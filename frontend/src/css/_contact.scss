@@ -1,0 +1,153 @@
+.contact-us {
+  @apply relative bg-white bg-left bg-cover bg-center bg-no-repeat py-12 overflow-hidden py-12 lg:py-16;
+  
+  .wrapper {
+    @apply relative z-10 flex flex-col lg:gap-8 max-w-full mx-auto px-4 lg:flex-row lg:items-start lg:gap-12 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
+    
+    .col {
+      @apply flex flex-col w-full relative z-[1] lg:w-1/2 py-4 lg:py-12 xl:py-16;
+      
+      .heading {
+        @apply justify-center lg:justify-start lg:w-full;
+      }
+      
+      .content {
+        @apply flex flex-col gap-2 py-8 lg:py-12 xl:py-16;
+        
+        p {
+          @apply text-center lg:text-left text-xl font-bold text-black lg:text-2xl 2xl:text-3xl;
+        }
+      }
+      
+      .form {
+        @apply w-full px-4 lg:px-12 xl:px-24;
+        
+        form {
+          @apply flex flex-col gap-6;
+          
+          .form-group {
+            @apply flex flex-col gap-2;
+            
+            label {
+              @apply text-base font-medium text-black lg:text-lg 2xl:text-xl;
+            }
+            
+            input,
+            textarea {
+              @apply w-full bg-transparent border-0 border-b-2 border-[rgba(54,195,220,0.3)] pb-2 pt-1 text-base text-black outline-none lg:text-lg 2xl:text-xl transition-[border-bottom-color] duration-300 ease-in-out;
+              
+              &::placeholder {
+                @apply text-gray-400;
+              }
+              
+              &:focus {
+                @apply border-b-[#36C3DC];
+              }
+            }
+            
+            textarea {
+              @apply min-h-[100px] resize-none;
+            }
+          }
+        }
+      }
+
+      &:last-child {
+        @apply bg-white/40;
+      }
+    }
+  }
+}
+
+.contact {
+  @apply relative py-12 lg:py-16 bg-cover bg-center bg-no-repeat overflow-hidden mt-20 lg:mt-14;
+
+  &::before {
+    content: "";
+    @apply absolute inset-0;
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  .wrapper {
+    @apply relative z-10 max-w-full mx-auto px-4 grid grid-cols-1 gap-8 lg:gap-10 lg:grid-cols-2;
+    @apply lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
+  }
+
+  .contact-main {
+    @apply w-full flex flex-col;
+
+    .heading {
+      @apply justify-center lg:justify-start w-full;
+    }
+  }
+
+  .contact-tagline {
+    @apply w-full flex flex-col py-8 lg:py-12;
+
+    p {
+      @apply text-center lg:text-left text-xl font-bold text-black lg:text-2xl 2xl:text-3xl;
+    }
+  }
+
+  .contact-form {
+    @apply pt-8;
+
+    form {
+      @apply flex flex-col gap-6;
+    }
+
+    .form-group {
+      @apply flex flex-col gap-2;
+
+      label {
+        @apply text-base font-medium text-black lg:text-lg 2xl:text-xl;
+      }
+
+      input,
+      textarea {
+        @apply w-full bg-transparent border-0 border-b-2 border-[rgba(54,195,220,0.3)] pb-2 pt-1 text-base text-black outline-none lg:text-lg 2xl:text-xl;
+        @apply transition-[border-bottom-color] duration-300 ease-in-out;
+
+        &::placeholder {
+          @apply text-gray-400;
+        }
+
+        &:focus {
+          @apply border-b-[#36C3DC];
+        }
+      }
+
+      textarea {
+        @apply min-h-[100px] resize-none;
+      }
+    }
+  }
+
+  .contact-offices {
+    @apply h-fit py-5 lg:p-6 xl:p-7;
+  }
+
+  .offices-title {
+    @apply flex items-center gap-2 mb-5 text-primary text-lg lg:text-xl font-bold uppercase;
+
+    svg {
+      @apply w-4 h-4 shrink-0;
+    }
+  }
+
+  .offices-list {
+    @apply flex flex-col gap-6;
+
+    .office-item {
+      @apply px-3 border-l-2 lg:border-l-[3px] border-primary py-4 lg:py-1 bg-white/40 lg:bg-transparent;
+
+      h3 {
+        @apply text-black text-sm lg:text-base font-semibold mb-1 leading-tight;
+      }
+
+      p {
+        @apply text-xs lg:text-sm font-medium;
+      }
+    }
+  }
+}

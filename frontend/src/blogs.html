@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="description" content="NSC Software - Vietnam's Premier Software Development & Consulting Company. Top 7% IT talents with AI-enabled delivery for global enterprises." />
+    <title>NSC Software - Vietnam's Premier Software Development & Consulting Company</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" /> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+    <script>
+      (function(){
+        var t = Date.now();
+        var preload = document.createElement('link');
+        preload.rel = 'preload';
+        preload.href = './css/style.css?t=' + t;
+        preload.as = 'style';
+        document.head.appendChild(preload);
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './css/style.css?t=' + t;
+        document.head.appendChild(link);
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Mobile Header (shows for mobile up to lg screen) -->
+    <header class="mobile-header xl:hidden">
+      <div class="mobile-header-wrapper">
+        <logo class="mobile-logo-wrapper">
+          <a href="./">
+            <img src="./img/mob-logo-white.png" class="mobile-logo-white" alt="NSC Software Logo" loading="eager" fetchpriority="high" />
+            <img src="./img/mob-logo.png" class="mobile-logo-colored" alt="NSC Software Logo" loading="eager" fetchpriority="high" />
+          </a>
+        </logo>
+        <div class="mobile-center">
+          <span class="mobile-home-text">Blog</span>
+        </div>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Mobile Menu (hidden by default) -->
+      <div class="mobile-nav" id="mobileNav">
+        <span>Menu</span>
+        <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul class="mobile-nav-list">
+          <li>
+            <a href="./" class="mobile-nav-link">
+              Home
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="about.html" class="mobile-nav-link">
+              About Us
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="ai.html" class="mobile-nav-link">
+              AI
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li class="mobile-dropdown-parent">
+            <a class="mobile-nav-link mobile-dropdown-toggle no-link-cursor">
+              What We Do
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <ul class="mobile-dropdown">
+              <li>
+                <a href="our-services.html" class="mobile-nav-link">
+                  Our Service
+                  <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="our-capabilites.html" class="mobile-nav-link">
+                  Technology Capabilities
+                  <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="career.html" class="mobile-nav-link">
+              Careers
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="blogs.html" class="mobile-nav-link active">
+              Blog
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="case-studies.html" class="mobile-nav-link">
+              Case Studies
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="contact.html" class="mobile-nav-link">
+              Contact Us
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li class="mobile-dropdown-parent mobile-language">
+            <a href="#language" class="mobile-nav-link mobile-dropdown-toggle">
+              Language: English
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <ul class="mobile-dropdown">
+              <li>
+                <a href="#en" class="mobile-nav-link">
+                  <span class="lang-check">✓</span>
+                  English
+                </a>
+              </li>
+              <li>
+                <a href="#de" class="mobile-nav-link">
+                  German
+                </a>
+              </li>
+              <li>
+                <a href="#ja" class="mobile-nav-link">
+                  Japanese
+                </a>
+              </li>
+              <li>
+                <a href="#vi" class="mobile-nav-link">
+                  Vietnamese
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <!-- Desktop Header (shows for screens above lg) -->
+    <header class="desktop-header hidden xl:block">
+      <div class="wrapper">
+        <logo>
+          <a href="#"><img src="./img/logo-white.png" class="logo-white" alt="Logo" loading="eager" fetchpriority="high" />
+            <img src="./img/logo.png" class="logo" alt="Logo" loading="eager" fetchpriority="high" /></a>
+        </logo>
+        <nav>
+          <ul class="nav">
+            <li><a href="./">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="ai.html" class="highlight">AI</a></li>
+            <li><a class="no-link-cursor">What We Do <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+            <ul class="dropdown">
+              <li><a href="our-services.html">Our Services</a></li>
+              <li><a href="our-capabilites.html">Technology Capabilities</a></li>
+            </ul>
+            </li>
+            <li><a href="blogs.html" class="active">Blog</a></li>
+            <li><a href="career.html">Careers</a></li>
+            <li><a href="case-studies.html">Case Studies</a></li>
+            <li><a href="contact.html" class="contact-btn">Contact Us</a></li>
+            <li class="lang-switcher">
+              <a href="#language">EN <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+              <ul class="dropdown">
+                <li><a href="#en">English</a></li>
+                <li><a href="#de">German</a></li>
+                <li><a href="#ja">Japanese</a></li>
+                <li><a href="#vi">Vietnamese</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+        
+      </div>
+    </header>
+
+    <section class="hero dark">
+      <img src="./img/hero-blogs.png" alt="Hero Image" loading="lazy" />
+      <div class="headlines animate__animated animate__zoomIn">
+        <h1><sb>Discover the People Behind the Code</sb>
+        </h1>
+        <div class="description">
+          <br class="lg:hidden">
+          <p>
+            At NSC Software, technology is only as powerful as the people building it. From innovative software solutions to stories of growth, teamwork, and real-world impact, our blog gives you a peek into life at NSC, and why our team is shaping the future of software.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      window.blogVueData = [
+        { id: 1, title: 'Inside NSC: Our Engineering Team Shares the Journey Behind a FinTech Platform', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 2, title: 'Meet Script: Transforming Online Meetings with AI-Powered Notes', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 3, title: 'NSC at Vietnam Tech Expo 2025: Building the Future of Software Together', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog3.png', link: '#' },
+        { id: 4, title: 'NSC at Vietnam Tech Expo 2025: Building the Future of Software Together', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog4.png', link: '#' },
+        { id: 5, title: 'NSC at Vietnam Tech Expo 2025: Building the Future of Software Together', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 6, title: 'NSC at Vietnam Tech Expo 2025: Building the Future of Software Together', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 7, title: 'Agile Mindset in Global Software Delivery', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 8, title: 'Digital Transformation: A Strategic Approach', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog2.png', link: '#' },
+        { id: 9, title: 'Building a Culture of Innovation at NSC', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog3.png', link: '#' },
+        { id: 10, title: 'The Future of Remote Collaboration', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog4.png', link: '#' },
+        { id: 11, title: 'Celebrating Our Team: NSC Annual Retreat 2025', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog5.png', link: '#' },
+        { id: 12, title: 'AI-Powered Development: What We Learned', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog6.png', link: '#' },
+        { id: 13, title: 'Microservices Architecture: Best Practices', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 14, title: 'DevOps Culture: Breaking Down Silos', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 15, title: 'Cloud-Native Development Strategies', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 16, title: 'Team Building Activities That Work', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 17, title: 'React Performance Optimization Techniques', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 18, title: 'Diversity and Inclusion in Tech Teams', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 19, title: 'Node.js Best Practices for Enterprise Apps', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 20, title: 'Mentorship Programs: Growing Talent', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 21, title: 'API Design Principles and Patterns', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 22, title: 'Work-Life Balance in Software Development', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 23, title: 'TypeScript: Advanced Type System', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 24, title: 'Cross-Cultural Communication in Tech', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 25, title: 'GraphQL vs REST: Choosing the Right API', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 26, title: 'Employee Recognition: What Works', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 27, title: 'Docker and Containerization Guide', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 28, title: 'Building Trust in Distributed Teams', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 29, title: 'Kubernetes Orchestration Best Practices', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 30, title: 'Remote Team Onboarding Strategies', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 31, title: 'Database Optimization Techniques', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 32, title: 'Company Values: Living Them Daily', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 33, title: 'Event-Driven Architecture Patterns', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 34, title: 'Knowledge Sharing Sessions', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 35, title: 'Serverless Computing: Pros and Cons', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 36, title: 'Team Retrospectives: Making Them Count', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 37, title: 'CI/CD Pipeline Optimization', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 38, title: 'Open Source Contributions', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 39, title: 'Security Best Practices for APIs', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 40, title: 'Learning and Development Programs', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 41, title: 'Real-Time Applications with WebSockets', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 42, title: 'Careers Growth Paths at NSC', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 43, title: 'Progressive Web Apps: The Future', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 44, title: 'Building Psychological Safety', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 45, title: 'Testing Strategies: Unit to E2E', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 46, title: 'Internal Tech Talks Series', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 47, title: 'State Management in Modern Apps', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 48, title: 'Hackathons: Innovation Through Play', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 49, title: 'Mobile App Performance Tuning', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 50, title: 'Community Engagement Initiatives', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 51, title: 'WebAssembly: Performance Gains', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 52, title: 'Feedback Culture: Giving and Receiving', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 53, title: 'Caching Strategies for Scale', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 54, title: 'Workplace Wellness Programs', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 55, title: 'GraphQL Federation Patterns', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 56, title: 'Mentoring Junior Developers', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 57, title: 'Observability and Monitoring', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 58, title: 'Team Building Retreats', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 59, title: 'Design Systems: Building Consistency', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 60, title: 'Inclusive Hiring Practices', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 61, title: 'Edge Computing: Benefits and Challenges', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 62, title: 'Employee Resource Groups', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 63, title: 'Message Queue Patterns', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 64, title: 'Celebrating Milestones Together', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 65, title: 'Database Sharding Strategies', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 66, title: 'Leadership Development Programs', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 67, title: 'Feature Flags: Controlled Rollouts', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 68, title: 'Volunteer Days: Giving Back', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 69, title: 'API Rate Limiting Best Practices', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 70, title: 'Workplace Flexibility Benefits', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 71, title: 'Load Balancing Strategies', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 72, title: 'Internal Communication Tools', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 73, title: 'Code Review Best Practices', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 74, title: 'Team Celebrations and Events', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 75, title: 'Distributed Systems: CAP Theorem', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 76, title: 'Professional Development Budgets', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 77, title: 'Service Mesh Architecture', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 78, title: 'Workplace Diversity Initiatives', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 79, title: 'API Versioning Strategies', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 80, title: 'Employee Satisfaction Surveys', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 81, title: 'Zero-Downtime Deployments', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 82, title: 'Company Culture: Our Values', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 83, title: 'Graph Database Applications', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 84, title: 'Team Offsites: Planning Tips', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 85, title: 'Chaos Engineering Principles', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 86, title: 'Work-Life Integration Strategies', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 87, title: 'Event Sourcing Patterns', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 88, title: 'Internal Innovation Labs', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 89, title: 'Performance Monitoring Tools', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 90, title: 'Employee Recognition Programs', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 91, title: 'Blockchain in Enterprise Apps', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 92, title: 'Building Strong Team Bonds', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 93, title: 'Machine Learning Model Deployment', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 94, title: 'Sustainable Work Practices', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' },
+        { id: 95, title: 'API Gateway Patterns', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog5.png', link: '#' },
+        { id: 96, title: 'Community Tech Events', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog6.png', link: '#' },
+        { id: 97, title: 'Data Pipeline Architecture', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog1.png', link: '#' },
+        { id: 98, title: 'Employee Wellness Initiatives', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog2.png', link: '#' },
+        { id: 99, title: 'Infrastructure as Code', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Technology', image: './img/blog3.png', link: '#' },
+        { id: 100, title: 'Company Anniversary Celebrations', excerpt: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...', category: 'Cultures', image: './img/blog4.png', link: '#' }
+      ];
+    </script>
+    
+    <section class="blog-list-details" style="background-image:url('./img/blogs-bg-details.png');">
+      <div class="heading">
+        <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+        <h2>BLOGS</h2>
+      </div>
+      <div class="wrapper"> 
+        <div class="blogs-wrapper">
+          <div class="featured-header">
+            
+            <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16.6816 0.00732422C17.0465 0.0371221 17.3983 0.156317 17.707 0.353027L17.8579 0.457031L18 0.574219C18.318 0.85919 18.5492 1.22988 18.665 1.64355C18.6678 1.65333 18.6713 1.66302 18.6738 1.67285L21.0454 10.8765C21.1124 11.1358 21.2471 11.3726 21.4365 11.562C21.6259 11.7513 21.8628 11.8862 22.1221 11.9531L31.3242 14.3247L31.3491 14.332L31.5249 14.3877C31.8694 14.5139 32.1774 14.7229 32.4229 14.9956L32.5415 15.1377L32.647 15.2886C32.8774 15.6492 33.0014 16.0695 33.0015 16.5C33.0015 16.9924 32.8398 17.472 32.5415 17.8638C32.2431 18.2556 31.8239 18.5385 31.3491 18.6694L31.3242 18.6753L30.9507 17.2236L30.9478 17.2163L31.3242 18.6753L22.1221 21.0469C21.8626 21.1139 21.626 21.25 21.4365 21.4395C21.2474 21.6287 21.111 21.8645 21.0439 22.1235L18.6724 31.3271L18.6636 31.3564L17.2515 30.9609L17.2192 30.9521L18.6636 31.3564C18.5312 31.8293 18.2477 32.2462 17.8564 32.543C17.4653 32.8397 16.9881 33.0014 16.4971 33.0015C16.0061 33.0015 15.5289 32.8396 15.1377 32.543C14.7465 32.2462 14.4629 31.8293 14.3306 31.3564L15.7822 30.9492L15.75 30.958L14.3306 31.3564C14.3278 31.3467 14.3243 31.337 14.3218 31.3271L11.9502 22.125L14.8564 21.3765L16.4956 27.7441L18.1392 21.3765C18.3401 20.5981 18.747 19.8868 19.3154 19.3184C19.8841 18.7497 20.5949 18.343 21.3735 18.1421L27.7441 16.5L21.3735 14.8579C20.595 14.6571 19.884 14.2516 19.3154 13.6831C18.7468 13.1145 18.34 12.4037 18.1392 11.625L16.4971 5.25439L14.855 11.625C14.6537 12.403 14.2486 13.1151 13.6802 13.6831C13.1116 14.2513 12.4004 14.6558 11.6221 14.8564L5.25293 16.4985L11.6221 18.1421C12.4007 18.343 13.1116 18.7497 13.6802 19.3184C14.2485 19.8867 14.6541 20.5968 14.855 21.375L11.9502 22.125C11.8832 21.8656 11.7485 21.6289 11.5591 21.4395C11.3696 21.25 11.1329 21.1139 10.8735 21.0469L1.67139 18.6738L2.04492 17.2236L2.0376 17.2485L1.67139 18.6738L1.63623 18.665L1.46191 18.6079C1.06295 18.4587 0.713885 18.1983 0.455566 17.8564C0.160381 17.4658 0 16.9896 0 16.5C8.11703e-05 16.0105 0.160456 15.5341 0.455566 15.1436C0.750728 14.7532 1.16543 14.4701 1.63623 14.3364L1.66992 14.3262L2.03613 15.75L2.03906 15.7573L1.66992 14.3262L10.8735 11.9517C11.1328 11.8847 11.3696 11.7498 11.5591 11.5605C11.7482 11.3716 11.883 11.1352 11.9502 10.8765L14.3232 1.67285L15.7837 2.04932L15.7764 2.04785L14.3232 1.67285C14.3258 1.66303 14.3293 1.65332 14.332 1.64355C14.4644 1.17075 14.748 0.753765 15.1392 0.457031L15.2886 0.353027C15.6489 0.123181 16.0686 0 16.4985 0L16.6816 0.00732422ZM2.99854 27C2.17011 27 1.49707 26.3284 1.49707 25.5C1.49727 24.6717 2.17023 24 2.99854 24C2.99873 23.1717 3.67023 22.5 4.49854 22.5C5.27507 22.5004 5.91324 23.0912 5.98975 23.8477L5.99854 24L6.15088 24.0088C6.90725 24.0855 7.49835 24.7234 7.49854 25.5C7.49854 26.3282 6.82663 26.9996 5.99854 27C5.99854 27.8282 5.32663 28.4996 4.49854 28.5C3.67011 28.5 2.99854 27.8284 2.99854 27ZM26.9985 9V7.5H25.4985C24.6701 7.5 23.9985 6.82843 23.9985 6C23.9987 5.17174 24.6702 4.5 25.4985 4.5H26.9985V3C26.9987 2.17174 27.6702 1.5 28.4985 1.5C29.3265 1.5004 29.9983 2.17199 29.9985 3V4.5H31.4985C32.3265 4.5004 32.9983 5.17199 32.9985 6C32.9985 6.82818 32.3266 7.4996 31.4985 7.5H29.9985V9C29.9985 9.82818 29.3266 10.4996 28.4985 10.5C27.6701 10.5 26.9985 9.82843 26.9985 9Z" fill="#36C3DC"/>
+              </svg>
+            <h3>Featured</h3>
+          </div>
+          <div class="featured-content">
+            <div class="col featured-main">
+              <div class="main-post">
+                <div class="post-image">
+                  <img src="./img/blog1.png" alt="Agile Mindset in Global Software Delivery" loading="lazy" />
+                </div>
+                <div class="post-content">
+                  <h2><a href="#">Agile Mindset in Global Software Delivery</a></h2>
+                  <p class="post-description">Agile Mindset in GloaAgile mindset in global software delivery means teams stop hiding behind process and start iterating fast, aligning const...</p>
+                  <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg></a>
+                </div>
+              </div>
+            </div>
+            <div class="col featured-sidebar">
+              <div class="sidebar-items">
+                <div class="sidebar-item">
+                  <div class="item-thumbnail">
+                    <img src="./img/blog6.png" alt="Building Scalable Software for B2B Enterprises" loading="lazy" />
+                  </div>
+                  <div class="item-content">
+                    <h3><a href="#">Building Scalable Software for B2B Enterprises</a></h3>
+                    <p class="item-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg></a>
+                  </div>
+                </div>
+                <div class="sidebar-item">
+                  <div class="item-thumbnail">
+                    <img src="./img/blog7.png" alt="The Future of AI-Driven Quality Assurance" loading="lazy" />
+                  </div>
+                  <div class="item-content">
+                    <h3><a href="#">The Future of AI-Driven Quality Assurance</a></h3>
+                    <p class="item-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg></a>
+                  </div>
+                </div>
+                <div class="sidebar-item">
+                  <div class="item-thumbnail">
+                    <img src="./img/blog8.png" alt="Cultural Agility: How Vietnam's Tech Talent Goes Global" loading="lazy" />
+                  </div>
+                  <div class="item-content">
+                    <h3><a href="#">Cultural Agility: How Vietnam's Tech Talent Goes Global</a></h3>
+                    <p class="item-excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                    <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="blogs-list" id="blog-list-app" v-cloak>
+          <div class="blogs-list-header">
+            <div class="blogs-title">
+                
+              <svg width="27" height="33" viewBox="0 0 27 33" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 28.5V4.5C0 3.30653 0.474445 2.16227 1.31836 1.31836C2.16227 0.474445 3.30653 0 4.5 0H18C18.3978 0 18.7792 0.158148 19.0605 0.439453L26.5605 7.93945C26.8419 8.22076 27 8.60218 27 9V28.5C27 29.6935 26.5256 30.8377 25.6816 31.6816C24.8377 32.5256 23.6935 33 22.5 33H4.5C3.30653 33 2.16227 32.5256 1.31836 31.6816C0.474446 30.8377 0 29.6935 0 28.5ZM10.5 22.5C11.3284 22.5 12 23.1716 12 24C12 24.8284 11.3284 25.5 10.5 25.5H7.5C6.67157 25.5 6 24.8284 6 24C6 23.1716 6.67157 22.5 7.5 22.5H10.5ZM19.5 22.5C20.3284 22.5 21 23.1716 21 24C21 24.8284 20.3284 25.5 19.5 25.5H16.5C15.6716 25.5 15 24.8284 15 24C15 23.1716 15.6716 22.5 16.5 22.5H19.5ZM10.5 16.5C11.3284 16.5 12 17.1716 12 18C12 18.8284 11.3284 19.5 10.5 19.5H7.5C6.67157 19.5 6 18.8284 6 18C6 17.1716 6.67157 16.5 7.5 16.5H10.5ZM19.5 16.5C20.3284 16.5 21 17.1716 21 18C21 18.8284 20.3284 19.5 19.5 19.5H16.5C15.6716 19.5 15 18.8284 15 18C15 17.1716 15.6716 16.5 16.5 16.5H19.5ZM18 7.5C18 7.89782 18.1581 8.27924 18.4395 8.56055C18.7208 8.84185 19.1022 9 19.5 9H23.3789L18 3.62109V7.5ZM3 28.5C3 28.8978 3.15815 29.2792 3.43945 29.5605C3.72076 29.8419 4.10218 30 4.5 30H22.5C22.8978 30 23.2792 29.8419 23.5605 29.5605C23.8419 29.2792 24 28.8978 24 28.5V12H19.5C18.3065 12 17.1623 11.5256 16.3184 10.6816C15.4744 9.83773 15 8.69347 15 7.5V3H4.5C4.10217 3 3.72076 3.15815 3.43945 3.43945C3.15815 3.72076 3 4.10217 3 4.5V28.5Z" fill="#36C3DC"/>
+                </svg>
+  
+                <h2>Blogs</h2>
+              </div>
+            <div class="blogs-filters">
+              <div class="blogs-search">
+                <label class="search-input-wrap" for="blogsSearchInput">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M11 4C7.13401 4 4 7.13401 4 11C4 14.866 7.13401 18 11 18C12.6574 18 14.1803 17.4215 15.3789 16.4565L19.2929 20.2929C19.6834 20.6834 20.3166 20.6834 20.7071 20.2929C21.0976 19.9024 21.0976 19.2692 20.7071 18.8787L16.7935 15.0425C17.6474 13.8615 18 12.3964 18 11C18 7.13401 14.866 4 11 4ZM6 11C6 8.23858 8.23858 6 11 6C13.7614 6 16 8.23858 16 11C16 13.7614 13.7614 16 11 16C8.23858 16 6 13.7614 6 11Z" fill="currentColor"/>
+                  </svg>
+                  <input
+                    id="blogsSearchInput"
+                    type="search"
+                    v-model.trim="searchQuery"
+                    placeholder="Search..."
+                    aria-label="Search blogs by title, excerpt, or category"
+                  />
+                  <span class="results-count" v-if="searchQuery && searchQuery.trim().length">{{ filteredResultCount }} results</span>
+                </label>
+              </div>
+              <button type="button" class="filter-btn" :class="{ 'filter-active': activeFilter === filter.id }" v-for="filter in filters" :key="filter.id" @click="setFilter(filter.id)">
+                <svg v-if="activeFilter === filter.id" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M13.3333 4L6 11.3333L2.66667 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {{ filter.label }}
+              </button>
+            </div>
+          </div>
+          <div class="blogs-posts">
+            <template v-if="paginatedPosts.length">
+              <article class="blog-post" v-for="post in paginatedPosts" :key="post.id">
+                <div class="post-image">
+                  <img :src="post.image" :alt="post.title" loading="lazy" />
+                </div>
+                <div class="post-content">
+                  <h3><a :href="post.link">{{ post.title }}</a></h3>
+                  <p class="post-excerpt">{{ post.excerpt }}</p>
+                  <div class="post-footer">
+                    <span class="post-category">{{ post.category }}</span>
+                    <a :href="post.link" class="read-more-link">Read More <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg></a>
+                  </div>
+                </div>
+              </article>
+            </template>
+            <div v-else class="blogs-empty">
+              <p>No blog posts found in this category.</p>
+            </div>
+          </div>
+          <div class="pagination blogs-pagination" v-if="totalPages > 1">
+            <button type="button" class="pagination-prev" :disabled="currentPage <= 1" @click="setPage(currentPage - 1)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Previous
+            </button>
+            <div class="pagination-numbers">
+              <template v-for="page in displayPages" :key="page.num || 'ellipsis'">
+                <button v-if="!page.isEllipsis" type="button" class="pagination-num" :class="{ 'pagination-num-active': currentPage === page.num }" @click="setPage(page.num)">{{ page.num }}</button>
+                <span v-else class="pagination-ellipsis">...</span>
+              </template>
+            </div>
+            <button type="button" class="pagination-next" :disabled="currentPage >= totalPages" @click="setPage(currentPage + 1)">
+              Next
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <footer>
+      <div class="wrapper">
+        <div class="col company-info">
+          <div class="company-branding">
+            <div class="logo">
+              <img src="./img/logo.png" alt="NSC Software Logo" class="block lg:hidden" loading="lazy" />
+              <img src="./img/mob-foot-logo.png" alt="NSC Software Logo" class="hidden lg:block" loading="lazy" />
+            </div>
+            <h3 class="company-name">NSC Software Co., LTD</h3>
+          </div>
+          <p class="company-description">Vietnam's Premier Software Development & Consulting Company</p>
+          <p class="business-number">Business Number: <br> 0110524817</p>
+          <div class="certifications">
+            <div class="cert-badge">
+              <img src="./img/ISO-27001.png" alt="ISO 27001" loading="lazy" />
+            </div>
+            <div class="cert-badge">
+              <img src="./img/ISO-9001-2015.png" alt="ISO 9001:2015" loading="lazy" />
+            </div>
+          </div>
+          <p class="email">Email: <br><a href="mailto:contact@nscsoftware.com">contact@nscsoftware.com</a></p>
+        </div>
+        <div class="col right-column">
+          <div class="contact-info">
+            <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="contact-content">
+              <h4 class="section-heading">Contact</h4>
+              <svg xmlns="http://www.w3.org/2000/svg" class="accordion-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+                </svg>
+            </button>
+            <h4 class="section-heading hidden lg:block">Contact</h4>
+            <div class="offices-wrapper lg-hidden" id="contact-content">
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software Headquarters:</h5>
+                  <p>Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Ho Chi Minh:</h5>
+                  <p>Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software USA:</h5>
+                  <p>4245 N Central Expy, #490, Dallas, TX, USA 75205</p>
+                  <p>Tel: <a href="tel:+17134282289">+1 (713) 428 2289</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Australia:</h5>
+                  <p>Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia</p>
+                  <p>Tel: <a href="tel:+61488860719">(+61) 0488 860 719</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Europe:</h5>
+                  <p>Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany</p>
+                  <p>Tel: <a href="tel:+491701633520">(+49) 170 1633520</a></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="offices-wrapper hidden lg:block" id="contact-content">
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software Headquarters:</h5>
+                  <p>Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Australia:</h5>
+                  <p>Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia</p>
+                  <p>Tel: <a href="tel:+61488860719">(+61) 0488 860 719</a></p>
+                </div>
+              </div>
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software Ho Chi Minh:</h5>
+                  <p>Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Europe:</h5>
+                  <p>Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany</p>
+                  <p>Tel: <a href="tel:+491701633520">(+49) 170 1633520</a></p>
+                </div>
+              </div>
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software USA:</h5>
+                  <p>4245 N Central Expy, #490, Dallas, TX, USA 75205</p>
+                  <p>Tel: <a href="tel:+17134282289">+1 (713) 428 2289</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sitemap lg:hidden">
+            <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="sitemap-content">
+              <h4 class="section-heading">Site Map</h4>
+              <svg xmlns="http://www.w3.org/2000/svg" class="accordion-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+                </svg>
+            </button>
+            <h4 class="section-heading hidden lg:block">Site Map</h4>
+            <div class="sitemap-links" id="sitemap-content">
+              <div class="sitemap-col">
+                <ul>
+                  <li><a href="./">Home</a></li>
+                  <li><a href="about.html">About Us</a></li>
+                </ul>
+              </div>
+              <div class="sitemap-col">
+                <ul>
+                  <li><a>What We Do</a>
+                    <ul>
+                      <li><a href="our-services.html">Our Services</a></li>
+                      <li><a href="our-capabilites.html">Technology Capabilities</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="career.html">Careers</a></li>
+                </ul>
+              </div>
+              <div class="sitemap-col">
+                <ul>
+                  <li><a href="blogs.html">Blog</a></li>
+                  <li><a href="case-studies.html">Case Studies</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+      <div class="sitemap hidden lg:block">
+        <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="sitemap-content">
+          <h4 class="section-heading">Site Map</h4>
+          <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h4 class="section-heading hidden lg:block">Site Map</h4>
+        <div class="sitemap-links" id="sitemap-content">
+          <div class="sitemap-col">
+            <ul>
+              <li><a href="./">Home</a></li>
+              <li><a href="about.html">About Us</a></li>
+            </ul>
+          </div>
+          <div class="sitemap-col">
+            <ul>
+              <li><a>What We Do</a>
+                <ul>
+                  <li><a href="our-services.html">Our Services</a></li>
+                  <li><a href="our-capabilites.html">Technology Capabilities</a></li>
+                </ul>
+              </li>
+              <li><a href="career.html">Careers</a></li>
+            </ul>
+          </div>
+          <div class="sitemap-col">
+            <ul>
+              <li><a href="blogs.html">Blog</a></li>
+              <li><a href="case-studies.html">Case Studies</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="wrapper">
+          <div class="copyright">
+            <p>NSC@2026 All copyrights reserved</p>
+            <div class="legal-links">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Cookies Policy</a>
+              <a href="#">Term of Use</a>
+            </div>
+          </div>
+          <div class="social">
+            <a href="#" class="social-icon linkedin" aria-label="LinkedIn">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12C9.82843 12 10.5 12.6716 10.5 13.5V31.5C10.5 32.3284 9.82843 33 9 33H3C2.17157 33 1.5 32.3284 1.5 31.5V13.5C1.5 12.6716 2.17157 12 3 12H9ZM31.5 21C31.5 19.0109 30.7093 17.1038 29.3027 15.6973C27.8962 14.2907 25.9891 13.5 24 13.5C22.0109 13.5 20.1038 14.2907 18.6973 15.6973C17.2907 17.1038 16.5 19.0109 16.5 21V30H19.5V21C19.5 19.8065 19.9744 18.6623 20.8184 17.8184C21.6623 16.9744 22.8065 16.5 24 16.5C25.1935 16.5 26.3377 16.9744 27.1816 17.8184C28.0256 18.6623 28.5 19.8065 28.5 21V30H31.5V21ZM4.5 30H7.5V15H4.5V30ZM7.5 6C7.5 5.17157 6.82843 4.5 6 4.5C5.17157 4.5 4.5 5.17157 4.5 6C4.5 6.82843 5.17157 7.5 6 7.5C6.82843 7.5 7.5 6.82843 7.5 6ZM34.5 31.5C34.5 32.3284 33.8284 33 33 33H27C26.1716 33 25.5 32.3284 25.5 31.5V21C25.5 20.6022 25.3419 20.2208 25.0605 19.9395C24.7792 19.6581 24.3978 19.5 24 19.5C23.6022 19.5 23.2208 19.6581 22.9395 19.9395C22.6581 20.2208 22.5 20.6022 22.5 21V31.5C22.5 32.3284 21.8284 33 21 33H15C14.1716 33 13.5 32.3284 13.5 31.5V21C13.5 18.2152 14.6056 15.5438 16.5747 13.5747C18.5438 11.6056 21.2152 10.5 24 10.5C26.7848 10.5 29.4562 11.6056 31.4253 13.5747C33.3944 15.5438 34.5 18.2152 34.5 21V31.5ZM10.5 6C10.5 8.48528 8.48528 10.5 6 10.5C3.51472 10.5 1.5 8.48528 1.5 6C1.5 3.51472 3.51472 1.5 6 1.5C8.48528 1.5 10.5 3.51472 10.5 6Z" fill="#36C3DC"/>
+                </svg>
+            </a>
+            <a href="#" class="social-icon facebook" aria-label="Facebook">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.5 10.5C19.5 9.70435 19.8163 8.94151 20.3789 8.37891C20.9415 7.8163 21.7043 7.5 22.5 7.5H25.5V4.5H22.5C20.9087 4.5 19.383 5.13259 18.2578 6.25781C17.1326 7.38303 16.5 8.9087 16.5 10.5V15C16.5 15.8284 15.8284 16.5 15 16.5H12V19.5H15C15.8284 19.5 16.5 20.1716 16.5 21V31.5H19.5V21C19.5 20.1716 20.1716 19.5 21 19.5H24.3296L25.0796 16.5H21C20.1716 16.5 19.5 15.8284 19.5 15V10.5ZM22.5 13.5H27C27.4619 13.5 27.8979 13.7131 28.1821 14.0771C28.4663 14.4411 28.5665 14.9153 28.4546 15.3633L26.9546 21.3633C26.7877 22.031 26.1883 22.5 25.5 22.5H22.5V33C22.5 33.8284 21.8284 34.5 21 34.5H15C14.1716 34.5 13.5 33.8284 13.5 33V22.5H10.5C9.67157 22.5 9 21.8284 9 21V15C9 14.1716 9.67157 13.5 10.5 13.5H13.5V10.5C13.5 8.11305 14.4489 5.82455 16.1367 4.13672C17.8245 2.44889 20.1131 1.5 22.5 1.5H27C27.8284 1.5 28.5 2.17157 28.5 3V9C28.5 9.82843 27.8284 10.5 27 10.5H22.5V13.5Z" fill="#36C3DC"/>
+                </svg>
+            </a>
+            <a href="#" class="social-icon youtube" aria-label="YouTube">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.14654 6.68107C14.3449 5.64016 21.6557 5.64016 28.8541 6.68107L30.3951 6.91984L30.5474 6.95353C31.3005 7.1601 31.9874 7.55858 32.5396 8.11076C33.0918 8.66297 33.4903 9.34984 33.6968 10.1029C33.7046 10.1313 33.7113 10.1606 33.7173 10.1894C34.8086 15.3393 34.8086 20.6605 33.7173 25.8105C33.7113 25.8392 33.7046 25.8685 33.6968 25.8969L32.2525 25.4999H32.2496L33.6968 25.8969C33.4903 26.65 33.0918 27.3369 32.5396 27.8891C31.9874 28.4413 31.3005 28.8397 30.5474 29.0463L30.1504 27.599V27.6005L30.5474 29.0463C30.4976 29.06 30.4461 29.0715 30.3951 29.08L28.8541 29.3188C21.1414 30.4343 13.2997 30.3549 5.60553 29.08L5.85162 27.5917L5.45318 29.0463C4.70012 28.8397 4.01317 28.4413 3.46099 27.8891C2.97765 27.4057 2.61245 26.819 2.39019 26.1752L2.30377 25.8969L2.28326 25.8105L3.75103 25.4999H3.74957L2.28326 25.8105C1.19204 20.6605 1.19204 15.3393 2.28326 10.1894C2.28935 10.1606 2.296 10.1313 2.30377 10.1029C2.51031 9.34984 2.90882 8.66297 3.46099 8.11076C4.01317 7.55859 4.70011 7.1601 5.45318 6.95353C5.50306 6.93986 5.5545 6.92829 5.60553 6.91984L7.14654 6.68107ZM5.60553 29.08C5.55452 29.0715 5.50305 29.06 5.45318 29.0463L5.85015 27.6005L5.60553 29.08ZM29.8062 9.86418C21.9874 8.57992 14.0117 8.57976 6.19293 9.86418C5.96353 9.93651 5.75413 10.0615 5.58355 10.2319C5.40549 10.4099 5.2748 10.6306 5.20416 10.872C4.21707 15.5721 4.21726 20.4262 5.20416 25.1264C5.27471 25.3683 5.40516 25.5896 5.58355 25.768C5.75369 25.9379 5.96275 26.0618 6.19146 26.1342C14.0108 27.4192 21.9868 27.4189 29.8062 26.1342C30.036 26.0619 30.2462 25.9386 30.417 25.768C30.5953 25.5897 30.7244 25.3682 30.795 25.1264C31.782 20.426 31.7822 15.5723 30.795 10.872C30.7243 10.6307 30.595 10.4098 30.417 10.2319C30.2461 10.0612 30.0361 9.93644 29.8062 9.86418ZM14.2613 12.1947C14.6726 11.9619 15.1657 11.9378 15.5928 12.1215L15.7715 12.2138L23.2715 16.7138L22.4996 17.9999L23.2715 19.2861L15.7715 23.7861C15.3082 24.0639 14.7314 24.0713 14.2613 23.8051C13.791 23.5388 13.501 23.0403 13.501 22.4999V13.4999C13.501 12.9595 13.791 12.461 14.2613 12.1947ZM16.501 19.85L19.5845 17.9999L16.501 16.1484V19.85ZM23.2715 16.7138C23.7234 16.9849 24.001 17.473 24.001 17.9999C24.001 18.5268 23.7234 19.015 23.2715 19.2861L22.501 17.9999L23.2715 16.7138Z" fill="#36C3DC"/>
+                </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" defer></script>
+    <script src="./js/open-positions.js" defer></script>
+    <script src="./js/blog-list.js" defer></script>
+    <script src="./js/case-studies.js" defer></script>
+    <script src="./js/scripts.js" defer></script>
+  </body>
+</html>

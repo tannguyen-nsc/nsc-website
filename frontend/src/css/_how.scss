@@ -1,0 +1,45 @@
+.how-we-work {
+  @apply relative min-h-[180vw] md:min-h-[130vw] lg:min-h-[55vw] xl:min-h-[50vw] bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center py-12 lg:py-16;
+
+  .wrapper {
+    @apply flex flex-col items-center justify-center z-50;
+
+    .description {
+      @apply relative z-10 text-center py-8;
+      h3 {
+        @apply text-lg lg:text-xl 2xl:text-2xl font-semibold px-6 2xl:mt-4;
+      }
+
+      p {
+        @apply text-lg lg:text-xl 2xl:text-2xl font-semibold text-primary;
+      }
+    }
+
+    .item-wrapper {
+      @apply relative z-10 px-4 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+
+      img {
+        @apply relative w-full h-auto;
+      }
+
+      .items {
+        @apply flex flex-col lg:flex-row items-stretch justify-center bg-primary bg-opacity-80 w-full max-w-full;
+        .item {
+          @apply flex flex-col border-t border-white/30 lg:border-r p-4 lg:flex-1;
+          
+          .content {
+            @apply flex flex-col items-center justify-center bg-primary border border-white p-4 text-white text-center lg:h-full lg:flex-1;
+
+            h3 {
+              @apply text-xl 2xl:text-2xl font-bold xl:leading-tight mb-4;
+            }
+  
+            p {
+              @apply text-base 2xl:font-semibold;
+            }
+          }
+        }
+      }
+    }
+  }
+}  

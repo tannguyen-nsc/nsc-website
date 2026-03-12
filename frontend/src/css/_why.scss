@@ -1,0 +1,365 @@
+.why-us {
+  // text-shadow: 0px 0px 2px black;
+  @apply relative min-h-[180vw] md:min-h-[130vw] lg:min-h-[100vw] xl:min-h-[67vw] 2xl:min-h-[55vw] flex flex-col items-center justify-between text-center overflow-hidden gap-64 md:gap-0 xl:pb-0 bg-primary py-12 lg:py-16;
+  img {
+    @apply absolute top-0 left-0 w-full h-full object-cover object-top md:object-center lg:object-bottom xl:object-bottom;
+
+    &.global {
+      @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-auto h-auto xl:max-w-[600px] 2xl:max-w-[700px] object-contain z-0 transition-transform duration-500 ease-out transform-gpu origin-center;
+    }
+
+    &.mob-top-pattern {
+      @apply bottom-0;
+    }
+
+    &.md-globe {
+      @apply absolute top-[10%] lg:top-[15%] left-[50%] w-[60%] h-auto z-10 translate-x-[-50%];
+    }
+  }
+
+  // 3D globe (img + object-position for rotate effect)
+  .why-us-globe {
+    @apply absolute top-[40%] xl:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 overflow-hidden w-[300px] h-[300px] bg-[url('../img/globe.png')] bg-cover bg-center bg-no-repeat rounded-full z-20;
+
+    .why-us-globe__img {
+      @apply absolute left-0 top-0;
+      width: 610px;
+      height: 300px;
+      object-fit: none;
+      object-position: -150px 0px;
+      transition: object-position 0.5s ease-out;
+    }
+
+    .why-us-globe__gradient {
+      @apply absolute left-0 top-0 w-full h-full z-40;
+    }
+
+    .why-us-globe__s {
+      @apply absolute left-0 top-0 w-full h-full z-40 xl:hidden;
+    }
+
+    @screen md {
+      width: 500px;
+      height: 500px;
+
+      .why-us-globe__img {
+        width: 1017px;
+        height: 500px;
+        object-position: -150px 0px;
+      }
+    }
+
+    @screen xl {
+      width: 500px;
+      height: 500px;
+
+      .why-us-globe__img {
+        width: 1017px;
+        height: 500px;
+        object-position: -475px 0px;
+      }
+    }
+
+    @screen 2xl {
+      width: 600px;
+      height: 600px;
+
+      .why-us-globe__img {
+        width: 1220px;
+        height: 600px;
+        object-position: -560px 0px;
+      }
+    }
+  }
+
+  .heading {
+    @apply mt-0 xl:pb-96;
+  }
+
+  .heading, .why-us-content {
+    @apply relative z-10;
+  }
+
+  .why-us-content {
+    @apply w-full max-w-full px-4 lg:px-8 relative z-30;
+    
+    // Absolute positioning container for desktop
+    @screen xl {
+      @apply max-w-[1400px] mx-auto min-h-[600px] relative;
+    }
+
+    .slick-list {
+      @apply overflow-visible;
+    }
+
+    .slick-track {
+      @apply flex;
+    }
+
+    .slick-slide {
+      @apply h-auto;
+      
+      > div {
+        @apply h-full;
+      }
+    }
+
+    // Slick arrows styling
+    .slick-prev,
+    .slick-next {
+      @apply z-20 w-12 h-12 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full text-white;
+      
+      &::before {
+        @apply hidden;
+      }
+
+      svg {
+        @apply w-6 h-6;
+        path {
+          @apply fill-white;
+        }
+      }
+
+      &.slick-disabled {
+        @apply opacity-50 cursor-not-allowed;
+      }
+    }
+
+    .slick-prev {
+      @apply left-4;
+    }
+
+    .slick-next {
+      @apply right-4;
+    }
+
+    // Slick dots styling
+    .slick-dots {
+      @apply bottom-4 flex items-center justify-center gap-2;
+      
+      li {
+        @apply m-0;
+        
+        button {
+          @apply w-2 h-2 rounded-full bg-white bg-opacity-40;
+          
+          &::before {
+            @apply hidden;
+          }
+        }
+
+        &.slick-active {
+          button {
+            @apply bg-white bg-opacity-100 w-8 rounded-full;
+          }
+        }
+      }
+    }
+  }
+
+  .why-us-item {
+    @apply text-white text-left bg-[url('../img/mob-why-nsc-item-bg.png')] bg-cover bg-center bg-no-repeat border-r-2 border-white;
+    
+    img.vetor {
+      @apply absolute object-contain transition-opacity duration-300 pointer-events-none hidden xl:block z-0 opacity-100;
+    }
+
+    .content {
+      @apply w-full h-full p-6 xl:p-4 w-full z-20;
+  
+      h3 {
+        @apply text-2xl font-bold text-white leading-tight pb-4;
+      }
+  
+      .description {
+        @apply text-base text-white font-normal leading-relaxed xl:hidden;
+        
+        p {
+          @apply m-0;
+        }
+      }
+    }
+
+    @screen xl {
+      // Hover effects: show description and change colors
+      &:hover, &.slick-active { 
+        @apply z-20 bg-none bg-white;
+        
+        .content {
+          h3 {
+            @apply mb-6 text-primary;
+          }
+          
+          .description {
+            @apply block text-black;
+          }
+        }
+      }
+    }
+    
+    // Desktop layout: Absolute positioning for fixed layout
+    // Left column: items 1, 3, 5, 6 (4 items)
+    // Right column: items 2, 4, 7 (3 items)
+    @screen xl {
+      @apply absolute xl:w-[310px] 2xl:w-[320px] mb-0 bg-[url('../img/wni-left-bg.png')] bg-cover bg-right bg-no-repeat;
+      
+      // Position vector images relative to .why-us-item, not .content
+      // This ensures they don't move when content expands on hover
+      img.vetor {
+        @apply absolute;
+        // Position relative to .why-us-item by using fixed pixel values
+        // Accounting for .content padding: py-6 = 24px
+      }
+      
+      // Left column items (1, 3, 5, 6)
+      &:nth-child(1) {
+        @apply  left-[11%] top-[-57%];
+
+        img.vetor {
+          @apply top-[calc(160px-100%)] left-[calc(100%-2px)] translate-x-0 translate-y-0 w-[160px] 2xl:w-[196px] opacity-100;
+        }
+
+        &:hover {
+          img.vetor {
+            @apply top-[calc(162px-100%)] 2xl:top-[calc(186px-100%)];
+          }
+        }
+
+        // @media screen and (min-width: 1440px) { 
+        //   @apply left-[14%] top-[-44%];
+        // }
+
+        @screen 2xl {
+          @apply left-[7%] top-[-55%];
+
+          img.vetor {
+            @apply left-[calc(100%-18px)];
+          }
+        }
+      }
+
+      &:nth-child(3) {
+        @apply  left-[4%] top-[-21.5%];
+
+        img.vetor {
+          @apply top-[calc(70px-100%)] left-[calc(100%-0px)] w-[110px] 2xl:w-[120px] opacity-100 will-change-transform;
+        }
+
+        @media screen and (min-width: 1440px) { 
+          @apply left-[6%];
+        }
+
+        @screen 2xl {
+          @apply left-[2%] top-[-19.5%];
+        }
+      }
+      
+      &:nth-child(5) {
+        @apply  left-[4%] top-[18.5%];
+
+        img.vetor {
+          @apply top-[calc(60px-100%)] left-full translate-x-0 translate-y-0 w-[128px] 2xl:w-[136px] opacity-100 will-change-transform;
+        }
+
+        @media screen and (min-width: 1440px) { 
+          @apply left-[6%];
+        }
+
+        @screen 2xl {
+          @apply left-[2%] top-[20.5%];
+        }
+      }
+      
+      &:nth-child(6) {
+        @apply left-[5%] top-[54%];
+
+        img.vetor {
+          @apply absolute top-[calc(50px-100%)] left-[calc(100%-2px)] w-[180px] 2xl:w-[200px];
+        }
+
+        @media screen and (min-width: 1440px) { 
+          @apply left-[9%];
+        }
+
+        @screen 2xl {
+          @apply left-[4%] top-[56%];
+
+          img.vetor {
+            @apply left-[calc(100%-14px)];
+          }
+        }
+      }
+
+      &:nth-child(2), &:nth-child(4), &:nth-child(7) {  
+        @apply bg-[url('../img/wni-right-bg.png')] bg-cover bg-left bg-no-repeat border-r-0 border-l-2 border-white;
+      }
+
+      // Right column items (2, 4, 7)
+      &:nth-child(2) {
+        @apply right-[5%] top-[-33%];
+
+        img.vetor {
+          @apply top-[calc(160px-100%)] right-[calc(100%-2px)] translate-x-[-100%] translate-y-0 w-[100px] opacity-100 will-change-transform;
+        }
+
+        &:hover {
+          img.vetor {
+            @apply top-[calc(162px-100%)];
+          }
+        }
+
+        @media screen and (min-width: 1440px) { 
+          @apply right-[9%];
+        }
+
+        @screen 2xl {
+          @apply right-[5%];
+        }
+      }
+      
+      &:nth-child(4) {
+        @apply right-[2.5%] top-[4%];
+
+        img.vetor {
+          @apply top-[calc(125px-100%)] right-full translate-x-[-100%] translate-y-0 w-[120px] 2xl:w-[140px] opacity-100 will-change-transform;
+        }
+
+        @media screen and (min-width: 1440px) { 
+          @apply right-[6.5%]; 
+        }
+
+        @screen 2xl {
+          @apply right-[1.5%]; 
+        }
+      }
+      
+      &:nth-child(7) {
+        @apply right-[8%] top-[41%];
+
+        img.vetor {
+          @apply top-[calc(60px-100%)] right-full translate-x-[-100%] translate-y-0 w-[120px] 2xl:w-[140px] opacity-100 will-change-transform;
+        }
+
+        @media screen and (min-width: 1440px) { 
+          @apply right-[12%];
+        }
+
+        @screen 2xl {
+          @apply right-[6%];
+        }
+      }
+
+      &:hover {
+        @apply bg-none bg-white z-30 shadow-lg;
+        
+        h3 {
+          @apply text-primary;
+        }
+        
+        .description {
+          @apply block text-black;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,145 @@
+.blogs {
+  background-size: 250%;
+  @apply min-h-[180vw] md:min-h-[130vw] lg:min-h-[55vw] xl:min-h-[50vw] relative bg-[url('../img/mob-blogs-bg.png')] lg:bg-[url('../img/blogs-bg.png')] lg:bg-cover bg-left-top lg:bg-left-bottom bg-no-repeat bg-white flex flex-col items-center justify-center px-4 py-12 lg:py-16;
+  
+  .wrapper {
+    @apply flex flex-col z-50 max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full;
+    
+    .description {
+      @apply grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 py-8 lg:py-12;
+      
+      h3 {
+        @apply text-xl lg:text-2xl 2xl:text-3xl font-bold text-black;
+      }
+      
+      p {
+        @apply text-base font-medium;
+      }
+    }
+    
+    .blogs-wrapper {
+      @apply grid grid-cols-1 lg:grid-cols-2 pb-8 lg:pb-12;
+      
+      .col {
+        @apply flex flex-col border border-[#E5E5E5] bg-[#F9F9FB];
+        
+        .main {
+          @apply overflow-hidden;
+          
+          .header {
+            @apply px-6 pt-6 pb-4;
+            
+            h3 {
+              @apply text-xl lg:text-2xl 2xl:text-3xl font-bold text-primary mb-2;
+            }
+          }
+          
+          .content {
+            @apply p-6 border-t border-[#E5E5E5] ;
+            
+            img {
+              @apply w-full h-48 sm:h-auto object-cover mb-4;
+            }
+            
+            h2 {
+              @apply text-base lg:text-lg font-semibold lg:font-medium  text-black mb-4;
+              
+              a {
+                @apply text-black hover:text-primary transition-colors duration-300;
+              }
+            }
+            
+            .read-more {
+              @apply text-primary text-base lg:text-sm flex items-center gap-1 font-bold hover:gap-2 transition-all duration-300;
+              
+              svg {
+                @apply transition-transform duration-300;
+                
+                path {
+                  @apply fill-primary;
+                }
+              }
+              
+              &:hover svg {
+                @apply transform translate-x-1;
+              }
+            }
+          }
+        }
+        
+        .items {
+          @apply flex flex-col gap-0;
+          
+          .item {
+            @apply flex gap-4 px-4 py-4 border-t border-[#E5E5E5] min-h-[120px];
+            align-items: stretch;
+            
+            .thumbnail {
+              @apply flex-shrink-0 w-[120px] h-[120px];
+              
+              img {
+                @apply w-full h-full object-cover;
+              }
+            }
+            
+            .content-wrapper {
+              @apply flex flex-col justify-between flex-grow;
+              
+              h2 {
+                @apply text-base lg:text-lg font-semibold lg:font-medium text-black mb-2;
+                
+                a {
+                  @apply text-black hover:text-primary transition-colors duration-300;
+                }
+              }
+              
+              .read-more {
+                @apply text-primary flex items-center gap-1 text-xs text-base font-bold hover:gap-2 transition-all duration-300 self-start;
+                
+                svg {
+                  @apply transition-transform duration-300;
+                  
+                  path {
+                    @apply fill-primary;
+                  }
+                }
+                
+                &:hover svg {
+                  @apply transform translate-x-1;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    .join-us {
+      @apply flex flex-col lg:flex-row items-center gap-6 lg:gap-8 pt-6 lg:pt-20 w-full border-t border-[#E5E5E5];
+      
+      .image {
+        @apply flex-shrink-0;
+        
+        img {
+          @apply w-20 h-20 lg:w-36 lg:h-36;
+        }
+      }
+      
+      .content {
+        @apply flex flex-col gap-4 flex-grow text-center lg:text-left items-center lg:items-start justify-center lg:justify-start;
+        
+        h3 {
+          @apply text-xl lg:text-2xl 2xl:text-3xl font-bold text-primary;
+        }
+        
+        p {
+          @apply text-base lg:text-lg 2xl:text-xl;
+        }
+      }
+    }
+  }
+  
+  .mob-bottom-pattern {
+    @apply absolute bottom-[-2%] left-0 w-full h-full object-cover w-full h-auto; 
+  }
+}

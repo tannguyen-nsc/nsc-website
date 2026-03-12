@@ -1,0 +1,103 @@
+// AI Impact section: 2x2 accordion grid (Tailwind @apply throughout)
+.ai-impact {
+  @apply relative flex flex-col items-center justify-center bg-cover bg-right bg-no-repeat px-4 py-16 lg:py-16;
+
+  .wrapper {
+    @apply relative z-10 border border-white/30 bg-primary/50 px-4 py-8 lg:px-8 lg:py-10 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+  }
+
+  .wrapper .heading {
+    @apply mb-6 text-left lg:mb-8 flex-wrap justify-start lg:justify-center;
+
+    img {
+      @apply mb-4 md:mb-0
+    }
+  }
+
+  .ai-impact-grid {
+    @apply grid grid-cols-1 overflow-hidden border border-white/50 md:grid-cols-2;
+  }
+
+  .ai-impact-item {
+    @apply relative flex min-h-0 shrink-0 cursor-pointer flex-col border-b border-r border-white/50 bg-transparent transition-colors duration-300;
+    @apply [&:nth-child(2n)]:border-r-0 [&:nth-child(n+3)]:border-b-0;
+
+    &:first-child,
+    &:nth-child(3) {
+      @apply border-r-0 md:border-r;
+    }
+
+    &:last-child {
+      @apply border-t md:border-t-0;
+    }
+  }
+
+  .ai-impact-item-header {
+    @apply flex w-full shrink-0 flex-wrap items-center gap-3 py-4 pl-4 pr-12 lg:gap-4 lg:pl-5 lg:pr-14;
+  }
+
+  .ai-impact-item-num {
+    @apply w-full shrink-0 text-2xl font-normal text-[#F9F9FB] lg:text-3xl xl:text-4xl;
+  }
+
+  .ai-impact-item-title {
+    @apply m-0 flex-1 text-left text-2xl font-bold leading-tight text-[#F9F9FB] lg:text-3xl xl:text-4xl;
+
+    span {
+      @apply hidden;
+    }
+  }
+
+  .ai-impact-item-toggle {
+    @apply absolute right-4 top-4 z-10 flex h-7 w-7 cursor-pointer items-center justify-center border-0 bg-transparent p-0 text-[#F9F9FB] transition-colors duration-300 lg:right-5 lg:top-4 lg:h-8 lg:w-8;
+
+    .icon-plus {
+      @apply block;
+    }
+
+    .icon-minus {
+      @apply hidden;
+    }
+  }
+
+  .ai-impact-item-content {
+    @apply min-h-0 max-h-0 flex-shrink-0 overflow-hidden px-4 pb-0 opacity-0 transition-all duration-300 ease-out;
+
+    p {
+      @apply pt-0 text-sm font-medium leading-relaxed text-black pb-4 lg:pb-5 lg:text-xl;
+    }
+  }
+
+  // Expanded state: white background, primary/dark text, minus icon; content fills remaining height
+  .ai-impact-item.active {
+    @apply bg-[url('../img/ai-impact-item-active.png')] bg-cover bg-left bg-no-repeat;
+
+    .ai-impact-item-num {
+      @apply w-auto text-base font-medium text-primary lg:text-lg xl:text-2xl hidden;
+    }
+
+    .ai-impact-item-title {
+      @apply text-base font-medium text-primary lg:text-lg xl:text-2xl;
+
+      span {
+        @apply inline-block;
+      }
+    }
+
+    .ai-impact-item-toggle {
+      @apply text-black/80;
+
+      .icon-plus {
+        @apply hidden;
+      }
+
+      .icon-minus {
+        @apply block;
+      }
+    }
+
+    .ai-impact-item-content {
+      @apply min-h-0 max-h-[none] flex-1 opacity-100 overflow-y-auto;
+    }
+  }
+}

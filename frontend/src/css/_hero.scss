@@ -1,0 +1,161 @@
+.hero {
+  // text-shadow: 0px 0px 2px black;
+  @apply relative min-h-[180vw] md:min-h-[130vw] xl:min-h-[60vw] 2xl:min-h-[50vw] flex items-center justify-center text-center;
+  img {
+    @apply absolute top-0 left-0 w-full h-full object-cover object-bottom;
+  }
+
+&.home {w
+  .headlines {
+    h1 {
+      @apply [text-shadow:0_0_3px_black];
+
+      span {
+        @apply font-bold;
+      }
+    }
+
+    .description {
+      @apply [text-shadow:0_0_2px_black];
+    }
+
+    .buttons {
+      .btn-explore {
+        @apply [text-shadow:0_0_2px_black];
+      }
+    }
+  }
+}
+
+.headlines {
+    @apply relative z-10 max-w-5xl mx-auto;
+    h1 {
+      @apply text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl  font-semibold xl:leading-tight;
+
+      sb {
+        @apply inline-block font-semibold mb-2;
+      }
+    }
+
+    .description {
+      @apply flex items-center justify-center flex-wrap gap-2 px-4;
+
+      .iso-logos {
+        @apply flex items-center mb-2 gap-2;
+      }
+
+      p {
+        @apply xl:text-2xl w-full xl:w-auto font-medium;
+
+        span {
+          @apply text-white;
+        }
+
+        b {
+          @apply text-white;
+        }
+      }
+    }
+
+    img {
+      @apply relative max-w-[80px] mx-auto;
+    }
+
+    .buttons {
+      @apply flex items-center justify-center mt-12;
+  
+      .btn-explore {
+        @apply xl:text-2xl flex items-center justify-center gap-[1/2] xl:gap-1 text-white hover:text-black bg-none lg:bg-white lg:rounded-lg lg:border lg:border-primary lg:text-primary lg:px-4 lg:py-2 lg:hover:bg-primary lg:hover:text-white lg:hover:border-white;
+  
+        svg {
+          @apply max-h-[14px] xl:max-h-[24px];
+          
+          path {
+            @apply fill-white lg:fill-primary lg:hover:fill-white;
+          }
+        }
+  
+        &:hover {
+          svg {
+            path {
+              @apply fill-black lg:fill-white;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.left-text, &.dark {
+    .headlines {
+      @apply text-white;
+
+      .description {
+        @apply my-4 xl:my-8;
+        p {
+          b {
+            // text-shadow: 0 0 2px var(--color-primary);
+            @apply text-primary;
+          }
+        }
+      }
+
+      .buttons {
+        .btn {
+          @apply text-primary;
+          svg {
+            path {
+              @apply fill-primary;
+            }
+          }
+  
+          &:hover {
+            @apply text-white;
+            svg {
+              path {
+                @apply fill-white;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.left-text {
+    @apply xl:text-left;
+    .headlines {
+      @apply xl:w-[55%] xl:mr-0 xl:pl-4 xl:pr-12 2xl:pr-20 text-black;
+
+      .description {
+        @apply px-0 text-justify;
+      }
+
+      .buttons {
+        @apply justify-start;
+        .btn {
+          &:hover {
+            @apply text-black;
+            svg {
+              path {
+                @apply fill-black;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.dark {
+    .headlines {
+      @apply text-white;
+
+      h1 {
+        sb {
+          @apply [text-shadow:0_0_2px_white];
+        }
+      }
+    }
+  } 
+}

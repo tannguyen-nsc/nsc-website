@@ -1,0 +1,194 @@
+.global-presence {
+  @apply relative min-h-[210vw] md:min-h-[140vw] lg:min-h-[80vw] xl:min-h-[70vw] 2xl:min-h-[58vw] flex flex-col items-center overflow-hidden bg-primary py-12 lg:py-16;
+
+  .global-presence-bg {
+    @apply absolute top-0 left-0 w-full h-full object-cover lg:object-contain object-top pointer-events-none z-0;
+
+    @screen md {
+      @apply object-[center_25%];
+    }
+
+    @screen lg {
+      @apply object-top;
+    }
+  } 
+
+  .global-presence-bot-bg {
+    @apply absolute bottom-0 left-0 z-10 object-cover w-full pointer-events-none;
+  } 
+
+  .heading {
+    @apply relative z-10;
+  }
+
+  .map-area {
+    @apply relative w-full flex-1 flex flex-col items-center justify-center px-4 max-w-[1400px] mx-auto z-[1] min-h-[60vh] lg:min-h-[70vh] 2xl:min-h-[60vh];
+  }
+
+  // Location markers: white labels + glowing dots on the map (z above card so all stay clickable)
+  .location-markers {
+    @apply absolute inset-0 list-none m-0 p-0 lg:left-[5%] lg:right-[5%] lg:top-[15%] lg:bottom-[25%] z-20;
+  }
+
+  .location-marker {
+    @apply absolute cursor-pointer z-50;
+
+    &:nth-child(1) {
+      @apply left-[2%] top-[15.5%] md:left-[5%] md:top-[17.5%] lg:left-[12%] lg:top-[8%] xl:left-[12.5%] xl:top-[24%];
+
+      @media screen and (min-width: 1440px)   {
+        @apply left-[12%] top-[27%];
+      }
+
+      @media screen and (min-width: 1520px)   {
+        @apply left-[10%] top-[28%];
+      }
+
+      @screen 2xl {
+        @apply left-[6%] top-[45%];
+      }    
+    }
+    
+    &:nth-child(2) {
+      @apply left-[30%] top-[9%] md:left-[35%] md:top-[8.5%] lg:left-[42%] lg:top-[-14%] xl:left-[43%] xl:top-[-1%];
+
+      @media screen and (min-width: 1440px)   {
+        @apply left-[43%] top-[7%];
+      }
+
+      @screen 2xl {
+        @apply left-[42.5%] top-[17%];
+      }    
+    }
+
+    &:nth-child(3) {
+      @apply left-[65%] top-[7.5%] md:left-[69%] md:top-[7%] lg:left-[72%] lg:top-[-2%] xl:left-[73%] xl:top-[17%];
+
+      @media screen and (min-width: 1440px)   {
+        @apply left-[74%] top-[22%];
+      }
+
+      @media screen and (min-width: 1520px)   {
+        @apply left-[75.5%];
+      }
+
+      @screen 2xl {
+        @apply left-[79%] top-[36%];
+      }  
+    }
+
+    &:nth-child(4) {
+      @apply left-[59%] top-[13.5%] md:left-[66%] md:top-[16%] lg:left-[69%] lg:top-[15%] xl:left-[71%] xl:top-[36%];
+
+      @media screen and (min-width: 1440px)   {
+        @apply left-[72.5%] top-[39%];
+      }
+
+      @media screen and (min-width: 1520px)   {
+        @apply left-[74%];
+      }
+
+      @screen 2xl {
+        @apply left-[78%] top-[59%];
+      }  
+    }
+
+    &:last-child {
+      @apply left-[67%] top-[37%] md:left-[75%] md:top-[47.5%] lg:left-[91.5%] xl:left-[92.5%] xl:top-[74%];
+
+      @media screen and (min-width: 1440px)   {
+        @apply left-[96.5%] top-[78%];
+      }
+
+      @screen 2xl {
+        @apply left-[102.5%] top-[103%];
+      }  
+    }
+
+    .label {
+      @apply block font-medium text-sm lg:text-base bg-white shadow-sm whitespace-nowrap mb-1.5 relative z-[2];
+
+      a {
+        @apply block px-3 py-1.5 text-black font-semibold no-underline transition-colors duration-200;
+      }
+    }
+
+    &:hover .label a {
+      @apply text-primary;
+    }
+
+    &.active .label a {
+      @apply text-primary;
+    }
+  }
+
+  // Central white card - fixed body height so it never changes when slider runs; content scrolls if long
+  .presence-card {
+    @apply relative w-full max-w-[420px] overflow-hidden bg-white shadow-lg mt-auto text-center z-10 flex flex-col flex-shrink-0;
+
+    .presence-card-image {
+      @apply relative w-full flex-shrink-0 overflow-hidden h-0 pb-[56.25%];
+
+      img {
+        @apply absolute p-2 inset-0 w-full h-full object-cover object-bottom;
+      }
+    }
+
+    .presence-card-body {
+      @apply relative px-2 py-3 flex-shrink-0 transition-all duration-300 ease-out overflow-y-auto overflow-x-hidden;
+    }
+
+    .presence-card-body.slide-out-left {
+      @apply -translate-x-6 opacity-0;
+    }
+
+    .presence-card-body.slide-out-right {
+      @apply translate-x-6 opacity-0;
+    }
+
+    .presence-card-nav {
+      @apply flex items-center justify-between gap-3 mb-4;
+    }
+
+    .presence-card-title,
+    .presence-card-address {
+      @apply transition-opacity duration-200;
+    }
+
+    .presence-card-prev,
+    .presence-card-next {
+      @apply w-8 h-8 flex items-center justify-center hover:text-black hover:bg-gray-100 text-lg font-normal transition-colors duration-200 border border-gray-200 bg-transparent;
+    }
+
+    .presence-card-title {
+      @apply text-lg lg:text-xl font-bold text-black text-center mx-2 flex items-center justify-center;
+    }
+
+    .presence-card-address {
+      @apply text-sm lg:text-base text-black font-normal leading-relaxed;
+
+      p {
+        @apply m-0 mb-1 last:mb-0;
+      }
+    }
+
+    .presence-card-description {
+      @apply text-sm lg:text-base text-black font-normal leading-relaxed mt-2;
+
+      p {
+        @apply m-0;
+      }
+    }
+  }
+
+  .places-data {
+    @apply hidden;
+
+    .place {
+      .global-presence-place-image,
+      .place-description {
+        @apply hidden;
+      }
+    }
+  }
+}

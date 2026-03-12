@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="description" content="NSC Software - Vietnam's Premier Software Development & Consulting Company. Top 7% IT talents with AI-enabled delivery for global enterprises." />
+    <title>NSC Software - Vietnam's Premier Software Development & Consulting Company</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" /> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+    <script>
+      (function(){
+        var t = Date.now();
+        var preload = document.createElement('link');
+        preload.rel = 'preload';
+        preload.href = './css/style.css?t=' + t;
+        preload.as = 'style';
+        document.head.appendChild(preload);
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './css/style.css?t=' + t;
+        document.head.appendChild(link);
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Mobile Header (shows for mobile up to lg screen) -->
+    <header class="mobile-header xl:hidden">
+      <div class="mobile-header-wrapper">
+        <logo class="mobile-logo-wrapper">
+          <a href="./">
+            <img src="./img/mob-logo-white.png" class="mobile-logo-white" alt="NSC Software Logo" loading="eager" fetchpriority="high" />
+            <img src="./img/mob-logo.png" class="mobile-logo-colored" alt="NSC Software Logo" loading="eager" fetchpriority="high" />
+          </a>
+        </logo>
+        <div class="mobile-center">
+          <span class="mobile-home-text">Careers</span>
+        </div>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Mobile Menu (hidden by default) -->
+      <div class="mobile-nav" id="mobileNav">
+        <span>Menu</span>
+        <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul class="mobile-nav-list">
+          <li>
+            <a href="./" class="mobile-nav-link">
+              Home
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="about.html" class="mobile-nav-link">
+              About Us
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="ai.html" class="mobile-nav-link">
+              AI
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li class="mobile-dropdown-parent">
+            <a class="mobile-nav-link mobile-dropdown-toggle no-link-cursor">
+              What We Do
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <ul class="mobile-dropdown">
+              <li>
+                <a href="our-services.html" class="mobile-nav-link">
+                  Our Service
+                  <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="our-capabilites.html" class="mobile-nav-link">
+                  Technology Capabilities
+                  <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="career.html" class="mobile-nav-link active">
+              Careers
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="blogs.html" class="mobile-nav-link">
+              Blog
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="case-studies.html" class="mobile-nav-link">
+              Case Studies
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="contact.html" class="mobile-nav-link">
+              Contact Us
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li class="mobile-dropdown-parent mobile-language">
+            <a href="#language" class="mobile-nav-link mobile-dropdown-toggle">
+              Language: English
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <ul class="mobile-dropdown">
+              <li>
+                <a href="#en" class="mobile-nav-link">
+                  <span class="lang-check">✓</span>
+                  English
+                </a>
+              </li>
+              <li>
+                <a href="#de" class="mobile-nav-link">
+                  German
+                </a>
+              </li>
+              <li>
+                <a href="#ja" class="mobile-nav-link">
+                  Japanese
+                </a>
+              </li>
+              <li>
+                <a href="#vi" class="mobile-nav-link">
+                  Vietnamese
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <!-- Desktop Header (shows for screens above lg) -->
+    <header class="desktop-header hidden xl:block">
+      <div class="wrapper">
+        <logo>
+          <a href="#"><img src="./img/logo-white.png" class="logo-white" alt="Logo" loading="eager" fetchpriority="high" />
+            <img src="./img/logo.png" class="logo" alt="Logo" loading="eager" fetchpriority="high" /></a>
+        </logo>
+        <nav>
+          <ul class="nav">
+            <li><a href="./">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="ai.html" class="highlight">AI</a></li>
+            <li><a class="no-link-cursor">What We Do <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+            <ul class="dropdown">
+              <li><a href="our-services.html">Our Services</a></li>
+              <li><a href="our-capabilites.html">Technology Capabilities</a></li>
+            </ul>
+            </li>
+            <li><a href="blogs.html">Blog</a></li>
+            <li><a href="career.html" class="active">Careers</a></li>
+            <li><a href="case-studies.html">Case Studies</a></li>
+            <li><a href="contact.html" class="contact-btn">Contact Us</a></li>
+            <li class="lang-switcher">
+              <a href="#language">EN <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+              <ul class="dropdown">
+                <li><a href="#en">English</a></li>
+                <li><a href="#de">German</a></li>
+                <li><a href="#ja">Japanese</a></li>
+                <li><a href="#vi">Vietnamese</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+        
+      </div>
+    </header>
+
+    <section class="hero dark">
+      <img src="./img/hero-career.png" alt="Hero Image" loading="lazy" />
+      <div class="headlines animate__animated animate__zoomIn">
+        <h1>
+          Careers at NSC Software <br>
+          At NSC, we <span class="highlight primary">CARE</span> <br> about your Careers! 
+        </h1>
+      </div>
+    </section>
+    
+    <section class="we-are-nsc">
+      <img src="./img/wansc-1.png" class="hidden xl:block gallery-image gallery-image-top-left" alt="We are NSC" loading="lazy" />
+      <img src="./img/wansc-2.png" class="hidden xl:block gallery-image gallery-image-top-right" alt="We are NSC" loading="lazy" />
+      <img src="./img/wansc-6.png" class="hidden xl:block gallery-image gallery-image-middle-right" alt="We are NSC" loading="lazy" />
+      <img src="./img/wansc-7.png" class="hidden xl:block gallery-image gallery-image-bottom-right" alt="We are NSC" loading="lazy" />
+      <img src="./img/wansc-4.png" class="hidden xl:block gallery-image gallery-image-center-bottom" alt="We are NSC" loading="lazy" />
+      <img src="./img/wansc-3.png" class="hidden xl:block gallery-image gallery-image-middle-left" alt="We are NSC" loading="lazy" />
+      <img src="./img/wansc-5.png" class="hidden xl:block gallery-image gallery-image-bottom-left" alt="We are NSC" loading="lazy" />
+     <div class="wrapper">
+      <div class="col">
+        <img src="./img/wansc-heading.png" class="hidden xl:block gallery-image gallery-image-heading" alt="We are NSC" loading="lazy" />
+        <div class="heading">
+          <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+          <h2>WE ARE NSC <br class="hidden xl:block"> SOFTWARE</h2>
+        </div>
+      </div>
+      <img src="./img/wansc-group-1.png" class="xl:hidden gallery-image-group" alt="We are NSC" loading="lazy" />
+      <div class="col right-col">
+        <img src="./img/wansc-body-4.png" class="hidden xl:block gallery-image gallery-image-content-top" alt="We are NSC" loading="lazy" />
+        <img src="./img/wansc-body-3.png" class="hidden xl:block gallery-image gallery-image-content-image-top-right" alt="We are NSC" loading="lazy" />
+        <img src="./img/wansc-body-2.png" class="hidden xl:block gallery-image gallery-image-content-bottom-right" alt="We are NSC" loading="lazy" />
+        <img src="./img/wansc-body-1.png" class="hidden xl:block gallery-image gallery-image-content-bottom" alt="We are NSC" loading="lazy" />
+        <img src="./img/wansc-body-6.png" class="hidden xl:block gallery-image gallery-image-content-bottom-left" alt="We are NSC" loading="lazy" />
+        <img src="./img/wansc-body-5.png" class="hidden xl:block gallery-image gallery-image-content-top-left" alt="We are NSC" loading="lazy" />
+        <div>
+          <p>Founded in Vietnam with a global vision, NSC Software delivers innovative software solutions that empower enterprises worldwide. We foster a <b class="text-primary">collaborative</b>, <b class="text-primary">performance-driven</b>, and <b class="text-primary">learning-focused culture</b>, where our disciplined and passionate team tackles challenges with precision.</p>
+          <p>Committed to <b class="text-primary">global standards</b> and continuous growth, we invest in technical and language training, enabling our team to excel on international projects. Our goal is to be <b class="text-primary">Asia’s most trusted partner in software development and consulting</b>, positioning Vietnam as a leading global IT hub.</p>
+        </div>
+        <div class="block-link"><a href="#open-positions-app">Join NSC and help shape the future of software <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"></path>
+          </svg></a></div>
+      </div>
+      <img src="./img/wansc-group-2.png" class="xl:hidden gallery-image-group pt-6" alt="We are NSC" loading="lazy" />
+     </div>
+    </section>
+
+    <section class="core-values">
+      <img src="./img/values-bg.png" alt="Hero Image" class="lg:block hidden bg" loading="eager" fetchpriority="high" />
+      <img src="./img/mob-values-bg.png" alt="Hero Image" class="lg:hidden bg" loading="eager" fetchpriority="high" />
+      <div class="heading light">
+        <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+        <h2>CORE VALUES</h2>
+      </div>
+      <div class="wrapper">
+        <div class="col">
+          <h3>Premier</h3>
+          <p>We deliver premier software development and consulting services, ensuring excellence in every solution we provide.</p>
+        </div>
+        <div class="col">
+          <h3>Talented</h3>
+          <p>We empower Vietnam’s top engineers to demonstrate their capabilities, innovate boldly, and make a global impact.</p>
+        </div>
+        <div class="col">
+          <h3>Innovative</h3>
+          <p>We embrace emerging technologies and creative thinking to build future-ready, impactful solutions for our clients.</p>
+        </div>
+        <div class="col">
+          <h3>Committed</h3>
+          <p>We are dedicated to our clients’ success, going the extra mile to deliver value, quality, and long-term partnerships.</p>
+        </div>
+        <div class="col">
+          <h3>Trusted</h3>
+          <p>We build long-lasting relationships through integrity, transparency, and consistent performance across every engagement. </p>
+        </div>
+      </div>
+    </section>
+    
+    <script>
+      window.jobVueData = [
+        { id: 1, title: 'Full Stack Engineer (Javascript)', date: '11/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 2, title: 'Full Stack Engineer (Nextjs)', date: '11/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 3, title: 'Senior Full Stack Engineer', date: '10/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 4, title: 'Full Stack Engineer (Angular)', date: '09/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 5, title: 'Full Stack Engineer (Flutter)', date: '08/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 6, title: 'Backend Engineer (Node.js)', date: '07/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 7, title: 'DevOps Engineer', date: '06/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 8, title: 'QA Engineer', date: '05/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 9, title: 'Engineering Manager', date: '04/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 10, title: 'Project Manager', date: '03/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 11, title: 'Delivery Lead', date: '02/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 12, title: 'Technical Director', date: '01/12/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 13, title: 'Business Development Representative', date: '30/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 14, title: 'Account Manager', date: '29/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 15, title: 'Marketing Specialist', date: '28/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 16, title: 'HR Coordinator', date: '27/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 17, title: 'Frontend Developer (React)', date: '26/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 18, title: 'Frontend Developer (Vue.js)', date: '25/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 19, title: 'Backend Developer (Python)', date: '24/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 20, title: 'Backend Developer (Java)', date: '23/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 21, title: 'Backend Developer (Go)', date: '22/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 22, title: 'Mobile Developer (iOS)', date: '21/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 23, title: 'Mobile Developer (Android)', date: '20/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 24, title: 'Cloud Architect', date: '19/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 25, title: 'Security Engineer', date: '18/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 26, title: 'Data Engineer', date: '17/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 27, title: 'Machine Learning Engineer', date: '16/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 28, title: 'Site Reliability Engineer', date: '15/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 29, title: 'Database Administrator', date: '14/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 30, title: 'UI/UX Designer', date: '13/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 31, title: 'Product Manager', date: '12/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 32, title: 'Scrum Master', date: '11/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 33, title: 'Program Manager', date: '10/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 34, title: 'Operations Manager', date: '09/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 35, title: 'Engineering Lead', date: '08/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 36, title: 'Technical Program Manager', date: '07/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 37, title: 'Release Manager', date: '06/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 38, title: 'Quality Assurance Manager', date: '05/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 39, title: 'Sales Manager', date: '04/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 40, title: 'Marketing Manager', date: '03/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 41, title: 'Customer Success Manager', date: '02/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 42, title: 'Partnership Manager', date: '01/11/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 43, title: 'Content Marketing Specialist', date: '31/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 44, title: 'SEO Specialist', date: '30/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 45, title: 'Full Stack Developer (TypeScript)', date: '29/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 46, title: 'Senior Backend Engineer', date: '28/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 47, title: 'Senior Frontend Engineer', date: '27/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 48, title: 'Full Stack Developer (PHP)', date: '26/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 49, title: 'Full Stack Developer (Ruby)', date: '25/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 50, title: 'Full Stack Developer (C#)', date: '24/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 51, title: 'Backend Developer (Scala)', date: '23/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 52, title: 'Backend Developer (Rust)', date: '22/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 53, title: 'Frontend Developer (Svelte)', date: '21/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 54, title: 'Frontend Developer (Ember.js)', date: '20/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 55, title: 'Mobile Developer (React Native)', date: '19/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 56, title: 'Mobile Developer (Xamarin)', date: '18/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 57, title: 'Blockchain Developer', date: '17/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 58, title: 'Game Developer', date: '16/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 59, title: 'Embedded Systems Engineer', date: '15/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 60, title: 'Automation Test Engineer', date: '14/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 61, title: 'Performance Engineer', date: '13/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 62, title: 'Infrastructure Engineer', date: '12/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 63, title: 'Platform Engineer', date: '11/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 64, title: 'Solutions Architect', date: '10/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 65, title: 'Senior DevOps Engineer', date: '09/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 66, title: 'Senior QA Engineer', date: '08/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 67, title: 'Lead Software Engineer', date: '07/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 68, title: 'Principal Engineer', date: '06/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 69, title: 'Staff Engineer', date: '05/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 70, title: 'VP of Engineering', date: '04/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 71, title: 'CTO', date: '03/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 72, title: 'Head of Product', date: '02/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 73, title: 'Head of Engineering', date: '01/10/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 74, title: 'Head of Quality', date: '30/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 75, title: 'Head of DevOps', date: '29/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'management', link: '#' },
+        { id: 76, title: 'Talent Acquisition Specialist', date: '28/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 77, title: 'HR Business Partner', date: '27/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 78, title: 'Learning & Development Specialist', date: '26/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 79, title: 'Compensation & Benefits Specialist', date: '25/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 80, title: 'Finance Manager', date: '24/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 81, title: 'Accounting Specialist', date: '23/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 82, title: 'Legal Counsel', date: '22/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 83, title: 'Compliance Officer', date: '21/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 84, title: 'Business Analyst', date: '20/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 85, title: 'Data Analyst', date: '19/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 86, title: 'Business Intelligence Analyst', date: '18/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 87, title: 'Technical Writer', date: '17/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 88, title: 'Documentation Specialist', date: '16/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 89, title: 'Support Engineer', date: '15/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 90, title: 'Customer Support Specialist', date: '14/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 91, title: 'Sales Engineer', date: '13/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 92, title: 'Pre-Sales Engineer', date: '12/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'business', link: '#' },
+        { id: 93, title: 'Implementation Specialist', date: '11/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 94, title: 'Integration Engineer', date: '10/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 95, title: 'API Developer', date: '09/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 96, title: 'Microservices Developer', date: '08/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 97, title: 'Event-Driven Architecture Engineer', date: '07/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 98, title: 'GraphQL Developer', date: '06/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 99, title: 'Web3 Developer', date: '05/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' },
+        { id: 100, title: 'AI/ML Engineer', date: '04/09/2025', company: 'NSC SOFTWARE', type: 'Full-time', category: 'engineering', link: '#' }
+      ];
+    </script>
+    <section class="open-positions" id="open-positions-app" v-cloak>
+      <div class="wrapper">
+        <div class="heading">
+          <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+          <h2>OPEN POSITIONS</h2>
+        </div>
+        <div class="intro">
+          <p>At NSC, we’re always looking for passionate talents to grow with us. Explore our open roles and join a collaborative, global team shaping impactful engineering solutions.</p>
+        </div>
+        <div class="positions-list">
+          <div class="positions-tabs">
+            <button type="button" class="tab" :class="{ 'tab-active': activeTab === tab.id }" v-for="tab in tabs" :key="tab.id" @click="setTab(tab.id)">{{ tab.label }}</button>
+          </div>
+          <div class="positions-items">
+            <div v-if="loading" class="positions-loading">
+              <p>Loading positions...</p>
+            </div>
+            <template v-else-if="loadError">
+              <div class="positions-empty">
+                <p>{{ loadError }}</p>
+              </div>
+            </template>
+            <template v-else-if="paginatedJobs.length">
+              <div class="positions-item" v-for="job in paginatedJobs" :key="job.id">
+                <div class="positions-item-content">
+                  <a :href="job.link" class="job-title">{{ job.title }}</a>
+                  <div class="job-meta">
+                    <span class="company">{{ job.company }}</span>
+                    <span class="date">{{ job.date }}</span>
+                    <span class="type">{{ job.type }}</span>
+                  </div>
+                </div>
+                <div class="apply-wrap">
+                  <a :href="job.link" class="apply-btn">Apply Now <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+                </div>
+              </div>
+            </template>
+            <div v-else class="positions-empty">
+              <p>No open positions in this category at the moment.</p>
+            </div>
+          </div>
+          <div class="pagination positions-pagination" v-if="totalPages > 1">
+            <button type="button" class="pagination-prev" :disabled="currentPage <= 1" @click="setPage(currentPage - 1)"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Previous</button>
+            <div class="pagination-numbers">
+              <template v-for="page in displayPages" :key="page.num || 'ellipsis'">
+                <button v-if="!page.isEllipsis" type="button" class="pagination-num" :class="{ 'pagination-num-active': currentPage === page.num }" @click="setPage(page.num)">{{ page.num }}</button>
+                <span v-else class="pagination-ellipsis">...</span>
+              </template>
+            </div>
+            <button type="button" class="pagination-next" :disabled="currentPage >= totalPages" @click="setPage(currentPage + 1)">Next <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrapper">
+        <div class="col company-info">
+          <div class="company-branding">
+            <div class="logo">
+              <img src="./img/logo.png" alt="NSC Software Logo" class="block lg:hidden" loading="lazy" />
+              <img src="./img/mob-foot-logo.png" alt="NSC Software Logo" class="hidden lg:block" loading="lazy" />
+            </div>
+            <h3 class="company-name">NSC Software Co., LTD</h3>
+          </div>
+          <p class="company-description">Vietnam's Premier Software Development & Consulting Company</p>
+          <p class="business-number">Business Number: <br> 0110524817</p>
+          <div class="certifications">
+            <div class="cert-badge">
+              <img src="./img/ISO-27001.png" alt="ISO 27001" loading="lazy" />
+            </div>
+            <div class="cert-badge">
+              <img src="./img/ISO-9001-2015.png" alt="ISO 9001:2015" loading="lazy" />
+            </div>
+          </div>
+          <p class="email">Email: <br><a href="mailto:contact@nscsoftware.com">contact@nscsoftware.com</a></p>
+        </div>
+        <div class="col right-column">
+          <div class="contact-info">
+            <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="contact-content">
+              <h4 class="section-heading">Contact</h4>
+              <svg xmlns="http://www.w3.org/2000/svg" class="accordion-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+                </svg>
+            </button>
+            <h4 class="section-heading hidden lg:block">Contact</h4>
+            <div class="offices-wrapper lg-hidden" id="contact-content">
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software Headquarters:</h5>
+                  <p>Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Ho Chi Minh:</h5>
+                  <p>Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software USA:</h5>
+                  <p>4245 N Central Expy, #490, Dallas, TX, USA 75205</p>
+                  <p>Tel: <a href="tel:+17134282289">+1 (713) 428 2289</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Australia:</h5>
+                  <p>Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia</p>
+                  <p>Tel: <a href="tel:+61488860719">(+61) 0488 860 719</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Europe:</h5>
+                  <p>Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany</p>
+                  <p>Tel: <a href="tel:+491701633520">(+49) 170 1633520</a></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="offices-wrapper hidden lg:block" id="contact-content">
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software Headquarters:</h5>
+                  <p>Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Australia:</h5>
+                  <p>Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia</p>
+                  <p>Tel: <a href="tel:+61488860719">(+61) 0488 860 719</a></p>
+                </div>
+              </div>
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software Ho Chi Minh:</h5>
+                  <p>Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Europe:</h5>
+                  <p>Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany</p>
+                  <p>Tel: <a href="tel:+491701633520">(+49) 170 1633520</a></p>
+                </div>
+              </div>
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software USA:</h5>
+                  <p>4245 N Central Expy, #490, Dallas, TX, USA 75205</p>
+                  <p>Tel: <a href="tel:+17134282289">+1 (713) 428 2289</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sitemap lg:hidden">
+            <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="sitemap-content">
+              <h4 class="section-heading">Site Map</h4>
+              <svg xmlns="http://www.w3.org/2000/svg" class="accordion-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+                </svg>
+            </button>
+            <h4 class="section-heading hidden lg:block">Site Map</h4>
+            <div class="sitemap-links" id="sitemap-content">
+              <div class="sitemap-col">
+                <ul>
+                  <li><a href="./">Home</a></li>
+                  <li><a href="about.html">About Us</a></li>
+                </ul>
+              </div>
+              <div class="sitemap-col">
+                <ul>
+                  <li><a>What We Do</a>
+                    <ul>
+                      <li><a href="our-services.html">Our Services</a></li>
+                      <li><a href="our-capabilites.html">Technology Capabilities</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="career.html">Careers</a></li>
+                </ul>
+              </div>
+              <div class="sitemap-col">
+                <ul>
+                  <li><a href="blogs.html">Blog</a></li>
+                  <li><a href="case-studies.html">Case Studies</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+      <div class="sitemap hidden lg:block">
+        <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="sitemap-content">
+          <h4 class="section-heading">Site Map</h4>
+          <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h4 class="section-heading hidden lg:block">Site Map</h4>
+        <div class="sitemap-links" id="sitemap-content">
+          <div class="sitemap-col">
+            <ul>
+              <li><a href="./">Home</a></li>
+              <li><a href="about.html">About Us</a></li>
+            </ul>
+          </div>
+          <div class="sitemap-col">
+            <ul>
+              <li><a>What We Do</a>
+                <ul>
+                  <li><a href="our-services.html">Our Services</a></li>
+                  <li><a href="our-capabilites.html">Technology Capabilities</a></li>
+                </ul>
+              </li>
+              <li><a href="career.html">Careers</a></li>
+            </ul>
+          </div>
+          <div class="sitemap-col">
+            <ul>
+              <li><a href="blogs.html">Blog</a></li>
+              <li><a href="case-studies.html">Case Studies</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="wrapper">
+          <div class="copyright">
+            <p>NSC@2026 All copyrights reserved</p>
+            <div class="legal-links">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Cookies Policy</a>
+              <a href="#">Term of Use</a>
+            </div>
+          </div>
+          <div class="social">
+            <a href="#" class="social-icon linkedin" aria-label="LinkedIn">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12C9.82843 12 10.5 12.6716 10.5 13.5V31.5C10.5 32.3284 9.82843 33 9 33H3C2.17157 33 1.5 32.3284 1.5 31.5V13.5C1.5 12.6716 2.17157 12 3 12H9ZM31.5 21C31.5 19.0109 30.7093 17.1038 29.3027 15.6973C27.8962 14.2907 25.9891 13.5 24 13.5C22.0109 13.5 20.1038 14.2907 18.6973 15.6973C17.2907 17.1038 16.5 19.0109 16.5 21V30H19.5V21C19.5 19.8065 19.9744 18.6623 20.8184 17.8184C21.6623 16.9744 22.8065 16.5 24 16.5C25.1935 16.5 26.3377 16.9744 27.1816 17.8184C28.0256 18.6623 28.5 19.8065 28.5 21V30H31.5V21ZM4.5 30H7.5V15H4.5V30ZM7.5 6C7.5 5.17157 6.82843 4.5 6 4.5C5.17157 4.5 4.5 5.17157 4.5 6C4.5 6.82843 5.17157 7.5 6 7.5C6.82843 7.5 7.5 6.82843 7.5 6ZM34.5 31.5C34.5 32.3284 33.8284 33 33 33H27C26.1716 33 25.5 32.3284 25.5 31.5V21C25.5 20.6022 25.3419 20.2208 25.0605 19.9395C24.7792 19.6581 24.3978 19.5 24 19.5C23.6022 19.5 23.2208 19.6581 22.9395 19.9395C22.6581 20.2208 22.5 20.6022 22.5 21V31.5C22.5 32.3284 21.8284 33 21 33H15C14.1716 33 13.5 32.3284 13.5 31.5V21C13.5 18.2152 14.6056 15.5438 16.5747 13.5747C18.5438 11.6056 21.2152 10.5 24 10.5C26.7848 10.5 29.4562 11.6056 31.4253 13.5747C33.3944 15.5438 34.5 18.2152 34.5 21V31.5ZM10.5 6C10.5 8.48528 8.48528 10.5 6 10.5C3.51472 10.5 1.5 8.48528 1.5 6C1.5 3.51472 3.51472 1.5 6 1.5C8.48528 1.5 10.5 3.51472 10.5 6Z" fill="#36C3DC"/>
+                </svg>
+            </a>
+            <a href="#" class="social-icon facebook" aria-label="Facebook">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.5 10.5C19.5 9.70435 19.8163 8.94151 20.3789 8.37891C20.9415 7.8163 21.7043 7.5 22.5 7.5H25.5V4.5H22.5C20.9087 4.5 19.383 5.13259 18.2578 6.25781C17.1326 7.38303 16.5 8.9087 16.5 10.5V15C16.5 15.8284 15.8284 16.5 15 16.5H12V19.5H15C15.8284 19.5 16.5 20.1716 16.5 21V31.5H19.5V21C19.5 20.1716 20.1716 19.5 21 19.5H24.3296L25.0796 16.5H21C20.1716 16.5 19.5 15.8284 19.5 15V10.5ZM22.5 13.5H27C27.4619 13.5 27.8979 13.7131 28.1821 14.0771C28.4663 14.4411 28.5665 14.9153 28.4546 15.3633L26.9546 21.3633C26.7877 22.031 26.1883 22.5 25.5 22.5H22.5V33C22.5 33.8284 21.8284 34.5 21 34.5H15C14.1716 34.5 13.5 33.8284 13.5 33V22.5H10.5C9.67157 22.5 9 21.8284 9 21V15C9 14.1716 9.67157 13.5 10.5 13.5H13.5V10.5C13.5 8.11305 14.4489 5.82455 16.1367 4.13672C17.8245 2.44889 20.1131 1.5 22.5 1.5H27C27.8284 1.5 28.5 2.17157 28.5 3V9C28.5 9.82843 27.8284 10.5 27 10.5H22.5V13.5Z" fill="#36C3DC"/>
+                </svg>
+            </a>
+            <a href="#" class="social-icon youtube" aria-label="YouTube">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.14654 6.68107C14.3449 5.64016 21.6557 5.64016 28.8541 6.68107L30.3951 6.91984L30.5474 6.95353C31.3005 7.1601 31.9874 7.55858 32.5396 8.11076C33.0918 8.66297 33.4903 9.34984 33.6968 10.1029C33.7046 10.1313 33.7113 10.1606 33.7173 10.1894C34.8086 15.3393 34.8086 20.6605 33.7173 25.8105C33.7113 25.8392 33.7046 25.8685 33.6968 25.8969L32.2525 25.4999H32.2496L33.6968 25.8969C33.4903 26.65 33.0918 27.3369 32.5396 27.8891C31.9874 28.4413 31.3005 28.8397 30.5474 29.0463L30.1504 27.599V27.6005L30.5474 29.0463C30.4976 29.06 30.4461 29.0715 30.3951 29.08L28.8541 29.3188C21.1414 30.4343 13.2997 30.3549 5.60553 29.08L5.85162 27.5917L5.45318 29.0463C4.70012 28.8397 4.01317 28.4413 3.46099 27.8891C2.97765 27.4057 2.61245 26.819 2.39019 26.1752L2.30377 25.8969L2.28326 25.8105L3.75103 25.4999H3.74957L2.28326 25.8105C1.19204 20.6605 1.19204 15.3393 2.28326 10.1894C2.28935 10.1606 2.296 10.1313 2.30377 10.1029C2.51031 9.34984 2.90882 8.66297 3.46099 8.11076C4.01317 7.55859 4.70011 7.1601 5.45318 6.95353C5.50306 6.93986 5.5545 6.92829 5.60553 6.91984L7.14654 6.68107ZM5.60553 29.08C5.55452 29.0715 5.50305 29.06 5.45318 29.0463L5.85015 27.6005L5.60553 29.08ZM29.8062 9.86418C21.9874 8.57992 14.0117 8.57976 6.19293 9.86418C5.96353 9.93651 5.75413 10.0615 5.58355 10.2319C5.40549 10.4099 5.2748 10.6306 5.20416 10.872C4.21707 15.5721 4.21726 20.4262 5.20416 25.1264C5.27471 25.3683 5.40516 25.5896 5.58355 25.768C5.75369 25.9379 5.96275 26.0618 6.19146 26.1342C14.0108 27.4192 21.9868 27.4189 29.8062 26.1342C30.036 26.0619 30.2462 25.9386 30.417 25.768C30.5953 25.5897 30.7244 25.3682 30.795 25.1264C31.782 20.426 31.7822 15.5723 30.795 10.872C30.7243 10.6307 30.595 10.4098 30.417 10.2319C30.2461 10.0612 30.0361 9.93644 29.8062 9.86418ZM14.2613 12.1947C14.6726 11.9619 15.1657 11.9378 15.5928 12.1215L15.7715 12.2138L23.2715 16.7138L22.4996 17.9999L23.2715 19.2861L15.7715 23.7861C15.3082 24.0639 14.7314 24.0713 14.2613 23.8051C13.791 23.5388 13.501 23.0403 13.501 22.4999V13.4999C13.501 12.9595 13.791 12.461 14.2613 12.1947ZM16.501 19.85L19.5845 17.9999L16.501 16.1484V19.85ZM23.2715 16.7138C23.7234 16.9849 24.001 17.473 24.001 17.9999C24.001 18.5268 23.7234 19.015 23.2715 19.2861L22.501 17.9999L23.2715 16.7138Z" fill="#36C3DC"/>
+                </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" defer></script>
+    <script src="./js/open-positions.js" defer></script>
+    <script src="./js/blog-list.js" defer></script>
+    <script src="./js/case-studies.js" defer></script>
+    <script src="./js/scripts.js" defer></script>
+  </body>
+</html>

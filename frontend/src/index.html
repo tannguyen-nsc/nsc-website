@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta name="description" content="NSC Software - Vietnam's Premier Software Development & Consulting Company. Top 7% IT talents with AI-enabled delivery for global enterprises." />
+    <title>NSC Software - Vietnam's Premier Software Development & Consulting Company</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- <link rel="stylesheet"  href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" /> -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
+    <script>
+      (function(){
+        var t = Date.now();
+        var preload = document.createElement('link');
+        preload.rel = 'preload';
+        preload.href = './css/style.css?t=' + t;
+        preload.as = 'style';
+        document.head.appendChild(preload);
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = './css/style.css?t=' + t;
+        document.head.appendChild(link);
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- Mobile Header (shows for mobile up to lg screen) -->
+    <header class="mobile-header xl:hidden">
+      <div class="mobile-header-wrapper">
+        <logo class="mobile-logo-wrapper">
+          <a href="./">
+            <img src="./img/mob-logo-white.png" class="mobile-logo-white" alt="NSC Software Logo" loading="eager" fetchpriority="high" />
+            <img src="./img/mob-logo.png" class="mobile-logo-colored" alt="NSC Software Logo" loading="eager" fetchpriority="high" />
+          </a>
+        </logo>
+        <div class="mobile-center">
+          <span class="mobile-home-text">Home</span>
+        </div>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <!-- Mobile Menu (hidden by default) -->
+      <div class="mobile-nav" id="mobileNav">
+        <span>Menu</span>
+        <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <ul class="mobile-nav-list">
+          <li>
+            <a href="./" class="mobile-nav-link">
+              Home
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="about.html" class="mobile-nav-link">
+              About Us
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="ai.html" class="mobile-nav-link">
+              AI
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li class="mobile-dropdown-parent">
+            <a class="mobile-nav-link mobile-dropdown-toggle no-link-cursor">
+              What We Do
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <ul class="mobile-dropdown">
+              <li>
+                <a href="our-services.html" class="mobile-nav-link">
+                  Our Service
+                  <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="our-capabilites.html" class="mobile-nav-link">
+                  Technology Capabilities
+                  <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="career.html" class="mobile-nav-link">
+              Careers
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="blogs.html" class="mobile-nav-link">
+              Blog
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="case-studies.html" class="mobile-nav-link">
+              Case Studies
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="contact.html" class="mobile-nav-link">
+              Contact Us
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+          </li>
+          <li class="mobile-dropdown-parent mobile-language">
+            <a href="#language" class="mobile-nav-link mobile-dropdown-toggle">
+              Language: English
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <ul class="mobile-dropdown">
+              <li>
+                <a href="#en" class="mobile-nav-link">
+                  <span class="lang-check">✓</span>
+                  English
+                </a>
+              </li>
+              <li>
+                <a href="#de" class="mobile-nav-link">
+                  German
+                </a>
+              </li>
+              <li>
+                <a href="#ja" class="mobile-nav-link">
+                  Japanese
+                </a>
+              </li>
+              <li>
+                <a href="#vi" class="mobile-nav-link">
+                  Vietnamese
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </header>
+
+    <!-- Desktop Header (shows for screens above lg) -->
+    <header class="desktop-header hidden xl:block">
+      <div class="wrapper">
+        <logo>
+          <a href="#"><img src="./img/logo-white.png" class="logo-white" alt="Logo" loading="eager" fetchpriority="high" />
+            <img src="./img/logo.png" class="logo" alt="Logo" loading="eager" fetchpriority="high" /></a>
+        </logo>
+        <nav>
+          <ul class="nav">
+            <li><a href="./" class="active">Home</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="ai.html" class="highlight">AI</a></li>
+            <li><a class="no-link-cursor">What We Do <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+            <ul class="dropdown">
+              <li><a href="our-services.html">Our Services</a></li>
+              <li><a href="our-capabilites.html">Technology Capabilities</a></li>
+            </ul>
+            </li>
+            <li><a href="blogs.html">Blog</a></li>
+            <li><a href="career.html">Careers</a></li>
+            <li><a href="case-studies.html">Case Studies</a></li>
+            <li><a href="contact.html" class="contact-btn">Contact Us</a></li>
+            <li class="lang-switcher">
+              <a href="#language">EN <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+              <ul class="dropdown">
+                <li><a href="#en">English</a></li>
+                <li><a href="#de">German</a></li>
+                <li><a href="#ja">Japanese</a></li>
+                <li><a href="#vi">Vietnamese</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+        
+      </div>
+    </header>
+
+    <section class="hero home">
+      <img src="./img/hero-light.png" alt="Hero Image" loading="lazy" />
+      <div class="headlines animate__animated animate__zoomIn">
+        <h1>
+          <span class="highlight">AI-Driven</span> <br class="lg:hidden"> <sb>Software Development</sb> <br>
+          <sb>Powered by</sb> <br class="lg:hidden"> <span class="highlight">Senior Engineers</span>
+        </h1>
+        <div class="description">
+          <div class="iso-logos">
+            <img src="./img/ISO-27001.png" alt="ISO 27001 Information Security Logo" loading="lazy" />
+            <img src="./img/ISO-9001-2015.png" alt="ISO 9001:2015 Quality Management Logo" loading="lazy" />
+          </div>
+          <br class="lg:hidden">
+          <p>
+            Hire Vietnam’s <b>Top 7% IT Talents</b> to <br> Deliver AI Enterprise Solutions
+          </p>
+        </div>
+        <div class="buttons">
+          <a href="#" class="btn-explore">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.9999 5C10.9999 4.44772 11.4476 4 11.9999 4C12.5522 4 12.9999 4.44772 12.9999 5V16.5859L18.2929 11.293C18.6834 10.9024 19.3164 10.9024 19.707 11.293C20.0975 11.6835 20.0975 12.3165 19.707 12.707L12.707 19.707C12.3164 20.0976 11.6834 20.0976 11.2929 19.707L4.29289 12.707C3.90237 12.3165 3.90237 11.6835 4.29289 11.293C4.68342 10.9024 5.31643 10.9024 5.70696 11.293L10.9999 16.5859V5Z" fill="#FFFFFF"/>
+            </svg>
+             Explore</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="stats">
+      <div class="wrapper">
+        <img src="./img/company-stats.png" alt="Company Stats" class="lg:block hidden" loading="lazy" />
+        <img src="./img/company-stats-mob.png" alt="Company Stats" class="lg:hidden" loading="lazy" />
+        <div class="company-stats">
+          <div class="stat animate__animated animate__flipInY">
+            <h2><span class="count">200</span>+</h2>
+            <h3>Senior Experts</h3>
+            <p>(100% Senior-Level)</p>
+          </div>
+          <div class="stat animate__animated animate__flipInY">
+            <h2><span class="count">100</span>%</h2>
+            <h3>English-Proficient Team</h3>
+          </div>
+          <div class="stat animate__animated animate__flipInY">
+            <h2><span class="count">100</span>+</h2>
+            <h3>Successful Projects</h3>
+          </div>
+          <div class="stat animate__animated animate__flipInY">
+            <h2><span class="count">50</span>+</h2>
+            <h3>Global <br class="block md:hidden"> Clients</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="our-services" style="background-image: url('./img/our-services.png');">
+      <div class="wrapper">
+        <div class="heading">
+          <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+          <h2>Our Services</h2>
+        </div>
+        <div class="services">
+          <div class="service">
+            <div class="description">
+              <p>NSC Software delivers AI-driven, end-to-end technology solutions that help businesses build modern digital products, optimize operations, & accelerate growth with a senior, high-quality engineering team.</p>
+            </div>
+            <div class="buttons">
+              <a href="#" class="btn">Explore our services 
+                <svg class="right" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.29289 5.29289C8.68342 4.90237 9.31643 4.90237 9.70696 5.29289L15.707 11.2929C16.0975 11.6834 16.0975 12.3164 15.707 12.707L9.70696 18.707C9.31643 19.0975 8.68342 19.0975 8.29289 18.707C7.90237 18.3164 7.90237 17.6834 8.29289 17.2929L13.5859 11.9999L8.29289 6.70696C7.90237 6.31643 7.90237 5.68342 8.29289 5.29289Z" fill="#36C3DC"/>
+                </svg>
+                <svg class="down" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M11.5292 5.52876C11.7896 5.26841 12.2116 5.26841 12.472 5.52876C12.7323 5.78911 12.7323 6.21112 12.472 6.47147L8.47196 10.4715C8.21161 10.7318 7.7896 10.7318 7.52925 10.4715L3.52925 6.47147C3.2689 6.21112 3.2689 5.78911 3.52925 5.52876C3.7896 5.26841 4.21161 5.26841 4.47195 5.52876L8.0006 9.0574L11.5292 5.52876Z" fill="#36C3DC"/>
+                  </svg>
+              </a>
+            </div>
+          </div>
+          <div class="service">
+            <div class="header"><span>01</span>
+              
+              <svg class="plus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8327 22.1665V15.1665H5.83268C5.18835 15.1665 4.66602 14.6442 4.66602 13.9998C4.66602 13.3555 5.18835 12.8332 5.83268 12.8332H12.8327V5.83317C12.8327 5.18884 13.355 4.6665 13.9993 4.6665C14.6437 4.6665 15.166 5.18884 15.166 5.83317V12.8332H22.166C22.8103 12.8332 23.3327 13.3555 23.3327 13.9998C23.3327 14.6442 22.8103 15.1665 22.166 15.1665H15.166V22.1665C15.166 22.8108 14.6437 23.3332 13.9993 23.3332C13.355 23.3332 12.8327 22.8108 12.8327 22.1665Z" fill="#0A0A0A"/>
+                </svg>
+                
+              <svg class="minus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.166 12.8335C22.8103 12.8335 23.3327 13.3558 23.3327 14.0002C23.3327 14.6445 22.8103 15.1668 22.166 15.1668H5.83268C5.18835 15.1668 4.66602 14.6445 4.66602 14.0002C4.66602 13.3558 5.18835 12.8335 5.83268 12.8335H22.166Z" fill="#F9F9FB"/>
+                </svg>
+    
+            </div>
+            <h2><span>01. </span>Software Development & Digital Solutions</h2>
+            <div class="description">
+              <p>Delivering full-cycle software development services - from product ideation and MVP to  enterprise-scale platforms - with a focus on scalability, performance, and long-term business value.</p>
+            </div>
+          </div>
+          <div class="service">
+            <div class="header"><span>02</span> 
+              
+              <svg class="plus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8327 22.1665V15.1665H5.83268C5.18835 15.1665 4.66602 14.6442 4.66602 13.9998C4.66602 13.3555 5.18835 12.8332 5.83268 12.8332H12.8327V5.83317C12.8327 5.18884 13.355 4.6665 13.9993 4.6665C14.6437 4.6665 15.166 5.18884 15.166 5.83317V12.8332H22.166C22.8103 12.8332 23.3327 13.3555 23.3327 13.9998C23.3327 14.6442 22.8103 15.1665 22.166 15.1665H15.166V22.1665C15.166 22.8108 14.6437 23.3332 13.9993 23.3332C13.355 23.3332 12.8327 22.8108 12.8327 22.1665Z" fill="#0A0A0A"/>
+                </svg>
+                
+              <svg class="minus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.166 12.8335C22.8103 12.8335 23.3327 13.3558 23.3327 14.0002C23.3327 14.6445 22.8103 15.1668 22.166 15.1668H5.83268C5.18835 15.1668 4.66602 14.6445 4.66602 14.0002C4.66602 13.3558 5.18835 12.8335 5.83268 12.8335H22.166Z" fill="#F9F9FB"/>
+                </svg>
+    
+            </div>
+            <h2><span>02. </span>Technology Consulting & Architecture</h2>
+            <div class="description">
+              <p>Providing strategic technology advisory and solution architecture design to help enterprises modernize systems, adopt emerging technologies, and align IT strategies with business objectives.</p>
+            </div>
+          </div>
+          <div class="service">
+            <div class="header"><span>03</span> 
+              
+              <svg class="plus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8327 22.1665V15.1665H5.83268C5.18835 15.1665 4.66602 14.6442 4.66602 13.9998C4.66602 13.3555 5.18835 12.8332 5.83268 12.8332H12.8327V5.83317C12.8327 5.18884 13.355 4.6665 13.9993 4.6665C14.6437 4.6665 15.166 5.18884 15.166 5.83317V12.8332H22.166C22.8103 12.8332 23.3327 13.3555 23.3327 13.9998C23.3327 14.6442 22.8103 15.1665 22.166 15.1665H15.166V22.1665C15.166 22.8108 14.6437 23.3332 13.9993 23.3332C13.355 23.3332 12.8327 22.8108 12.8327 22.1665Z" fill="#0A0A0A"/>
+                </svg>
+                
+              <svg class="minus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.166 12.8335C22.8103 12.8335 23.3327 13.3558 23.3327 14.0002C23.3327 14.6445 22.8103 15.1668 22.166 15.1668H5.83268C5.18835 15.1668 4.66602 14.6445 4.66602 14.0002C4.66602 13.3558 5.18835 12.8335 5.83268 12.8335H22.166Z" fill="#F9F9FB"/>
+                </svg>
+    
+            </div>    
+            <h2><span>03. </span>Cloud & DevOps Services</h2>
+            <div class="description">
+              <p>Enabling agility and resilience through cloud-native engineering, infrastructure automation, and DevSecOps practices that accelerate deployment, enhance reliability, and optimize cost efficiency.</p>
+            </div>
+          </div>
+          <div class="service">
+            <div class="header"><span>04</span> 
+              
+              <svg class="plus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8327 22.1665V15.1665H5.83268C5.18835 15.1665 4.66602 14.6442 4.66602 13.9998C4.66602 13.3555 5.18835 12.8332 5.83268 12.8332H12.8327V5.83317C12.8327 5.18884 13.355 4.6665 13.9993 4.6665C14.6437 4.6665 15.166 5.18884 15.166 5.83317V12.8332H22.166C22.8103 12.8332 23.3327 13.3555 23.3327 13.9998C23.3327 14.6442 22.8103 15.1665 22.166 15.1665H15.166V22.1665C15.166 22.8108 14.6437 23.3332 13.9993 23.3332C13.355 23.3332 12.8327 22.8108 12.8327 22.1665Z" fill="#0A0A0A"/>
+                </svg>
+                
+              <svg class="minus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.166 12.8335C22.8103 12.8335 23.3327 13.3558 23.3327 14.0002C23.3327 14.6445 22.8103 15.1668 22.166 15.1668H5.83268C5.18835 15.1668 4.66602 14.6445 4.66602 14.0002C4.66602 13.3558 5.18835 12.8335 5.83268 12.8335H22.166Z" fill="#F9F9FB"/>
+                </svg>
+    
+            </div>
+            <h2><span>04. </span>Data Engineering & Analytics</h2>
+            <div class="description">
+              <p>Building secure and scalable data pipelines, lakes, and warehouses to transform raw data into actionable insights - empowering smarter decisions and data-driven innovation.</p>
+            </div>
+          </div>
+          <div class="service">
+            <div class="header"><span>05</span> 
+              
+              <svg class="plus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8327 22.1665V15.1665H5.83268C5.18835 15.1665 4.66602 14.6442 4.66602 13.9998C4.66602 13.3555 5.18835 12.8332 5.83268 12.8332H12.8327V5.83317C12.8327 5.18884 13.355 4.6665 13.9993 4.6665C14.6437 4.6665 15.166 5.18884 15.166 5.83317V12.8332H22.166C22.8103 12.8332 23.3327 13.3555 23.3327 13.9998C23.3327 14.6442 22.8103 15.1665 22.166 15.1665H15.166V22.1665C15.166 22.8108 14.6437 23.3332 13.9993 23.3332C13.355 23.3332 12.8327 22.8108 12.8327 22.1665Z" fill="#0A0A0A"/>
+                </svg>
+                
+              <svg class="minus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.166 12.8335C22.8103 12.8335 23.3327 13.3558 23.3327 14.0002C23.3327 14.6445 22.8103 15.1668 22.166 15.1668H5.83268C5.18835 15.1668 4.66602 14.6445 4.66602 14.0002C4.66602 13.3558 5.18835 12.8335 5.83268 12.8335H22.166Z" fill="#F9F9FB"/>
+                </svg>
+    
+            </div>
+            <h2><span>05. </span>AI & Machine Learning</h2>
+            <div class="description">
+              <p>Designing and deploying AI solutions - from predictive analytics and NLP to computer vision and generative AI - that enhance automation, intelligence, and business performance.</p>
+            </div>
+          </div>
+          <div class="service">
+            <div class="header"><span>06</span> 
+              
+              <svg class="plus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8327 22.1665V15.1665H5.83268C5.18835 15.1665 4.66602 14.6442 4.66602 13.9998C4.66602 13.3555 5.18835 12.8332 5.83268 12.8332H12.8327V5.83317C12.8327 5.18884 13.355 4.6665 13.9993 4.6665C14.6437 4.6665 15.166 5.18884 15.166 5.83317V12.8332H22.166C22.8103 12.8332 23.3327 13.3555 23.3327 13.9998C23.3327 14.6442 22.8103 15.1665 22.166 15.1665H15.166V22.1665C15.166 22.8108 14.6437 23.3332 13.9993 23.3332C13.355 23.3332 12.8327 22.8108 12.8327 22.1665Z" fill="#0A0A0A"/>
+                </svg>
+                
+              <svg class="minus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.166 12.8335C22.8103 12.8335 23.3327 13.3558 23.3327 14.0002C23.3327 14.6445 22.8103 15.1668 22.166 15.1668H5.83268C5.18835 15.1668 4.66602 14.6445 4.66602 14.0002C4.66602 13.3558 5.18835 12.8335 5.83268 12.8335H22.166Z" fill="#F9F9FB"/>
+                </svg>
+    
+            </div>
+            <h2><span>06. </span>Blockchain & Web3 Development</h2>
+            <div class="description">
+              <p>Developing decentralized applications and blockchain-based platforms to enable digital trust, transparency, and new models of value exchange across industries.</p>
+            </div>
+          </div>
+          <div class="service">
+            <div class="header"><span>07</span> 
+              
+              <svg class="plus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8327 22.1665V15.1665H5.83268C5.18835 15.1665 4.66602 14.6442 4.66602 13.9998C4.66602 13.3555 5.18835 12.8332 5.83268 12.8332H12.8327V5.83317C12.8327 5.18884 13.355 4.6665 13.9993 4.6665C14.6437 4.6665 15.166 5.18884 15.166 5.83317V12.8332H22.166C22.8103 12.8332 23.3327 13.3555 23.3327 13.9998C23.3327 14.6442 22.8103 15.1665 22.166 15.1665H15.166V22.1665C15.166 22.8108 14.6437 23.3332 13.9993 23.3332C13.355 23.3332 12.8327 22.8108 12.8327 22.1665Z" fill="#0A0A0A"/>
+                </svg>
+                
+              <svg class="minus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.166 12.8335C22.8103 12.8335 23.3327 13.3558 23.3327 14.0002C23.3327 14.6445 22.8103 15.1668 22.166 15.1668H5.83268C5.18835 15.1668 4.66602 14.6445 4.66602 14.0002C4.66602 13.3558 5.18835 12.8335 5.83268 12.8335H22.166Z" fill="#F9F9FB"/>
+                </svg>
+    
+            </div>
+            <h2><span>07. </span>Quality Assurance & Testing Services</h2>
+            <div class="description">
+              <p>Ensuring product quality, performance, and security through comprehensive manual and automated testing frameworks that integrate seamlessly into your delivery pipeline.</p>
+            </div>
+          </div>
+          <div class="service">
+            <div class="header"><span>08</span> 
+              
+              <svg class="plus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.8327 22.1665V15.1665H5.83268C5.18835 15.1665 4.66602 14.6442 4.66602 13.9998C4.66602 13.3555 5.18835 12.8332 5.83268 12.8332H12.8327V5.83317C12.8327 5.18884 13.355 4.6665 13.9993 4.6665C14.6437 4.6665 15.166 5.18884 15.166 5.83317V12.8332H22.166C22.8103 12.8332 23.3327 13.3555 23.3327 13.9998C23.3327 14.6442 22.8103 15.1665 22.166 15.1665H15.166V22.1665C15.166 22.8108 14.6437 23.3332 13.9993 23.3332C13.355 23.3332 12.8327 22.8108 12.8327 22.1665Z" fill="#0A0A0A"/>
+                </svg>
+                
+              <svg class="minus" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22.166 12.8335C22.8103 12.8335 23.3327 13.3558 23.3327 14.0002C23.3327 14.6445 22.8103 15.1668 22.166 15.1668H5.83268C5.18835 15.1668 4.66602 14.6445 4.66602 14.0002C4.66602 13.3558 5.18835 12.8335 5.83268 12.8335H22.166Z" fill="#F9F9FB"/>
+                </svg>
+    
+            </div>
+            <h2><span>08. </span>ERP, CRM & Business Platform Services</h2>
+            <div class="description">
+              <p>Customizing and integrating enterprise platforms such as Odoo, Dynamics 365, Salesforce, and SAP to streamline operations, enhance workflows, and drive business growth.</p>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <div class="bottom-sheet-overlay" id="bottomSheetOverlay"></div>
+      <div class="bottom-sheet" id="bottomSheet">
+        <div class="bottom-sheet-header">
+          <h3 class="bottom-sheet-title" id="bottomSheetTitle"></h3>
+          <button class="bottom-sheet-close" id="bottomSheetClose" aria-label="Close">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21 7L7 21M7 7L21 21" stroke="#F9F9FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="bottom-sheet-content">
+          <div class="service-content" id="bottomSheetContent"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-us">
+      <img src="./img/why-nsc-bg.png" class="xl:block hidden" loading="lazy" />
+      <img src="./img/mob-why-nsc-bg.png" class="md:hidden mob-top-pattern" loading="lazy" />
+      <div class="why-us-globe xl:block global" aria-hidden="true" role="presentation">
+        <img src="./img/gradient.png" alt="" class="why-us-globe__gradient" loading="lazy" />
+        <img src="./img/s.png" alt="" class="why-us-globe__s" loading="lazy" />
+        <img src="./img/map600x300.png" class="why-us-globe__img md:hidden" loading="lazy" />
+        <img src="./img/map1000x500.png" alt="" class="why-us-globe__img hidden md:block xl:hidden" loading="lazy" />
+        <img src="./img/map-demo1000x500.png" alt="" class="why-us-globe__img hidden xl:block 2xl:hidden" loading="lazy" />
+        <img src="./img/map-demo1200x600.png" alt="" class="why-us-globe__img hidden 2xl:block" loading="lazy" />
+      </div>
+      <div class="heading light">
+        <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+        <h2>Why NSC Software?</h2>
+      </div>
+      <img src="./img/why-nsc-bg.png" class="hidden md:block xl:hidden" loading="lazy" />
+      <div class="why-us-content">
+        <div class="why-us-item">
+          <div class="content">
+            <img src="./img/wni-1.png" class="vetor" alt="Why NSC Software? 1" loading="lazy" />
+            <h3>Senior-Led, AI-Driven Expertise</h3>
+            <div class="description"><p>Projects are guided by senior engineers and enhanced by AI for higher efficiency and quality.</p></div>
+          </div>
+        </div>
+        <div class="why-us-item">
+          <div class="content">
+            <img src="./img/wni-5.png" class="vetor" alt="Why NSC Software? 1" loading="lazy" />
+            <h3>Time-Zone Aligned Collaboration</h3>
+            <div class="description"><p>Teams operate in overlapping hours with Europe, Australia and the US for real-time coordination.</p></div>
+          </div>
+        </div>
+        <div class="why-us-item">
+          <div class="content">
+            <img src="./img/wni-2.png" class="vetor" alt="Why NSC Software? 1" loading="lazy" />
+            <h3>Vietnam’s Top 7% IT Talents</h3>
+            <div class="description"><p>Top 7% Vietnamese engineers, rigorously selected for technical excellence and problem-solving capability.</p></div>
+          </div>
+        </div>
+        <div class="why-us-item">
+          <div class="content">
+            <img src="./img/wni-6.png" class="vetor" alt="Why NSC Software? 1" loading="lazy" />
+            <h3>100% English-Proficient Team</h3>
+            <div class="description"><p>Seamless communication and collaboration with clients across global regions.</p></div>
+          </div>
+        </div>
+        <div class="why-us-item">
+          <div class="content">
+            <img src="./img/wni-3.png" class="vetor" alt="Why NSC Software? 1" loading="lazy" />
+            <h3>100% Senior-Level Engineers</h3>
+            <div class="description"><p>All engineers are senior professionals with a minimum of 6 years of experience.</p></div>
+          </div>
+        </div>
+        <div class="why-us-item">
+          <div class="content">
+            <img src="./img/wni-4.png" class="vetor" alt="Why NSC Software? 1" loading="lazy" />
+            <h3>6+ Years Minimum Experience</h3>
+            <div class="description"><p>Depth of technical expertise and delivery maturity across complex enterprise systems.</p></div>
+          </div>
+        </div>
+        <div class="why-us-item">
+          <div class="content">
+            <img src="./img/wni-7.png" class="vetor" alt="Why NSC Software? 1" loading="lazy" />
+            <h3>High-Quality, Cost-Efficient Delivery</h3>
+            <div class="description"><p>Projects are guided by senior engineers and enhanced by AI for higher efficiency and quality.</p></div>
+          </div>
+        </div>
+    </section>
+    
+    <section class="how-we-work" style="background-image: url('./img/how-we-work.png');"> 
+      <div class="wrapper">
+        <div class="heading animate__animated animate__zoomIn">
+          <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+          <h2>How We Work</h2>
+        </div>
+        <div class="description animate__animated animate__zoomIn">
+          <h3>Flexible engagement models designed for:</h3>
+          <p>Long-term partnership - Efficiency - Transparency</p>
+        </div>
+        <div class="item-wrapper">
+          <img src="./img/nsc-members.png" class="hidden lg:block" alt="NSC Members" loading="lazy" />
+          <img src="./img/mob-nsc-members.png" class="block lg:hidden" alt="NSC Members" loading="lazy" />
+          <div class="items">
+            <div class="item">
+              <div class="content animate__animated animate__flipInY">
+                <h3>Fixed-Scope <br> Projects</h3>
+              <p>Clear goals, fixed requirements, and defined timelines, ideal for well-scoped initiatives.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="content animate__animated animate__flipInY">
+                <h3>Dedicated <br class="hidden lg:block"> Team</h3>
+                <p>Build a long-term, fully managed engineering team aligned with your business objectives.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="content animate__animated animate__flipInY">
+                <h3>Staff <br class="hidden lg:block"> Augmentation</h3>
+                <p>Extend your in-house capacity with senior engineers working directly under your management.</p>
+              </div>
+            </div>
+            <div class="item">
+              <div class="content animate__animated animate__flipInY">
+                <h3>Managed <br class="hidden lg:block"> Services</h3>
+                <p>Delegate selected operations to NSC under SLA-driven, KPI-measured management.</p>
+              </div>
+            </div>  
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ai-driven" style="background-image: url('./img/ai-driven.png');">
+      <div class="wrapper">
+        <div class="content animate__animated animate__zoomIn">
+          <h2><span>AI-Driven</span> <br> Software <br> Development</h2>
+        </div>
+        <div class="content animate__animated animate__zoomIn">
+          <h2>Power by <br> <span>Senior <br class="hidden lg:block"> Engineers</span></h2>
+        </div>
+        <div class="block-content animate__animated animate__zoomIn">
+          <div class="description">
+            <p>NSC integrates AI across the entire delivery lifecycle to enhance productivity, consistency, and decision-making.</p>
+            <p>We combine leading AI frameworks with proprietary, privacy-controlled models to ensure secure, compliant, and efficient delivery for every client engagement.</p>
+          </div>
+          <a href="#" class="btn">Learn How We Leverage AI <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+            </svg></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials" style="background-image: url('./img/testimonials.png');"> 
+      
+        <div class="heading">
+          <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+          <h2>Beyond A Partner</h2>
+        </div>
+       <div class="wrapper">
+        
+        <div class="description">
+          <p>Empowering global enterprises with AI-driven engineering and senior-led delivery, built on trust, transparency, and long-term collaboration.</p>
+          <a href="#" class="btn">Explore Our Case Studies <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+            </svg></a>
+        </div>
+        <div class="logos">
+          <div class="logo">
+            <img src="./img/ACB.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/Petlinx.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/Atomworks.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/Greatscott.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/Healthcare.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/OCQ.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/visaplan.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/abri.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/anz.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/alawyer.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/hivello.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/commnia.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/STU.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/threat.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/littles.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/FW.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/monday.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/NUBO.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/salesbuildr.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/shft.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/dtails.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/timeblockr.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/Glassboxx.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/clowd.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/pl.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/Simpson.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/Timberyard.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/histofy.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/andromeda.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/endava.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/abouthealthcar.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/allshifts.png" alt="Logo" loading="lazy" />
+          </div>
+          <div class="logo">
+            <img src="./img/Bruker.png" alt="Logo" loading="lazy" />
+          </div>
+        </div>
+        <div class="testimonials-slider">
+          <div class="item">
+            <div class="header">
+              
+              <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+                </svg>
+  
+            </div>
+            <div class="content">
+              <p>We worked with NSC to source a senior Go developer and couldn’t be happier with the results. The developer’s work has been excellent, and the NSC team provided outstanding support every step of the way.</p>
+            </div>
+            <div class="footer">
+              <div class="thumbnail">
+                <img src="./img/testimonial1.png" alt="Thumbnail" loading="lazy" />
+              </div>
+              <div class="name">
+                <h3>Nicolas Carpi</h3>
+                <p>CEO / Deltablot</p>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="header">
+              
+              <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+                </svg>
+  
+            </div>
+            <div class="content">
+              <p>We can highly recommend NSC. They have been exceptionally flexible, professional, and solution-oriented throughout our collaboration. As a startup, challenges often arise on short notice, but NSC has always responded with great understanding and a genuine willingness to help.</p>
+              <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                </svg></a>
+            </div>
+            
+            <div class="popup-content">
+              <p>We can highly recommend NSC. They have been exceptionally flexible, professional, and solution-oriented throughout our collaboration. As a startup, challenges often arise on short notice, but NSC has always responded with great understanding and a genuine willingness to help.</p>
+              <p>Their proactive approach and strong sense of service make them a reliable and valued partner that we gladly recommend to others.</p>
+              <p>We can wholeheartedly recommend NSC without hesitation. Throughout our collaboration, they have proven to be highly flexible, professional, and solution-oriented. As a startup, unexpected challenges often arise at short notice, but NSC has consistently handled every situation with impressive understanding and a strong commitment to finding solutions that worked for both sides.</p>
+              <p>Their approach is characterized by excellent service, open communication, and a genuine interest in creating value for their clients. We have always felt confident working with them, and it is clear that they take pride in delivering quality and flexibility – even when things move quickly.</p>
+              <p>We can therefore warmly recommend NSC to any company looking for a reliable, dedicated, and collaborative partner</p>
+            </div>
+            <div class="footer">
+              <div class="thumbnail">
+                <img src="./img/testimonial2.png" alt="Thumbnail" loading="lazy" />
+              </div>
+              <div class="name">
+                <h3>Tony Motzfeldt  </h3>
+                <p>CEO and Founder / SHFT</p>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="header">
+              
+              <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+                </svg>
+  
+            </div>
+            <div class="content">
+              <p>Working with the NSC team has been a great experience. Their developers are highly skilled, professional, and consistently deliver quality results on time. We truly appreciate their technical expertise and the level of support they provide, they’ve been a reliable and capable partner throughout our collaboration.</p>
+            </div>
+            <div class="footer">
+              <div class="thumbnail">
+                <img src="./img/testimonial3.png" alt="Thumbnail" loading="lazy" />
+              </div>
+              <div class="name">
+                <h3>Marcus Tan</h3>
+                <p>Senior Business Analyst / Ascent Lawyers</p>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="header">
+              
+              <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+                </svg>
+  
+            </div>
+            <div class="content">
+              <p>I worked with NCS for over a year, and my experience with their engineering team was consistently excellent. Their engineers demonstrated top-tier technical expertise, strong professionalism, and the ability to contribute effectively from day one.</p>
+              <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                </svg></a>
+            </div>
+            <div class="popup-content">
+              <p>I worked with NCS for over a year, and my experience with their engineering team was consistently excellent. Their engineers demonstrated top-tier technical expertise, strong professionalism, and the ability to contribute effectively from day one. They were also a genuine pleasure to collaborate with. I would confidently recommend their services to anyone seeking a highly capable and well-resourced team.</p>
+            </div>
+            <div class="footer">
+              <div class="thumbnail">
+                <img src="./img/testimonial4.png" alt="Thumbnail" loading="lazy" />
+              </div>
+              <div class="name">
+                <h3>Alex</h3>
+                <p>Solutions For Science</p>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="header">
+              
+              <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+                </svg>
+  
+            </div>
+            <div class="content">
+              <p>NCS team is a team that understands 100% what customers want. It has put us on the optimal path to the results our company wants</p>
+            </div>
+            <div class="footer">
+              <div class="thumbnail">
+                <img src="./img/testimonial5.png" alt="Thumbnail" loading="lazy" />
+              </div>
+              <div class="name">
+                <h3>DongHee Shin</h3>
+                <p>PO / OGO Corp</p>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="header">
+              
+              <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+                </svg>
+  
+            </div>
+            <div class="content">
+              <p>We discovered NSC Software when we went searching for a more cost effective outsourcing business to develop our web application. They presented a great solution, which was completed within budget and fast! We now consider them an integral part of our development team, and have already re-engaged them on another project.</p>
+            </div>
+            <div class="footer">
+              <div class="thumbnail">
+                <img src="./img/testimonial6.png" alt="Thumbnail" loading="lazy" />
+              </div>
+              <div class="name">
+                <h3>Laurence Smith</h3>
+                <p>CEO / Petlinx</p>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="header">
+              
+              <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+                </svg>
+  
+            </div>
+            <div class="content">
+              <p>We are very happy with the work that NSC did for us in developing our app for iOS and Android in Flutter. The collaboration was smooth and efficient, and the first version of the app was launched after just six months of collaboration. Won’t hesitate to work with NSC again in another project!</p>
+            </div>
+            <div class="footer">
+              <div class="thumbnail">
+                <img src="./img/testimonial7.png" alt="Thumbnail" loading="lazy" />
+              </div>
+              <div class="name">
+                <h3>Daniel Feldt</h3>
+                <p>CEO / Great Scott</p>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="header">
+              
+              <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+                </svg>
+  
+            </div>
+            <div class="content">
+              <p>My only regret was we didn’t get to meet and work with NSC sooner, their team could have saved our company from months of wasted energy and resources working with the wrong people.</p>
+            </div>
+            <div class="footer">
+              <div class="thumbnail">
+                <img src="./img/testimonial8.png" alt="Thumbnail" loading="lazy" />
+              </div>
+              <div class="name">
+                <h3>Eddie Huang</h3>
+                <p>CEO / Atomworks</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+       <!-- Testimonial Modal -->
+    <div class="testimonial-modal-overlay" id="testimonialModalOverlay"></div>
+    <div class="testimonial-modal" id="testimonialModal">
+      <button class="testimonial-modal-close" id="testimonialModalClose" aria-label="Close">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="testimonial-modal-content">
+        <div class="testimonial-modal-header">
+          <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+          </svg>
+        </div>
+        <div class="testimonial-modal-body">
+          <div class="testimonial-modal-text" id="testimonialModalText"></div>
+        </div>
+        <div class="testimonial-modal-footer">
+          <div class="testimonial-modal-thumbnail" id="testimonialModalThumbnail"></div>
+          <div class="testimonial-modal-name" id="testimonialModalName"></div>
+        </div>
+      </div>
+    </div>
+    </section> 
+
+    <section class="blogs no-padding-top">
+      <div class="heading">
+        <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+        <h2>BLOGS</h2>
+      </div>
+      <div class="wrapper">   
+        <div class="description">
+          <h3>Ideas that inspire. <br class="hidden lg:block"> Stories that shape the future.</h3>
+          <p>Stay updated with insights, stories, and perspectives from NSC Software, where we explore how technology, innovation, and people drive business transformation.</p>
+        </div>
+        <div class="blogs-wrapper">
+          <div class="col">
+            <div class="main">
+              <div class="header">
+                <h3>Featured Insights</h3>
+                <p>Explore in-depth perspectives from our experts on software development, digital transformation, and emerging technology trends.</p>
+              </div>
+              <div class="content">
+                <img src="./img/blog1.png" alt="Thumbnail" loading="lazy" />
+                <h2><a href="#">Agile Mindset in Global Software Delivery</a></h2>
+                <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                  <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                    </svg></a>
+              </div>
+            </div>
+            <div class="items">
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="./img/blog2.png" alt="Thumbnail" loading="lazy" />
+                </div>
+                <div class="content-wrapper">
+                  <h2><a href="#">Building Scalable Software for B2B Enterprises</a></h2>
+                  <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                    <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                      </svg></a>
+                </div>
+              </div>
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="./img/blog3.png" alt="Thumbnail" loading="lazy" />
+                </div>
+                <div class="content-wrapper">
+                  <h2><a href="#">The Future of AI-Driven Quality Assurance</a></h2>
+                  <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                    <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                      </svg></a>
+                </div>
+              </div>
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="./img/blog4.png" alt="Thumbnail" loading="lazy" />
+                </div>
+                <div class="content-wrapper">
+                  <h2><a href="#">Cultural Agility: How Vietnam's Tech Talent Goes Global</a></h2>
+                  <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                    <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                      </svg></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="main">
+              <div class="header">
+                <h3>Latest Updates</h3>
+                <p>Keep up with our latest news, events, and knowledge sharing from the NSC team.</p>
+              </div>
+              <div class="content">
+                <img src="./img/blog5.png" alt="Thumbnail" loading="lazy" />
+                <h2><a href="#">NSC Software Partners with Japanese Enterprises to Accelerate Digital Innovation</a></h2>
+                <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                  <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                    </svg></a>
+              </div>
+            </div>
+            <div class="items">
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="./img/blog6.png" alt="Thumbnail" loading="lazy" />
+                </div>
+                <div class="content-wrapper">
+                  <h2><a href="#">Inside NSC: Our Engineering Team Shares the Journey Behind a FinTech Platform</a></h2>
+                  <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                    <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                      </svg></a>
+                </div>
+              </div>
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="./img/blog7.png" alt="Thumbnail" loading="lazy" />
+                </div>
+                <div class="content-wrapper">
+                  <h2><a href="#">Meet Script: Transforming Online Meetings with AI-Powered Notes</a></h2>
+                  <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                    <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                      </svg></a>
+                </div>
+              </div>
+              <div class="item">
+                <div class="thumbnail">
+                  <img src="./img/blog8.png" alt="Thumbnail" loading="lazy" />
+                </div>
+                <div class="content-wrapper">
+                  <h2><a href="#">NSC at Vietnam Tech Expo 2025: Building the Future of Software Together</a></h2>
+                  <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                    <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                      </svg></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="join-us">
+          <div class="image">
+            <img src="./img/join-conversation.png" alt="Join Us" loading="lazy" />
+          </div>
+          <div class="content">
+            <h3>Join Conversation</h3>
+            <p>Follow our journey of growth, innovation, and collaboration, where every insight leads to a smarter tomorrow.</p>
+            <a href="#" class="btn"> Explore all articles on the NSC Blog <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+              <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                </svg></a>
+          </div>
+        </div>
+      </div>
+      
+      <img src="./img/mob-blogs--bot-bg.png" class="block lg:hidden mob-bottom-pattern" alt="Heading Icon" loading="lazy" />
+    </section>
+
+    <section class="contact-us" style="background-image:url('./img/join-bg.png');">
+      <div class="wrapper">
+        <div class="col">
+          <div class="heading">
+            <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+            <h2>CONTACT</h2>
+          </div>
+          <div class="content">
+            <p>Ideas that inspire.</p>
+            <p>Stories that shape the future.</p>
+          </div>
+        </div>
+        <div class="col">
+          <div class="form">
+            <form action="#">
+              <div class="form-group">
+                <label for="name">Your Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Enter your full name" />
+              </div>
+              <div class="form-group">
+                <label for="email">Your Work Email</label>
+                <input type="email" id="email" name="email" placeholder="Enter your Email" />
+              </div>
+              <div class="form-group">
+                <label for="message">Your Message</label>
+                <textarea id="message" name="message" placeholder="Enter Your Message here"></textarea>
+              </div>
+              <button type="submit" class="btn">Send</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrapper">
+        <div class="col company-info">
+          <div class="company-branding">
+            <div class="logo">
+              <img src="./img/logo.png" alt="NSC Software Logo" class="block lg:hidden" loading="lazy" />
+              <img src="./img/mob-foot-logo.png" alt="NSC Software Logo" class="hidden lg:block" loading="lazy" />
+            </div>
+            <h3 class="company-name">NSC Software Co., LTD</h3>
+          </div>
+          <p class="company-description">Vietnam's Premier Software Development & Consulting Company</p>
+          <p class="business-number">Business Number: <br> 0110524817</p>
+          <div class="certifications">
+            <div class="cert-badge">
+              <img src="./img/ISO-27001.png" alt="ISO 27001" loading="lazy" />
+            </div>
+            <div class="cert-badge">
+              <img src="./img/ISO-9001-2015.png" alt="ISO 9001:2015" loading="lazy" />
+            </div>
+          </div>
+          <p class="email">Email: <br><a href="mailto:contact@nscsoftware.com">contact@nscsoftware.com</a></p>
+        </div>
+        <div class="col right-column">
+          <div class="contact-info">
+            <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="contact-content">
+              <h4 class="section-heading">Contact</h4>
+              <svg xmlns="http://www.w3.org/2000/svg" class="accordion-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+                </svg>
+            </button>
+            <h4 class="section-heading hidden lg:block">Contact</h4>
+            <div class="offices-wrapper lg-hidden" id="contact-content">
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software Headquarters:</h5>
+                  <p>Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Ho Chi Minh:</h5>
+                  <p>Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software USA:</h5>
+                  <p>4245 N Central Expy, #490, Dallas, TX, USA 75205</p>
+                  <p>Tel: <a href="tel:+17134282289">+1 (713) 428 2289</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Australia:</h5>
+                  <p>Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia</p>
+                  <p>Tel: <a href="tel:+61488860719">(+61) 0488 860 719</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Europe:</h5>
+                  <p>Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany</p>
+                  <p>Tel: <a href="tel:+491701633520">(+49) 170 1633520</a></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="offices-wrapper hidden lg:block" id="contact-content">
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software Headquarters:</h5>
+                  <p>Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Australia:</h5>
+                  <p>Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia</p>
+                  <p>Tel: <a href="tel:+61488860719">(+61) 0488 860 719</a></p>
+                </div>
+              </div>
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software Ho Chi Minh:</h5>
+                  <p>Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam</p>
+                  <p>Tel: <a href="tel:+84866639497">(+84) 866 639 497</a></p>
+                </div>
+                <div class="office">
+                  <h5>NSC Software Europe:</h5>
+                  <p>Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany</p>
+                  <p>Tel: <a href="tel:+491701633520">(+49) 170 1633520</a></p>
+                </div>
+              </div>
+              <div class="offices">
+                <div class="office">
+                  <h5>NSC Software USA:</h5>
+                  <p>4245 N Central Expy, #490, Dallas, TX, USA 75205</p>
+                  <p>Tel: <a href="tel:+17134282289">+1 (713) 428 2289</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sitemap lg:hidden">
+            <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="sitemap-content">
+              <h4 class="section-heading">Site Map</h4>
+              <svg xmlns="http://www.w3.org/2000/svg" class="accordion-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+                </svg>
+            </button>
+            <h4 class="section-heading hidden lg:block">Site Map</h4>
+            <div class="sitemap-links" id="sitemap-content">
+              <div class="sitemap-col">
+                <ul>
+                  <li><a href="./">Home</a></li>
+                  <li><a href="about.html">About Us</a></li>
+                </ul>
+              </div>
+              <div class="sitemap-col">
+                <ul>
+                  <li><a>What We Do</a>
+                    <ul>
+                      <li><a href="our-services.html">Our Services</a></li>
+                      <li><a href="our-capabilites.html">Technology Capabilities</a></li>
+                    </ul>
+                  </li>
+                  <li><a href="career.html">Careers</a></li>
+                </ul>
+              </div>
+              <div class="sitemap-col">
+                <ul>
+                  <li><a href="blogs.html">Blog</a></li>
+                  <li><a href="case-studies.html">Case Studies</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+      <div class="sitemap hidden lg:block">
+        <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="sitemap-content">
+          <h4 class="section-heading">Site Map</h4>
+          <svg class="accordion-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <h4 class="section-heading hidden lg:block">Site Map</h4>
+        <div class="sitemap-links" id="sitemap-content">
+          <div class="sitemap-col">
+            <ul>
+              <li><a href="./">Home</a></li>
+              <li><a href="about.html">About Us</a></li>
+            </ul>
+          </div>
+          <div class="sitemap-col">
+            <ul>
+              <li><a>What We Do</a>
+                <ul>
+                  <li><a href="our-services.html">Our Services</a></li>
+                  <li><a href="our-capabilites.html">Technology Capabilities</a></li>
+                </ul>
+              </li>
+              <li><a href="career.html">Careers</a></li>
+            </ul>
+          </div>
+          <div class="sitemap-col">
+            <ul>
+              <li><a href="blogs.html">Blog</a></li>
+              <li><a href="case-studies.html">Case Studies</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="bottom">
+        <div class="wrapper">
+          <div class="copyright">
+            <p>NSC@2026 All copyrights reserved</p>
+            <div class="legal-links">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Cookies Policy</a>
+              <a href="#">Term of Use</a>
+            </div>
+          </div>
+          <div class="social">
+            <a href="#" class="social-icon linkedin" aria-label="LinkedIn">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12C9.82843 12 10.5 12.6716 10.5 13.5V31.5C10.5 32.3284 9.82843 33 9 33H3C2.17157 33 1.5 32.3284 1.5 31.5V13.5C1.5 12.6716 2.17157 12 3 12H9ZM31.5 21C31.5 19.0109 30.7093 17.1038 29.3027 15.6973C27.8962 14.2907 25.9891 13.5 24 13.5C22.0109 13.5 20.1038 14.2907 18.6973 15.6973C17.2907 17.1038 16.5 19.0109 16.5 21V30H19.5V21C19.5 19.8065 19.9744 18.6623 20.8184 17.8184C21.6623 16.9744 22.8065 16.5 24 16.5C25.1935 16.5 26.3377 16.9744 27.1816 17.8184C28.0256 18.6623 28.5 19.8065 28.5 21V30H31.5V21ZM4.5 30H7.5V15H4.5V30ZM7.5 6C7.5 5.17157 6.82843 4.5 6 4.5C5.17157 4.5 4.5 5.17157 4.5 6C4.5 6.82843 5.17157 7.5 6 7.5C6.82843 7.5 7.5 6.82843 7.5 6ZM34.5 31.5C34.5 32.3284 33.8284 33 33 33H27C26.1716 33 25.5 32.3284 25.5 31.5V21C25.5 20.6022 25.3419 20.2208 25.0605 19.9395C24.7792 19.6581 24.3978 19.5 24 19.5C23.6022 19.5 23.2208 19.6581 22.9395 19.9395C22.6581 20.2208 22.5 20.6022 22.5 21V31.5C22.5 32.3284 21.8284 33 21 33H15C14.1716 33 13.5 32.3284 13.5 31.5V21C13.5 18.2152 14.6056 15.5438 16.5747 13.5747C18.5438 11.6056 21.2152 10.5 24 10.5C26.7848 10.5 29.4562 11.6056 31.4253 13.5747C33.3944 15.5438 34.5 18.2152 34.5 21V31.5ZM10.5 6C10.5 8.48528 8.48528 10.5 6 10.5C3.51472 10.5 1.5 8.48528 1.5 6C1.5 3.51472 3.51472 1.5 6 1.5C8.48528 1.5 10.5 3.51472 10.5 6Z" fill="#36C3DC"/>
+                </svg>
+            </a>
+            <a href="#" class="social-icon facebook" aria-label="Facebook">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19.5 10.5C19.5 9.70435 19.8163 8.94151 20.3789 8.37891C20.9415 7.8163 21.7043 7.5 22.5 7.5H25.5V4.5H22.5C20.9087 4.5 19.383 5.13259 18.2578 6.25781C17.1326 7.38303 16.5 8.9087 16.5 10.5V15C16.5 15.8284 15.8284 16.5 15 16.5H12V19.5H15C15.8284 19.5 16.5 20.1716 16.5 21V31.5H19.5V21C19.5 20.1716 20.1716 19.5 21 19.5H24.3296L25.0796 16.5H21C20.1716 16.5 19.5 15.8284 19.5 15V10.5ZM22.5 13.5H27C27.4619 13.5 27.8979 13.7131 28.1821 14.0771C28.4663 14.4411 28.5665 14.9153 28.4546 15.3633L26.9546 21.3633C26.7877 22.031 26.1883 22.5 25.5 22.5H22.5V33C22.5 33.8284 21.8284 34.5 21 34.5H15C14.1716 34.5 13.5 33.8284 13.5 33V22.5H10.5C9.67157 22.5 9 21.8284 9 21V15C9 14.1716 9.67157 13.5 10.5 13.5H13.5V10.5C13.5 8.11305 14.4489 5.82455 16.1367 4.13672C17.8245 2.44889 20.1131 1.5 22.5 1.5H27C27.8284 1.5 28.5 2.17157 28.5 3V9C28.5 9.82843 27.8284 10.5 27 10.5H22.5V13.5Z" fill="#36C3DC"/>
+                </svg>
+            </a>
+            <a href="#" class="social-icon youtube" aria-label="YouTube">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.14654 6.68107C14.3449 5.64016 21.6557 5.64016 28.8541 6.68107L30.3951 6.91984L30.5474 6.95353C31.3005 7.1601 31.9874 7.55858 32.5396 8.11076C33.0918 8.66297 33.4903 9.34984 33.6968 10.1029C33.7046 10.1313 33.7113 10.1606 33.7173 10.1894C34.8086 15.3393 34.8086 20.6605 33.7173 25.8105C33.7113 25.8392 33.7046 25.8685 33.6968 25.8969L32.2525 25.4999H32.2496L33.6968 25.8969C33.4903 26.65 33.0918 27.3369 32.5396 27.8891C31.9874 28.4413 31.3005 28.8397 30.5474 29.0463L30.1504 27.599V27.6005L30.5474 29.0463C30.4976 29.06 30.4461 29.0715 30.3951 29.08L28.8541 29.3188C21.1414 30.4343 13.2997 30.3549 5.60553 29.08L5.85162 27.5917L5.45318 29.0463C4.70012 28.8397 4.01317 28.4413 3.46099 27.8891C2.97765 27.4057 2.61245 26.819 2.39019 26.1752L2.30377 25.8969L2.28326 25.8105L3.75103 25.4999H3.74957L2.28326 25.8105C1.19204 20.6605 1.19204 15.3393 2.28326 10.1894C2.28935 10.1606 2.296 10.1313 2.30377 10.1029C2.51031 9.34984 2.90882 8.66297 3.46099 8.11076C4.01317 7.55859 4.70011 7.1601 5.45318 6.95353C5.50306 6.93986 5.5545 6.92829 5.60553 6.91984L7.14654 6.68107ZM5.60553 29.08C5.55452 29.0715 5.50305 29.06 5.45318 29.0463L5.85015 27.6005L5.60553 29.08ZM29.8062 9.86418C21.9874 8.57992 14.0117 8.57976 6.19293 9.86418C5.96353 9.93651 5.75413 10.0615 5.58355 10.2319C5.40549 10.4099 5.2748 10.6306 5.20416 10.872C4.21707 15.5721 4.21726 20.4262 5.20416 25.1264C5.27471 25.3683 5.40516 25.5896 5.58355 25.768C5.75369 25.9379 5.96275 26.0618 6.19146 26.1342C14.0108 27.4192 21.9868 27.4189 29.8062 26.1342C30.036 26.0619 30.2462 25.9386 30.417 25.768C30.5953 25.5897 30.7244 25.3682 30.795 25.1264C31.782 20.426 31.7822 15.5723 30.795 10.872C30.7243 10.6307 30.595 10.4098 30.417 10.2319C30.2461 10.0612 30.0361 9.93644 29.8062 9.86418ZM14.2613 12.1947C14.6726 11.9619 15.1657 11.9378 15.5928 12.1215L15.7715 12.2138L23.2715 16.7138L22.4996 17.9999L23.2715 19.2861L15.7715 23.7861C15.3082 24.0639 14.7314 24.0713 14.2613 23.8051C13.791 23.5388 13.501 23.0403 13.501 22.4999V13.4999C13.501 12.9595 13.791 12.461 14.2613 12.1947ZM16.501 19.85L19.5845 17.9999L16.501 16.1484V19.85ZM23.2715 16.7138C23.7234 16.9849 24.001 17.473 24.001 17.9999C24.001 18.5268 23.7234 19.015 23.2715 19.2861L22.501 17.9999L23.2715 16.7138Z" fill="#36C3DC"/>
+                </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="./js/scripts.js" defer></script>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+.our-capabilities-details {
+  @apply relative flex flex-col items-center justify-center bg-[#F9F9FB] px-4 py-12 lg:py-16;
+  
+  >.heading {
+    @apply flex-wrap justify-start lg:justify-center;
+    img {
+      @apply mb-4 md:mb-0;
+    }
+  }
+
+  .wrapper {
+    @apply relative z-10 flex flex-col items-center justify-center lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+    
+    // Heading section (icon + title)
+    .heading {
+      @apply flex items-center gap-4 lg:gap-6 mb-6 lg:mb-8 w-full;
+      
+      img {
+        @apply max-w-[32px] lg:max-w-[56px] h-auto shrink-0;
+      }
+      
+      h2 {
+        @apply text-black text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl  font-bold uppercase leading-tight;
+        @apply tracking-tight;
+      }
+    }
+    
+    // Description paragraph
+    .description {
+      @apply w-full py-8;
+      
+      p {
+        @apply text-base lg:text-lg lg:text-center leading-relaxed max-w-4xl mx-auto font-medium lg:font-semibold;
+
+        &.center {
+          @apply text-center;
+        }
+      }
+    }
+    
+    // Content area (categories and logos)
+    .content {
+      @apply w-full flex flex-wrap items-stretch;
+      
+      // Left column - Category titles
+      .col.left-col {
+        @apply w-full lg:w-1/3 lg:border-b lg:border-[#E5E5E5] flex flex-wrap justify-start items-center pt-4 lg:pt-0 pl-4 xl:pl-6;
+        
+        h2 {
+          @apply w-full text-primary text-lg lg:text-xl xl:text-xl font-bold mb-3 lg:mb-0;
+          @apply leading-tight;
+        }
+
+        bandage {
+          @apply text-[#30A46C] bg-[#D6F1DF] p-2 text-lg lg:text-xl font-normal mb-3 lg:mb-0;
+          @apply leading-tight;
+        }
+
+        &:first-child {
+          @apply pt-0;
+        }
+      }
+      
+      // Right column - Technology logos
+      .col.right-col {
+        @apply w-full lg:w-2/3 border-b border-[#E5E5E5] flex flex-wrap items-center gap-4 lg:gap-6 pb-4 lg:py-8 pl-4 xl:pl-6;
+        
+        img {
+          @apply h-8 lg:h-9 w-auto object-contain;
+          @apply transition-opacity duration-200;
+          
+          &:hover {
+            @apply opacity-80;
+          }
+        }
+
+        .row {
+          @apply w-full flex flex-wrap items-center gap-4 lg:gap-6;
+          
+          span {
+            @apply text-base font-medium;
+          }
+        }
+      }
+      
+      // Remove separator from last logo group
+      .col.right-col:last-of-type::after {
+        @apply hidden;
+      }
+      
+      // Ensure proper spacing between title and logos
+      .col.left-col + .col.right-col {
+        @apply mt-0;
+      }
+    }
+
+    .quote {  
+      p {
+        @apply w-full px-4 lg:px-12 mt-8 2xl:mt-12 text-black text-base lg:text-lg xl:text-xl 2xl:text-2xl leading-relaxed font-semibold lg:font-medium border-l-2 border-r-2 lg:border-l-[3px] lg:border-r-[3px] border-primary;
+      }
+    }
+  }
+}

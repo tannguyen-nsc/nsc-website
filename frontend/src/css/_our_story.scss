@@ -1,0 +1,41 @@
+.our-story{
+  @apply relative flex flex-col items-center justify-center min-h-[180vw] md:min-h-[100vw] lg:min-h-[55vw] xl:min-h-[50vw] 2xl:min-h-[40vw] bg-cover bg-right-bottom bg-no-repeat px-4 bg-[url('../img/mob-our-story-bg.png')] lg:bg-[url('../img/our-story-bg.png')] py-12 lg:py-16;
+
+  .content {
+    @apply lg:text-center py-8 lg:py-12 lg:px-8 mx-auto lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+    
+    p {
+      @apply text-base lg:text-lg xl:text-xl text-black leading-relaxed;
+      
+      b {
+        @apply font-bold;
+      }
+    }
+  } 
+
+  .wrapper {
+    @apply flex flex-wrap items-start justify-center z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+    gap: 2rem 0;
+    @screen lg {
+      gap: 3rem 2rem;
+    }
+
+    .col {
+      @apply w-full lg:w-[calc((100%-2rem)/2)] pt-[0.5rem];
+      
+      h2 {
+        @apply text-lg lg:text-xl xl:text-2xl 2xl:text-3xl font-bold leading-tight mb-0 bg-[url('../img/story-title-bg.png')] bg-cover bg-center bg-no-repeat px-4;
+      }
+
+      .description {
+        p {
+          @apply pt-2 text-sm lg:text-base xl:text-lg leading-relaxed font-medium lg:font-normal pb-0 mb-0;
+        }
+        
+        img {
+          @apply w-24 lg:w-32 h-auto;
+        }
+      }
+    }
+  }
+} 
