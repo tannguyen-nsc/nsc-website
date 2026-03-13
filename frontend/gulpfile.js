@@ -73,6 +73,11 @@ function devScripts() {
     .pipe(dest(options.paths.dist.js));
 }
 
+function devExternalScripts() {
+  return src(`${options.paths.src.js}/external/**/*.js`)
+    .pipe(dest(`${options.paths.dist.js}/external`));
+}
+
 function devImages() {
   return src(`${options.paths.src.img}/**/*`).pipe(
     dest(options.paths.dist.img)
@@ -101,6 +106,7 @@ function watchFiles() {
     series(devStyles, previewReload)
   );
   watch(`${options.paths.src.js}/**/*.js`, series(devScripts, previewReload));
+  watch(`${options.paths.src.js}/external/**/*.js`, series(devExternalScripts, previewReload));
   watch(`${options.paths.src.img}/**/*`, series(devImages, previewReload));
   watch(`${options.paths.src.fonts}/**/*`, series(devFonts, previewReload));
   watch(
@@ -163,10 +169,17 @@ function prodScripts() {
   return src([
     `${options.paths.src.js}/libs/**/*.js`,
     `${options.paths.src.js}/**/*.js`,
+    `!${options.paths.src.js}/**/external/*`,
   ])
     .pipe(concat({ path: "scripts.js" }))
     .pipe(uglify())
     .pipe(dest(options.paths.build.js));
+}
+
+function prodExternalScripts() {
+  return src(`${options.paths.src.js}/external/**/*.js`)
+    .pipe(uglify())
+    .pipe(dest(`${options.paths.build.js}/external`));
 }
 
 function prodImages() {
@@ -218,7 +231,7 @@ function buildFinish(done) {
 
 exports.default = series(
   devClean, // Clean Dist Folder
-  parallel(devStyles, devScripts, devImages, devFonts, devThirdParty, devHTML), //Run All tasks in parallel
+  parallel(devStyles, devScripts, devExternalScripts, devImages, devFonts, devThirdParty, devHTML), //Run All tasks in parallel
   livePreview, // Live Preview Build
   watchFiles // Watch for Live Changes
 );
@@ -228,6 +241,7 @@ exports.prod = series(
   parallel(
     prodStyles,
     prodScripts,
+    prodExternalScripts,
     prodImages,
     prodHTML,
     prodFonts,

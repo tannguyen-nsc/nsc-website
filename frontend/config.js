@@ -47,6 +47,8 @@ const config = {
         /contact.*/,
         /footer.*/,
         /header.*/,
+        /globe.*/,
+        /why-us.*/,
       ],
     },
   },

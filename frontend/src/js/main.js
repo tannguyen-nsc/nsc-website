@@ -739,109 +739,27 @@
     constructor() {
       this.slider = null;
       this.isMobile = window.innerWidth < CONFIG.BREAKPOINTS.LARGE;
-      this.mobileGlobeStepX = 30;
-      this.mobileGlobeCurrentX = -150;
     }
 
     resetMobileGlobePosition() {
-      const globeImgs = document.querySelectorAll('.why-us .why-us-globe__img');
-      this.mobileGlobeCurrentX = -150;
-      globeImgs.forEach((img) => {
-        img.style.objectPosition = '-150px 0px';
-      });
+      // No-op: 3D globe handles its own rotation
     }
 
     unbindMobileGlobeSwipe($whyUsContent) {
       if ($whyUsContent && $whyUsContent.length > 0) {
         $whyUsContent.off('.whyUsGlobeSwipe');
       }
-
-      $(window).off('resize.whyUsGlobeSwipe');
     }
 
     bindMobileGlobeSwipe($whyUsContent) {
       this.unbindMobileGlobeSwipe($whyUsContent);
-
-      const globe = document.querySelector('.why-us .why-us-globe');
-      const globeImgs = globe ? Array.from(globe.querySelectorAll('.why-us-globe__img')) : [];
-
-      if (!$whyUsContent || $whyUsContent.length === 0 || !globe || globeImgs.length === 0) {
-        return;
-      }
-
-      const applyPosition = (x) => {
-        globeImgs.forEach((img) => {
-          img.style.objectPosition = `${x}px 0px`;
-        });
-      };
-
-      const isGlobeSwipeViewport = () => window.innerWidth < CONFIG.BREAKPOINTS.LARGE;
-
-      const getMaxX = () => {
-        if (!isGlobeSwipeViewport()) {
-          this.resetMobileGlobePosition();
-          return 0;
-        }
-
-        // Keep limits aligned with _why.scss:
-        // <768px: globe 300, map 610 -> 310
-        // 768px-1279px: globe 500, map 1017 -> 517
-        return window.innerWidth >= CONFIG.BREAKPOINTS.TABLET ? 517 : 310;
-      };
-
-      const moveGlobeOneStep = (direction) => {
-        const maxX = getMaxX();
-        if (maxX <= 0) {
-          this.mobileGlobeCurrentX = -150;
-          applyPosition(-150);
-          return;
-        }
-
-        // Match globe motion with swipe direction.
-        if (direction === 'prev') {
-          this.mobileGlobeCurrentX += this.mobileGlobeStepX;
-        } else {
-          this.mobileGlobeCurrentX -= this.mobileGlobeStepX;
-        }
-
-        // Wrap inside valid range so reverse swipes animate opposite way.
-        if (this.mobileGlobeCurrentX <= -maxX) {
-          this.mobileGlobeCurrentX = -150;
-        } else if (this.mobileGlobeCurrentX > 0) {
-          this.mobileGlobeCurrentX = -maxX;
-        }
-
-        applyPosition(this.mobileGlobeCurrentX);
-      };
+      if (!$whyUsContent || $whyUsContent.length === 0) return;
 
       $whyUsContent.on('beforeChange.whyUsGlobeSwipe', (event, slick, currentSlide, nextSlide) => {
-        let direction = 'next';
-        if (typeof currentSlide === 'number' && typeof nextSlide === 'number' && slick && typeof slick.slideCount === 'number') {
-          const slideCount = slick.slideCount;
-          if (nextSlide === (currentSlide - 1 + slideCount) % slideCount) {
-            direction = 'prev';
-          }
+        if (window.NSCGlobe && window.NSCGlobe.instance) {
+          window.NSCGlobe.instance.rotateToPoint(nextSlide % 7);
         }
-
-        moveGlobeOneStep(direction);
       });
-
-      this.mobileGlobeCurrentX = -150;
-      applyPosition(-150);
-
-      $(window).on('resize.whyUsGlobeSwipe', debounce(() => {
-        const maxX = getMaxX();
-        if (maxX <= 0) {
-          this.resetMobileGlobePosition();
-          return;
-        }
-
-        if (this.mobileGlobeCurrentX <= -maxX) {
-          this.mobileGlobeCurrentX = -150;
-        }
-
-        applyPosition(this.mobileGlobeCurrentX);
-      }, CONFIG.RESIZE_DEBOUNCE));
     }
 
     init() {
@@ -2445,95 +2363,10 @@
     });
   }
 
-  // ============================================================================
-  // WHY US GLOBE 3D ROTATION (object-position on img hover)
-  // ============================================================================
-
-  function initWhyUsGlobeRotation() {
-    const globe = document.querySelector('.why-us .why-us-globe');
-    const globeImgs = globe ? Array.from(globe.querySelectorAll('.why-us-globe__img')) : [];
-    const whyUsItems = document.querySelectorAll('.why-us-item');
-    if (!globe || globeImgs.length === 0 || !whyUsItems.length) return;
-
-    const leftItemIndices = [0, 2, 4, 5]; // items 1, 3, 5, 6
-    const rightItemIndices = [1, 3, 6];   // items 2, 4, 7
-
-    function getGlobePositions() {
-      const w = globe.offsetWidth;
-      // Derive img width from container (globe can be hidden so getComputedStyle may be 0)
-      var imgW = 0;
-      for (var i = 0; i < globeImgs.length; i += 1) {
-        var computedWidth = parseFloat(getComputedStyle(globeImgs[i]).width) || 0;
-        if (computedWidth > 0) {
-          imgW = computedWidth;
-          break;
-        }
-      }
-
-      if (!imgW && w) {
-        if (w >= 600) imgW = 1200;
-        else if (w >= 500) imgW = 1000;
-        else imgW = 610;
-      }
-
-      if (!imgW) imgW = 500;
-      const maxPos = Math.max(0, imgW - w);
-      // Default position matches CSS: -910px -115px (base/xl), -900px -100px (2xl)
-      var defaultX = -475;
-      var defaultY = 0;
-      if (w > 500) {
-        defaultX = -560;
-        defaultY = 0;
-      }
-
-      // Left/Right: 30px offset from default (e.g. Left = -910 + 30 = -880, Right = -910 - 30 = -940)
-      var offsetX = 30;
-
-      return {
-        default: { x: defaultX, y: defaultY },
-        left: { x: defaultX - offsetX, y: defaultY },
-        right: { x: defaultX + offsetX, y: defaultY }
-      };
-    }
-
-    function setGlobePosition(pos) {
-      globeImgs.forEach(function(img) {
-        img.style.objectPosition = pos.x + 'px ' + pos.y + 'px';
-      });
-    }
-
-    whyUsItems.forEach(function(item, index) {
-      item.addEventListener('mouseenter', function() {
-        if (window.innerWidth < CONFIG.BREAKPOINTS.LARGE) return;
-        var pos = getGlobePositions();
-        if (leftItemIndices.indexOf(index) !== -1) {
-          setGlobePosition(pos.left);
-        } else if (rightItemIndices.indexOf(index) !== -1) {
-          setGlobePosition(pos.right);
-        }
-      });
-      item.addEventListener('mouseleave', function() {
-        if (window.innerWidth < CONFIG.BREAKPOINTS.LARGE) return;
-        var pos = getGlobePositions();
-        setGlobePosition(pos.default);
-      });
-    });
-
-    window.addEventListener('resize', debounce(function() {
-      if (window.innerWidth < CONFIG.BREAKPOINTS.LARGE) return;
-      var pos = getGlobePositions();
-      setGlobePosition(pos.default);
-    }, CONFIG.RESIZE_DEBOUNCE));
-  }
-
   // Initialize all components
   initializeWhenReady();
   initCompanyStatsHeights();
   initBlogHeights();
-
-  onDOMReady(function() {
-    initWhyUsGlobeRotation();
-  });
 
   // Global Presence card carousel
   function initGlobalPresenceCard() {
