@@ -25,6 +25,9 @@
 
   var GLOBE_RADIUS = 100;
   var WIREFRAME_RADIUS = 107;
+  var WIRE_LAT_BANDS = 10;    // latitude bands between poles
+  var WIRE_LNG_COUNT = 14;    // points per band
+  var WIRE_ARC_SEGMENTS = 8;  // interpolation segments per arc
   var HEX_RESOLUTION = 3;
   var GLOBE_BASE_COLOR = "#36C3DC";
   var HEX_COLOR = "#fff";
@@ -86,6 +89,7 @@
   var connectorDashed = false;
   var connectorDashSize = 4;
   var connectorGapSize = 3;
+  var wireRadius = WIREFRAME_RADIUS;
   var connectorDotsMesh = null;
   var CONNECTOR_DOT_COLOR = "#FFFFFF";
   var CONNECTOR_DOT_SIZE = 7;
@@ -212,6 +216,120 @@
     pos.applyMatrix4(globeGroup.matrixWorld);
 
     return pos;
+  }
+
+  /**
+   * Spherical linear interpolation between two points on a sphere.
+   * Returns an array of (segments + 1) THREE.Vector3 points.
+   * @param {THREE.Vector3} a - start point on sphere
+   * @param {THREE.Vector3} b - end point on sphere
+   * @param {number} radius - sphere radius
+   * @param {number} segments - number of interpolation segments
+   * @returns {THREE.Vector3[]}
+   */
+  function sphereSlerp(a, b, radius, segments) {
+    var points = [];
+    var na = a.clone().normalize();
+    var nb = b.clone().normalize();
+    var dot = na.dot(nb);
+    // Clamp to avoid NaN from acos
+    if (dot > 1) dot = 1;
+    if (dot < -1) dot = -1;
+    var omega = Math.acos(dot);
+
+    // Degenerate: coincident or nearly coincident points
+    if (omega < 1e-6) {
+      for (var i = 0; i <= segments; i++) {
+        points.push(a.clone());
+      }
+      return points;
+    }
+
+    var sinOmega = Math.sin(omega);
+    for (var j = 0; j <= segments; j++) {
+      var t = j / segments;
+      var sa = Math.sin((1 - t) * omega) / sinOmega;
+      var sb = Math.sin(t * omega) / sinOmega;
+      points.push(new THREE.Vector3(
+        (na.x * sa + nb.x * sb) * radius,
+        (na.y * sa + nb.y * sb) * radius,
+        (na.z * sa + nb.z * sb) * radius
+      ));
+    }
+    return points;
+  }
+
+  /**
+   * Generate a diamond/rhombus grid on a sphere.
+   * @param {number} radius - sphere radius
+   * @param {number} latBands - number of latitude bands between poles
+   * @param {number} lngCount - points per band
+   * @param {number} arcSegments - interpolation segments per arc
+   * @returns {{ points: THREE.Vector3[], arcs: THREE.Vector3[][] }}
+   */
+  function generateDiamondGrid(radius, latBands, lngCount, arcSegments) {
+    var points = [];
+    var arcs = [];
+    var bands = [];
+
+    // North pole
+    var northPole = new THREE.Vector3(0, radius, 0);
+    points.push(northPole);
+
+    // Generate latitude bands
+    for (var i = 0; i < latBands; i++) {
+      var phi = Math.PI * (i + 1) / (latBands + 1);
+      var band = [];
+      var lngOffset = (i % 2 === 1) ? (Math.PI / lngCount) : 0;
+      for (var j = 0; j < lngCount; j++) {
+        var theta = (2 * Math.PI * j / lngCount) + lngOffset;
+        var pt = new THREE.Vector3(
+          radius * Math.sin(phi) * Math.cos(theta),
+          radius * Math.cos(phi),
+          radius * Math.sin(phi) * Math.sin(theta)
+        );
+        band.push(pt);
+        points.push(pt);
+      }
+      bands.push(band);
+    }
+
+    // South pole
+    var southPole = new THREE.Vector3(0, -radius, 0);
+    points.push(southPole);
+
+    // Connect north pole to first band
+    if (bands.length > 0) {
+      for (var n = 0; n < lngCount; n++) {
+        arcs.push(sphereSlerp(northPole, bands[0][n], radius, arcSegments));
+      }
+    }
+
+    // Connect adjacent bands with diamond pattern
+    for (var bi = 0; bi < bands.length - 1; bi++) {
+      var isEvenBand = (bi % 2 === 0);
+      for (var bj = 0; bj < lngCount; bj++) {
+        if (isEvenBand) {
+          // Even band[j] -> next band[j] and next band[(j-1+M)%M]
+          arcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][bj], radius, arcSegments));
+          arcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][(bj - 1 + lngCount) % lngCount], radius, arcSegments));
+        } else {
+          // Odd band[j] -> next band[j] and next band[(j+1)%M]
+          arcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][bj], radius, arcSegments));
+          arcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][(bj + 1) % lngCount], radius, arcSegments));
+        }
+      }
+    }
+
+    // Connect last band to south pole
+    if (bands.length > 0) {
+      var lastBand = bands[bands.length - 1];
+      for (var s = 0; s < lngCount; s++) {
+        arcs.push(sphereSlerp(lastBand[s], southPole, radius, arcSegments));
+      }
+    }
+
+    return { points: points, arcs: arcs };
   }
 
   // ---------------------------------------------------------------------------
@@ -429,13 +547,20 @@
   // ---------------------------------------------------------------------------
 
   function createWireframe(radius) {
-    var icoGeo = new THREE.IcosahedronGeometry(radius, 5);
+    var grid = generateDiamondGrid(radius, WIRE_LAT_BANDS, WIRE_LNG_COUNT, WIRE_ARC_SEGMENTS);
 
     if (THREE.LineSegmentsGeometry && THREE.LineMaterial && THREE.LineSegments2) {
-      var wireGeo = new THREE.WireframeGeometry(icoGeo);
-      var positions = wireGeo.attributes.position.array;
+      // Convert arcs to line segment pairs
+      var segPositions = [];
+      for (var a = 0; a < grid.arcs.length; a++) {
+        var arc = grid.arcs[a];
+        for (var p = 0; p < arc.length - 1; p++) {
+          segPositions.push(arc[p].x, arc[p].y, arc[p].z);
+          segPositions.push(arc[p + 1].x, arc[p + 1].y, arc[p + 1].z);
+        }
+      }
       var lineGeo = new THREE.LineSegmentsGeometry();
-      lineGeo.setPositions(positions);
+      lineGeo.setPositions(segPositions);
       var w = containerEl ? containerEl.clientWidth : window.innerWidth;
       var h = containerEl ? containerEl.clientHeight : window.innerHeight;
       var wireMat = new THREE.LineMaterial({
@@ -451,14 +576,21 @@
       wireMat.toneMapped = false;
       var mesh = new THREE.LineSegments2(lineGeo, wireMat);
       mesh.computeLineDistances();
-      icoGeo.dispose();
-      wireGeo.dispose();
       return mesh;
     }
 
-    // Fallback: standard wireframe (line width always 1px)
-    return new THREE.Mesh(icoGeo, new THREE.MeshBasicMaterial({
-      wireframe: true,
+    // Fallback: standard LineSegments
+    var positions = [];
+    for (var fa = 0; fa < grid.arcs.length; fa++) {
+      var fArc = grid.arcs[fa];
+      for (var fp = 0; fp < fArc.length - 1; fp++) {
+        positions.push(fArc[fp].x, fArc[fp].y, fArc[fp].z);
+        positions.push(fArc[fp + 1].x, fArc[fp + 1].y, fArc[fp + 1].z);
+      }
+    }
+    var fallbackGeo = new THREE.BufferGeometry();
+    fallbackGeo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+    return new THREE.LineSegments(fallbackGeo, new THREE.LineBasicMaterial({
       color: WIREFRAME_COLOR,
       transparent: true,
       opacity: WIREFRAME_OPACITY,
@@ -471,11 +603,14 @@
   // ---------------------------------------------------------------------------
 
   function createGridDots(radius) {
-    var icoGeo = new THREE.IcosahedronGeometry(radius, 5);
-    var positions = icoGeo.attributes.position.array;
+    var grid = generateDiamondGrid(radius, WIRE_LAT_BANDS, WIRE_LNG_COUNT, WIRE_ARC_SEGMENTS);
+    var positions = [];
+    for (var i = 0; i < grid.points.length; i++) {
+      positions.push(grid.points[i].x, grid.points[i].y, grid.points[i].z);
+    }
     var dotGeo = new THREE.BufferGeometry();
     dotGeo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
-    // Draw a circle on a small canvas → use as texture for round dots
+    // Draw a circle on a small canvas -> use as texture for round dots
     var canvas = document.createElement("canvas");
     canvas.width = 64;
     canvas.height = 64;
@@ -497,7 +632,6 @@
     });
     dotMat.toneMapped = false;
     var points = new THREE.Points(dotGeo, dotMat);
-    icoGeo.dispose();
     return points;
   }
 
@@ -1340,6 +1474,31 @@
     );
   }
 
+  function rebuildWireframeAndDots(newRadius) {
+    if (!wireframeMesh || !globeGroup) return;
+    var oldMat = wireframeMesh.material;
+    wireframeMesh.geometry.dispose();
+    globeGroup.remove(wireframeMesh);
+
+    wireframeMesh = createWireframe(newRadius);
+    wireframeMesh.material = oldMat;
+    if (wireframeMesh.computeLineDistances) {
+      wireframeMesh.computeLineDistances();
+    }
+    wireframeMesh.renderOrder = 1;
+    globeGroup.add(wireframeMesh);
+
+    if (gridDotsMesh) {
+      gridDotsMesh.geometry.dispose();
+      gridDotsMesh.material.dispose();
+      globeGroup.remove(gridDotsMesh);
+    }
+    gridDotsMesh = createGridDots(newRadius);
+    gridDotsMesh.material.color.copy(dotBaseColor).multiplyScalar(dotGlowIntensity);
+    gridDotsMesh.renderOrder = 2;
+    globeGroup.add(gridDotsMesh);
+  }
+
   function appendOverlayGridSection(panel) {
     panel.appendChild(makeHeading("Overlay Grid"));
 
@@ -1405,40 +1564,31 @@
     );
 
     panel.appendChild(
-      makeSlider("Line Offset", 0, 10, 0.5, WIREFRAME_RADIUS - GLOBE_RADIUS, function (v) {
-        if (wireframeMesh && globeGroup) {
-          var newRadius = GLOBE_RADIUS + v;
-          var oldMat = wireframeMesh.material;
-          wireframeMesh.geometry.dispose();
-          globeGroup.remove(wireframeMesh);
+      makeSlider("Line Offset", 0, 10, 0.5, wireRadius - GLOBE_RADIUS, function (v) {
+        wireRadius = GLOBE_RADIUS + v;
+        rebuildWireframeAndDots(wireRadius);
+      }, function () { return wireRadius - GLOBE_RADIUS; })
+    );
 
-          if (THREE.LineSegmentsGeometry && THREE.LineMaterial && THREE.LineSegments2) {
-            var icoGeo = new THREE.IcosahedronGeometry(newRadius, 5);
-            var wireGeo = new THREE.WireframeGeometry(icoGeo);
-            var lineGeo = new THREE.LineSegmentsGeometry();
-            lineGeo.setPositions(wireGeo.attributes.position.array);
-            wireframeMesh = new THREE.LineSegments2(lineGeo, oldMat);
-            wireframeMesh.computeLineDistances();
-            icoGeo.dispose();
-            wireGeo.dispose();
-          } else {
-            wireframeMesh = new THREE.Mesh(
-              new THREE.IcosahedronGeometry(newRadius, 5),
-              oldMat
-            );
-          }
+    panel.appendChild(
+      makeSlider("Lat Bands", 3, 30, 1, WIRE_LAT_BANDS, function (v) {
+        WIRE_LAT_BANDS = v;
+        rebuildWireframeAndDots(wireRadius);
+      }, function () { return WIRE_LAT_BANDS; })
+    );
 
-          globeGroup.add(wireframeMesh);
+    panel.appendChild(
+      makeSlider("Lng Points", 6, 30, 1, WIRE_LNG_COUNT, function (v) {
+        WIRE_LNG_COUNT = v;
+        rebuildWireframeAndDots(wireRadius);
+      }, function () { return WIRE_LNG_COUNT; })
+    );
 
-          if (gridDotsMesh) {
-            gridDotsMesh.geometry.dispose();
-            gridDotsMesh.material.dispose();
-            globeGroup.remove(gridDotsMesh);
-          }
-          gridDotsMesh = createGridDots(newRadius);
-          globeGroup.add(gridDotsMesh);
-        }
-      })
+    panel.appendChild(
+      makeSlider("Arc Segments", 2, 20, 1, WIRE_ARC_SEGMENTS, function (v) {
+        WIRE_ARC_SEGMENTS = v;
+        rebuildWireframeAndDots(wireRadius);
+      }, function () { return WIRE_ARC_SEGMENTS; })
     );
   }
 
@@ -1647,11 +1797,14 @@
           wireGlowIntensity: wireGlowIntensity,
           lineWidth: wireframeMesh ? wireframeMesh.material.linewidth || 1 : null,
           opacity: wireframeMesh ? wireframeMesh.material.opacity : WIREFRAME_OPACITY,
-          wireframeRadius: WIREFRAME_RADIUS,
+          wireframeRadius: wireRadius,
           dashed: wireframeMesh ? !!wireframeMesh.material.dashed : false,
           dashSize: wireframeMesh ? wireframeMesh.material.dashSize : 0.7,
           gapSize: wireframeMesh ? wireframeMesh.material.gapSize : 1.5,
-          lineOffset: WIREFRAME_RADIUS - GLOBE_RADIUS,
+          lineOffset: wireRadius - GLOBE_RADIUS,
+          latBands: WIRE_LAT_BANDS,
+          lngCount: WIRE_LNG_COUNT,
+          arcSegments: WIRE_ARC_SEGMENTS,
         },
         dotGrid: {
           color: "#" + dotBaseColor.getHexString(),
