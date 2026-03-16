@@ -123,16 +123,26 @@
 
   .why-us-item {
     @apply text-white text-left bg-[url('../img/mob-why-nsc-item-bg.png')] bg-cover bg-center bg-no-repeat border-r-2 border-white;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
     
     .content {
       @apply w-full h-full p-6 xl:p-4 w-full z-20;
   
       h3 {
         @apply text-2xl font-bold text-white leading-tight pb-4;
+        transition: color 0.3s ease;
       }
-  
+
       .description {
-        @apply text-base text-white font-normal leading-relaxed xl:hidden;
+        @apply text-base text-white font-normal leading-relaxed;
+        transition: color 0.3s ease;
+
+        @screen xl {
+          max-height: 0;
+          opacity: 0;
+          overflow: hidden;
+          transition: max-height 0.3s ease, opacity 0.3s ease, color 0.3s ease;
+        }
         
         p {
           @apply m-0;
@@ -142,16 +152,18 @@
 
     @screen xl {
       // Hover effects: show description and change colors
-      &:hover, &.slick-active { 
+      &:hover, &.slick-active {
         @apply z-20 bg-none bg-white;
-        
+
         .content {
           h3 {
             @apply mb-6 text-primary;
           }
-          
+
           .description {
-            @apply block text-black;
+            @apply text-black;
+            max-height: 200px;
+            opacity: 1;
           }
         }
       }
@@ -215,14 +227,18 @@
       }
 
       &:hover {
-        @apply bg-none bg-white z-30 shadow-lg;
-        
+        @apply bg-none bg-white z-30;
+        transform: translateY(-4px) scale(1.02);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+
         h3 {
           @apply text-primary;
         }
-        
+
         .description {
-          @apply block text-black;
+          @apply text-black;
+          max-height: 200px;
+          opacity: 1;
         }
       }
     }

@@ -32,7 +32,7 @@
   var WIREFRAME_COLOR = "#ffffff";
   var WIREFRAME_OPACITY = 1;
   var GRID_DOT_COLOR = "#ffffff";
-  var GRID_DOT_SIZE = 2;
+  var GRID_DOT_SIZE = 3;
   var ATMOSPHERE_COLOR = "#36C3DC";
   var ROTATION_DURATION = 1200;
   var AUTO_ROTATE_SPEED = 0.15 * (Math.PI / 180); // deg/frame -> radians
@@ -88,7 +88,7 @@
   var connectorGapSize = 3;
   var connectorDotsMesh = null;
   var CONNECTOR_DOT_COLOR = "#FFFFFF";
-  var CONNECTOR_DOT_SIZE = 3;
+  var CONNECTOR_DOT_SIZE = 7;
   var connDotBaseColor = new THREE.Color(CONNECTOR_DOT_COLOR);
   var connDotGlowIntensity = 2.6;
   var rimShellMesh = null;
@@ -395,28 +395,32 @@
       var cardRect = card.getBoundingClientRect();
       var isLeftColumn = LEFT_COLUMN_INDICES.indexOf(index) !== -1;
 
-      var cardX, cardY;
+      var cardX, cardY, midX;
       if (isLeftColumn) {
         cardX = cardRect.right - contentRect.left;
         cardY = cardRect.top + cardRect.height / 2 - contentRect.top;
+        midX = cardX + 40;
       } else {
         cardX = cardRect.left - contentRect.left;
         cardY = cardRect.top + cardRect.height / 2 - contentRect.top;
+        midX = cardX - 40;
       }
 
-      var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line.setAttribute("x1", String(globeX));
-      line.setAttribute("y1", String(globeY));
-      line.setAttribute("x2", String(cardX));
-      line.setAttribute("y2", String(cardY));
-      line.setAttribute("stroke", connectorColor);
-      line.setAttribute("stroke-width", String(connectorWidth));
+      var d = "M" + cardX + "," + cardY
+            + " L" + midX + "," + cardY
+            + " L" + globeX + "," + globeY;
+
+      var path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path.setAttribute("d", d);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", connectorColor);
+      path.setAttribute("stroke-width", String(connectorWidth));
       if (connectorDashed) {
-        line.setAttribute("stroke-dasharray", connectorDashSize + " " + connectorGapSize);
+        path.setAttribute("stroke-dasharray", connectorDashSize + " " + connectorGapSize);
       } else {
-        line.removeAttribute("stroke-dasharray");
+        path.removeAttribute("stroke-dasharray");
       }
-      svgOverlay.appendChild(line);
+      svgOverlay.appendChild(path);
     });
   }
 
@@ -628,6 +632,9 @@
     if (THREE.OutputPass) {
       composer.addPass(new THREE.OutputPass());
     }
+    // Synchronise render-target dimensions with pixel ratio so the
+    // bloom pipeline starts at the correct physical resolution.
+    composer.setSize(width, height);
   }
 
   // Listen for deferred addon loading
@@ -981,11 +988,16 @@
 
       var width = containerEl.clientWidth;
       var height = containerEl.clientHeight;
+      var dpr = Math.min(window.devicePixelRatio, 2);
 
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
+      renderer.setPixelRatio(dpr);
       renderer.setSize(width, height);
-      if (composer) composer.setSize(width, height);
+      if (composer) {
+        composer.setPixelRatio(dpr);
+        composer.setSize(width, height);
+      }
       if (wireframeMesh && wireframeMesh.material.resolution) {
         wireframeMesh.material.resolution.set(width, height);
       }
