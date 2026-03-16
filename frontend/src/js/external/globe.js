@@ -46,6 +46,9 @@
   var ROTATION_DURATION = 1200;
   var AUTO_ROTATE_SPEED = 0.15 * (Math.PI / 180); // deg/frame -> radians
   var BREAKPOINT_LARGE = 1280;
+  var INTRO_GLOBE_DURATION = 800;
+  var INTRO_RIM_DURATION = 600;
+  var INTRO_CONNECTOR_DURATION = 800;
   var GEOJSON_URL =
     "https://cdn.jsdelivr.net/npm/three-globe@2.45.0/example/hexed-polygons/ne_110m_admin_0_countries.geojson";
 
@@ -119,6 +122,8 @@
   var VIETNAM_TILE_OFFSET_X = 16;
   var VIETNAM_TILE_OFFSET_Y = 4.5;
   var VIETNAM_TILE_OFFSET_Z = 0;
+  var introAnimating = false;
+  var connectorDrawProgress = 1;
 
   // ---------------------------------------------------------------------------
   // Helpers
@@ -548,12 +553,15 @@
       path.setAttribute("fill", "none");
       path.setAttribute("stroke", connectorColor);
       path.setAttribute("stroke-width", String(connectorWidth));
-      if (connectorDashed) {
-        path.setAttribute("stroke-dasharray", connectorDashSize + " " + connectorGapSize);
-      } else {
-        path.removeAttribute("stroke-dasharray");
-      }
       svgOverlay.appendChild(path);
+      if (connectorDrawProgress < 1) {
+        var totalLen = path.getTotalLength();
+        var offset = totalLen * (1 - connectorDrawProgress);
+        path.style.strokeDasharray = String(totalLen);
+        path.style.strokeDashoffset = String(offset);
+      } else if (connectorDashed) {
+        path.setAttribute("stroke-dasharray", connectorDashSize + " " + connectorGapSize);
+      }
     });
   }
 
@@ -1030,6 +1038,10 @@
     globeGroup.rotation.x = initial.x;
     globeGroup.rotation.y = initial.y;
     globeGroup.rotation.z = -12 * (Math.PI / 180);
+
+    // Start invisible for intro animation
+    globeGroup.scale.set(0, 0, 0);
+    rimShellMesh.visible = false;
   }
 
   // ---------------------------------------------------------------------------
@@ -1062,6 +1074,66 @@
       .onUpdate(function () {
         globeGroup.rotation.x = from.x;
         globeGroup.rotation.y = from.y;
+      })
+      .start();
+  }
+
+  // ---------------------------------------------------------------------------
+  // Intro Animation (staged creation)
+  // ---------------------------------------------------------------------------
+
+  function playIntroAnimation() {
+    introAnimating = true;
+    connectorDrawProgress = 0;
+
+    // Phase 1: Globe scales from 0 → 1
+    var scaleObj = { s: 0 };
+    new TWEEN.Tween(scaleObj)
+      .to({ s: 1 }, INTRO_GLOBE_DURATION)
+      .easing(TWEEN.Easing.Back.Out)
+      .onUpdate(function () {
+        if (isDisposed || !globeGroup) return;
+        globeGroup.scale.set(scaleObj.s, scaleObj.s, scaleObj.s);
+      })
+      .onComplete(function () {
+        if (isDisposed || !rimShellMesh) return;
+
+        // Phase 2: Rim glow fades in
+        rimShellMesh.visible = true;
+        rimShellMesh.material.uniforms.rimOpacity.value = 0;
+
+        var rimObj = { opacity: 0 };
+        new TWEEN.Tween(rimObj)
+          .to({ opacity: RIM_SHELL_OPACITY }, INTRO_RIM_DURATION)
+          .easing(TWEEN.Easing.Quadratic.Out)
+          .onUpdate(function () {
+            if (isDisposed || !rimShellMesh) return;
+            rimShellMesh.material.uniforms.rimOpacity.value = rimObj.opacity;
+          })
+          .onComplete(function () {
+            if (isDisposed) return;
+
+            // Phase 3: Connector lines draw (desktop only)
+            if (window.innerWidth >= BREAKPOINT_LARGE) {
+              var drawObj = { progress: 0 };
+              new TWEEN.Tween(drawObj)
+                .to({ progress: 1 }, INTRO_CONNECTOR_DURATION)
+                .easing(TWEEN.Easing.Cubic.InOut)
+                .onUpdate(function () {
+                  if (isDisposed) return;
+                  connectorDrawProgress = drawObj.progress;
+                })
+                .onComplete(function () {
+                  connectorDrawProgress = 1;
+                  introAnimating = false;
+                })
+                .start();
+            } else {
+              connectorDrawProgress = 1;
+              introAnimating = false;
+            }
+          })
+          .start();
       })
       .start();
   }
@@ -1134,6 +1206,7 @@
 
     items.forEach(function (item) {
       item.addEventListener("mouseenter", function () {
+        if (introAnimating) return;
         var idx = parseInt(item.getAttribute("data-globe-index"), 10);
         if (isNaN(idx)) return;
 
@@ -2072,6 +2145,8 @@
   }
 
   function disposeMeshes() {
+    introAnimating = false;
+    connectorDrawProgress = 1;
     globe = null;
     if (vietnamTileMesh) {
       vietnamTileMesh.geometry.dispose();
@@ -2154,6 +2229,7 @@
         isInitialized = true;
         createDebugPanel();
         animate();
+        playIntroAnimation();
       })
       .catch(function (err) {
         console.error("[NSCGlobe] Initialization failed:", err);
