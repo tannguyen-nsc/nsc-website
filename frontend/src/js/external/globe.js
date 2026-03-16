@@ -530,17 +530,20 @@
       var globeY = screen.y + offsetY;
 
       // Card position relative to content container
+      // Anchor to the h3 element so the line stays stable when the card expands on hover
       var cardRect = card.getBoundingClientRect();
+      var h3El = card.querySelector("h3");
+      var anchorRect = h3El ? h3El.getBoundingClientRect() : cardRect;
       var isLeftColumn = LEFT_COLUMN_INDICES.indexOf(index) !== -1;
 
       var cardX, cardY, midX;
       if (isLeftColumn) {
         cardX = cardRect.right - contentRect.left;
-        cardY = cardRect.top + cardRect.height / 2 - contentRect.top;
+        cardY = anchorRect.top + anchorRect.height / 2 - contentRect.top;
         midX = cardX + 40;
       } else {
         cardX = cardRect.left - contentRect.left;
-        cardY = cardRect.top + cardRect.height / 2 - contentRect.top;
+        cardY = anchorRect.top + anchorRect.height / 2 - contentRect.top;
         midX = cardX - 40;
       }
 
