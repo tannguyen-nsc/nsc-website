@@ -2026,11 +2026,12 @@
     var btn = document.createElement("button");
     btn.textContent = "\u2699";
     btn.style.cssText =
-      "position:fixed;bottom:16px;right:16px;z-index:10000;width:32px;height:32px;" +
+      "position:absolute;top:16px;right:16px;z-index:10000;width:32px;height:32px;" +
       "border:none;border-radius:50%;background:rgba(0,0,0,0.5);color:#36C3DC;" +
       "font-size:18px;cursor:pointer;line-height:32px;text-align:center;padding:0;" +
       "pointer-events:auto;";
-    wrapper.appendChild(btn);
+    sectionEl.style.position = "relative";
+    sectionEl.appendChild(btn);
     debugGearBtn = btn;
 
     // Panel
@@ -2041,6 +2042,18 @@
       "max-height:70vh;overflow-y:auto;display:none;min-width:220px;pointer-events:auto;";
     wrapper.appendChild(panel);
     debugPanel = panel;
+
+    // Close button
+    var closeBtn = document.createElement("button");
+    closeBtn.textContent = "\u00D7";
+    closeBtn.style.cssText =
+      "position:sticky;top:0;float:right;z-index:1;width:20px;height:20px;margin:0 0 4px 4px;" +
+      "border:none;border-radius:3px;background:rgba(255,255,255,0.1);color:#ccc;" +
+      "font-size:14px;line-height:20px;text-align:center;padding:0;cursor:pointer;";
+    closeBtn.addEventListener("click", function () {
+      panel.style.display = "none";
+    });
+    panel.appendChild(closeBtn);
 
     btn.addEventListener("click", function () {
       panel.style.display = panel.style.display === "none" ? "block" : "none";
@@ -2102,6 +2115,9 @@
 
   function disposeDebugUI() {
     debugInfoEl = null;
+    if (debugGearBtn) {
+      debugGearBtn.remove();
+    }
     if (debugWrapper) {
       debugWrapper.remove();
       debugWrapper = null;
