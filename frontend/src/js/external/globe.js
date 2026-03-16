@@ -28,7 +28,7 @@
   var HEX_RESOLUTION = 3;
   var GLOBE_BASE_COLOR = "#36C3DC";
   var HEX_COLOR = "#fff";
-  var VIETNAM_HEX_COLOR = "rgba(220, 50, 50, 1)";
+  var VIETNAM_HEX_COLOR = "#fff";
   var WIREFRAME_COLOR = "#ffffff";
   var WIREFRAME_OPACITY = 1;
   var GRID_DOT_COLOR = "#ffffff";
@@ -41,17 +41,17 @@
     "https://cdn.jsdelivr.net/npm/three-globe@2.45.0/example/hexed-polygons/ne_110m_admin_0_countries.geojson";
 
   var POINTS_DATA = [
-    { lat: 21.03, lng: 105.85, label: "Senior-Led, AI-Driven Expertise" }, // Hanoi, Vietnam
-    { lat: 10.76, lng: 106.66, label: "100% Senior-Level Engineers" }, // Ho Chi Minh City, Vietnam
-    { lat: 13.76, lng: 100.5, label: "Vietnam's Top 7% IT Talents" }, // Bangkok, Thailand
-    { lat: 1.35, lng: 103.82, label: "6+ Years Minimum Experience" }, // Singapore
-    { lat: 16.05, lng: 108.22, label: "100% English-Proficient Team" }, // Da Nang, Vietnam
-    { lat: 22.4, lng: 114.11, label: "Time-Zone Aligned Collaboration" }, // Hong Kong
-    { lat: 14.6, lng: 120.98, label: "High-Quality, Cost-Efficient Delivery" }, // Manila, Philippines
+    { lat: 22.00, lng: 100.00, label: "Senior-Led, AI-Driven Expertise" },
+    { lat: 23.00, lng: 125.50, label: "Time-Zone Aligned Collaboration" },
+    { lat: 15.00, lng: 99.50, label: "Vietnam's Top 7% IT Talents" },
+    { lat: 14.00, lng: 122.00, label: "100% English-Proficient Team" },
+    { lat: 7.50, lng: 100.00, label: "100% Senior-Level Engineers" },
+    { lat: 5.50, lng: 122.50, label: "High-Quality, Cost-Efficient Delivery" },
+    { lat: 1.35, lng: 100.50, label: "6+ Years Minimum Experience" }
   ];
 
   // Left-column card indices connect from right edge; right-column from left edge.
-  var LEFT_COLUMN_INDICES = [0, 1, 2, 3];
+  var LEFT_COLUMN_INDICES = [0, 2, 4, 6];
 
   // ---------------------------------------------------------------------------
   // State
@@ -72,9 +72,10 @@
   var isDisposed = false;
   var resizeTimer = null;
   var debugInfoEl = null;
-  var rotXSlider = null, rotXVal = null;
-  var rotYSlider = null, rotYVal = null;
-  var rotZSlider = null, rotZVal = null;
+  var sliderRegistry = [];
+  var toggleRegistry = [];
+  var colorRegistry = [];
+  var cameraTarget = { x: 0, y: 0, z: 0 };
   var connectorColor = "rgba(54, 195, 220, 0.35)";
   var connectorWidth = 3;
   var connectorAltitude = 0.015;
@@ -92,10 +93,21 @@
   var connDotGlowIntensity = 2.6;
   var rimShellMesh = null;
   var RIM_SHELL_COLOR = "#00b3ff";
-  var RIM_SHELL_INTENSITY = 2.5;
-  var RIM_SHELL_POWER = 6;
+  var RIM_SHELL_INTENSITY = 4.5;
+  var RIM_SHELL_POWER = 7.2;
   var RIM_SHELL_OPACITY = 0.5;
-  var RIM_SHELL_RADIUS = 101;
+  var RIM_SHELL_RADIUS = 100.5;
+  var vietnamTileMesh = null;
+  var VIETNAM_TILE_LAT = 16;
+  var VIETNAM_TILE_LNG = 107;
+  var VIETNAM_TILE_SIZE = 88;
+  var VIETNAM_TILE_ALTITUDE = 0.05;
+  var VIETNAM_TILE_ROTATE_X = 0;    // degrees
+  var VIETNAM_TILE_ROTATE_Y = -180; // degrees
+  var VIETNAM_TILE_ROTATE_Z = 4;    // degrees
+  var VIETNAM_TILE_OFFSET_X = 16;
+  var VIETNAM_TILE_OFFSET_Y = 4.5;
+  var VIETNAM_TILE_OFFSET_Z = 0;
 
   // ---------------------------------------------------------------------------
   // Helpers
@@ -203,6 +215,115 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Debug UI Primitives
+  // ---------------------------------------------------------------------------
+
+  function makeSlider(label, min, max, step, value, onChange, getter) {
+    var row = document.createElement("div");
+    row.style.cssText =
+      "margin:3px 0;display:flex;align-items:center;gap:6px;";
+    var lbl = document.createElement("span");
+    lbl.textContent = label;
+    lbl.style.cssText = "min-width:90px;font-size:10px;";
+    var inp = document.createElement("input");
+    inp.type = "range";
+    inp.min = min;
+    inp.max = max;
+    inp.step = step;
+    inp.value = value;
+    inp.style.cssText = "flex:1;height:14px;accent-color:#36C3DC;";
+    var val = document.createElement("span");
+    val.textContent = Number(value).toFixed(2);
+    val.style.cssText = "min-width:32px;text-align:right;font-size:10px;";
+    inp.addEventListener("input", function () {
+      val.textContent = Number(inp.value).toFixed(2);
+      onChange(Number(inp.value));
+    });
+    row.appendChild(lbl);
+    row.appendChild(inp);
+    row.appendChild(val);
+    if (getter) {
+      sliderRegistry.push({ inp: inp, val: val, getter: getter });
+    }
+    return row;
+  }
+
+  function makeHeading(text) {
+    var h = document.createElement("div");
+    h.textContent = text;
+    h.style.cssText =
+      "color:#36C3DC;font-weight:bold;font-size:11px;margin:8px 0 3px;border-bottom:1px solid #333;padding-bottom:2px;";
+    return h;
+  }
+
+  function makeCollapsibleGroup(title, collapsed, buildContent) {
+    var wrapper = document.createElement("div");
+    var header = document.createElement("div");
+    header.style.cssText =
+      "color:#36C3DC;font-weight:bold;font-size:11px;margin:8px 0 3px;border-bottom:1px solid #333;padding-bottom:2px;cursor:pointer;user-select:none;";
+    var arrow = document.createElement("span");
+    arrow.textContent = collapsed ? "\u25B6 " : "\u25BC ";
+    arrow.style.cssText = "font-size:9px;";
+    var label = document.createElement("span");
+    label.textContent = title;
+    header.appendChild(arrow);
+    header.appendChild(label);
+    var body = document.createElement("div");
+    body.style.display = collapsed ? "none" : "block";
+    buildContent(body);
+    header.addEventListener("click", function () {
+      var isHidden = body.style.display === "none";
+      body.style.display = isHidden ? "block" : "none";
+      arrow.textContent = isHidden ? "\u25BC " : "\u25B6 ";
+    });
+    wrapper.appendChild(header);
+    wrapper.appendChild(body);
+    return wrapper;
+  }
+
+  function makeToggle(label, checked, onChange, getter) {
+    var row = document.createElement("div");
+    row.style.cssText = "margin:3px 0;display:flex;align-items:center;gap:6px;";
+    var lbl = document.createElement("span");
+    lbl.textContent = label;
+    lbl.style.cssText = "min-width:90px;font-size:10px;";
+    var chk = document.createElement("input");
+    chk.type = "checkbox";
+    chk.checked = checked;
+    chk.style.cssText = "accent-color:#36C3DC;cursor:pointer;";
+    chk.addEventListener("change", function () {
+      onChange(chk.checked);
+    });
+    if (getter) {
+      toggleRegistry.push({ checkbox: chk, getter: getter });
+    }
+    row.appendChild(lbl);
+    row.appendChild(chk);
+    return row;
+  }
+
+  function makeColorPicker(label, value, onChange, getter) {
+    var row = document.createElement("div");
+    row.style.cssText = "margin:3px 0;display:flex;align-items:center;gap:6px;";
+    var lbl = document.createElement("span");
+    lbl.textContent = label;
+    lbl.style.cssText = "min-width:90px;font-size:10px;";
+    var inp = document.createElement("input");
+    inp.type = "color";
+    inp.value = value;
+    inp.style.cssText = "width:40px;height:20px;border:none;padding:0;cursor:pointer;";
+    inp.addEventListener("input", function () {
+      onChange(inp.value);
+    });
+    if (getter) {
+      colorRegistry.push({ input: inp, getter: getter });
+    }
+    row.appendChild(lbl);
+    row.appendChild(inp);
+    return row;
+  }
+
+  // ---------------------------------------------------------------------------
   // SVG Connector Lines
   // ---------------------------------------------------------------------------
 
@@ -226,13 +347,22 @@
   }
 
   function updateConnectorLines() {
-    if (!svgOverlay || window.innerWidth < BREAKPOINT_LARGE) return;
+    if (window.innerWidth < BREAKPOINT_LARGE || !renderer) return;
+
+    // Self-heal: if svgOverlay was removed from DOM (e.g. by Slick unslick), recreate it
+    if (svgOverlay && !document.contains(svgOverlay)) {
+      svgOverlay = null;
+    }
+    if (!svgOverlay) {
+      svgOverlay = createSVGOverlay();
+    }
+    if (!svgOverlay) return;
 
     var contentEl = document.querySelector(".why-us-content");
     if (!contentEl) return;
 
     var contentRect = contentEl.getBoundingClientRect();
-    var canvasRect = containerEl.getBoundingClientRect();
+    var canvasRect = renderer.domElement.getBoundingClientRect();
 
     // Offset of the canvas within the content container
     var offsetX = canvasRect.left - contentRect.left;
@@ -253,7 +383,7 @@
       if (!card) return;
 
       var worldPos = latLngToWorld(point.lat, point.lng, connectorAltitude);
-      var screen = projectToScreen(worldPos, camera, containerEl);
+      var screen = projectToScreen(worldPos, camera, renderer.domElement);
 
       if (!screen.visible) return;
 
@@ -408,6 +538,19 @@
     return new THREE.Points(geo, mat);
   }
 
+  function updateConnectorDotPosition(index) {
+    if (!connectorDotsMesh) return;
+    var point = POINTS_DATA[index];
+    var phi = (90 - point.lat) * (Math.PI / 180);
+    var theta = (90 - point.lng) * (Math.PI / 180);
+    var r = GLOBE_RADIUS * (1 + connectorAltitude);
+    var positions = connectorDotsMesh.geometry.attributes.position.array;
+    positions[index * 3] = r * Math.sin(phi) * Math.cos(theta);
+    positions[index * 3 + 1] = r * Math.cos(phi);
+    positions[index * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+    connectorDotsMesh.geometry.attributes.position.needsUpdate = true;
+  }
+
   // ---------------------------------------------------------------------------
   // Fresnel Rim Shell
   // ---------------------------------------------------------------------------
@@ -501,37 +644,24 @@
   });
 
   // ---------------------------------------------------------------------------
-  // Globe Initialization
+  // Renderer & Lights Factories
   // ---------------------------------------------------------------------------
 
-  function initScene() {
-    containerEl = document.getElementById("globe-container");
-    sectionEl = document.getElementById("why-us");
-    if (!containerEl || !sectionEl) return false;
-
-    var width = containerEl.clientWidth;
-    var height = containerEl.clientHeight;
-
-    // Scene
-    scene = new THREE.Scene();
-
-    // Camera
-    camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
-    camera.position.set(0, 0, 270);
-
-    // Renderer
+  function createRenderer(width, height) {
     try {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     } catch (e) {
       console.warn("[NSCGlobe] WebGL renderer creation failed:", e);
-      return false;
+      return null;
     }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
     containerEl.appendChild(renderer.domElement);
+    return renderer;
+  }
 
-    // Lighting
+  function createLights() {
     ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
 
@@ -547,13 +677,33 @@
     backLight.position.set(-135, -300, 300);
     scene.add(backLight);
 
-    // Spot lights 1-4 (same defaults as backlight)
     for (var i = 0; i < 4; i++) {
       spotLights[i] = new THREE.DirectionalLight(0xffffff, 1.6);
       spotLights[i].position.set(-135, -300, 300);
       spotLights[i].visible = false;
       scene.add(spotLights[i]);
     }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Globe Initialization
+  // ---------------------------------------------------------------------------
+
+  function initScene() {
+    containerEl = document.getElementById("globe-container");
+    sectionEl = document.getElementById("why-us");
+    if (!containerEl || !sectionEl) return false;
+
+    var width = containerEl.clientWidth;
+    var height = containerEl.clientHeight;
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(50, width / height, 1, 1000);
+    camera.position.set(0, 0, 270);
+
+    if (!createRenderer(width, height)) return false;
+
+    createLights();
 
     // Tone mapping
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -568,6 +718,76 @@
     scene.add(globeGroup);
 
     return true;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Vietnam Tile (image on globe surface)
+  // ---------------------------------------------------------------------------
+
+  function createVietnamTile() {
+    var loader = new THREE.TextureLoader();
+    var texture = loader.load("./img/s.png");
+    texture.colorSpace = THREE.SRGBColorSpace;
+
+    var geo = new THREE.PlaneGeometry(1, 1);
+    // Flip UVs horizontally so the image isn't mirrored
+    var uvs = geo.attributes.uv;
+    for (var i = 0; i < uvs.count; i++) {
+      uvs.setX(i, 1 - uvs.getX(i));
+    }
+    var mat = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+      toneMapped: false,
+    });
+
+    var mesh = new THREE.Mesh(geo, mat);
+
+    // Position on globe surface
+    updateVietnamTilePosition(mesh);
+
+    return mesh;
+  }
+
+  function updateVietnamTilePosition(mesh) {
+    if (!mesh) return;
+    var lat = VIETNAM_TILE_LAT;
+    var lng = VIETNAM_TILE_LNG;
+    var size = VIETNAM_TILE_SIZE;
+    var phi = (90 - lat) * (Math.PI / 180);
+    var theta = (90 - lng) * (Math.PI / 180);
+    var r = GLOBE_RADIUS + VIETNAM_TILE_ALTITUDE;
+
+    // Position on sphere surface
+    mesh.position.set(
+      r * Math.sin(phi) * Math.cos(theta),
+      r * Math.cos(phi),
+      r * Math.sin(phi) * Math.sin(theta)
+    );
+
+    // Scale
+    mesh.scale.set(size, size, 1);
+
+    // Orient to face outward from globe center (in parent's local space).
+    // Use Matrix4.lookAt directly instead of mesh.lookAt to avoid
+    // world-space conversion that breaks when globeGroup is rotated.
+    var normal = mesh.position.clone().normalize();
+    var lookTarget = mesh.position.clone().add(normal);
+    var rotM = new THREE.Matrix4();
+    rotM.lookAt(lookTarget, mesh.position, mesh.up);
+    mesh.quaternion.setFromRotationMatrix(rotM);
+
+    // Apply rotations in local frame (after lookAt sets the base orientation)
+    mesh.rotateX(VIETNAM_TILE_ROTATE_X * Math.PI / 180);
+    mesh.rotateY(VIETNAM_TILE_ROTATE_Y * Math.PI / 180);
+    mesh.rotateZ(VIETNAM_TILE_ROTATE_Z * Math.PI / 180);
+
+    // Apply offsets in world space
+    mesh.position.x += VIETNAM_TILE_OFFSET_X;
+    mesh.position.y += VIETNAM_TILE_OFFSET_Y;
+    mesh.position.z += VIETNAM_TILE_OFFSET_Z;
   }
 
   function buildGlobe(geoFeatures) {
@@ -598,6 +818,11 @@
     globe.traverse(function (child) {
       child.renderOrder = 0;
     });
+
+    // Vietnam tile (custom image on globe surface)
+    vietnamTileMesh = createVietnamTile();
+    vietnamTileMesh.renderOrder = 3;
+    globeGroup.add(vietnamTileMesh);
 
     // Wireframe overlay (using LineSegments2 for variable line width)
     wireframeMesh = createWireframe(WIREFRAME_RADIUS);
@@ -671,6 +896,39 @@
   // Animation Loop
   // ---------------------------------------------------------------------------
 
+  function syncDebugPanel() {
+    if (debugInfoEl && globeGroup) {
+      var rx = ((globeGroup.rotation.x * 180) / Math.PI).toFixed(2);
+      var ry = ((globeGroup.rotation.y * 180) / Math.PI).toFixed(2);
+      var lat = ((globeGroup.rotation.x * 180) / Math.PI).toFixed(2);
+      var lng = ((-globeGroup.rotation.y * 180) / Math.PI).toFixed(2);
+      debugInfoEl.textContent =
+        "rot.x: " + rx + "  rot.y: " + ry + "\nlat: " + lat + "  lng: " + lng;
+    }
+    for (var si = 0; si < sliderRegistry.length; si++) {
+      var entry = sliderRegistry[si];
+      var current = entry.getter();
+      if (current !== null && current !== undefined) {
+        entry.inp.value = current;
+        entry.val.textContent = Number(current).toFixed(2);
+      }
+    }
+    for (var ti = 0; ti < toggleRegistry.length; ti++) {
+      var tEntry = toggleRegistry[ti];
+      var tCurrent = tEntry.getter();
+      if (tCurrent !== null && tCurrent !== undefined) {
+        tEntry.checkbox.checked = tCurrent;
+      }
+    }
+    for (var ci = 0; ci < colorRegistry.length; ci++) {
+      var cEntry = colorRegistry[ci];
+      var cCurrent = cEntry.getter();
+      if (cCurrent !== null && cCurrent !== undefined) {
+        cEntry.input.value = cCurrent;
+      }
+    }
+  }
+
   function animate() {
     animFrameId = requestAnimationFrame(animate);
 
@@ -682,32 +940,8 @@
 
     updateConnectorLines();
 
-    // Update debug info readout
-    if (
-      debugInfoEl &&
-      globeGroup &&
-      debugPanel &&
-      debugPanel.style.display !== "none"
-    ) {
-      var rx = ((globeGroup.rotation.x * 180) / Math.PI).toFixed(2);
-      var ry = ((globeGroup.rotation.y * 180) / Math.PI).toFixed(2);
-      var lat = ((globeGroup.rotation.x * 180) / Math.PI).toFixed(2);
-      var lng = ((-globeGroup.rotation.y * 180) / Math.PI).toFixed(2);
-      debugInfoEl.textContent =
-        "rot.x: " + rx + "  rot.y: " + ry + "\nlat: " + lat + "  lng: " + lng;
-      if (rotXSlider) {
-        rotXSlider.value = rx;
-        rotXVal.textContent = Number(rx).toFixed(2);
-      }
-      if (rotYSlider) {
-        rotYSlider.value = ry;
-        rotYVal.textContent = Number(ry).toFixed(2);
-      }
-      if (rotZSlider) {
-        var rz = ((globeGroup.rotation.z * 180) / Math.PI).toFixed(2);
-        rotZSlider.value = rz;
-        rotZVal.textContent = Number(rz).toFixed(2);
-      }
+    if (debugPanel && debugPanel.style.display !== "none") {
+      syncDebugPanel();
     }
 
     if (composer) {
@@ -755,279 +989,132 @@
       if (wireframeMesh && wireframeMesh.material.resolution) {
         wireframeMesh.material.resolution.set(width, height);
       }
-
-      // Recreate or remove SVG overlay based on breakpoint
-      if (window.innerWidth >= BREAKPOINT_LARGE) {
-        if (!svgOverlay) {
-          svgOverlay = createSVGOverlay();
-        }
-      } else if (svgOverlay) {
-        svgOverlay.remove();
-        svgOverlay = null;
-      }
     }, 150);
   }
 
   // ---------------------------------------------------------------------------
-  // Debug Panel (localhost only)
+  // Debug Panel Sections
   // ---------------------------------------------------------------------------
 
-  function createDebugPanel() {
-    var host = location.hostname;
-    if (host !== "localhost" && host !== "127.0.0.1") return;
-
-    // Overlay wrapper — sits outside .why-us so overflow:hidden cannot clip it
-    var wrapper = document.createElement("div");
-    wrapper.style.cssText =
-      "position:fixed;z-index:10001;pointer-events:none;top:0;left:0;width:0;height:0;";
-    document.body.appendChild(wrapper);
-    debugWrapper = wrapper;
-
-    // Gear toggle button
-    var btn = document.createElement("button");
-    btn.textContent = "\u2699";
-    btn.style.cssText =
-      "position:fixed;bottom:16px;right:16px;z-index:10000;width:32px;height:32px;" +
-      "border:none;border-radius:50%;background:rgba(0,0,0,0.5);color:#36C3DC;" +
-      "font-size:18px;cursor:pointer;line-height:32px;text-align:center;padding:0;" +
-      "pointer-events:auto;";
-    wrapper.appendChild(btn);
-    debugGearBtn = btn;
-
-    // Panel
-    var panel = document.createElement("div");
-    panel.style.cssText =
-      "position:fixed;bottom:56px;right:16px;z-index:10000;background:rgba(0,0,0,0.85);" +
-      "color:#ccc;font:11px/1.6 monospace;padding:10px 12px;border-radius:6px;" +
-      "max-height:70vh;overflow-y:auto;display:none;min-width:220px;pointer-events:auto;";
-    wrapper.appendChild(panel);
-    debugPanel = panel;
-
-    btn.addEventListener("click", function () {
-      panel.style.display = panel.style.display === "none" ? "block" : "none";
-    });
-
-    function makeSlider(label, min, max, step, value, onChange) {
-      var row = document.createElement("div");
-      row.style.cssText =
-        "margin:3px 0;display:flex;align-items:center;gap:6px;";
-      var lbl = document.createElement("span");
-      lbl.textContent = label;
-      lbl.style.cssText = "min-width:90px;font-size:10px;";
-      var inp = document.createElement("input");
-      inp.type = "range";
-      inp.min = min;
-      inp.max = max;
-      inp.step = step;
-      inp.value = value;
-      inp.style.cssText = "flex:1;height:14px;accent-color:#36C3DC;";
-      var val = document.createElement("span");
-      val.textContent = Number(value).toFixed(2);
-      val.style.cssText = "min-width:32px;text-align:right;font-size:10px;";
-      inp.addEventListener("input", function () {
-        val.textContent = Number(inp.value).toFixed(2);
-        onChange(Number(inp.value));
-      });
-      row.appendChild(lbl);
-      row.appendChild(inp);
-      row.appendChild(val);
-      return row;
-    }
-
-    function heading(text) {
-      var h = document.createElement("div");
-      h.textContent = text;
-      h.style.cssText =
-        "color:#36C3DC;font-weight:bold;font-size:11px;margin:8px 0 3px;border-bottom:1px solid #333;padding-bottom:2px;";
-      return h;
-    }
-
-    // --- Lighting section ---
-    panel.appendChild(heading("Lighting"));
+  function appendLightingSection(panel) {
+    panel.appendChild(makeHeading("Lighting"));
     panel.appendChild(
-      makeSlider(
-        "Ambient",
-        0,
-        3,
-        0.05,
+      makeSlider("Ambient", 0, 3, 0.05,
         ambientLight ? ambientLight.intensity : 1.4,
-        function (v) {
-          if (ambientLight) ambientLight.intensity = v;
-        }
-      )
+        function (v) { if (ambientLight) ambientLight.intensity = v; },
+        function () { return ambientLight ? ambientLight.intensity : null; })
     );
     panel.appendChild(
-      makeSlider(
-        "Key",
-        0,
-        3,
-        0.05,
+      makeSlider("Key", 0, 3, 0.05,
         keyLight ? keyLight.intensity : 1.8,
-        function (v) {
-          if (keyLight) keyLight.intensity = v;
-        }
-      )
+        function (v) { if (keyLight) keyLight.intensity = v; },
+        function () { return keyLight ? keyLight.intensity : null; })
     );
     panel.appendChild(
-      makeSlider(
-        "Fill",
-        0,
-        3,
-        0.05,
+      makeSlider("Fill", 0, 3, 0.05,
         fillLight ? fillLight.intensity : 0.9,
-        function (v) {
-          if (fillLight) fillLight.intensity = v;
-        }
-      )
+        function (v) { if (fillLight) fillLight.intensity = v; },
+        function () { return fillLight ? fillLight.intensity : null; })
     );
+  }
 
-    // --- Back Light section ---
-    panel.appendChild(heading("Back Light"));
+  function appendBackLightAndSpotsSection(panel) {
+    panel.appendChild(makeCollapsibleGroup("Lights (Back + Spots)", true, function (container) {
+      container.appendChild(makeHeading("Back Light"));
 
-    // On/off toggle
-    var backToggleRow = document.createElement("div");
-    backToggleRow.style.cssText =
-      "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var backToggleLbl = document.createElement("span");
-    backToggleLbl.textContent = "Enabled";
-    backToggleLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var backToggleChk = document.createElement("input");
-    backToggleChk.type = "checkbox";
-    backToggleChk.checked = true;
-    backToggleChk.style.cssText = "accent-color:#36C3DC;cursor:pointer;";
-    backToggleChk.addEventListener("change", function () {
-      if (backLight) backLight.visible = backToggleChk.checked;
-    });
-    backToggleRow.appendChild(backToggleLbl);
-    backToggleRow.appendChild(backToggleChk);
-    panel.appendChild(backToggleRow);
+      container.appendChild(makeToggle("Enabled", true,
+        function (v) { if (backLight) backLight.visible = v; },
+        function () { return backLight ? backLight.visible : null; }
+      ));
 
-    // Intensity
-    panel.appendChild(
-      makeSlider("Intensity", 0, 20, 0.1,
-        backLight ? backLight.intensity : 1.5,
-        function (v) { if (backLight) backLight.intensity = v; })
-    );
+      container.appendChild(
+        makeSlider("Intensity", 0, 20, 0.1,
+          backLight ? backLight.intensity : 1.5,
+          function (v) { if (backLight) backLight.intensity = v; },
+          function () { return backLight ? backLight.intensity : null; })
+      );
 
-    // Color picker
-    var backColorRow = document.createElement("div");
-    backColorRow.style.cssText =
-      "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var backColorLbl = document.createElement("span");
-    backColorLbl.textContent = "Color";
-    backColorLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var backColorInp = document.createElement("input");
-    backColorInp.type = "color";
-    backColorInp.value = "#ffffff";
-    backColorInp.style.cssText =
-      "width:40px;height:20px;border:none;padding:0;cursor:pointer;";
-    backColorInp.addEventListener("input", function () {
-      if (backLight) backLight.color = new THREE.Color(backColorInp.value);
-    });
-    backColorRow.appendChild(backColorLbl);
-    backColorRow.appendChild(backColorInp);
-    panel.appendChild(backColorRow);
+      container.appendChild(makeColorPicker("Color", "#ffffff",
+        function (v) { if (backLight) backLight.color = new THREE.Color(v); },
+        function () { return backLight ? "#" + backLight.color.getHexString() : null; }
+      ));
 
-    // Position X/Y/Z
-    panel.appendChild(
-      makeSlider("Pos X", -300, 300, 5,
-        backLight ? backLight.position.x : 0,
-        function (v) { if (backLight) backLight.position.x = v; })
-    );
-    panel.appendChild(
-      makeSlider("Pos Y", -300, 300, 5,
-        backLight ? backLight.position.y : 50,
-        function (v) { if (backLight) backLight.position.y = v; })
-    );
-    panel.appendChild(
-      makeSlider("Pos Z", -300, 300, 5,
-        backLight ? backLight.position.z : -200,
-        function (v) { if (backLight) backLight.position.z = v; })
-    );
+      container.appendChild(
+        makeSlider("Pos X", -300, 300, 5,
+          backLight ? backLight.position.x : 0,
+          function (v) { if (backLight) backLight.position.x = v; },
+          function () { return backLight ? backLight.position.x : null; })
+      );
+      container.appendChild(
+        makeSlider("Pos Y", -300, 300, 5,
+          backLight ? backLight.position.y : 50,
+          function (v) { if (backLight) backLight.position.y = v; },
+          function () { return backLight ? backLight.position.y : null; })
+      );
+      container.appendChild(
+        makeSlider("Pos Z", -300, 300, 5,
+          backLight ? backLight.position.z : -200,
+          function (v) { if (backLight) backLight.position.z = v; },
+          function () { return backLight ? backLight.position.z : null; })
+      );
 
-    // --- Spot Lights 1-4 ---
-    for (var si = 0; si < 4; si++) {
-      (function (idx) {
-        var light = spotLights[idx];
-        panel.appendChild(heading("Light " + (idx + 1)));
+      for (var si = 0; si < 4; si++) {
+        (function (idx) {
+          var light = spotLights[idx];
+          container.appendChild(makeHeading("Light " + (idx + 1)));
 
-        // On/off toggle
-        var toggleRow = document.createElement("div");
-        toggleRow.style.cssText = "margin:3px 0;display:flex;align-items:center;gap:6px;";
-        var toggleLbl = document.createElement("span");
-        toggleLbl.textContent = "Enabled";
-        toggleLbl.style.cssText = "min-width:90px;font-size:10px;";
-        var toggleChk = document.createElement("input");
-        toggleChk.type = "checkbox";
-        toggleChk.checked = light ? light.visible : false;
-        toggleChk.style.cssText = "accent-color:#36C3DC;cursor:pointer;";
-        toggleChk.addEventListener("change", function () {
-          if (spotLights[idx]) spotLights[idx].visible = toggleChk.checked;
-        });
-        toggleRow.appendChild(toggleLbl);
-        toggleRow.appendChild(toggleChk);
-        panel.appendChild(toggleRow);
+          container.appendChild(makeToggle("Enabled", light ? light.visible : false,
+            function (v) { if (spotLights[idx]) spotLights[idx].visible = v; },
+            function () { return spotLights[idx] ? spotLights[idx].visible : null; }
+          ));
 
-        // Intensity
-        panel.appendChild(
-          makeSlider("Intensity", 0, 20, 0.1, light ? light.intensity : 1.6, function (v) {
-            if (spotLights[idx]) spotLights[idx].intensity = v;
-          })
-        );
+          container.appendChild(
+            makeSlider("Intensity", 0, 20, 0.1, light ? light.intensity : 1.6, function (v) {
+              if (spotLights[idx]) spotLights[idx].intensity = v;
+            }, function () { return spotLights[idx] ? spotLights[idx].intensity : null; })
+          );
 
-        // Color picker
-        var colorRow = document.createElement("div");
-        colorRow.style.cssText = "margin:3px 0;display:flex;align-items:center;gap:6px;";
-        var colorLbl = document.createElement("span");
-        colorLbl.textContent = "Color";
-        colorLbl.style.cssText = "min-width:90px;font-size:10px;";
-        var colorInp = document.createElement("input");
-        colorInp.type = "color";
-        colorInp.value = light ? "#" + light.color.getHexString() : "#ffffff";
-        colorInp.style.cssText = "width:40px;height:20px;border:none;padding:0;cursor:pointer;";
-        colorInp.addEventListener("input", function () {
-          if (spotLights[idx]) spotLights[idx].color = new THREE.Color(colorInp.value);
-        });
-        colorRow.appendChild(colorLbl);
-        colorRow.appendChild(colorInp);
-        panel.appendChild(colorRow);
+          container.appendChild(makeColorPicker("Color", light ? "#" + light.color.getHexString() : "#ffffff",
+            function (v) { if (spotLights[idx]) spotLights[idx].color = new THREE.Color(v); },
+            function () { return spotLights[idx] ? "#" + spotLights[idx].color.getHexString() : null; }
+          ));
 
-        // Position X/Y/Z
-        panel.appendChild(
-          makeSlider("Pos X", -300, 300, 5, light ? light.position.x : -135, function (v) {
-            if (spotLights[idx]) spotLights[idx].position.x = v;
-          })
-        );
-        panel.appendChild(
-          makeSlider("Pos Y", -300, 300, 5, light ? light.position.y : -300, function (v) {
-            if (spotLights[idx]) spotLights[idx].position.y = v;
-          })
-        );
-        panel.appendChild(
-          makeSlider("Pos Z", -300, 300, 5, light ? light.position.z : 300, function (v) {
-            if (spotLights[idx]) spotLights[idx].position.z = v;
-          })
-        );
-      })(si);
-    }
+          container.appendChild(
+            makeSlider("Pos X", -300, 300, 5, light ? light.position.x : -135, function (v) {
+              if (spotLights[idx]) spotLights[idx].position.x = v;
+            }, function () { return spotLights[idx] ? spotLights[idx].position.x : null; })
+          );
+          container.appendChild(
+            makeSlider("Pos Y", -300, 300, 5, light ? light.position.y : -300, function (v) {
+              if (spotLights[idx]) spotLights[idx].position.y = v;
+            }, function () { return spotLights[idx] ? spotLights[idx].position.y : null; })
+          );
+          container.appendChild(
+            makeSlider("Pos Z", -300, 300, 5, light ? light.position.z : 300, function (v) {
+              if (spotLights[idx]) spotLights[idx].position.z = v;
+            }, function () { return spotLights[idx] ? spotLights[idx].position.z : null; })
+          );
+        })(si);
+      }
+    }));
+  }
 
-    // --- Camera section ---
-    panel.appendChild(heading("Camera"));
-    var cameraTarget = { x: 0, y: 0, z: 0 };
+  function appendCameraSection(panel) {
+    panel.appendChild(makeHeading("Camera"));
     panel.appendChild(
       makeSlider("Distance", 100, 500, 5, camera ? camera.position.z : 260, function (v) {
         if (camera) camera.position.setZ(v);
-      })
+      }, function () { return camera ? camera.position.z : null; })
     );
     panel.appendChild(
       makeSlider("Position X", -300, 300, 5, camera ? camera.position.x : 0, function (v) {
         if (camera) camera.position.setX(v);
-      })
+      }, function () { return camera ? camera.position.x : null; })
     );
     panel.appendChild(
       makeSlider("Position Y", -300, 300, 5, camera ? camera.position.y : 0, function (v) {
         if (camera) camera.position.setY(v);
-      })
+      }, function () { return camera ? camera.position.y : null; })
     );
     panel.appendChild(
       makeSlider("FOV", 10, 120, 1, camera ? camera.fov : 50, function (v) {
@@ -1035,160 +1122,184 @@
           camera.fov = v;
           camera.updateProjectionMatrix();
         }
-      })
+      }, function () { return camera ? camera.fov : null; })
     );
     panel.appendChild(
       makeSlider("Look At X", -200, 200, 5, 0, function (v) {
         cameraTarget.x = v;
         if (camera) camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
-      })
+      }, function () { return cameraTarget.x; })
     );
     panel.appendChild(
       makeSlider("Look At Y", -200, 200, 5, 0, function (v) {
         cameraTarget.y = v;
         if (camera) camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
-      })
+      }, function () { return cameraTarget.y; })
     );
     panel.appendChild(
       makeSlider("Look At Z", -200, 200, 5, 0, function (v) {
         cameraTarget.z = v;
         if (camera) camera.lookAt(cameraTarget.x, cameraTarget.y, cameraTarget.z);
-      })
+      }, function () { return cameraTarget.z; })
     );
+  }
 
-    // --- Globe section ---
-    panel.appendChild(heading("Globe"));
-    var colorRow = document.createElement("div");
-    colorRow.style.cssText =
-      "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var colorLbl = document.createElement("span");
-    colorLbl.textContent = "Color";
-    colorLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var colorInp = document.createElement("input");
-    colorInp.type = "color";
-    colorInp.value = GLOBE_BASE_COLOR;
-    colorInp.style.cssText =
-      "width:40px;height:20px;border:none;padding:0;cursor:pointer;";
-    colorInp.addEventListener("input", function () {
-      if (globe) {
-        var mat = globe.globeMaterial();
-        mat.color = new THREE.Color(colorInp.value);
-        mat.emissive = new THREE.Color(colorInp.value);
-      }
-    });
-    colorRow.appendChild(colorLbl);
-    colorRow.appendChild(colorInp);
-    panel.appendChild(colorRow);
+  function appendGlobeMaterialSection(panel) {
+    panel.appendChild(makeHeading("Globe"));
+
+    panel.appendChild(makeColorPicker("Color", GLOBE_BASE_COLOR,
+      function (v) {
+        if (globe) {
+          var mat = globe.globeMaterial();
+          mat.color = new THREE.Color(v);
+          mat.emissive = new THREE.Color(v);
+        }
+      },
+      function () { return globe ? "#" + globe.globeMaterial().color.getHexString() : null; }
+    ));
 
     panel.appendChild(
       makeSlider("Emissive Int.", 0, 1, 0.01, EMISSIVE_INTENSITY, function (v) {
         if (globe) globe.globeMaterial().emissiveIntensity = v;
-      })
+      }, function () { return globe ? globe.globeMaterial().emissiveIntensity : null; })
     );
+  }
 
-    // --- Rim Glow section ---
-    panel.appendChild(heading("Rim Glow"));
+  function appendVietnamTileSection(panel) {
+    panel.appendChild(makeHeading("Vietnam Tile"));
 
-    // On/off toggle
-    var rimToggleRow = document.createElement("div");
-    rimToggleRow.style.cssText = "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var rimToggleLbl = document.createElement("span");
-    rimToggleLbl.textContent = "Enabled";
-    rimToggleLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var rimToggleChk = document.createElement("input");
-    rimToggleChk.type = "checkbox";
-    rimToggleChk.checked = rimShellMesh ? rimShellMesh.visible : true;
-    rimToggleChk.style.cssText = "accent-color:#36C3DC;cursor:pointer;";
-    rimToggleChk.addEventListener("change", function () {
-      if (rimShellMesh) rimShellMesh.visible = rimToggleChk.checked;
-    });
-    rimToggleRow.appendChild(rimToggleLbl);
-    rimToggleRow.appendChild(rimToggleChk);
-    panel.appendChild(rimToggleRow);
+    panel.appendChild(makeToggle("Enabled", vietnamTileMesh ? vietnamTileMesh.visible : true,
+      function (v) { if (vietnamTileMesh) vietnamTileMesh.visible = v; },
+      function () { return vietnamTileMesh ? vietnamTileMesh.visible : null; }
+    ));
 
-    // Color picker
-    var rimColorRow = document.createElement("div");
-    rimColorRow.style.cssText = "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var rimColorLbl = document.createElement("span");
-    rimColorLbl.textContent = "Color";
-    rimColorLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var rimColorInp = document.createElement("input");
-    rimColorInp.type = "color";
-    rimColorInp.value = RIM_SHELL_COLOR;
-    rimColorInp.style.cssText = "width:40px;height:20px;border:none;padding:0;cursor:pointer;";
-    rimColorInp.addEventListener("input", function () {
-      if (rimShellMesh) rimShellMesh.material.uniforms.rimColor.value = new THREE.Color(rimColorInp.value);
-    });
-    rimColorRow.appendChild(rimColorLbl);
-    rimColorRow.appendChild(rimColorInp);
-    panel.appendChild(rimColorRow);
+    panel.appendChild(
+      makeSlider("Size", 5, 200, 1, VIETNAM_TILE_SIZE, function (v) {
+        VIETNAM_TILE_SIZE = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_SIZE; })
+    );
+    panel.appendChild(
+      makeSlider("Altitude", 0, 10, 0.1, VIETNAM_TILE_ALTITUDE, function (v) {
+        VIETNAM_TILE_ALTITUDE = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_ALTITUDE; })
+    );
+    panel.appendChild(
+      makeSlider("Lat", -90, 90, 0.5, VIETNAM_TILE_LAT, function (v) {
+        VIETNAM_TILE_LAT = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_LAT; })
+    );
+    panel.appendChild(
+      makeSlider("Lng", -180, 180, 0.5, VIETNAM_TILE_LNG, function (v) {
+        VIETNAM_TILE_LNG = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_LNG; })
+    );
+    panel.appendChild(
+      makeSlider("Rotate X", -180, 180, 1, VIETNAM_TILE_ROTATE_X, function (v) {
+        VIETNAM_TILE_ROTATE_X = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_ROTATE_X; })
+    );
+    panel.appendChild(
+      makeSlider("Rotate Y", -180, 180, 1, VIETNAM_TILE_ROTATE_Y, function (v) {
+        VIETNAM_TILE_ROTATE_Y = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_ROTATE_Y; })
+    );
+    panel.appendChild(
+      makeSlider("Rotate Z", -180, 180, 1, VIETNAM_TILE_ROTATE_Z, function (v) {
+        VIETNAM_TILE_ROTATE_Z = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_ROTATE_Z; })
+    );
+    panel.appendChild(
+      makeSlider("Offset X", -50, 50, 0.5, VIETNAM_TILE_OFFSET_X, function (v) {
+        VIETNAM_TILE_OFFSET_X = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_OFFSET_X; })
+    );
+    panel.appendChild(
+      makeSlider("Offset Y", -50, 50, 0.5, VIETNAM_TILE_OFFSET_Y, function (v) {
+        VIETNAM_TILE_OFFSET_Y = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_OFFSET_Y; })
+    );
+    panel.appendChild(
+      makeSlider("Offset Z", -50, 50, 0.5, VIETNAM_TILE_OFFSET_Z, function (v) {
+        VIETNAM_TILE_OFFSET_Z = v;
+        updateVietnamTilePosition(vietnamTileMesh);
+      }, function () { return VIETNAM_TILE_OFFSET_Z; })
+    );
+  }
+
+  function appendRimGlowSection(panel) {
+    panel.appendChild(makeHeading("Rim Glow"));
+
+    panel.appendChild(makeToggle("Enabled", rimShellMesh ? rimShellMesh.visible : true,
+      function (v) { if (rimShellMesh) rimShellMesh.visible = v; },
+      function () { return rimShellMesh ? rimShellMesh.visible : null; }
+    ));
+
+    panel.appendChild(makeColorPicker("Color", RIM_SHELL_COLOR,
+      function (v) { if (rimShellMesh) rimShellMesh.material.uniforms.rimColor.value = new THREE.Color(v); },
+      function () { return rimShellMesh ? "#" + rimShellMesh.material.uniforms.rimColor.value.getHexString() : null; }
+    ));
 
     panel.appendChild(
       makeSlider("Intensity", 0, 5, 0.1, RIM_SHELL_INTENSITY, function (v) {
         if (rimShellMesh) rimShellMesh.material.uniforms.rimIntensity.value = v;
-      })
+      }, function () { return rimShellMesh ? rimShellMesh.material.uniforms.rimIntensity.value : null; })
     );
     panel.appendChild(
       makeSlider("Power", 0.5, 10, 0.1, RIM_SHELL_POWER, function (v) {
         if (rimShellMesh) rimShellMesh.material.uniforms.rimPower.value = v;
-      })
+      }, function () { return rimShellMesh ? rimShellMesh.material.uniforms.rimPower.value : null; })
     );
     panel.appendChild(
       makeSlider("Opacity", 0, 1, 0.05, RIM_SHELL_OPACITY, function (v) {
         if (rimShellMesh) rimShellMesh.material.uniforms.rimOpacity.value = v;
-      })
+      }, function () { return rimShellMesh ? rimShellMesh.material.uniforms.rimOpacity.value : null; })
     );
     panel.appendChild(
       makeSlider("Radius", 100, 115, 0.5, RIM_SHELL_RADIUS, function (v) {
+        RIM_SHELL_RADIUS = v;
         if (rimShellMesh) {
           rimShellMesh.geometry.dispose();
           rimShellMesh.geometry = new THREE.SphereGeometry(v, 64, 64);
         }
-      })
+      }, function () { return RIM_SHELL_RADIUS; })
+    );
+  }
+
+  function appendGlobeTransformSection(panel) {
+    panel.appendChild(makeHeading("Globe Transform"));
+    panel.appendChild(
+      makeSlider("Rotation X", -180, 180, 1, globeGroup ? globeGroup.rotation.x * 180 / Math.PI : 0, function (v) {
+        if (globeGroup) globeGroup.rotation.x = v * Math.PI / 180;
+      }, function () { return globeGroup ? globeGroup.rotation.x * 180 / Math.PI : null; })
+    );
+    panel.appendChild(
+      makeSlider("Rotation Y", -180, 180, 1, globeGroup ? globeGroup.rotation.y * 180 / Math.PI : 0, function (v) {
+        if (globeGroup) globeGroup.rotation.y = v * Math.PI / 180;
+      }, function () { return globeGroup ? globeGroup.rotation.y * 180 / Math.PI : null; })
+    );
+    panel.appendChild(
+      makeSlider("Rotation Z", -180, 180, 1, globeGroup ? globeGroup.rotation.z * 180 / Math.PI : 0, function (v) {
+        if (globeGroup) globeGroup.rotation.z = v * Math.PI / 180;
+      }, function () { return globeGroup ? globeGroup.rotation.z * 180 / Math.PI : null; })
     );
 
-    // --- Globe Transform section ---
-    panel.appendChild(heading("Globe Transform"));
-    var rotXRow = makeSlider("Rotation X", -180, 180, 1, globeGroup ? globeGroup.rotation.x * 180 / Math.PI : 0, function (v) {
-      if (globeGroup) globeGroup.rotation.x = v * Math.PI / 180;
-    });
-    rotXSlider = rotXRow.children[1];
-    rotXVal = rotXRow.children[2];
-    panel.appendChild(rotXRow);
+    panel.appendChild(makeToggle("Auto-rotate", autoRotate,
+      function (v) { autoRotate = v; },
+      function () { return autoRotate; }
+    ));
+  }
 
-    var rotYRow = makeSlider("Rotation Y", -180, 180, 1, globeGroup ? globeGroup.rotation.y * 180 / Math.PI : 0, function (v) {
-      if (globeGroup) globeGroup.rotation.y = v * Math.PI / 180;
-    });
-    rotYSlider = rotYRow.children[1];
-    rotYVal = rotYRow.children[2];
-    panel.appendChild(rotYRow);
-
-    var rotZRow = makeSlider("Rotation Z", -180, 180, 1, globeGroup ? globeGroup.rotation.z * 180 / Math.PI : 0, function (v) {
-      if (globeGroup) globeGroup.rotation.z = v * Math.PI / 180;
-    });
-    rotZSlider = rotZRow.children[1];
-    rotZVal = rotZRow.children[2];
-    panel.appendChild(rotZRow);
-
-    var autoRotateRow = document.createElement("div");
-    autoRotateRow.style.cssText =
-      "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var autoRotateLbl = document.createElement("span");
-    autoRotateLbl.textContent = "Auto-rotate";
-    autoRotateLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var autoRotateChk = document.createElement("input");
-    autoRotateChk.type = "checkbox";
-    autoRotateChk.checked = autoRotate;
-    autoRotateChk.style.cssText = "accent-color:#36C3DC;cursor:pointer;";
-    autoRotateChk.addEventListener("change", function () {
-      autoRotate = autoRotateChk.checked;
-    });
-    autoRotateRow.appendChild(autoRotateLbl);
-    autoRotateRow.appendChild(autoRotateChk);
-    panel.appendChild(autoRotateRow);
-
-    // --- Bloom section ---
-    panel.appendChild(heading("Bloom" + (bloomPass ? "" : " (unavailable)")));
+  function appendBloomSection(panel) {
+    panel.appendChild(makeHeading("Bloom" + (bloomPass ? "" : " (unavailable)")));
     if (!bloomPass) {
       var bloomNote = document.createElement("div");
       bloomNote.style.cssText = "color:#f88;font-size:10px;margin:3px 0;";
@@ -1198,47 +1309,37 @@
     panel.appendChild(
       makeSlider("Strength", 0, 5, 0.05, bloomPass ? bloomPass.strength : BLOOM_STRENGTH, function (v) {
         if (bloomPass) bloomPass.strength = v;
-      })
+      }, function () { return bloomPass ? bloomPass.strength : null; })
     );
     panel.appendChild(
       makeSlider("Radius", 0, 1, 0.01, bloomPass ? bloomPass.radius : BLOOM_RADIUS, function (v) {
         if (bloomPass) bloomPass.radius = v;
-      })
+      }, function () { return bloomPass ? bloomPass.radius : null; })
     );
     panel.appendChild(
       makeSlider("Threshold", 0, 1, 0.01, bloomPass ? bloomPass.threshold : BLOOM_THRESHOLD, function (v) {
         if (bloomPass) bloomPass.threshold = v;
-      })
+      }, function () { return bloomPass ? bloomPass.threshold : null; })
     );
     panel.appendChild(
       makeSlider("Exposure", 0.1, 5, 0.1, renderer ? renderer.toneMappingExposure : 1.5, function (v) {
         if (renderer) renderer.toneMappingExposure = v;
-      })
+      }, function () { return renderer ? renderer.toneMappingExposure : null; })
     );
+  }
 
-    // --- Overlay Grid section ---
-    panel.appendChild(heading("Overlay Grid"));
+  function appendOverlayGridSection(panel) {
+    panel.appendChild(makeHeading("Overlay Grid"));
 
-    var lineColorRow = document.createElement("div");
-    lineColorRow.style.cssText =
-      "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var lineColorLbl = document.createElement("span");
-    lineColorLbl.textContent = "Grid Color";
-    lineColorLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var lineColorInp = document.createElement("input");
-    lineColorInp.type = "color";
-    lineColorInp.value = "#ffffff";
-    lineColorInp.style.cssText =
-      "width:40px;height:20px;border:none;padding:0;cursor:pointer;";
-    lineColorInp.addEventListener("input", function () {
-      wireBaseColor.set(lineColorInp.value);
-      if (wireframeMesh) {
-        wireframeMesh.material.color.copy(wireBaseColor).multiplyScalar(wireGlowIntensity);
-      }
-    });
-    lineColorRow.appendChild(lineColorLbl);
-    lineColorRow.appendChild(lineColorInp);
-    panel.appendChild(lineColorRow);
+    panel.appendChild(makeColorPicker("Grid Color", "#ffffff",
+      function (v) {
+        wireBaseColor.set(v);
+        if (wireframeMesh) {
+          wireframeMesh.material.color.copy(wireBaseColor).multiplyScalar(wireGlowIntensity);
+        }
+      },
+      function () { return "#" + wireBaseColor.getHexString(); }
+    ));
 
     panel.appendChild(
       makeSlider("Grid Glow", 0, 5, 0.1, wireGlowIntensity, function (v) {
@@ -1246,7 +1347,7 @@
         if (wireframeMesh) {
           wireframeMesh.material.color.copy(wireBaseColor).multiplyScalar(v);
         }
-      })
+      }, function () { return wireGlowIntensity; })
     );
 
     panel.appendChild(
@@ -1255,7 +1356,7 @@
           wireframeMesh.material.linewidth = v;
           wireframeMesh.material.needsUpdate = true;
         }
-      })
+      }, function () { return wireframeMesh ? wireframeMesh.material.linewidth : null; })
     );
     panel.appendChild(
       makeSlider("Grid Opacity", 0, 1, 0.05, wireframeMesh ? wireframeMesh.material.opacity : WIREFRAME_OPACITY, function (v) {
@@ -1264,40 +1365,31 @@
           wireframeMesh.material.transparent = v < 1;
           wireframeMesh.material.needsUpdate = true;
         }
-      })
+      }, function () { return wireframeMesh ? wireframeMesh.material.opacity : null; })
     );
-    // Dashed checkbox
-    var dashedRow = document.createElement("div");
-    dashedRow.style.cssText =
-      "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var dashedLbl = document.createElement("span");
-    dashedLbl.textContent = "Dashed";
-    dashedLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var dashedChk = document.createElement("input");
-    dashedChk.type = "checkbox";
-    dashedChk.checked = true;
-    dashedChk.addEventListener("change", function () {
-      if (!wireframeMesh) return;
-      wireframeMesh.material.dashed = dashedChk.checked;
-      wireframeMesh.material.needsUpdate = true;
-    });
-    dashedRow.appendChild(dashedLbl);
-    dashedRow.appendChild(dashedChk);
-    panel.appendChild(dashedRow);
+
+    panel.appendChild(makeToggle("Dashed", true,
+      function (v) {
+        if (!wireframeMesh) return;
+        wireframeMesh.material.dashed = v;
+        wireframeMesh.material.needsUpdate = true;
+      },
+      function () { return wireframeMesh ? !!wireframeMesh.material.dashed : null; }
+    ));
 
     panel.appendChild(
       makeSlider("Dash Size", 0.05, 2, 0.05, 0.7, function (v) {
         if (wireframeMesh) {
           wireframeMesh.material.dashSize = v;
         }
-      })
+      }, function () { return wireframeMesh ? wireframeMesh.material.dashSize : null; })
     );
     panel.appendChild(
       makeSlider("Gap Size", 0.05, 2, 0.05, 1.5, function (v) {
         if (wireframeMesh) {
           wireframeMesh.material.gapSize = v;
         }
-      })
+      }, function () { return wireframeMesh ? wireframeMesh.material.gapSize : null; })
     );
 
     panel.appendChild(
@@ -1336,38 +1428,27 @@
         }
       })
     );
+  }
 
-    // Dot Color picker
-    var dotGridColorRow = document.createElement("div");
-    dotGridColorRow.style.cssText =
-      "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var dotGridColorLbl = document.createElement("span");
-    dotGridColorLbl.textContent = "Dot Color";
-    dotGridColorLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var dotGridColorInp = document.createElement("input");
-    dotGridColorInp.type = "color";
-    dotGridColorInp.value = GRID_DOT_COLOR;
-    dotGridColorInp.style.cssText =
-      "width:40px;height:20px;border:none;padding:0;cursor:pointer;";
-    dotGridColorInp.addEventListener("input", function () {
-      GRID_DOT_COLOR = dotGridColorInp.value;
-      dotBaseColor.set(dotGridColorInp.value);
-      if (gridDotsMesh) {
-        gridDotsMesh.material.color.copy(dotBaseColor).multiplyScalar(dotGlowIntensity);
-      }
-    });
-    dotGridColorRow.appendChild(dotGridColorLbl);
-    dotGridColorRow.appendChild(dotGridColorInp);
-    panel.appendChild(dotGridColorRow);
+  function appendDotGridSection(panel) {
+    panel.appendChild(makeColorPicker("Dot Color", GRID_DOT_COLOR,
+      function (v) {
+        GRID_DOT_COLOR = v;
+        dotBaseColor.set(v);
+        if (gridDotsMesh) {
+          gridDotsMesh.material.color.copy(dotBaseColor).multiplyScalar(dotGlowIntensity);
+        }
+      },
+      function () { return "#" + dotBaseColor.getHexString(); }
+    ));
 
-    // Dot Size slider
     panel.appendChild(
       makeSlider("Dot Size", 1, 10, 0.5, GRID_DOT_SIZE, function (v) {
         GRID_DOT_SIZE = v;
         if (gridDotsMesh) {
           gridDotsMesh.material.size = v;
         }
-      })
+      }, function () { return GRID_DOT_SIZE; })
     );
 
     panel.appendChild(
@@ -1376,74 +1457,51 @@
         if (gridDotsMesh) {
           gridDotsMesh.material.color.copy(dotBaseColor).multiplyScalar(v);
         }
-      })
+      }, function () { return dotGlowIntensity; })
     );
+  }
 
-    // --- Connectors section ---
-    panel.appendChild(heading("Connectors"));
+  function appendConnectorSection(panel) {
+    panel.appendChild(makeHeading("Connectors"));
 
-    // Dashed checkbox
-    var connDashedRow = document.createElement("div");
-    connDashedRow.style.cssText =
-      "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var connDashedLbl = document.createElement("span");
-    connDashedLbl.textContent = "Dashed";
-    connDashedLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var connDashedChk = document.createElement("input");
-    connDashedChk.type = "checkbox";
-    connDashedChk.checked = connectorDashed;
-    connDashedChk.addEventListener("change", function () {
-      connectorDashed = connDashedChk.checked;
-    });
-    connDashedRow.appendChild(connDashedLbl);
-    connDashedRow.appendChild(connDashedChk);
-    panel.appendChild(connDashedRow);
+    panel.appendChild(makeToggle("Dashed", connectorDashed,
+      function (v) { connectorDashed = v; },
+      function () { return connectorDashed; }
+    ));
 
     panel.appendChild(
       makeSlider("Line Width", 0.5, 5, 0.5, connectorWidth, function (v) {
         connectorWidth = v;
-      })
+      }, function () { return connectorWidth; })
     );
 
     panel.appendChild(
       makeSlider("Dash Size", 0.5, 10, 0.5, connectorDashSize, function (v) {
         connectorDashSize = v;
-      })
+      }, function () { return connectorDashSize; })
     );
     panel.appendChild(
       makeSlider("Gap Size", 0.5, 10, 0.5, connectorGapSize, function (v) {
         connectorGapSize = v;
-      })
+      }, function () { return connectorGapSize; })
     );
 
-    // Connector Dot Color picker
-    var connDotColorRow = document.createElement("div");
-    connDotColorRow.style.cssText =
-      "margin:3px 0;display:flex;align-items:center;gap:6px;";
-    var connDotColorLbl = document.createElement("span");
-    connDotColorLbl.textContent = "Conn Dot Color";
-    connDotColorLbl.style.cssText = "min-width:90px;font-size:10px;";
-    var connDotColorInp = document.createElement("input");
-    connDotColorInp.type = "color";
-    connDotColorInp.value = CONNECTOR_DOT_COLOR;
-    connDotColorInp.style.cssText =
-      "width:40px;height:20px;border:none;padding:0;cursor:pointer;";
-    connDotColorInp.addEventListener("input", function () {
-      CONNECTOR_DOT_COLOR = connDotColorInp.value;
-      connDotBaseColor.set(connDotColorInp.value);
-      if (connectorDotsMesh) {
-        connectorDotsMesh.material.color.copy(connDotBaseColor).multiplyScalar(connDotGlowIntensity);
-      }
-    });
-    connDotColorRow.appendChild(connDotColorLbl);
-    connDotColorRow.appendChild(connDotColorInp);
-    panel.appendChild(connDotColorRow);
+    panel.appendChild(makeColorPicker("Conn Dot Color", CONNECTOR_DOT_COLOR,
+      function (v) {
+        CONNECTOR_DOT_COLOR = v;
+        connDotBaseColor.set(v);
+        if (connectorDotsMesh) {
+          connectorDotsMesh.material.color.copy(connDotBaseColor).multiplyScalar(connDotGlowIntensity);
+        }
+      },
+      function () { return "#" + connDotBaseColor.getHexString(); }
+    ));
 
     panel.appendChild(
       makeSlider("Conn Dot Size", 1, 15, 0.5, CONNECTOR_DOT_SIZE, function (v) {
         CONNECTOR_DOT_SIZE = v;
         if (connectorDotsMesh) connectorDotsMesh.material.size = v;
-      })
+      }, function () { return CONNECTOR_DOT_SIZE; })
     );
 
     panel.appendChild(
@@ -1452,46 +1510,42 @@
         if (connectorDotsMesh) {
           connectorDotsMesh.material.color.copy(connDotBaseColor).multiplyScalar(v);
         }
-      })
+      }, function () { return connDotGlowIntensity; })
     );
+  }
 
-    // --- Controls section ---
-    panel.appendChild(heading("Controls"));
+  function appendCityControlsSection(panel) {
+    panel.appendChild(makeCollapsibleGroup("Why-Us Points", true, function (container) {
+      for (var ci = 0; ci < POINTS_DATA.length; ci++) {
+        (function (i) {
+          container.appendChild(makeHeading(POINTS_DATA[i].label));
+          container.appendChild(
+            makeSlider("Lat", -90, 90, 0.5, POINTS_DATA[i].lat, function (v) {
+              POINTS_DATA[i].lat = v;
+              updateConnectorDotPosition(i);
+            }, function () { return POINTS_DATA[i].lat; })
+          );
+          container.appendChild(
+            makeSlider("Lng", -180, 180, 0.5, POINTS_DATA[i].lng, function (v) {
+              POINTS_DATA[i].lng = v;
+              updateConnectorDotPosition(i);
+            }, function () { return POINTS_DATA[i].lng; })
+          );
+        })(ci);
+      }
+    }));
+  }
 
-    var cityNames = [
-      "Hanoi",
-      "Ho Chi Minh",
-      "Bangkok",
-      "Singapore",
-      "Da Nang",
-      "Hong Kong",
-      "Manila",
-    ];
-    var btnRow = document.createElement("div");
-    btnRow.style.cssText = "margin:4px 0;display:flex;flex-wrap:wrap;gap:3px;";
-    cityNames.forEach(function (name, i) {
-      var b = document.createElement("button");
-      b.textContent = name;
-      b.style.cssText =
-        "background:#222;color:#ccc;border:1px solid #444;border-radius:3px;" +
-        "font-size:9px;padding:2px 5px;cursor:pointer;";
-      b.addEventListener("click", function () {
-        autoRotate = false;
-        rotateToPoint(i);
-      });
-      btnRow.appendChild(b);
-    });
-    panel.appendChild(btnRow);
-
-    // --- Debug Info section ---
-    panel.appendChild(heading("Debug Info"));
+  function appendDebugInfoSection(panel) {
+    panel.appendChild(makeHeading("Debug Info"));
     debugInfoEl = document.createElement("div");
     debugInfoEl.style.cssText =
       "font-size:9px;font-family:monospace;color:#aaa;line-height:1.4;";
     debugInfoEl.textContent = "rot.x: 0  rot.y: 0\nlat: 0  lng: 0";
     panel.appendChild(debugInfoEl);
+  }
 
-    // --- Capture button ---
+  function appendSnapshotSection(panel) {
     var captureBtn = document.createElement("button");
     captureBtn.textContent = "Capture";
     captureBtn.style.cssText =
@@ -1499,7 +1553,6 @@
       "border-radius:3px;font-size:10px;cursor:pointer;width:100%;";
     captureBtn.addEventListener("click", function () {
       var snapshot = {
-        // Lighting
         lighting: {
           ambient: ambientLight ? ambientLight.intensity : null,
           key: keyLight ? keyLight.intensity : null,
@@ -1520,7 +1573,6 @@
             };
           }),
         },
-        // Bloom / post-processing
         bloom: {
           active: !!bloomPass,
           strength: bloomPass ? bloomPass.strength : BLOOM_STRENGTH,
@@ -1531,14 +1583,15 @@
           type: renderer ? renderer.toneMapping : null,
           exposure: renderer ? renderer.toneMappingExposure : null,
         },
-        // Camera
         camera: {
           fov: camera ? camera.fov : null,
           position: camera ? { x: camera.position.x, y: camera.position.y, z: camera.position.z } : null,
+          lookAt: { x: cameraTarget.x, y: cameraTarget.y, z: cameraTarget.z },
         },
-        // Globe
         globe: {
           baseColor: GLOBE_BASE_COLOR,
+          color: globe ? "#" + globe.globeMaterial().color.getHexString() : null,
+          opacity: globe ? globe.globeMaterial().opacity : null,
           emissiveIntensity: EMISSIVE_INTENSITY,
           rotation: globeGroup ? {
             x: +(globeGroup.rotation.x * 180 / Math.PI).toFixed(2),
@@ -1547,15 +1600,36 @@
           } : null,
           autoRotate: autoRotate,
         },
-        // Rim Glow
+        vietnamTile: {
+          enabled: vietnamTileMesh ? vietnamTileMesh.visible : null,
+          size: VIETNAM_TILE_SIZE,
+          altitude: VIETNAM_TILE_ALTITUDE,
+          lat: VIETNAM_TILE_LAT,
+          lng: VIETNAM_TILE_LNG,
+          rotation: {
+            x: VIETNAM_TILE_ROTATE_X,
+            y: VIETNAM_TILE_ROTATE_Y,
+            z: VIETNAM_TILE_ROTATE_Z,
+          },
+          offset: {
+            x: VIETNAM_TILE_OFFSET_X,
+            y: VIETNAM_TILE_OFFSET_Y,
+            z: VIETNAM_TILE_OFFSET_Z,
+          },
+          position: vietnamTileMesh ? {
+            x: +vietnamTileMesh.position.x.toFixed(2),
+            y: +vietnamTileMesh.position.y.toFixed(2),
+            z: +vietnamTileMesh.position.z.toFixed(2),
+          } : null,
+        },
         rimGlow: {
           enabled: rimShellMesh ? rimShellMesh.visible : null,
           color: rimShellMesh ? "#" + rimShellMesh.material.uniforms.rimColor.value.getHexString() : RIM_SHELL_COLOR,
           intensity: rimShellMesh ? rimShellMesh.material.uniforms.rimIntensity.value : RIM_SHELL_INTENSITY,
           power: rimShellMesh ? rimShellMesh.material.uniforms.rimPower.value : RIM_SHELL_POWER,
           opacity: rimShellMesh ? rimShellMesh.material.uniforms.rimOpacity.value : RIM_SHELL_OPACITY,
+          radius: RIM_SHELL_RADIUS,
         },
-        // Overlay Grid
         overlayGrid: {
           wireframeColor: "#" + wireBaseColor.getHexString(),
           wireGlowIntensity: wireGlowIntensity,
@@ -1563,14 +1637,15 @@
           opacity: wireframeMesh ? wireframeMesh.material.opacity : WIREFRAME_OPACITY,
           wireframeRadius: WIREFRAME_RADIUS,
           dashed: wireframeMesh ? !!wireframeMesh.material.dashed : false,
+          dashSize: wireframeMesh ? wireframeMesh.material.dashSize : 0.7,
+          gapSize: wireframeMesh ? wireframeMesh.material.gapSize : 1.5,
+          lineOffset: WIREFRAME_RADIUS - GLOBE_RADIUS,
         },
-        // Dot Grid
         dotGrid: {
           color: "#" + dotBaseColor.getHexString(),
           size: GRID_DOT_SIZE,
           glowIntensity: dotGlowIntensity,
         },
-        // Connectors
         connectors: {
           color: connectorColor,
           width: connectorWidth,
@@ -1588,6 +1663,66 @@
     panel.appendChild(captureBtn);
   }
 
+  // ---------------------------------------------------------------------------
+  // Debug Panel (localhost only)
+  // ---------------------------------------------------------------------------
+
+  function createDebugPanel() {
+    var host = location.hostname;
+    if (host !== "localhost" && host !== "127.0.0.1") return;
+
+    sliderRegistry = [];
+    toggleRegistry = [];
+    colorRegistry = [];
+
+    // Overlay wrapper — sits outside .why-us so overflow:hidden cannot clip it
+    var wrapper = document.createElement("div");
+    wrapper.style.cssText =
+      "position:fixed;z-index:10001;pointer-events:none;top:0;left:0;width:0;height:0;";
+    document.body.appendChild(wrapper);
+    debugWrapper = wrapper;
+
+    // Gear toggle button
+    var btn = document.createElement("button");
+    btn.textContent = "\u2699";
+    btn.style.cssText =
+      "position:fixed;bottom:16px;right:16px;z-index:10000;width:32px;height:32px;" +
+      "border:none;border-radius:50%;background:rgba(0,0,0,0.5);color:#36C3DC;" +
+      "font-size:18px;cursor:pointer;line-height:32px;text-align:center;padding:0;" +
+      "pointer-events:auto;";
+    wrapper.appendChild(btn);
+    debugGearBtn = btn;
+
+    // Panel
+    var panel = document.createElement("div");
+    panel.style.cssText =
+      "position:fixed;bottom:56px;right:16px;z-index:10000;background:rgba(0,0,0,0.85);" +
+      "color:#ccc;font:11px/1.6 monospace;padding:10px 12px;border-radius:6px;" +
+      "max-height:70vh;overflow-y:auto;display:none;min-width:220px;pointer-events:auto;";
+    wrapper.appendChild(panel);
+    debugPanel = panel;
+
+    btn.addEventListener("click", function () {
+      panel.style.display = panel.style.display === "none" ? "block" : "none";
+    });
+
+    // Append all sections
+    appendLightingSection(panel);
+    appendBackLightAndSpotsSection(panel);
+    appendCameraSection(panel);
+    appendGlobeMaterialSection(panel);
+    appendVietnamTileSection(panel);
+    appendRimGlowSection(panel);
+    appendGlobeTransformSection(panel);
+    appendBloomSection(panel);
+    appendOverlayGridSection(panel);
+    appendDotGridSection(panel);
+    appendConnectorSection(panel);
+    appendCityControlsSection(panel);
+    appendDebugInfoSection(panel);
+    appendSnapshotSection(panel);
+  }
+
   function toggleDebug() {
     if (debugPanel) {
       debugPanel.style.display =
@@ -1596,35 +1731,36 @@
   }
 
   // ---------------------------------------------------------------------------
-  // Lifecycle
+  // Dispose Helpers
   // ---------------------------------------------------------------------------
 
-  function dispose() {
-    if (isDisposed) return;
-    isDisposed = true;
-    isInitialized = false;
-
+  function disposeTimers() {
     if (animFrameId) {
       cancelAnimationFrame(animFrameId);
       animFrameId = null;
     }
-
     clearTimeout(autoRotateResumeTimer);
     clearTimeout(resizeTimer);
     window.removeEventListener("resize", onResize);
+  }
 
+  function disposeSVGOverlay() {
     if (svgOverlay) {
       svgOverlay.remove();
       svgOverlay = null;
     }
+  }
 
-    // Dispose post-processing
+  function disposePostProcessing() {
     if (composer) {
       composer.renderTarget1.dispose();
       composer.renderTarget2.dispose();
       composer = null;
       bloomPass = null;
     }
+  }
+
+  function disposeDebugUI() {
     debugInfoEl = null;
     if (debugWrapper) {
       debugWrapper.remove();
@@ -1632,13 +1768,17 @@
     }
     debugGearBtn = null;
     debugPanel = null;
+    sliderRegistry = [];
+    toggleRegistry = [];
+    colorRegistry = [];
     ambientLight = null;
     keyLight = null;
     fillLight = null;
     backLight = null;
     spotLights = [null, null, null, null];
+  }
 
-    // Dispose Three.js resources
+  function disposeRenderer() {
     if (renderer) {
       renderer.forceContextLoss();
       renderer.dispose();
@@ -1647,7 +1787,9 @@
       }
       renderer = null;
     }
+  }
 
+  function disposeSceneGraph() {
     if (scene) {
       scene.traverse(function (obj) {
         if (obj.geometry) obj.geometry.dispose();
@@ -1663,8 +1805,16 @@
       });
       scene = null;
     }
+  }
 
+  function disposeMeshes() {
     globe = null;
+    if (vietnamTileMesh) {
+      vietnamTileMesh.geometry.dispose();
+      vietnamTileMesh.material.map.dispose();
+      vietnamTileMesh.material.dispose();
+      vietnamTileMesh = null;
+    }
     if (rimShellMesh) {
       rimShellMesh.geometry.dispose();
       rimShellMesh.material.dispose();
@@ -1675,6 +1825,24 @@
     globeGroup = null;
     camera = null;
     autoRotate = false;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Lifecycle
+  // ---------------------------------------------------------------------------
+
+  function dispose() {
+    if (isDisposed) return;
+    isDisposed = true;
+    isInitialized = false;
+
+    disposeTimers();
+    disposeSVGOverlay();
+    disposePostProcessing();
+    disposeDebugUI();
+    disposeRenderer();
+    disposeSceneGraph();
+    disposeMeshes();
   }
 
   /**
