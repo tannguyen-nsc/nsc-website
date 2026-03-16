@@ -25,9 +25,15 @@
 
   var GLOBE_RADIUS = 100;
   var WIREFRAME_RADIUS = 107;
-  var WIRE_LAT_BANDS = 10;    // latitude bands between poles
-  var WIRE_LNG_COUNT = 14;    // points per band
-  var WIRE_ARC_SEGMENTS = 8;  // interpolation segments per arc
+  var WIRE_LAT_BANDS = 18;    // latitude bands between poles
+  var WIRE_LNG_COUNT = 26;    // points per band
+  var WIRE_ARC_SEGMENTS = 6;  // interpolation segments per arc
+  var WIRE_LAT_LINEWIDTH = 1.0;    // latitude (horizontal) line width
+  var WIRE_LNG_LINEWIDTH = 0.5;    // longitude (diagonal+pole) line width
+  var WIRE_LAT_DASH_SIZE = 1.1;
+  var WIRE_LAT_GAP_SIZE = 1.5;
+  var WIRE_LNG_DASH_SIZE = 0.7;
+  var WIRE_LNG_GAP_SIZE = 1.5;
   var HEX_RESOLUTION = 3;
   var GLOBE_BASE_COLOR = "#36C3DC";
   var HEX_COLOR = "#fff";
@@ -60,7 +66,7 @@
   // State
   // ---------------------------------------------------------------------------
 
-  var scene, camera, renderer, globe, wireframeMesh, gridDotsMesh, globeGroup;
+  var scene, camera, renderer, globe, wireframeMesh, wireframeLngMesh, gridDotsMesh, globeGroup;
   var composer, bloomPass;
   var ambientLight, keyLight, fillLight, backLight;
   var spotLights = [null, null, null, null];
@@ -269,7 +275,8 @@
    */
   function generateDiamondGrid(radius, latBands, lngCount, arcSegments) {
     var points = [];
-    var arcs = [];
+    var latArcs = [];
+    var lngArcs = [];
     var bands = [];
 
     // North pole
@@ -298,38 +305,45 @@
     var southPole = new THREE.Vector3(0, -radius, 0);
     points.push(southPole);
 
-    // Connect north pole to first band
+    // Connect north pole to first band (longitude)
     if (bands.length > 0) {
       for (var n = 0; n < lngCount; n++) {
-        arcs.push(sphereSlerp(northPole, bands[0][n], radius, arcSegments));
+        lngArcs.push(sphereSlerp(northPole, bands[0][n], radius, arcSegments));
       }
     }
 
-    // Connect adjacent bands with diamond pattern
+    // Connect horizontal latitude lines within each band
+    for (var hi = 0; hi < bands.length; hi++) {
+      for (var hj = 0; hj < lngCount; hj++) {
+        latArcs.push(sphereSlerp(bands[hi][hj], bands[hi][(hj + 1) % lngCount], radius, arcSegments));
+      }
+    }
+
+    // Connect adjacent bands with diamond pattern (longitude)
     for (var bi = 0; bi < bands.length - 1; bi++) {
       var isEvenBand = (bi % 2 === 0);
       for (var bj = 0; bj < lngCount; bj++) {
         if (isEvenBand) {
           // Even band[j] -> next band[j] and next band[(j-1+M)%M]
-          arcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][bj], radius, arcSegments));
-          arcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][(bj - 1 + lngCount) % lngCount], radius, arcSegments));
+          lngArcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][bj], radius, arcSegments));
+          lngArcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][(bj - 1 + lngCount) % lngCount], radius, arcSegments));
         } else {
           // Odd band[j] -> next band[j] and next band[(j+1)%M]
-          arcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][bj], radius, arcSegments));
-          arcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][(bj + 1) % lngCount], radius, arcSegments));
+          lngArcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][bj], radius, arcSegments));
+          lngArcs.push(sphereSlerp(bands[bi][bj], bands[bi + 1][(bj + 1) % lngCount], radius, arcSegments));
         }
       }
     }
 
-    // Connect last band to south pole
+    // Connect last band to south pole (longitude)
     if (bands.length > 0) {
       var lastBand = bands[bands.length - 1];
       for (var s = 0; s < lngCount; s++) {
-        arcs.push(sphereSlerp(lastBand[s], southPole, radius, arcSegments));
+        lngArcs.push(sphereSlerp(lastBand[s], southPole, radius, arcSegments));
       }
     }
 
-    return { points: points, arcs: arcs };
+    return { points: points, latArcs: latArcs, lngArcs: lngArcs };
   }
 
   // ---------------------------------------------------------------------------
@@ -546,14 +560,11 @@
   // Wireframe helper (LineSegments2 for variable line width)
   // ---------------------------------------------------------------------------
 
-  function createWireframe(radius) {
-    var grid = generateDiamondGrid(radius, WIRE_LAT_BANDS, WIRE_LNG_COUNT, WIRE_ARC_SEGMENTS);
-
+  function createLineMeshFromArcs(arcs, linewidth, dashSize, gapSize) {
     if (THREE.LineSegmentsGeometry && THREE.LineMaterial && THREE.LineSegments2) {
-      // Convert arcs to line segment pairs
       var segPositions = [];
-      for (var a = 0; a < grid.arcs.length; a++) {
-        var arc = grid.arcs[a];
+      for (var a = 0; a < arcs.length; a++) {
+        var arc = arcs[a];
         for (var p = 0; p < arc.length - 1; p++) {
           segPositions.push(arc[p].x, arc[p].y, arc[p].z);
           segPositions.push(arc[p + 1].x, arc[p + 1].y, arc[p + 1].z);
@@ -567,10 +578,10 @@
         color: new THREE.Color(WIREFRAME_COLOR).getHex(),
         transparent: true,
         opacity: WIREFRAME_OPACITY,
-        linewidth: 0.5,
+        linewidth: linewidth,
         dashed: true,
-        dashSize: 0.7,
-        gapSize: 1.5,
+        dashSize: dashSize,
+        gapSize: gapSize,
         resolution: new THREE.Vector2(w, h),
       });
       wireMat.toneMapped = false;
@@ -581,8 +592,8 @@
 
     // Fallback: standard LineSegments
     var positions = [];
-    for (var fa = 0; fa < grid.arcs.length; fa++) {
-      var fArc = grid.arcs[fa];
+    for (var fa = 0; fa < arcs.length; fa++) {
+      var fArc = arcs[fa];
       for (var fp = 0; fp < fArc.length - 1; fp++) {
         positions.push(fArc[fp].x, fArc[fp].y, fArc[fp].z);
         positions.push(fArc[fp + 1].x, fArc[fp + 1].y, fArc[fp + 1].z);
@@ -596,6 +607,14 @@
       opacity: WIREFRAME_OPACITY,
       toneMapped: false,
     }));
+  }
+
+  function createWireframe(radius) {
+    var grid = generateDiamondGrid(radius, WIRE_LAT_BANDS, WIRE_LNG_COUNT, WIRE_ARC_SEGMENTS);
+    return {
+      lat: createLineMeshFromArcs(grid.latArcs, WIRE_LAT_LINEWIDTH, WIRE_LAT_DASH_SIZE, WIRE_LAT_GAP_SIZE),
+      lng: createLineMeshFromArcs(grid.lngArcs, WIRE_LNG_LINEWIDTH, WIRE_LNG_DASH_SIZE, WIRE_LNG_GAP_SIZE)
+    };
   }
 
   // ---------------------------------------------------------------------------
@@ -966,10 +985,15 @@
     globeGroup.add(vietnamTileMesh);
 
     // Wireframe overlay (using LineSegments2 for variable line width)
-    wireframeMesh = createWireframe(WIREFRAME_RADIUS);
+    var wirePair = createWireframe(WIREFRAME_RADIUS);
+    wireframeMesh = wirePair.lat;
+    wireframeLngMesh = wirePair.lng;
     wireframeMesh.material.color.copy(wireBaseColor).multiplyScalar(wireGlowIntensity);
     wireframeMesh.renderOrder = 1;
     globeGroup.add(wireframeMesh);
+    wireframeLngMesh.material.color.copy(wireBaseColor).multiplyScalar(wireGlowIntensity);
+    wireframeLngMesh.renderOrder = 1;
+    globeGroup.add(wireframeLngMesh);
 
     // Grid dots at wireframe vertices
     gridDotsMesh = createGridDots(WIREFRAME_RADIUS);
@@ -1134,6 +1158,9 @@
       }
       if (wireframeMesh && wireframeMesh.material.resolution) {
         wireframeMesh.material.resolution.set(width, height);
+      }
+      if (wireframeLngMesh && wireframeLngMesh.material.resolution) {
+        wireframeLngMesh.material.resolution.set(width, height);
       }
     }, 150);
   }
@@ -1475,18 +1502,29 @@
   }
 
   function rebuildWireframeAndDots(newRadius) {
-    if (!wireframeMesh || !globeGroup) return;
-    var oldMat = wireframeMesh.material;
+    if (!wireframeMesh || !wireframeLngMesh || !globeGroup) return;
+    var oldLatMat = wireframeMesh.material;
+    var oldLngMat = wireframeLngMesh.material;
     wireframeMesh.geometry.dispose();
+    wireframeLngMesh.geometry.dispose();
     globeGroup.remove(wireframeMesh);
+    globeGroup.remove(wireframeLngMesh);
 
-    wireframeMesh = createWireframe(newRadius);
-    wireframeMesh.material = oldMat;
+    var wirePair = createWireframe(newRadius);
+    wireframeMesh = wirePair.lat;
+    wireframeLngMesh = wirePair.lng;
+    wireframeMesh.material = oldLatMat;
+    wireframeLngMesh.material = oldLngMat;
     if (wireframeMesh.computeLineDistances) {
       wireframeMesh.computeLineDistances();
     }
+    if (wireframeLngMesh.computeLineDistances) {
+      wireframeLngMesh.computeLineDistances();
+    }
     wireframeMesh.renderOrder = 1;
+    wireframeLngMesh.renderOrder = 1;
     globeGroup.add(wireframeMesh);
+    globeGroup.add(wireframeLngMesh);
 
     if (gridDotsMesh) {
       gridDotsMesh.geometry.dispose();
@@ -1508,6 +1546,9 @@
         if (wireframeMesh) {
           wireframeMesh.material.color.copy(wireBaseColor).multiplyScalar(wireGlowIntensity);
         }
+        if (wireframeLngMesh) {
+          wireframeLngMesh.material.color.copy(wireBaseColor).multiplyScalar(wireGlowIntensity);
+        }
       },
       function () { return "#" + wireBaseColor.getHexString(); }
     ));
@@ -1518,16 +1559,29 @@
         if (wireframeMesh) {
           wireframeMesh.material.color.copy(wireBaseColor).multiplyScalar(v);
         }
+        if (wireframeLngMesh) {
+          wireframeLngMesh.material.color.copy(wireBaseColor).multiplyScalar(v);
+        }
       }, function () { return wireGlowIntensity; })
     );
 
     panel.appendChild(
-      makeSlider("Line Width", 0.5, 5, 0.5, wireframeMesh ? wireframeMesh.material.linewidth || 1 : 1, function (v) {
+      makeSlider("Lat Line Width", 0.5, 10, 0.5, WIRE_LAT_LINEWIDTH, function (v) {
+        WIRE_LAT_LINEWIDTH = v;
         if (wireframeMesh) {
           wireframeMesh.material.linewidth = v;
           wireframeMesh.material.needsUpdate = true;
         }
       }, function () { return wireframeMesh ? wireframeMesh.material.linewidth : null; })
+    );
+    panel.appendChild(
+      makeSlider("Lng Line Width", 0.5, 10, 0.5, WIRE_LNG_LINEWIDTH, function (v) {
+        WIRE_LNG_LINEWIDTH = v;
+        if (wireframeLngMesh) {
+          wireframeLngMesh.material.linewidth = v;
+          wireframeLngMesh.material.needsUpdate = true;
+        }
+      }, function () { return wireframeLngMesh ? wireframeLngMesh.material.linewidth : null; })
     );
     panel.appendChild(
       makeSlider("Grid Opacity", 0, 1, 0.05, wireframeMesh ? wireframeMesh.material.opacity : WIREFRAME_OPACITY, function (v) {
@@ -1536,31 +1590,59 @@
           wireframeMesh.material.transparent = v < 1;
           wireframeMesh.material.needsUpdate = true;
         }
+        if (wireframeLngMesh) {
+          wireframeLngMesh.material.opacity = v;
+          wireframeLngMesh.material.transparent = v < 1;
+          wireframeLngMesh.material.needsUpdate = true;
+        }
       }, function () { return wireframeMesh ? wireframeMesh.material.opacity : null; })
     );
 
     panel.appendChild(makeToggle("Dashed", true,
       function (v) {
-        if (!wireframeMesh) return;
-        wireframeMesh.material.dashed = v;
-        wireframeMesh.material.needsUpdate = true;
+        if (wireframeMesh) {
+          wireframeMesh.material.dashed = v;
+          wireframeMesh.material.needsUpdate = true;
+        }
+        if (wireframeLngMesh) {
+          wireframeLngMesh.material.dashed = v;
+          wireframeLngMesh.material.needsUpdate = true;
+        }
       },
       function () { return wireframeMesh ? !!wireframeMesh.material.dashed : null; }
     ));
 
     panel.appendChild(
-      makeSlider("Dash Size", 0.05, 2, 0.05, 0.7, function (v) {
+      makeSlider("Lat Dash Size", 0.05, 2, 0.05, WIRE_LAT_DASH_SIZE, function (v) {
+        WIRE_LAT_DASH_SIZE = v;
         if (wireframeMesh) {
           wireframeMesh.material.dashSize = v;
         }
       }, function () { return wireframeMesh ? wireframeMesh.material.dashSize : null; })
     );
     panel.appendChild(
-      makeSlider("Gap Size", 0.05, 2, 0.05, 1.5, function (v) {
+      makeSlider("Lat Gap Size", 0.05, 2, 0.05, WIRE_LAT_GAP_SIZE, function (v) {
+        WIRE_LAT_GAP_SIZE = v;
         if (wireframeMesh) {
           wireframeMesh.material.gapSize = v;
         }
       }, function () { return wireframeMesh ? wireframeMesh.material.gapSize : null; })
+    );
+    panel.appendChild(
+      makeSlider("Lng Dash Size", 0.05, 2, 0.05, WIRE_LNG_DASH_SIZE, function (v) {
+        WIRE_LNG_DASH_SIZE = v;
+        if (wireframeLngMesh) {
+          wireframeLngMesh.material.dashSize = v;
+        }
+      }, function () { return wireframeLngMesh ? wireframeLngMesh.material.dashSize : null; })
+    );
+    panel.appendChild(
+      makeSlider("Lng Gap Size", 0.05, 2, 0.05, WIRE_LNG_GAP_SIZE, function (v) {
+        WIRE_LNG_GAP_SIZE = v;
+        if (wireframeLngMesh) {
+          wireframeLngMesh.material.gapSize = v;
+        }
+      }, function () { return wireframeLngMesh ? wireframeLngMesh.material.gapSize : null; })
     );
 
     panel.appendChild(
@@ -1795,12 +1877,15 @@
         overlayGrid: {
           wireframeColor: "#" + wireBaseColor.getHexString(),
           wireGlowIntensity: wireGlowIntensity,
-          lineWidth: wireframeMesh ? wireframeMesh.material.linewidth || 1 : null,
+          latLineWidth: wireframeMesh ? wireframeMesh.material.linewidth || 1 : null,
+          lngLineWidth: wireframeLngMesh ? wireframeLngMesh.material.linewidth || 1 : null,
           opacity: wireframeMesh ? wireframeMesh.material.opacity : WIREFRAME_OPACITY,
           wireframeRadius: wireRadius,
           dashed: wireframeMesh ? !!wireframeMesh.material.dashed : false,
-          dashSize: wireframeMesh ? wireframeMesh.material.dashSize : 0.7,
-          gapSize: wireframeMesh ? wireframeMesh.material.gapSize : 1.5,
+          latDashSize: wireframeMesh ? wireframeMesh.material.dashSize : WIRE_LAT_DASH_SIZE,
+          latGapSize: wireframeMesh ? wireframeMesh.material.gapSize : WIRE_LAT_GAP_SIZE,
+          lngDashSize: wireframeLngMesh ? wireframeLngMesh.material.dashSize : WIRE_LNG_DASH_SIZE,
+          lngGapSize: wireframeLngMesh ? wireframeLngMesh.material.gapSize : WIRE_LNG_GAP_SIZE,
           lineOffset: wireRadius - GLOBE_RADIUS,
           latBands: WIRE_LAT_BANDS,
           lngCount: WIRE_LNG_COUNT,
@@ -1986,6 +2071,7 @@
       rimShellMesh = null;
     }
     wireframeMesh = null;
+    wireframeLngMesh = null;
     gridDotsMesh = null;
     globeGroup = null;
     camera = null;
