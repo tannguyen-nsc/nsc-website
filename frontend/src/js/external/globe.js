@@ -102,11 +102,12 @@
   var connDotBaseColor = new THREE.Color(CONNECTOR_DOT_COLOR);
   var connDotGlowIntensity = 2.6;
   var rimShellMesh = null;
-  var RIM_SHELL_COLOR = "#00b3ff";
-  var RIM_SHELL_INTENSITY = 4.5;
-  var RIM_SHELL_POWER = 7.2;
+  var RIM_SHELL_COLOR = "#32F4FE";
+  var RIM_SHELL_INTENSITY = 1.8;
+  var RIM_SHELL_POWER = 8;
   var RIM_SHELL_OPACITY = 0.5;
-  var RIM_SHELL_RADIUS = 100.5;
+  var RIM_SHELL_FILL = 0.45;
+  var RIM_SHELL_RADIUS = 100;
   var vietnamTileMesh = null;
   var VIETNAM_TILE_LAT = 16;
   var VIETNAM_TILE_LNG = 107;
@@ -720,6 +721,7 @@
         rimIntensity: { value: RIM_SHELL_INTENSITY },
         rimPower: { value: RIM_SHELL_POWER },
         rimOpacity: { value: RIM_SHELL_OPACITY },
+        rimFill: { value: RIM_SHELL_FILL },
       },
       vertexShader: [
         "varying vec3 vNormal;",
@@ -736,12 +738,19 @@
         "uniform float rimIntensity;",
         "uniform float rimPower;",
         "uniform float rimOpacity;",
+        "uniform float rimFill;",
         "varying vec3 vNormal;",
         "varying vec3 vViewDir;",
         "void main() {",
-        "  float fresnel = 1.0 - abs(dot(vNormal, vViewDir));",
-        "  fresnel = pow(fresnel, rimPower) * rimIntensity;",
-        "  gl_FragColor = vec4(rimColor * fresnel, fresnel * rimOpacity);",
+        "  float rawFresnel = 1.0 - abs(dot(vNormal, vViewDir));",
+        "  float rimEdge = pow(rawFresnel, rimPower);",
+        "  float rimRing = smoothstep(1.0 - max(rimFill, 0.01), 1.0, rawFresnel);",
+        "  float fresnelShape = mix(rimEdge, rimRing, rimFill);",
+        "  float brightness = fresnelShape * rimIntensity * rimOpacity;",
+        "  vec3 contrib = rimColor * brightness;",
+        "  float peak = max(contrib.r, max(contrib.g, contrib.b));",
+        "  if (peak > 1.0) contrib /= peak;",
+        "  gl_FragColor = vec4(contrib, 1.0);",
         "}",
       ].join("\n"),
       transparent: true,
@@ -1435,6 +1444,11 @@
       makeSlider("Opacity", 0, 1, 0.05, RIM_SHELL_OPACITY, function (v) {
         if (rimShellMesh) rimShellMesh.material.uniforms.rimOpacity.value = v;
       }, function () { return rimShellMesh ? rimShellMesh.material.uniforms.rimOpacity.value : null; })
+    );
+    panel.appendChild(
+      makeSlider("Fill", 0, 1, 0.05, RIM_SHELL_FILL, function (v) {
+        if (rimShellMesh) rimShellMesh.material.uniforms.rimFill.value = v;
+      }, function () { return rimShellMesh ? rimShellMesh.material.uniforms.rimFill.value : null; })
     );
     panel.appendChild(
       makeSlider("Radius", 100, 115, 0.5, RIM_SHELL_RADIUS, function (v) {
