@@ -18,6 +18,8 @@
   // Configuration
   // ---------------------------------------------------------------------------
 
+  var DEBUG_WHITELIST_DOMAINS = ["localhost", "127.0.0.1", "dev.nsc-software.com"];
+
   var BLOOM_STRENGTH = 0;
   var BLOOM_RADIUS = 0.1;
   var BLOOM_THRESHOLD = 0;
@@ -40,6 +42,7 @@
   var VIETNAM_HEX_COLOR = "#fff";
   var WIREFRAME_COLOR = "#ffffff";
   var WIREFRAME_OPACITY = 1;
+  var WIRE_SOFTNESS = 0.7;
   var GRID_DOT_COLOR = "#ffffff";
   var GRID_DOT_SIZE = 3;
   var ATMOSPHERE_COLOR = "#36C3DC";
@@ -577,6 +580,18 @@
   // Wireframe helper (LineSegments2 for variable line width)
   // ---------------------------------------------------------------------------
 
+  function applySoftEdge(mat, softness) {
+    mat.userData.softness = { value: softness };
+    mat.onBeforeCompile = function (shader) {
+      shader.uniforms.softness = mat.userData.softness;
+      shader.fragmentShader = "uniform float softness;\n" + shader.fragmentShader;
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "vec4 diffuseColor = vec4( diffuse, alpha );",
+        "float edgeDist = abs( vUv.x );\n\tfloat edgeFade = 1.0 - smoothstep( 1.0 - softness, 1.0, edgeDist );\n\talpha *= edgeFade;\n\tvec4 diffuseColor = vec4( diffuse, alpha );"
+      );
+    };
+  }
+
   function createLineMeshFromArcs(arcs, linewidth, dashSize, gapSize) {
     if (THREE.LineSegmentsGeometry && THREE.LineMaterial && THREE.LineSegments2) {
       var segPositions = [];
@@ -602,6 +617,7 @@
         resolution: new THREE.Vector2(w, h),
       });
       wireMat.toneMapped = false;
+      applySoftEdge(wireMat, WIRE_SOFTNESS);
       var mesh = new THREE.LineSegments2(lineGeo, wireMat);
       mesh.computeLineDistances();
       return mesh;
@@ -1697,6 +1713,17 @@
         }
       }, function () { return wireframeMesh ? wireframeMesh.material.opacity : null; })
     );
+    panel.appendChild(
+      makeSlider("Softness", 0, 1, 0.05, WIRE_SOFTNESS, function (v) {
+        WIRE_SOFTNESS = v;
+        if (wireframeMesh && wireframeMesh.material.userData.softness) {
+          wireframeMesh.material.userData.softness.value = v;
+        }
+        if (wireframeLngMesh && wireframeLngMesh.material.userData.softness) {
+          wireframeLngMesh.material.userData.softness.value = v;
+        }
+      }, function () { return WIRE_SOFTNESS; })
+    );
 
     panel.appendChild(makeToggle("Dashed", true,
       function (v) {
@@ -2000,6 +2027,7 @@
           latLineWidth: wireframeMesh ? wireframeMesh.material.linewidth || 1 : null,
           lngLineWidth: wireframeLngMesh ? wireframeLngMesh.material.linewidth || 1 : null,
           opacity: wireframeMesh ? wireframeMesh.material.opacity : WIREFRAME_OPACITY,
+          softness: WIRE_SOFTNESS,
           wireframeRadius: wireRadius,
           dashed: wireframeMesh ? !!wireframeMesh.material.dashed : false,
           latDashSize: wireframeMesh ? wireframeMesh.material.dashSize : WIRE_LAT_DASH_SIZE,
@@ -2039,7 +2067,7 @@
 
   function createDebugPanel() {
     var host = location.hostname;
-    if (host !== "localhost" && host !== "127.0.0.1") return;
+    if (DEBUG_WHITELIST_DOMAINS.indexOf(host) === -1) return;
 
     sliderRegistry = [];
     toggleRegistry = [];
