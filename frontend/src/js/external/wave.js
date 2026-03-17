@@ -956,7 +956,9 @@
 
   function createDebugPanel() {
     var host = location.hostname;
-    if (host !== "localhost" && host !== "127.0.0.1") return;
+    var whitelist = window.NSC_DEBUG_WHITELIST_DOMAINS ||
+      ["localhost", "127.0.0.1", "dev.nsc-software.com"];
+    if (whitelist.indexOf(host) === -1) return;
 
     sliderRegistry = [];
     toggleRegistry = [];

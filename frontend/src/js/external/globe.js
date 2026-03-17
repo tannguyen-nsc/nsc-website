@@ -18,7 +18,9 @@
   // Configuration
   // ---------------------------------------------------------------------------
 
-  var DEBUG_WHITELIST_DOMAINS = ["localhost", "127.0.0.1", "dev.nsc-software.com"];
+  var DEBUG_WHITELIST_DOMAINS = window.NSC_DEBUG_WHITELIST_DOMAINS ||
+    ["localhost", "127.0.0.1", "dev.nsc-software.com"];
+  window.NSC_DEBUG_WHITELIST_DOMAINS = DEBUG_WHITELIST_DOMAINS;
 
   var BLOOM_STRENGTH = 0;
   var BLOOM_RADIUS = 0.1;
