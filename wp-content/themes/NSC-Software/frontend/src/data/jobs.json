@@ -1,0 +1,148 @@
+{
+  "jobs": [
+    {
+      "id": 1,
+      "title": "Full Stack Engineer (Javascript)",
+      "date": "11/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "engineering",
+      "link": "#"
+    },
+    {
+      "id": 2,
+      "title": "Full Stack Engineer (Nextjs)",
+      "date": "11/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "engineering",
+      "link": "#"
+    },
+    {
+      "id": 3,
+      "title": "Senior Full Stack Engineer",
+      "date": "10/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "engineering",
+      "link": "#"
+    },
+    {
+      "id": 4,
+      "title": "Full Stack Engineer (Angular)",
+      "date": "09/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "engineering",
+      "link": "#"
+    },
+    {
+      "id": 5,
+      "title": "Full Stack Engineer (Flutter)",
+      "date": "08/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "engineering",
+      "link": "#"
+    },
+    {
+      "id": 6,
+      "title": "Backend Engineer (Node.js)",
+      "date": "07/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "engineering",
+      "link": "#"
+    },
+    {
+      "id": 7,
+      "title": "DevOps Engineer",
+      "date": "06/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "engineering",
+      "link": "#"
+    },
+    {
+      "id": 8,
+      "title": "QA Engineer",
+      "date": "05/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "engineering",
+      "link": "#"
+    },
+    {
+      "id": 9,
+      "title": "Engineering Manager",
+      "date": "04/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "management",
+      "link": "#"
+    },
+    {
+      "id": 10,
+      "title": "Project Manager",
+      "date": "03/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "management",
+      "link": "#"
+    },
+    {
+      "id": 11,
+      "title": "Delivery Lead",
+      "date": "02/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "management",
+      "link": "#"
+    },
+    {
+      "id": 12,
+      "title": "Technical Director",
+      "date": "01/12/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "management",
+      "link": "#"
+    },
+    {
+      "id": 13,
+      "title": "Business Development Representative",
+      "date": "30/11/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "business",
+      "link": "#"
+    },
+    {
+      "id": 14,
+      "title": "Account Manager",
+      "date": "29/11/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "business",
+      "link": "#"
+    },
+    {
+      "id": 15,
+      "title": "Marketing Specialist",
+      "date": "28/11/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "business",
+      "link": "#"
+    },
+    {
+      "id": 16,
+      "title": "HR Coordinator",
+      "date": "27/11/2025",
+      "company": "NSC SOFTWARE",
+      "type": "Full-time",
+      "category": "business",
+      "link": "#"
+    }
+  ]
+}

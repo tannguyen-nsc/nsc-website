@@ -1,0 +1,113 @@
+.case-studies {
+  @apply relative bg-white py-12 lg:py-16 overflow-hidden bg-left-bottom bg-no-repeat lg:bg-[url('../img/case-studies-bg.png')] lg:bg-cover lg:bg-center;
+
+  [v-cloak] {
+    display: none;
+  }
+
+  .case-studies-empty {
+    @apply col-span-full py-8 text-center;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(93, 219, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(185, 241, 255, 0.1) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    @apply relative z-10 max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] mx-auto px-4;
+  }
+
+  .case-studies-header {
+    @apply flex items-center justify-center gap-3 mb-8 lg:mb-10;
+
+    svg {
+      @apply flex-shrink-0 w-6 h-6;
+    }
+
+    h2 {
+      @apply text-2xl lg:text-3xl xl:text-4xl font-bold text-black uppercase m-0;
+    }
+  }
+
+  .case-studies-filters {
+    @apply flex flex-wrap justify-center gap-6 lg:gap-3 mt-16 lg:mt-16 mb-12 lg:mb-16;
+
+    .filter-btn {
+      @apply inline-flex items-center gap-2 px-4 py-2.5 text-base lg:text-lg font-medium  transition-colors cursor-pointer rounded-lg text-[#838383] bg-[#F9F9FB];
+
+      svg {
+        @apply flex-shrink-0 w-4 h-4;
+      }
+
+      &:hover, &.filter-active {
+        @apply bg-primary text-white;
+
+        svg {
+          stroke: currentColor;
+        }
+
+        &:hover {
+          @apply bg-primary opacity-90;
+        }
+      }
+    }
+  }
+
+  .case-studies-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8;
+  }
+
+  .case-study-card {
+    @apply bg-white overflow-hidden border border-[#E5E5E5];
+
+    .card-image {
+      @apply relative w-full h-64 overflow-hidden p-4;
+
+      img {
+        @apply w-full h-full object-cover;
+      }
+    }
+
+    .card-content {
+      @apply  flex flex-col pt-2 px-4 pb-4 lg:pt-0;
+
+      .card-category {
+        @apply inline-block px-3 py-1 text-base lg:text-lg font-medium bg-[#F9F9FB] text-[#838383] mb-4  self-start rounded;
+      }
+
+      h3 {
+        @apply text-base xl:text-lg font-medium text-black mb-3 leading-tight;
+      }
+
+      .card-description {
+        @apply text-sm lg:text-base leading-relaxed mb-4 flex-grow;
+        overflow: hidden;
+      }
+
+      .card-read-more {
+        @apply inline-flex items-center gap-1.5 text-xs font-bold text-primary no-underline hover:gap-2 transition-all self-start;
+
+        svg {
+          @apply flex-shrink-0 w-4 h-4;
+        }
+
+        &:hover {
+          @apply opacity-80;
+        }
+      }
+    }
+  }
+
+  .case-studies-pagination {
+    @apply hidden pagination mt-8 lg:mt-10 lg:bg-[#F9F9FB] lg:rounded-lg border-t border-[#E5E5E5] lg:border-t-0;
+  }
+}

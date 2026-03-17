@@ -1,0 +1,233 @@
+.our-services {
+  @apply relative bg-cover bg-left bg-no-repeat flex flex-col items-center justify-center px-4 pt-40 pb-12 lg:pb-16 lg:pt-52;
+  .wrapper {
+    @apply flex flex-col items-center justify-center z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+  
+    .services {
+      @apply flex flex-wrap justify-center items-stretch z-50 pt-4 lg:pt-12 gap-4 lg:gap-8 lg:grid lg:grid-cols-3 lg:gap-8;
+
+      .service {
+        @apply flex flex-col px-4 bg-[#EBF9FB] border border-[#B5E9F0] flex-[0_0_calc((100%-1rem)/2)] max-w-[calc((100%-1rem)/2)] lg:w-full lg:max-w-full cursor-pointer lg:cursor-default transition-all duration-300 pb-12 self-stretch lg:h-full lg:relative lg:pb-4 lg:overflow-y-auto xl:overflow-hidden;
+
+        @screen lg {
+          height: var(--service-height, auto);
+          min-height: var(--service-height, auto);
+        }
+        
+        // Hide description by default (mobile: hidden, tablet: hidden but with transition)
+        .description {
+          @apply hidden xl:min-h-[150px];
+          @screen lg {
+            @apply block opacity-0 invisible overflow-hidden shrink-0 text-white;
+          }
+        }
+        
+        // Heading default color (primary)
+        h2 {
+          @apply text-primary text-left transition-colors duration-300 text-base lg:text-2xl 2xl:text-3xl font-bold;
+          @screen lg {
+            @apply absolute top-1/2 left-4 -translate-y-1/2 right-4;
+          }
+          
+          // Hide span by default
+          span {
+            @apply hidden;
+          }
+        }
+        
+        // Header and other text default colors
+        .header {
+          @apply flex items-start justify-between gap-2 transition-colors duration-300 text-xl lg:text-2xl 2xl:text-3xl w-full py-4;
+          
+          svg {
+            @apply inline-block flex-shrink-0;
+            
+            path {
+              @apply transition-colors duration-300;
+            }
+          }
+          
+          // Hide minus SVG by default
+          .minus {
+            @apply hidden;
+          }
+          
+          // Show plus SVG by default
+          .plus {
+            @apply block;
+          }
+        }
+
+        // Hover and focus states (tablet and up) - exclude first child
+        @screen lg {
+          &:not(:first-child):hover,
+          &:not(:first-child):focus,
+          &:not(:first-child):focus-within {
+            @apply bg-[url('../img/serivce-hover.png')] bg-cover bg-right-top bg-no-repeat;
+            height: var(--service-height, auto);
+            min-height: var(--service-height, auto);
+            
+            // Show description
+            .description {
+              @apply opacity-100 visible overflow-y-auto shrink-0;
+            }
+            
+            // Hide header number and plus SVG first
+            .header {
+              @apply text-white;
+
+              span {
+                @apply text-white text-base lg:text-lg xl:text-xl 2xl:text-2xl font-bold w-[90%] 2xl:w-full text-left;
+              }
+
+              svg {
+                @apply relative z-10 opacity-0 transition-opacity duration-200 ease-in-out;
+              }
+              
+              svg path {
+                @apply fill-white;
+              }
+              
+              // Show minus, hide plus on hover
+              .minus {
+                @apply block opacity-100 transition-opacity duration-300 ease-in-out delay-[250ms];
+              }
+              
+              .plus {
+                @apply hidden;
+              }
+            }
+            
+            // Show h2 at header number position with delay
+            h2 {
+              @apply hidden; 
+              
+              // Show span on active
+              span {
+                @apply inline;
+              }
+            }
+            
+            // Make h2 visible after delay
+            &:not(:first-child):hover h2,
+            &:not(:first-child):focus h2,
+            &:not(:first-child):focus-within h2 {
+              @apply opacity-100;
+            }
+            
+            .description p {
+              @apply text-white 2xl:mt-4;
+              transition: color 200ms ease 0ms;
+            }
+          }
+        }
+        
+        &:first-child {
+          @apply w-full flex-[0_0_100%] lg:justify-between max-w-full bg-transparent border-0 lg:w-full lg:max-w-full lg:bg-white lg:border self-stretch xl:min-h-[250px] 2xl:min-h-[240px];
+          
+          .description {
+            @apply text-center text-black lg:text-left block visible opacity-100 pt-4 text-base 2xl:text-xl font-medium lg:font-semibold ;
+          }
+
+          .buttons {
+            @apply text-left;
+            .btn {
+              @apply text-primary m-auto mt-4 lg:ml-0 lg:pl-0 lg:pb-0 lg:my-0 border-transparent bg-transparent;
+              svg {
+                &.right {
+                  @apply hidden lg:block;
+                }
+  
+                &.down {
+                  @apply block lg:hidden;
+                }
+  
+                path {
+                  @apply fill-primary stroke-primary;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Mobile Bottom Sheet Modal (outside .our-services for better positioning)
+.bottom-sheet-overlay {
+    @apply fixed inset-0 bg-black/50 z-[100] hidden opacity-0 transition-opacity duration-300 ease-in-out lg:hidden touch-none;
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: none;
+    
+    &.active {
+      @apply block opacity-100 touch-none;
+      overscroll-behavior: none;
+      -webkit-overflow-scrolling: none;
+    }
+  }
+
+.bottom-sheet {
+    @apply fixed left-1/2 top-1/2 z-[101] hidden -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ease-in-out overflow-y-auto lg:hidden bg-[url('../img/serivce-hover.png')] bg-primary bg-cover bg-right-top bg-no-repeat max-h-[90vh] w-[90%] mx-auto opacity-0;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    
+    &.active {
+      @apply block opacity-100;
+    }
+
+    .bottom-sheet-header {
+      @apply sticky top-0 z-10 px-4 p-4 border-b-0 flex items-center justify-between text-white;
+      
+      .bottom-sheet-title {
+        @apply text-base font-bold text-white;
+      }
+      
+      .bottom-sheet-close {
+        @apply w-8 h-8 flex items-center justify-center cursor-pointer bg-transparent border-0 p-0;
+        
+        svg {
+          @apply w-6 h-6;
+          
+          path {
+            @apply fill-white;
+          }
+        }
+      }
+    }
+
+    .bottom-sheet-content {
+      @apply px-4 pt-4 text-white pb-8;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      
+      .service-content {
+        @apply space-y-4 text-white;
+        
+        h2 {
+          @apply text-white;
+        }
+        
+        p {
+          @apply text-white;
+        }
+      }
+      
+      .service-description {
+        @apply text-white text-base font-medium leading-relaxed mb-6 leading-[1.6];
+      }
+      
+      .service-features {
+        @apply flex flex-col gap-3 w-full mt-4;
+        
+        .feature-item {
+          @apply flex items-start gap-2 text-white text-base leading-[1.5];
+          
+          &::before {
+            content: '•';
+            @apply text-white shrink-0 mr-2 font-bold;
+          }
+        }
+      }
+    }
+  }

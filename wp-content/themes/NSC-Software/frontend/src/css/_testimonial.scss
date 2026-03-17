@@ -1,0 +1,248 @@
+.testimonials {
+  @apply relative lg:min-h-[180vw] md:min-h-[130vw] lg:min-h-[55vw] xl:min-h-[50vw] bg-cover lg:bg-right-top bg-no-repeat flex flex-col items-center justify-start lg:justify-center py-12 lg:py-16;
+  
+  .wrapper {
+    @apply flex flex-col lg:justify-center z-50 max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] px-4 gap-4 lg:gap-0;
+    
+    .description {
+      @apply relative z-10 text-center flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-4 border-b border-[#E5E5E5] pt-4 py-8 lg:py-12;
+      
+      p {
+        @apply w-full lg:w-[60%] xl:w-[70%] lg:text-left pb-4 lg:pb-0 text-xl 2xl:text-2xl;
+      }
+    }
+
+    .logos {
+      @apply relative w-full xl:max-w-[1280px] overflow-hidden md:overflow-hidden border-b border-[#E5E5E5] lg:border-b-0 pt-4 pb-8 lg:py-12;
+      
+      &.slick-slider {
+        @apply w-full;
+      }
+      
+      .slick-list {
+        @apply w-full overflow-visible 2xl:w-full;
+      }
+      
+      .slick-track {
+        @apply flex items-center 2xl:w-full 2xl:flex 2xl:left-0;
+      }
+      
+      .logo {
+        @apply px-4 items-center justify-center outline-none;
+        
+        img {
+          @apply w-full max-w-full h-auto max-h-[56px] lg:max-h-[80px] object-contain opacity-70 transition-opacity duration-100 grayscale;
+          
+          &:hover {
+            @apply opacity-100 grayscale-0;
+          }
+        }
+      }
+    }
+
+    .testimonials-slider {
+      @apply w-full;
+
+      .slick-prev, .slick-next {
+        display: none !important;
+      }
+
+      .slick-track {
+        @apply flex;
+        
+        .slick-slide {
+          @apply h-auto;
+          
+          // > div:not(.header, .footer) {
+          //   @apply h-full;
+          // }
+        }
+      }
+      
+      .item {
+        @apply flex flex-col border border-[#E5E5E5] rounded lg:mx-2;
+        
+        &:focus, &:hover {
+          @apply text-white border-transparent bg-cover bg-center bg-no-repeat bg-[url('../img/testimonial-card-hover.png')];
+        }
+
+        .header {
+          @apply flex-shrink-0 pl-4 pt-4;
+        }
+        
+        &:focus .header svg path,
+        &:hover .header svg path {
+          @apply fill-white;
+        }
+        
+        .content {
+          @apply flex-grow flex flex-col px-4 py-6;
+          
+          p {
+            @apply flex-grow mb-4;
+          }
+          
+          .read-more {
+            @apply text-primary font-bold flex items-center gap-1 justify-end;
+            
+            svg path {
+              @apply fill-primary stroke-primary;
+            }
+          }
+        }
+        
+        .popup-content {
+          @apply hidden;
+        }
+
+        &:focus .content,
+        &:hover .content {
+          .read-more {
+            @apply text-white font-bold;
+            svg path {
+              @apply fill-white stroke-white;
+            }
+          }
+
+          svg path {
+            @apply fill-white;
+          }
+        }
+
+        .footer {
+          @apply flex-shrink-0 mt-auto flex items-center gap-4 px-4 pt-8 md:pt-12 lg:pt-8 pb-4 bg-no-repeat bg-[url('../img/testimonial-credit.png')] bg-cover bg-[top_left];
+          
+          .thumbnail {
+            @apply flex-shrink-0;
+            
+            img {
+              @apply w-16 h-16 rounded-full object-cover;
+            }
+          }
+          
+          .name {
+            @apply flex flex-col;
+            
+            h3 {
+              @apply font-bold text-black text-lg mb-1 ;
+            }
+            
+            p {
+              @apply text-sm ;
+            }
+          }
+        }
+        
+        &:focus .footer,
+        &:hover .footer {
+          @apply bg-no-repeat bg-[url('../img/testimonial-credit-hover.png')] bg-cover bg-[top_left];
+          
+          .name {
+            h3 {
+              @apply text-white;
+            }
+            
+            p {
+              @apply text-white;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Testimonial Modal
+.testimonial-modal-overlay {
+  @apply fixed inset-0 bg-black bg-opacity-50 z-[9998] hidden;
+  @apply touch-none;
+  overscroll-behavior: none;
+  
+  &.active {
+    @apply block;
+    @apply touch-none;
+    overscroll-behavior: none;
+  }
+}
+
+.testimonial-modal {
+  @apply fixed top-1/2 left-1/2 lg:left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-[9999] bg-white rounded-lg border border-[#E5E5E5] lg:max-w-2xl lg:mr-0 w-[calc(100%-3rem)] lg:w-full max-h-[90vh] overflow-hidden hidden flex flex-col;
+  
+  &.active {
+    @apply flex;
+  }
+  
+  .testimonial-modal-close {
+    @apply absolute top-2 right-2 md:top-4 md:right-4 w-8 h-8 flex items-center justify-center border border-gray-300 rounded bg-gray-100 hover:bg-gray-200 transition-colors z-10;
+    
+    svg {
+      @apply w-5 h-5;
+    }
+  }
+  
+  .testimonial-modal-content {
+    @apply flex flex-col h-full;
+  }
+  
+  .testimonial-modal-header {
+    @apply flex-shrink-0 pl-2 pt-2 sm:pl-3 sm:pt-3 md:pl-4 md:pt-4;
+    
+    svg path {
+      @apply fill-[#99CDE4];
+    }
+  }
+  
+  .testimonial-modal-body {
+    @apply flex-grow overflow-y-auto px-2 py-2 sm:px-3 sm:py-3 md:px-4 md:py-4 pr-[calc(0.5rem+8px)];
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    
+    @screen sm {
+      @apply pr-[calc(0.75rem+8px)];
+    }
+    
+    @screen md {
+      @apply pr-4;
+    }
+    
+    .testimonial-modal-text {
+      @apply text-black;
+      
+      p {
+        @apply mb-4;
+      }
+      
+      .read-more {
+        @apply text-primary font-bold flex items-center gap-1 justify-end mt-4;
+        
+        svg path {
+          @apply fill-primary stroke-primary;
+        }
+      }
+    }
+  }
+  
+  .testimonial-modal-footer {
+    @apply flex-shrink-0 flex items-center gap-2 px-2 pt-4 pb-2 sm:gap-3 sm:px-3 sm:pt-6 sm:pb-3 md:gap-4 md:px-4 md:pt-12 lg:pt-8 md:pb-4 bg-no-repeat bg-[url('../img/popup-credit.png')] bg-cover bg-[top_left];
+    
+    .testimonial-modal-thumbnail {
+      @apply flex-shrink-0;
+      
+      img {
+        @apply w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover;
+      }
+    }
+    
+    .testimonial-modal-name {
+      @apply flex flex-col;
+      
+      h3 {
+        @apply font-bold text-black text-lg mb-1;
+      }
+      
+      p {
+        @apply text-sm;
+      }
+    }
+  }
+}

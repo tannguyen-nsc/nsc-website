@@ -1,0 +1,25 @@
+.ai-banner {
+  @apply relative min-h-[180vw] md:min-h-[130vw] lg:min-h-[50vw] flex items-center justify-center text-center bg-cover bg-left bg-no-repeat;
+
+  @media screen and (min-width: 1440px) {
+    @apply min-h-[48vw];
+  } 
+
+  @media screen and (min-width: 1600px) {
+    @apply min-h-[42vw];
+  } 
+
+  .wrapper {
+    @apply flex flex-col items-center justify-center text-center px-4;
+    .content {
+      @apply mx-auto text-white;
+      h2 {
+        @apply text-3xl xl:text-[42px] 2xl:text-5xl  font-semibold xl:leading-tight mb-8 2xl:mb-10;
+      }
+
+      p {
+        @apply text-base xl:text-2xl;
+      }
+    }
+  }
+}

@@ -1,0 +1,52 @@
+// AI Info section: two-column layout (visual left, content right)
+// Matches design: blurred code bg + teal overlay left; white content right with icon + heading + paragraph blocks
+
+.ai-info {
+  @apply grid grid-cols-1 lg:grid-cols-2 min-h-[80vh] overflow-hidden;
+
+  // Left column: banner image + blur + blue/teal overlay
+  .col:first-child {
+    @apply relative min-h-[320px] lg:min-h-0;
+
+    img {
+      @apply w-full h-full object-cover object-center;
+    }
+  }
+
+  // Right column: white background, content blocks
+  .col:last-child {
+    @apply flex items-center bg-white px-4 lg:px-12 2xl:px-24 py-12 2xl:py-16 ;
+  }
+
+  .content {
+    @apply w-full mx-auto text-left flex flex-col items-center justify-between h-full;
+  }
+
+  .content-item {
+    @apply mb-10 last:mb-0 lg:mb-0;
+
+    &:last-child {
+      @apply lg:mb-0;
+    }
+  }
+
+  // Override global section .heading: left-aligned, icon + heading inline, teal
+  .heading {
+    @apply w-full justify-start mb-4;
+    img {
+      @apply flex-shrink-0 w-10 h-10 lg:w-12 lg:h-12 object-contain mr-3 lg:mr-4 mt-0.5;
+    }
+
+    h3 {
+      @apply text-lg lg:text-xl xl:text-2xl font-bold leading-tight m-0 text-primary;
+    }
+  }
+
+  .description {
+    @apply pl-0;
+
+    p {
+      @apply text-black lg:text-base xl:text-lg font-medium leading-relaxed m-0;
+    }
+  }
+}

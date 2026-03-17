@@ -1,0 +1,86 @@
+.timeline { 
+  @apply relative min-h-[180vw] md:min-h-[130vw] lg:min-h-[55vw] xl:min-h-[50vw] flex flex-col items-center justify-center min-h-screen bg-cover bg-left-top bg-no-repeat px-4 py-12 lg:py-16 bg-[#FCFCFC];  
+  .wrapper {
+    @apply relative z-10 flex flex-col items-start justify-start lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+
+    // Info section (top section with heading and intro text)
+    .info {
+      @apply flex flex-col lg:flex-row items-stretch w-full;
+      
+      .col {
+        @apply w-full lg:w-1/2;
+        
+        &:first-child {
+          @apply flex flex-col items-start border-r border-white/20;
+          
+          img {
+            @apply max-w-[32px] lg:max-w-[56px] mb-4;
+          }
+          
+          h2 {
+            @apply text-black my-4 text-2xl lg:text-3xl xl:text-[42px] 2xl:text-5xl  font-bold uppercase;
+
+            &:last-child {
+              @apply lg:mb-8;
+            }
+          }
+
+          p {
+            @apply text-black text-lg lg:text-xl 2xl:text-2xl leading-relaxed font-semibold mt-4;
+          }
+        }
+        
+        &:last-child {
+          @apply flex flex-col gap-4 justify-center mb-4 py-4 lg:p-8;
+          
+          .timeline-items {
+            @apply flex flex-col lg:mt-[-4rem];
+            .timeline-item {
+              @apply flex  items-center justify-between min-h-[150px] lg:min-h-[124px];
+              .timeline-item-milestone {
+                @apply text-base lg:text-lg leading-relaxed font-normal text-left lg:text-center;
+                span {
+                  @apply relative text-primary text-lg lg:text-xl 2xl:text-2xl leading-relaxed font-bold border-2 border-primary px-4 py-2 bg-white;
+
+                  &::before {
+                    @apply content-[''] absolute top-[50px] lg:top-0 left-1/2 -translate-x-1/2 w-[2px] min-h-[50px] lg:min-h-[124px] h-full bg-primary z-[-1];
+                  }
+
+                  &::after {
+                    @apply content-[''] absolute bottom-[-69px] lg:bottom-[-84px] 2xl:bottom-[-79px] left-1/2 -translate-x-1/2 w-0 h-0 border-l-[5px] border-r-[5px] border-t-[7px] border-l-transparent border-r-transparent border-t-[#36C3DC];
+                  }
+                }
+              }
+
+              .timeline-item-content {
+                @apply w-2/3 xl:w-3/4;
+
+                h2 {
+                  @apply text-primary text-lg lg:text-xl 2xl:text-2xl leading-relaxed font-bold;
+                }
+
+                p {
+                  @apply text-black text-base 2xl:text-lg leading-relaxed font-semibold;
+                }
+              }
+
+              &:last-child {
+                .timeline-item-milestone {
+                  span {
+                    &::after, &::before {
+                      @apply hidden;
+                    }
+                  }
+                }
+              }
+            }
+          } 
+         }
+      }
+    }
+
+    .quote {  
+      @apply w-full px-4 lg:px-12 mb-8 text-black text-base 2xl:text-2xl leading-relaxed font-medium border-l-2 border-r-2 lg:border-l-[3px] lg:border-r-[3px] border-primary;
+    }
+  }
+}

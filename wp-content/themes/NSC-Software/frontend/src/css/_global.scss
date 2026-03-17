@@ -1,0 +1,125 @@
+:root {
+  --color-primary: #36C3DC;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Montserrat", Helvetica, sans-serif;
+  @apply text-base relative;
+}
+
+section {
+  .heading {
+    @apply relative z-10 flex mx-auto items-center justify-center;
+    img {   
+      @apply relative max-w-[32px] lg:max-w-[56px] mr-4 lg:mr-6 2xl:mr-8;
+    }
+
+    h2 {
+      @apply text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl  font-bold xl:leading-tight uppercase;
+    }
+
+    &.light {
+      h2 {
+        @apply text-white;
+      }
+    }
+  } 
+  
+  span {
+    &.highlight {
+    @apply relative text-white inline-block px-2 py-1 mb-2; 
+      &::before {
+        @apply content-[''] inline-block border-t-white border-l-white w-[12px] h-[12px] border-t-[3px] border-l-[3px] absolute top-0 left-0;
+      }
+
+      &::after {
+        @apply content-[''] inline-block border-b-white border-r-white w-[12px] h-[12px] border-b-[3px] border-r-[3px] absolute bottom-0 right-0;
+      }
+
+      &.primary {
+        @apply text-primary;
+        &::before {
+          @apply border-t-primary border-l-primary;
+        }
+
+        &::after {
+          @apply border-b-primary border-r-primary;
+        }
+      }
+    }
+  } 
+
+  .btn {
+    @apply flex items-center gap-1 bg-primary text-white px-4 py-2 border border-primary font-semibold w-fit gap-2;
+    
+    svg path {
+      @apply fill-white stroke-white;
+    }
+  
+    &:hover {
+      @apply text-primary bg-white border-primary;
+      
+      svg path {
+        @apply fill-primary stroke-primary;
+      }
+    }
+  }
+  
+  .pagination {
+    @apply flex flex-wrap items-center justify-between gap-3;
+  
+    .pagination-prev,
+    .pagination-next {
+      @apply inline-flex items-center text-sm lg:text-base text-primary font-bold bg-transparent border-0 cursor-pointer hover:opacity-80 transition-opacity gap-1 px-4 lg:px-5 py-4 lg:py-5;
+  
+      svg {
+        @apply flex-shrink-0 w-4 h-4;
+      }
+  
+      &:disabled {
+        @apply cursor-not-allowed;
+      }
+    }
+  
+    .pagination-numbers {
+      @apply flex items-center gap-1 lg:gap-2 py-4 lg:py-1;
+  
+      .pagination-num {
+        @apply min-w-[36px] h-9 lg:min-w-[48px] lg:h-12 flex items-center justify-center rounded text-sm lg:text-base font-bold bg-transparent border border-transparent cursor-pointer hover:text-primary transition-colors;
+      }
+  
+      .pagination-num-active {
+        @apply bg-white text-primary border border-[#E5E5E5] shadow-sm;
+      }
+  
+      .pagination-ellipsis {
+        @apply min-w-[36px] h-9 flex items-center justify-center text-sm lg:text-base;
+      }
+    }
+  }
+
+  &.no-padding {
+    padding: 0 !important;
+  }
+
+  &.no-padding-top {
+    padding-top: 0 !important;
+  }
+}
+
+// Hide animate__animated elements by default until they come into view
+.animate__animated {
+  opacity: 0;
+  visibility: hidden;
+  
+  // Show element when it's been animated (after intersection observer triggers)
+  &.in-view {
+    opacity: 1;
+    visibility: visible;
+  }
+}

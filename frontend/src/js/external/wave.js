@@ -91,11 +91,13 @@
       for (k = 0; k < dKeys.length; k++) {
         base[dKeys[k]] = defaults[dKeys[k]];
       }
+
       var pKeys = Object.keys(presets[name] || {});
       for (k = 0; k < pKeys.length; k++) {
         base[pKeys[k]] = presets[name][pKeys[k]];
       }
     }
+
     var allKeys = Object.keys(base);
     for (k = 0; k < allKeys.length; k++) {
       cfg[allKeys[k]] = base[allKeys[k]];
@@ -170,6 +172,7 @@
       amp *= 0.5;
       freq *= 2.0;
     }
+
     return val / max;
   }
 
@@ -217,6 +220,7 @@
     if (getter) {
       sliderRegistry.push({ inp: inp, val: val, getter: getter });
     }
+
     return row;
   }
 
@@ -269,6 +273,7 @@
     if (getter) {
       toggleRegistry.push({ checkbox: chk, getter: getter });
     }
+
     row.appendChild(lbl);
     row.appendChild(chk);
     return row;
@@ -290,6 +295,7 @@
     if (getter) {
       colorRegistry.push({ input: inp, getter: getter });
     }
+
     row.appendChild(lbl);
     row.appendChild(inp);
     return row;
@@ -312,12 +318,14 @@
       if (options[i].value === value) opt.selected = true;
       sel.appendChild(opt);
     }
+
     sel.addEventListener("change", function () {
       onChange(sel.value);
     });
     if (getter) {
       selectRegistry.push({ select: sel, getter: getter });
     }
+
     row.appendChild(lbl);
     row.appendChild(sel);
     return row;
@@ -399,6 +407,7 @@
     for (var i = 0; i < BREAKPOINTS.length; i++) {
       if (w >= BREAKPOINTS[i].minWidth) return BREAKPOINTS[i].cameraZoom;
     }
+
     return defaults.cameraZoom;
   }
 
@@ -407,6 +416,7 @@
     for (var i = 0; i < BREAKPOINTS.length; i++) {
       if (w >= BREAKPOINTS[i].minWidth) return BREAKPOINTS[i].cameraHeight;
     }
+
     return defaults.cameraHeight;
   }
 
@@ -657,6 +667,7 @@
               ctx.stroke();
               rowPathActive = false;
             }
+
             continue;
           }
 
@@ -693,6 +704,7 @@
             );
           }
         }
+
         if (rowPathActive) ctx.stroke();
         lineCount += cols - 1;
       }
@@ -712,6 +724,7 @@
             ctx.moveTo(screenX[pidx], screenY[pidx]);
             ctx.lineTo(screenX[idx], screenY[idx]);
           }
+
           ctx.stroke();
         } else {
           for (c = 0; c < cols; c++) {
@@ -727,6 +740,7 @@
             ctx.stroke();
           }
         }
+
         lineCount += cols;
       }
     }
@@ -751,6 +765,7 @@
         entry.val.textContent = Number(current).toFixed(2);
       }
     }
+
     for (ti = 0; ti < toggleRegistry.length; ti++) {
       entry = toggleRegistry[ti];
       current = entry.getter();
@@ -758,6 +773,7 @@
         entry.checkbox.checked = current;
       }
     }
+
     for (ci = 0; ci < colorRegistry.length; ci++) {
       entry = colorRegistry[ci];
       current = entry.getter();
@@ -765,6 +781,7 @@
         entry.input.value = current;
       }
     }
+
     for (xi = 0; xi < selectRegistry.length; xi++) {
       entry = selectRegistry[xi];
       current = entry.getter();
@@ -817,12 +834,14 @@
             btn.style.borderColor = "rgba(255,80,80,0.15)";
             btn.style.color = "rgba(255,120,120,0.7)";
           }
+
           btn.addEventListener("click", function () {
             applyPreset(name);
           });
           row.appendChild(btn);
         })(names[i]);
       }
+
       body.appendChild(row);
     }));
   }
@@ -945,6 +964,7 @@
       for (var i = 0; i < keys.length; i++) {
         snapshot[keys[i]] = cfg[keys[i]];
       }
+
       console.log("[NSCWave] Capture:", snapshot);
     });
     panel.appendChild(btn);
@@ -957,7 +977,7 @@
   function createDebugPanel() {
     var host = location.hostname;
     var whitelist = window.NSC_DEBUG_WHITELIST_DOMAINS ||
-      ["localhost", "127.0.0.1", "dev.nsc-software.com"];
+      ["localhost", "127.0.0.1", "dev.nsc-software.com", "nsc.test"];
     if (whitelist.indexOf(host) === -1) return;
 
     sliderRegistry = [];
@@ -1029,6 +1049,7 @@
     if (canvas && canvas.parentNode) {
       canvas.parentNode.removeChild(canvas);
     }
+
     canvas = null;
     ctx = null;
   }
@@ -1040,10 +1061,12 @@
     if (debugGearBtn && debugGearBtn.parentNode) {
       debugGearBtn.parentNode.removeChild(debugGearBtn);
     }
+
     if (debugWrapper) {
       debugWrapper.remove();
       debugWrapper = null;
     }
+
     debugGearBtn = null;
     debugPanel = null;
     sliderRegistry = [];
@@ -1057,6 +1080,7 @@
       cancelAnimationFrame(animFrameId);
       animFrameId = null;
     }
+
     if (boundResize) {
       window.removeEventListener("resize", boundResize);
       boundResize = null;

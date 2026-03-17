@@ -19,7 +19,7 @@
   // ---------------------------------------------------------------------------
 
   var DEBUG_WHITELIST_DOMAINS = window.NSC_DEBUG_WHITELIST_DOMAINS ||
-    ["localhost", "127.0.0.1", "dev.nsc-software.com"];
+    ["localhost", "127.0.0.1", "dev.nsc-software.com", "nsc.test"];
   window.NSC_DEBUG_WHITELIST_DOMAINS = DEBUG_WHITELIST_DOMAINS;
 
   var BLOOM_STRENGTH = 0;
@@ -264,6 +264,7 @@
       for (var i = 0; i <= segments; i++) {
         points.push(a.clone());
       }
+
       return points;
     }
 
@@ -278,6 +279,7 @@
         (na.z * sa + nb.z * sb) * radius
       ));
     }
+
     return points;
   }
 
@@ -314,6 +316,7 @@
         band.push(pt);
         points.push(pt);
       }
+
       bands.push(band);
     }
 
@@ -393,6 +396,7 @@
     if (getter) {
       sliderRegistry.push({ inp: inp, val: val, getter: getter });
     }
+
     return row;
   }
 
@@ -445,6 +449,7 @@
     if (getter) {
       toggleRegistry.push({ checkbox: chk, getter: getter });
     }
+
     row.appendChild(lbl);
     row.appendChild(chk);
     return row;
@@ -466,6 +471,7 @@
     if (getter) {
       colorRegistry.push({ input: inp, getter: getter });
     }
+
     row.appendChild(lbl);
     row.appendChild(inp);
     return row;
@@ -501,9 +507,11 @@
     if (svgOverlay && !document.contains(svgOverlay)) {
       svgOverlay = null;
     }
+
     if (!svgOverlay) {
       svgOverlay = createSVGOverlay();
     }
+
     if (!svgOverlay) return;
 
     var contentEl = document.querySelector(".why-us-content");
@@ -604,6 +612,7 @@
           segPositions.push(arc[p + 1].x, arc[p + 1].y, arc[p + 1].z);
         }
       }
+
       var lineGeo = new THREE.LineSegmentsGeometry();
       lineGeo.setPositions(segPositions);
       var w = containerEl ? containerEl.clientWidth : window.innerWidth;
@@ -634,6 +643,7 @@
         positions.push(fArc[fp + 1].x, fArc[fp + 1].y, fArc[fp + 1].z);
       }
     }
+
     var fallbackGeo = new THREE.BufferGeometry();
     fallbackGeo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     return new THREE.LineSegments(fallbackGeo, new THREE.LineBasicMaterial({
@@ -662,6 +672,7 @@
     for (var i = 0; i < grid.points.length; i++) {
       positions.push(grid.points[i].x, grid.points[i].y, grid.points[i].z);
     }
+
     var dotGeo = new THREE.BufferGeometry();
     dotGeo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
     // Draw a circle on a small canvas -> use as texture for round dots
@@ -808,6 +819,7 @@
       console.warn("[NSCGlobe] Bloom addons not yet available — will retry on three-addons-ready");
       return;
     }
+
     console.log("[NSCGlobe] Setting up bloom pipeline (OutputPass: " + !!THREE.OutputPass + ")");
     var rt = new THREE.WebGLRenderTarget(width, height, {
       format: THREE.RGBAFormat,
@@ -828,6 +840,7 @@
     if (THREE.OutputPass) {
       composer.addPass(new THREE.OutputPass());
     }
+
     // Synchronise render-target dimensions with pixel ratio so the
     // bloom pipeline starts at the correct physical resolution.
     composer.setSize(width, height);
@@ -857,6 +870,7 @@
       console.warn("[NSCGlobe] WebGL renderer creation failed:", e);
       return null;
     }
+
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(width, height);
     renderer.setClearColor(0x000000, 0);
@@ -938,6 +952,7 @@
     for (var i = 0; i < uvs.count; i++) {
       uvs.setX(i, 1 - uvs.getX(i));
     }
+
     var mat = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
@@ -1177,6 +1192,7 @@
         entry.val.textContent = Number(current).toFixed(2);
       }
     }
+
     for (var ti = 0; ti < toggleRegistry.length; ti++) {
       var tEntry = toggleRegistry[ti];
       var tCurrent = tEntry.getter();
@@ -1184,6 +1200,7 @@
         tEntry.checkbox.checked = tCurrent;
       }
     }
+
     for (var ci = 0; ci < colorRegistry.length; ci++) {
       var cEntry = colorRegistry[ci];
       var cCurrent = cEntry.getter();
@@ -1223,6 +1240,7 @@
       frameCount = 0;
       lastFpsTime = now;
     }
+
     if (statsFpsEl) statsFpsEl.textContent = fpsVal;
     if (statsPointsEl && renderer) statsPointsEl.textContent = renderer.info.render.points.toLocaleString();
     if (statsLinesEl && renderer) statsLinesEl.textContent = renderer.info.render.triangles.toLocaleString();
@@ -1269,9 +1287,11 @@
         composer.setPixelRatio(dpr);
         composer.setSize(width, height);
       }
+
       if (wireframeMesh && wireframeMesh.material.resolution) {
         wireframeMesh.material.resolution.set(width, height);
       }
+
       if (wireframeLngMesh && wireframeLngMesh.material.resolution) {
         wireframeLngMesh.material.resolution.set(width, height);
       }
@@ -1597,6 +1617,7 @@
       bloomNote.textContent = "Bloom not active — check console for missing deps";
       panel.appendChild(bloomNote);
     }
+
     panel.appendChild(
       makeSlider("Strength", 0, 5, 0.05, bloomPass ? bloomPass.strength : BLOOM_STRENGTH, function (v) {
         if (bloomPass) bloomPass.strength = v;
@@ -1636,9 +1657,11 @@
     if (wireframeMesh.computeLineDistances) {
       wireframeMesh.computeLineDistances();
     }
+
     if (wireframeLngMesh.computeLineDistances) {
       wireframeLngMesh.computeLineDistances();
     }
+
     wireframeMesh.renderOrder = 1;
     wireframeLngMesh.renderOrder = 1;
     globeGroup.add(wireframeMesh);
@@ -1649,6 +1672,7 @@
       gridDotsMesh.material.dispose();
       globeGroup.remove(gridDotsMesh);
     }
+
     gridDotsMesh = createGridDots(newRadius);
     gridDotsMesh.material.color.copy(dotBaseColor).multiplyScalar(dotGlowIntensity);
     gridDotsMesh.renderOrder = 2;
@@ -1664,6 +1688,7 @@
         if (wireframeMesh) {
           wireframeMesh.material.color.copy(wireBaseColor).multiplyScalar(wireGlowIntensity);
         }
+
         if (wireframeLngMesh) {
           wireframeLngMesh.material.color.copy(wireBaseColor).multiplyScalar(wireGlowIntensity);
         }
@@ -1677,6 +1702,7 @@
         if (wireframeMesh) {
           wireframeMesh.material.color.copy(wireBaseColor).multiplyScalar(v);
         }
+
         if (wireframeLngMesh) {
           wireframeLngMesh.material.color.copy(wireBaseColor).multiplyScalar(v);
         }
@@ -1708,6 +1734,7 @@
           wireframeMesh.material.transparent = v < 1;
           wireframeMesh.material.needsUpdate = true;
         }
+
         if (wireframeLngMesh) {
           wireframeLngMesh.material.opacity = v;
           wireframeLngMesh.material.transparent = v < 1;
@@ -1721,6 +1748,7 @@
         if (wireframeMesh && wireframeMesh.material.userData.softness) {
           wireframeMesh.material.userData.softness.value = v;
         }
+
         if (wireframeLngMesh && wireframeLngMesh.material.userData.softness) {
           wireframeLngMesh.material.userData.softness.value = v;
         }
@@ -1733,6 +1761,7 @@
           wireframeMesh.material.dashed = v;
           wireframeMesh.material.needsUpdate = true;
         }
+
         if (wireframeLngMesh) {
           wireframeLngMesh.material.dashed = v;
           wireframeLngMesh.material.needsUpdate = true;
@@ -2152,6 +2181,7 @@
       cancelAnimationFrame(animFrameId);
       animFrameId = null;
     }
+
     clearTimeout(autoRotateResumeTimer);
     clearTimeout(resizeTimer);
     window.removeEventListener("resize", onResize);
@@ -2180,10 +2210,12 @@
     if (debugGearBtn) {
       debugGearBtn.remove();
     }
+
     if (debugWrapper) {
       debugWrapper.remove();
       debugWrapper = null;
     }
+
     debugGearBtn = null;
     debugPanel = null;
     sliderRegistry = [];
@@ -2203,6 +2235,7 @@
       if (renderer.domElement && renderer.domElement.parentNode) {
         renderer.domElement.parentNode.removeChild(renderer.domElement);
       }
+
       renderer = null;
     }
   }
@@ -2235,11 +2268,13 @@
       vietnamTileMesh.material.dispose();
       vietnamTileMesh = null;
     }
+
     if (rimShellMesh) {
       rimShellMesh.geometry.dispose();
       rimShellMesh.material.dispose();
       rimShellMesh = null;
     }
+
     wireframeMesh = null;
     wireframeLngMesh = null;
     gridDotsMesh = null;

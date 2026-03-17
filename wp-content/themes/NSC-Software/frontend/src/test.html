@@ -1,0 +1,40 @@
+<style >
+  body {
+  background-color: #111;
+}
+
+#earth {
+    width: 300px;
+    height: 300px;
+    background: url(https://web.archive.org/web/20150807125159if_/http://www.noirextreme.com/digital/Earth-Color4096.jpg);
+    border-radius: 50%;
+    background-size: 610px;
+    box-shadow: inset 8px 36px 80px 36px rgb(0, 0, 0),
+    inset -6px 0 12px 4px rgba(255, 255, 255, 0.3);
+    background-position: 0px 0px;
+}
+</style>
+<div id="earth"></div>
+<script>
+  (function () {
+    var earth = document.getElementById('earth');
+    if (!earth) return;
+
+    var distanceX = 500; // equivalent to keyframe "to" value
+    var durationMs = 12000; // 12s linear
+    var start = null;
+
+    function animate(now) {
+      if (start === null) start = now;
+
+      var elapsed = (now - start) % durationMs;
+      var progress = elapsed / durationMs;
+      var x = distanceX * progress;
+
+      earth.style.backgroundPosition = x + 'px 0px';
+      requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+  })();
+</script>
