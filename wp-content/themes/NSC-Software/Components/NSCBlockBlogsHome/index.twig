@@ -1,0 +1,133 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockBlogsHome" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+  <section class="blogs no-padding-top {{ options.theme ? 'theme-' ~ options.theme : '' }}">
+  <div class="heading">
+    {% if headingIcon.url or headingIcon.src %}
+      <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+    {% elseif theme.buildUri %}
+      <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+    {% endif %}
+    <h2>{{ title|e }}</h2>
+  </div>
+  <div class="wrapper">
+    <div class="description">
+      {% if descriptionHeading %}<h3>{{ descriptionHeading|e }}</h3>{% endif %}
+      {% if descriptionParagraph %}<p>{{ descriptionParagraph|e }}</p>{% endif %}
+    </div>
+    <div class="blogs-wrapper">
+      {# Featured Insights column #}
+      <div class="col">
+        <div class="main">
+          <div class="header">
+            <h3>{{ labels.featuredTitle|default('Featured Insights')|e }}</h3>
+            <p>{{ labels.featuredDescription|default('Explore in-depth perspectives from our experts.')|e }}</p>
+          </div>
+          {% if featuredPosts|length > 0 %}
+            {% set mainFeatured = featuredPosts[0] %}
+            <div class="content">
+              {% if mainFeatured.thumbnail.src %}
+                <img src="{{ mainFeatured.thumbnail.src|e('esc_url') }}" alt="{{ mainFeatured.thumbnail.alt|default(mainFeatured.title)|e }}" loading="lazy" />
+              {% endif %}
+              <h2><a href="{{ mainFeatured.link|e('esc_url') }}">{{ mainFeatured.title|e }}</a></h2>
+              <a href="{{ mainFeatured.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                  <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                </svg></a>
+            </div>
+          {% endif %}
+        </div>
+        {% if featuredPosts|length > 1 %}
+          <div class="items">
+            {% for post in featuredPosts|slice(1, 3) %}
+              <div class="item">
+                <div class="thumbnail">
+                  {% if post.thumbnail.src %}
+                    <img src="{{ post.thumbnail.src|e('esc_url') }}" alt="{{ post.thumbnail.alt|default(post.title)|e }}" loading="lazy" />
+                  {% endif %}
+                </div>
+                <div class="content-wrapper">
+                  <h2><a href="{{ post.link|e('esc_url') }}">{{ post.title|e }}</a></h2>
+                  <a href="{{ post.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                      <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                    </svg></a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+      {# Latest Updates column #}
+      <div class="col">
+        <div class="main">
+          <div class="header">
+            <h3>{{ labels.latestTitle|default('Latest Updates')|e }}</h3>
+            <p>{{ labels.latestDescription|default('Keep up with our latest news and knowledge sharing.')|e }}</p>
+          </div>
+          {% if latestPosts|length > 0 %}
+            {% set mainLatest = latestPosts[0] %}
+            <div class="content">
+              {% if mainLatest.thumbnail.src %}
+                <img src="{{ mainLatest.thumbnail.src|e('esc_url') }}" alt="{{ mainLatest.thumbnail.alt|default(mainLatest.title)|e }}" loading="lazy" />
+              {% endif %}
+              <h2><a href="{{ mainLatest.link|e('esc_url') }}">{{ mainLatest.title|e }}</a></h2>
+              <a href="{{ mainLatest.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                  <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                </svg></a>
+            </div>
+          {% endif %}
+        </div>
+        {% if latestPosts|length > 1 %}
+          <div class="items">
+            {% for post in latestPosts|slice(1, 3) %}
+              <div class="item">
+                <div class="thumbnail">
+                  {% if post.thumbnail.src %}
+                    <img src="{{ post.thumbnail.src|e('esc_url') }}" alt="{{ post.thumbnail.alt|default(post.title)|e }}" loading="lazy" />
+                  {% endif %}
+                </div>
+                <div class="content-wrapper">
+                  <h2><a href="{{ post.link|e('esc_url') }}">{{ post.title|e }}</a></h2>
+                  <a href="{{ post.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                      <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                    </svg></a>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="join-us">
+      {% if joinConversation.image.url or joinConversation.image.src %}
+        <div class="image">
+          <img src="{{ (joinConversation.image.url|default(joinConversation.image.src))|e('esc_url') }}" alt="{{ joinConversation.title|e }}" loading="lazy" />
+        </div>
+      {% elseif theme.buildUri %}
+        <div class="image">
+          <img src="{{ theme.buildUri }}/img/join-conversation.png" alt="Join Us" loading="lazy" />
+        </div>
+      {% endif %}
+      <div class="content">
+        {% if joinConversation.title %}<h3>{{ joinConversation.title|e }}</h3>{% endif %}
+        {% if joinConversation.paragraph %}<p>{{ joinConversation.paragraph|e }}</p>{% endif %}
+        {% if joinConversation.buttonLabel and (joinConversation.buttonUrl or blogPageUrl) %}
+          <a href="{{ joinConversation.buttonUrl|default(blogPageUrl)|e('esc_url') }}" class="btn" {{ joinConversation.openInNewTab ? ' target="_blank" rel="noopener noreferrer"' }}>
+            {{ joinConversation.buttonLabel|e }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+              <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+            </svg>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% if theme.buildUri %}
+    <img src="{{ theme.buildUri }}/img/mob-blogs--bot-bg.png" class="block lg:hidden mob-bottom-pattern" alt="" loading="lazy" />
+  {% endif %}
+  </section>
+</nsc-software-component>
+{% endif %}

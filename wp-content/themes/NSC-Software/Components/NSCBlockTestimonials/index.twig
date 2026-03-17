@@ -1,0 +1,110 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockTestimonials" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+  {% set sectionBg = (backgroundImage.url|default(backgroundImage.src)) %}
+  <section class="testimonials {{ options.theme ? 'theme-' ~ options.theme : '' }}" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/testimonials.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <div class="heading">
+    {% if headingIcon.url or headingIcon.src %}
+      <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+    {% elseif theme.buildUri %}
+      <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+    {% endif %}
+    <h2>{{ title|e }}</h2>
+  </div>
+  <div class="wrapper">
+    <div class="description">
+      {% if introDescription %}<p>{{ introDescription|e }}</p>{% endif %}
+      {% if introButton.label and introButton.url %}
+        <a href="{{ introButton.url|e('esc_url') }}" class="btn" {{ introButton.openInNewTab ? ' target="_blank" rel="noopener noreferrer"' }}>
+          {{ introButton.label|e }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+          </svg>
+        </a>
+      {% endif %}
+    </div>
+    {% if logos|length %}
+      <div class="logos">
+        {% for logo in logos %}
+          {% if logo.image.url or logo.image.src %}
+            <div class="logo">
+              <img src="{{ (logo.image.url|default(logo.image.src))|e('esc_url') }}" alt="{{ (logo.image.alt|default(''))|e }}" loading="lazy" />
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% elseif theme.buildUri %}
+      {# Default client logos from frontend/build/index.html when none set #}
+      <div class="logos">
+        {% set defaultLogos = ['ACB.png', 'Petlinx.png', 'Atomworks.png', 'Greatscott.png', 'Healthcare.png', 'OCQ.png', 'visaplan.png', 'abri.png', 'anz.png', 'alawyer.png', 'hivello.png', 'commnia.png', 'STU.png', 'threat.png', 'littles.png', 'FW.png', 'monday.png', 'NUBO.png', 'salesbuildr.png', 'shft.png', 'dtails.png', 'timeblockr.png', 'Glassboxx.png', 'clowd.png', 'pl.png', 'Simpson.png', 'Timberyard.png', 'histofy.png', 'andromeda.png', 'endava.png', 'abouthealthcar.png', 'allshifts.png', 'Bruker.png'] %}
+        {% for filename in defaultLogos %}
+          <div class="logo">
+            <img src="{{ theme.buildUri }}/img/{{ filename }}" alt="Logo" loading="lazy" />
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% if testimonials|length %}
+      <div class="testimonials-slider">
+        {% for t in testimonials %}
+          <div class="item">
+            <div class="header">
+              <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+              </svg>
+            </div>
+            <div class="content">
+              <p>{{ t.content|e }}</p>
+              {% if t.readMoreContent %}
+                <a href="#" class="read-more">Read More <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                  <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                </svg></a>
+              {% endif %}
+            </div>
+            {% if t.readMoreContent %}
+              <div class="popup-content">{{ t.readMoreContent|raw }}</div>
+            {% endif %}
+            <div class="footer">
+              {% if t.image and (t.image.url or t.image.src) %}
+                <div class="thumbnail">
+                  <img src="{{ (t.image.url|default(t.image.src))|e('esc_url') }}" alt="{{ t.authorName|e }}" loading="lazy" />
+                </div>
+              {% elseif theme.buildUri and loop.index <= 8 %}
+                <div class="thumbnail">
+                  <img src="{{ theme.buildUri }}/img/testimonial{{ loop.index }}.png" alt="{{ t.authorName|e }}" loading="lazy" />
+                </div>
+              {% endif %}
+              <div class="name">
+                {% if t.authorName %}<h3>{{ t.authorName|e }}</h3>{% endif %}
+                {% if t.authorRole %}<p>{{ t.authorRole|e }}</p>{% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  <div class="testimonial-modal-overlay" id="testimonialModalOverlay"></div>
+  <div class="testimonial-modal" id="testimonialModal">
+    <button class="testimonial-modal-close" id="testimonialModalClose" aria-label="{{ __('Close', 'NscSoftware')|e }}">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <div class="testimonial-modal-content">
+      <div class="testimonial-modal-header">
+        <svg width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.83119 0.000208855L5.66319 11.5202L4.60719 7.20021C5.98319 7.20021 7.10319 7.60021 7.96719 8.40021C8.83119 9.20021 9.26319 10.3042 9.26319 11.7122C9.26319 13.0882 8.81519 14.2082 7.91919 15.0722C7.05519 15.9042 5.96719 16.3202 4.65519 16.3202C3.31119 16.3202 2.19119 15.9042 1.29519 15.0722C0.431188 14.2082 -0.000812411 13.0882 -0.000812411 11.7122C-0.000812411 11.2962 0.0311876 10.8962 0.0951876 10.5122C0.159188 10.0962 0.287188 9.61621 0.479188 9.07221C0.671188 8.52821 0.943188 7.80821 1.29519 6.91221L4.07919 0.000208855H8.83119ZM20.1592 0.000208855L16.9912 11.5202L15.9352 7.20021C17.3112 7.20021 18.4312 7.60021 19.2952 8.40021C20.1592 9.20021 20.5912 10.3042 20.5912 11.7122C20.5912 13.0882 20.1432 14.2082 19.2472 15.0722C18.3832 15.9042 17.2952 16.3202 15.9832 16.3202C14.6392 16.3202 13.5192 15.9042 12.6232 15.0722C11.7592 14.2082 11.3272 13.0882 11.3272 11.7122C11.3272 11.2962 11.3592 10.8962 11.4232 10.5122C11.4872 10.0962 11.6152 9.61621 11.8072 9.07221C11.9992 8.52821 12.2712 7.80821 12.6232 6.91221L15.4072 0.000208855H20.1592Z" fill="#99CDE4"/>
+        </svg>
+      </div>
+      <div class="testimonial-modal-body">
+        <div class="testimonial-modal-text" id="testimonialModalText"></div>
+      </div>
+      <div class="testimonial-modal-footer">
+        <div class="testimonial-modal-thumbnail" id="testimonialModalThumbnail"></div>
+        <div class="testimonial-modal-name" id="testimonialModalName"></div>
+      </div>
+    </div>
+  </div>
+  </section>
+</nsc-software-component>
+{% endif %}

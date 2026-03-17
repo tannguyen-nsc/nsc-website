@@ -3,16 +3,11 @@
 {% block content %}
   <article>
     <header>
-      {{ renderComponent('BlockPostHeader', { post: post }) }}
+      <h1>{{ post.title|e }}</h1>
+      {% if post.date %}<time datetime="{{ post.date('c') }}">{{ post.date }}</time>{% endif %}
     </header>
-    <section class="wp-block-post-content has-global-padding is-layout-constrained">
-        {{ post.content }}
-    </section>
-    <footer>
-      {{ renderComponent('BlockPostFooter', { post: post }) }}
-    </footer>
-    <section>
-      {{ renderComponent('GridPostsLatest', {'taxonomies': post.categories(), 'options': {'theme': 'light', 'maxColumns': 3}}) }}
+    <section class="wp-block-post-content">
+      {{ post.content }}
     </section>
   </article>
 {% endblock %}

@@ -1,0 +1,28 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockAiDriven" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+  {% set sectionBg = (backgroundImage.url|default(backgroundImage.src)) %}
+  <section class="ai-driven {{ options.theme ? 'theme-' ~ options.theme : '' }}" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/ai-driven.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <div class="wrapper">
+    <div class="content animate__animated animate__zoomIn">
+      <h2>{{ headline1|raw }}</h2>
+    </div>
+    <div class="content animate__animated animate__zoomIn">
+      <h2>{{ headline2|raw }}</h2>
+    </div>
+    <div class="block-content animate__animated animate__zoomIn">
+      <div class="description">
+        {% if description %}{{ description|raw }}{% endif %}
+      </div>
+      {% if button.label and button.url %}
+        <a href="{{ button.url|e('esc_url') }}" class="btn" {{ button.openInNewTab ? ' target="_blank" rel="noopener noreferrer"' }}>
+          {{ button.label|e }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
+          </svg>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  </section>
+</nsc-software-component>
+{% endif %}

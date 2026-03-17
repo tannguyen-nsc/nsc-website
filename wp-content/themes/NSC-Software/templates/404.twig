@@ -1,5 +1,9 @@
 {% extends 'templates/_document.twig' %}
 
 {% block content %}
-  {{ renderComponent('BlockNotFound') }}
+  <section class="error-404">
+    <h1>{{ __('Page not found', 'NscSoftware')|e }}</h1>
+    <p>{{ __('The page you are looking for might have been removed or is temporarily unavailable.', 'NscSoftware')|e }}</p>
+    <p><a href="{{ site.link|e('esc_url') }}">{{ __('Go to homepage', 'NscSoftware')|e }}</a></p>
+  </section>
 {% endblock %}

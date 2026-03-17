@@ -25,6 +25,23 @@ function getTheme($default = '')
     ];
 }
 
+/**
+ * Hidden option: when enabled, the component is not displayed on the front page.
+ *
+ * @return array<string, mixed>
+ */
+function getHidden()
+{
+    return [
+        'label' => __('Hide on front', 'NscSoftware'),
+        'name' => 'hidden',
+        'type' => 'true_false',
+        'message' => __('Hide this component on the front page', 'NscSoftware'),
+        'default_value' => 0,
+        'ui' => 1,
+    ];
+}
+
 
 function getSize($default = 'medium')
 {

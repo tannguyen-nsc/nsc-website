@@ -98,21 +98,21 @@ To render components into a template, see [Page Templates](#page-templates).
 
 #### Web Components
 
-Web components provide a standard component model for encapsulation and interoperability HTML elements. Most [components](#components) are based on an autonomous custom element called `NSC-Software-component`.
+Web components provide a standard component model for encapsulation and interoperability HTML elements. Most [components](#components) are based on an autonomous custom element called `nsc-software-component`.
 
 To define the name of a specific component use the `name` attribute, which should match the component’s folder name, to be ensure that its JavaScript is loaded as specified (see [JavaScript modules](#javascript-modules) for more details).
 
 For example:
 
 ```twig
-<NSC-Software-component name="BlockWysiwyg" …></NSC-Software-component>
+<nsc-software-component name="BlockWysiwyg" …></nsc-software-component>
 ```
 
 #### JavaScript modules
 
 Using a module based approach, allows to breaks JavaScript into separate files and keep them encapsuled inside [Components](#components) itself.
 
-Different loading strategies can be defined for each component independently when using the custom element `NSC-Software-component`:
+Different loading strategies can be defined for each component independently when using the custom element `nsc-software-component`:
 
 * `load:on="idle"`<br>
 Initialises after full page load, when the browser enters idle state.<br>
@@ -130,13 +130,13 @@ Usage example: Elements which may only be visible on certain screen sizes.
 Example:
 
 ```twig
-<NSC-Software-component name="BlockWysiwyg" load:on="visible"></NSC-Software-component>
+<nsc-software-component name="BlockWysiwyg" load:on="visible"></nsc-software-component>
 ```
 
 If it makes logical sense, loading strategies can be combined:
 
 ```twig
-<NSC-Software-component name="NavigationMain" load:on="idle" load:on:media="(min-width: 1024px)">
+<nsc-software-component name="NavigationMain" load:on="idle" load:on:media="(min-width: 1024px)">
 ```
 
 With nested components the loading strategy is waiting for parents. If you have a component with `load:on="idle"` nested inside a component with `load:on="visible"`, the child component will only be loaded on visible of the parent component.

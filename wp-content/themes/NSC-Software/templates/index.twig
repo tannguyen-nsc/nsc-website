@@ -1,8 +1,17 @@
 {% extends 'templates/_document.twig' %}
 
 {% block content %}
-  {{ renderComponent('GridPostsArchive', { posts: posts }) }}
-  {% for component in post.meta('pageComponents') %}
-    {{ renderComponent(component) }}
-  {% endfor %}
+  {% if posts %}
+    <section class="posts-archive">
+      <ul class="posts-list">
+        {% for post in posts %}
+          <li>
+            <a href="{{ post.link|e('esc_url') }}">{{ post.title|e }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% else %}
+    <p>{{ __('No posts found.', 'NscSoftware')|e }}</p>
+  {% endif %}
 {% endblock %}

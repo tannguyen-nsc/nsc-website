@@ -1,5 +1,20 @@
 {% extends 'templates/_document.twig' %}
 
 {% block content %}
-  {{ renderComponent('ListSearchResults', {posts: posts, pagination: posts.pagination, searchTerm: searchTerm}) }}
+  <section class="search-results">
+    {% if searchTerm %}
+      <h1>{{ __('Search results for:', 'NscSoftware')|e }} {{ searchTerm|e }}</h1>
+    {% endif %}
+    {% if posts %}
+      <ul class="results-list">
+        {% for post in posts %}
+          <li>
+            <a href="{{ post.link|e('esc_url') }}">{{ post.title|e }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>{{ __('No results found.', 'NscSoftware')|e }}</p>
+    {% endif %}
+  </section>
 {% endblock %}

@@ -19,6 +19,6 @@ import.meta.glob([
 ])
 
 window.customElements.define(
-  'NSC-Software-component',
+  'nsc-software-component',
   NscSoftwareComponent
 )

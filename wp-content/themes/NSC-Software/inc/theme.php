@@ -19,6 +19,7 @@ add_filter('big_image_size_threshold', '__return_false');
 
 add_filter('timber/context', function ($context) {
     $context['theme']->labels = Options::getTranslatable('Theme')['labels'] ?? [];
+    $context['theme']->buildUri = trailingslashit(get_template_directory_uri()) . 'frontend/build';
     return $context;
 });
 

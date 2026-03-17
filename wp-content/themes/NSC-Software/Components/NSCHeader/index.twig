@@ -1,0 +1,104 @@
+<nsc-software-component name="NSCHeader">
+  {# Mobile Header (shows for mobile up to xl) #}
+  <header class="mobile-header xl:hidden{{ headerClass ? ' ' ~ headerClass : '' }}">
+    <div class="mobile-header-wrapper">
+      <div class="mobile-logo-wrapper">
+        <a href="{{ site.link|e('esc_url') }}">
+          <img src="{{ (mobileLogo.white.src|default(mobileLogo.white.url)|default(buildUri ~ '/img/mob-logo-white.png'))|e('esc_url') }}" class="mobile-logo-white" alt="{{ (mobileLogo.white.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
+          <img src="{{ (mobileLogo.colored.src|default(mobileLogo.colored.url)|default(buildUri ~ '/img/mob-logo.png'))|e('esc_url') }}" class="mobile-logo-colored" alt="{{ (mobileLogo.colored.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
+        </a>
+      </div>
+      <div class="mobile-center">
+        <span class="mobile-home-text">{{ labels.mobileHomeText|default('Home')|e }}</span>
+      </div>
+      <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="{{ labels.ariaLabel|e }}">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 12H21M3 6H21M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mobile-nav" id="mobileNav">
+      <span>Menu</span>
+      <button class="mobile-nav-close" id="mobileNavClose" aria-label="{{ __('Close menu', 'NscSoftware')|e }}">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      {% if menu %}
+      <ul class="mobile-nav-list">
+        {% for item in menu.items %}
+          {% set _item_class = (item.classes|default([])|join(' '))|trim %}
+          {% if item.children %}
+            <li class="mobile-dropdown-parent">
+              <a class="mobile-nav-link mobile-dropdown-toggle no-link-cursor {{ _item_class }}">
+                {{ item.title|e }}
+                <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+              <ul class="mobile-dropdown">
+                {% for child in item.children %}
+                  {% set _child_class = (child.classes|default([])|join(' '))|trim %}
+                  <li>
+                    <a href="{{ child.link|e('esc_url') }}" class="mobile-nav-link {{ _child_class }}" {{ child.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>
+                      {{ child.title|e }}
+                      <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% else %}
+            <li>
+              <a href="{{ item.link|e('esc_url') }}" class="mobile-nav-link {{ item.current ? 'active' }} {{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>
+                {{ item.title|e }}
+                <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </header>
+
+  {# Desktop Header (shows for xl and up) #}
+  <header class="desktop-header hidden xl:block{{ headerClass ? ' ' ~ headerClass : '' }}">
+    <div class="wrapper">
+      <logo>
+        <a href="{{ site.link|e('esc_url') }}">
+          {% set _desktopLogoWhite = (logoWhite.src|default(logoWhite.url))|default('')|trim %}
+          {% set _desktopLogo = (logo.src|default(logo.url))|default('')|trim %}
+          <img src="{{ (_desktopLogoWhite|length ? _desktopLogoWhite : buildUri ~ '/img/logo-white.png')|e('esc_url') }}" class="logo-white" alt="{{ (logoWhite.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
+          <img src="{{ (_desktopLogo|length ? _desktopLogo : buildUri ~ '/img/logo.png')|e('esc_url') }}" class="logo" alt="{{ (logo.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
+        </a>
+      </logo>
+      {% if menu %}
+      <nav aria-label="{{ labels.ariaLabel|e }}">
+        <ul class="nav">
+          {% for item in menu.items %}
+            {% set _item_class = (item.classes|default([])|join(' '))|trim %}
+            {% if item.children %}
+              <li>
+                <a class="no-link-cursor {{ _item_class }}">{{ item.title|e }} <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+                <ul class="dropdown">
+                  {% for child in item.children %}
+                    {% set _child_class = (child.classes|default([])|join(' '))|trim %}
+                    <li><a href="{{ child.link|e('esc_url') }}" class="{{ _child_class }}" {{ child.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ child.title|e }}</a></li>
+                  {% endfor %}
+                </ul>
+              </li>
+            {% else %}
+              <li><a href="{{ item.link|e('esc_url') }}" class="{{ item.current ? 'active' }} {{ item.title == 'Contact Us' ? 'contact-btn' }} {{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </nav>
+      {% endif %}
+    </div>
+  </header>
+</nsc-software-component>

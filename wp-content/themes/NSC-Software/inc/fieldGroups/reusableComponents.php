@@ -16,15 +16,7 @@ add_action('NscSoftware/afterRegisterComponents', function () {
                 'type' => 'flexible_content',
                 'button_label' => __('Add Component', 'NscSoftware'),
                 'layouts' => [
-                    Components\BlockImage\getACFLayout(),
-                    Components\BlockImageText\getACFLayout(),
-                    Components\BlockSpacer\getACFLayout(),
-                    Components\BlockVideoOembed\getACFLayout(),
-                    Components\BlockWysiwyg\getACFLayout(),
-                    Components\GridImageText\getACFLayout(),
-                    Components\GridPostsLatest\getACFLayout(),
-                    Components\ListComponents\getACFLayout(),
-                    Components\SliderImages\getACFLayout(),
+                    Components\NSCBlockSectionHeading\getACFLayout(),
                 ],
             ]
         ],

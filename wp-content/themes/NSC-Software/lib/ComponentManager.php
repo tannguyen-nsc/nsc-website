@@ -149,13 +149,33 @@ class ComponentManager
      */
     public function get(string $componentName)
     {
-        // Check if component exists / is registered.
-        if (!$this->isRegistered($componentName)) {
+        $name = $this->resolveComponentName($componentName);
+        if ($name === null) {
             trigger_error("Cannot get component: Component '{$componentName}' is not registered!", E_USER_WARNING);
             return false;
         }
 
-        return $this->components[$componentName];
+        return $this->components[$name];
+    }
+
+    /**
+     * Resolve component name (e.g. NscBlockHero -> NSCBlockHero when that is registered).
+     *
+     * @param string $componentName The name of the component.
+     * @return string|null The registered component name, or null if not found.
+     */
+    protected function resolveComponentName(string $componentName)
+    {
+        // Exact key exists – return as-is.
+        if (array_key_exists($componentName, $this->components)) {
+            return $componentName;
+        }
+        // Map "NscBlockX" to "NSCBlockX" (ACF layout ucfirst gives Nsc, but folders are NSCBlockX).
+        $canonical = 'NSC' . substr($componentName, 3);
+        if (strlen($componentName) > 3 && substr($componentName, 0, 3) === 'Nsc' && array_key_exists($canonical, $this->components)) {
+            return $canonical;
+        }
+        return null;
     }
 
     /**
@@ -199,7 +219,13 @@ class ComponentManager
      */
     public function isRegistered(string $componentName)
     {
-        return array_key_exists($componentName, $this->components);
+        if (array_key_exists($componentName, $this->components)) {
+            return true;
+        }
+        if (strlen($componentName) > 3 && substr($componentName, 0, 3) === 'Nsc' && array_key_exists('NSC' . substr($componentName, 3), $this->components)) {
+            return true;
+        }
+        return false;
     }
 
     /**

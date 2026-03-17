@@ -71,7 +71,7 @@ function getScriptImport (node) {
 
 function hasParent (node) {
   if (!parents.has(node)) {
-    const parent = node.parentElement.closest('NSC-Software-component')
+    const parent = node.parentElement.closest('nsc-software-component')
     parents.set(node, parent)
     return !!parent
   } else {

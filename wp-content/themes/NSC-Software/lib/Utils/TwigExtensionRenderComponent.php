@@ -49,7 +49,13 @@ class TwigExtensionRenderComponent extends AbstractExtension
 
         if (is_array($componentName)) {
             $data = array_merge($componentName, $data);
-            $componentName = ucfirst($data['acf_fc_layout']);
+            $layout = $data['acf_fc_layout'];
+            // Map ACF layout "nscBlockX" to registered component name "NSCBlockX"
+            if (strlen($layout) > 3 && strtolower(substr($layout, 0, 3)) === 'nsc') {
+                $componentName = 'NSC' . substr($layout, 3);
+            } else {
+                $componentName = ucfirst($layout);
+            }
         }
 
         $fn = function ($output, $componentName, $data) use ($env, $context, $withContext, $ignoreMissing, $sandboxed) {

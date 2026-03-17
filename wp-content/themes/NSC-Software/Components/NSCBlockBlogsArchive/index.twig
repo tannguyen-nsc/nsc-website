@@ -1,0 +1,74 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockBlogsArchive" class="blogs blogs-archive {{ options.theme ? 'theme-' ~ options.theme : '' }}" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+  <div class="heading">
+    {% if headingIcon.url or headingIcon.src %}
+      <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+    {% elseif theme.buildUri %}
+      <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+    {% endif %}
+    <h2>{{ title|default('BLOGS')|e }}</h2>
+  </div>
+  <div class="wrapper">
+    {% if description %}
+      <div class="description">{{ description|raw }}</div>
+    {% endif %}
+    {% if terms|length > 1 %}
+      <ul class="filter">
+        {% for term in terms %}
+          <li class="item">
+            <a href="{{ term.link|e('esc_url') }}" class="button {{ term.isActive ? '' : 'button--outlined' }}">
+              <span class="visuallyHidden">{{ labels.filterBy|e }}</span>{{ term.title|e }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% if posts|length > 0 %}
+      <ul data-ref="posts" class="posts blog-list">
+        {% for post in posts %}
+          <li class="post item" data-theme="reset">
+            <a class="link" href="{{ post.link|e('esc_url') }}">
+              {% if post.thumbnail and post.thumbnail.src %}
+                <div class="thumbnail">
+                  <img src="{{ post.thumbnail.src|e('esc_url') }}" alt="{{ post.thumbnail.alt|default(post.title)|e }}" loading="lazy" />
+                </div>
+              {% endif %}
+              <div class="content-wrapper">
+                <h2 class="post-title">{{ post.title|e }}</h2>
+                {% if post.excerpt %}
+                  <p class="excerpt">{{ post.excerpt.read_more(false)|e }}</p>
+                {% endif %}
+                <span class="read-more">{{ labels.readMore|default('Read More')|e }}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                    <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
+                  </svg>
+                </span>
+              </div>
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="posts-empty">{{ labels.noPostsFound|default('No post found.')|e }}</p>
+    {% endif %}
+
+    {% if pagination.total > 1 %}
+      {% if loadMore and pagination.next %}
+        <div data-ref="pagination" class="pagination">
+          <a data-ref="loadMore" href="{{ pagination.next.link|e('esc_url') }}" class="button button-loadMore">{{ labels.loadMore|e }}</a>
+        </div>
+      {% else %}
+        <div class="pagination">
+          {% if pagination.prev %}
+            <a href="{{ pagination.prev.link|e('esc_url') }}" class="button button-previous">{{ labels.previous|e }}</a>
+          {% endif %}
+          {% if pagination.next %}
+            <a href="{{ pagination.next.link|e('esc_url') }}" class="button button-next">{{ labels.next|e }}</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</nsc-software-component>
+{% endif %}

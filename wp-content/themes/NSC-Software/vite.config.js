@@ -5,7 +5,7 @@ import globImporter from 'node-sass-glob-importer'
 import FullReload from 'vite-plugin-full-reload'
 import fs from 'fs'
 
-const wordpressHost = 'http://localhost:3000'
+const wordpressHost = 'http://nsc.test'
 
 const dest = './dist'
 const entries = [
@@ -54,6 +54,7 @@ export default defineConfig(({ mode }) => {
             key: fs.readFileSync(env.VITE_DEV_SERVER_KEY),
             cert: fs.readFileSync(env.VITE_DEV_SERVER_CERT)
           }
+
         : false,
       host: 'localhost' // preserve conflicts with IpV6
     },
