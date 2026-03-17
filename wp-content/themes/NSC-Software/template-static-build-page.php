@@ -33,6 +33,16 @@ $pageMap = [
     'test.html' => 'test',
 ];
 
+// Expose build base URI so JS (e.g. globe.js) can load assets like ./img/s.png from the theme.
+$nscBuildUriScript = '<script id="nsc-globe-build-uri">window.NSC_GLOBE_BUILD_URI='
+    . json_encode($buildUri, JSON_UNESCAPED_SLASHES)
+    . ";</script>\n";
+if (stripos($html, '</head>') !== false) {
+    $html = preg_replace('/<\/head>/i', $nscBuildUriScript . '</head>', $html, 1);
+} else {
+    $html = $nscBuildUriScript . $html;
+}
+
 // Rewrite static asset paths from the exported HTML to theme build assets.
 $html = strtr($html, [
     '"./css/' => '"' . $buildUri . '/css/',
