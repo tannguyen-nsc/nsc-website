@@ -83,7 +83,12 @@
   var isInitialized = false;
   var isDisposed = false;
   var resizeTimer = null;
-  var debugInfoEl = null;
+  var statsFpsEl = null;
+  var statsPointsEl = null;
+  var statsLinesEl = null;
+  var frameCount = 0;
+  var lastFpsTime = performance.now();
+  var fpsVal = 0;
   var sliderRegistry = [];
   var toggleRegistry = [];
   var colorRegistry = [];
@@ -1146,14 +1151,6 @@
   // ---------------------------------------------------------------------------
 
   function syncDebugPanel() {
-    if (debugInfoEl && globeGroup) {
-      var rx = ((globeGroup.rotation.x * 180) / Math.PI).toFixed(2);
-      var ry = ((globeGroup.rotation.y * 180) / Math.PI).toFixed(2);
-      var lat = ((globeGroup.rotation.x * 180) / Math.PI).toFixed(2);
-      var lng = ((-globeGroup.rotation.y * 180) / Math.PI).toFixed(2);
-      debugInfoEl.textContent =
-        "rot.x: " + rx + "  rot.y: " + ry + "\nlat: " + lat + "  lng: " + lng;
-    }
     for (var si = 0; si < sliderRegistry.length; si++) {
       var entry = sliderRegistry[si];
       var current = entry.getter();
@@ -1198,6 +1195,19 @@
     } else if (renderer && scene && camera) {
       renderer.render(scene, camera);
     }
+
+    // FPS + stats tracking
+    frameCount++;
+    var now = performance.now();
+    var elapsed = now - lastFpsTime;
+    if (elapsed >= 1000) {
+      fpsVal = Math.round(frameCount * 1000 / elapsed);
+      frameCount = 0;
+      lastFpsTime = now;
+    }
+    if (statsFpsEl) statsFpsEl.textContent = fpsVal;
+    if (statsPointsEl && renderer) statsPointsEl.textContent = renderer.info.render.points.toLocaleString();
+    if (statsLinesEl && renderer) statsLinesEl.textContent = renderer.info.render.triangles.toLocaleString();
   }
 
   // ---------------------------------------------------------------------------
@@ -1870,13 +1880,33 @@
     }));
   }
 
-  function appendDebugInfoSection(panel) {
-    panel.appendChild(makeHeading("Debug Info"));
-    debugInfoEl = document.createElement("div");
-    debugInfoEl.style.cssText =
-      "font-size:9px;font-family:monospace;color:#aaa;line-height:1.4;";
-    debugInfoEl.textContent = "rot.x: 0  rot.y: 0\nlat: 0  lng: 0";
-    panel.appendChild(debugInfoEl);
+  function appendStatsSection(panel) {
+    panel.appendChild(makeHeading("Stats"));
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.35);padding-top:4px;";
+
+    var fpsSpan = document.createElement("span");
+    fpsSpan.textContent = "FPS: ";
+    statsFpsEl = document.createElement("span");
+    statsFpsEl.textContent = "--";
+    fpsSpan.appendChild(statsFpsEl);
+
+    var ptsSpan = document.createElement("span");
+    ptsSpan.textContent = "Pts: ";
+    statsPointsEl = document.createElement("span");
+    statsPointsEl.textContent = "--";
+    ptsSpan.appendChild(statsPointsEl);
+
+    var trisSpan = document.createElement("span");
+    trisSpan.textContent = "Tris: ";
+    statsLinesEl = document.createElement("span");
+    statsLinesEl.textContent = "--";
+    trisSpan.appendChild(statsLinesEl);
+
+    row.appendChild(fpsSpan);
+    row.appendChild(ptsSpan);
+    row.appendChild(trisSpan);
+    panel.appendChild(row);
   }
 
   function appendSnapshotSection(panel) {
@@ -2060,6 +2090,7 @@
     });
 
     // Append all sections
+    appendStatsSection(panel);
     appendLightingSection(panel);
     appendBackLightAndSpotsSection(panel);
     appendCameraSection(panel);
@@ -2072,7 +2103,6 @@
     appendDotGridSection(panel);
     appendConnectorSection(panel);
     appendCityControlsSection(panel);
-    appendDebugInfoSection(panel);
     appendSnapshotSection(panel);
   }
 
@@ -2114,7 +2144,9 @@
   }
 
   function disposeDebugUI() {
-    debugInfoEl = null;
+    statsFpsEl = null;
+    statsPointsEl = null;
+    statsLinesEl = null;
     if (debugGearBtn) {
       debugGearBtn.remove();
     }

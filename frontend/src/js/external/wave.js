@@ -51,7 +51,8 @@
     showRows: true,
     showCols: true,
     depthFade: true,
-    heightColor: false
+    heightColor: false,
+    backfaceCull: true
   };
 
   var defaults = {};
@@ -506,6 +507,22 @@
       }
     }
 
+    // Compute per-quad facing (screen-space winding)
+    var quadFacing;
+    if (cfg.backfaceCull) {
+      quadFacing = new Float32Array((rows - 1) * (cols - 1));
+      for (r = 0; r < rows - 1; r++) {
+        for (c = 0; c < cols - 1; c++) {
+          idx = r * cols + c;
+          var ex1 = screenX[idx + 1] - screenX[idx];
+          var ey1 = screenY[idx + 1] - screenY[idx];
+          var ex2 = screenX[idx + cols] - screenX[idx];
+          var ey2 = screenY[idx + cols] - screenY[idx];
+          quadFacing[r * (cols - 1) + c] = ex1 * ey2 - ey1 * ex2;
+        }
+      }
+    }
+
     // Clear (transparent — hero background shows through)
     ctx.clearRect(0, 0, W, H);
 
@@ -520,24 +537,46 @@
     var lineCount = 0;
     var depthT, alpha, hNorm, bright, sx, sy, pidx;
 
-    // Draw filled quads with lighting (back-to-front for correct depth)
+    function isRowSegmentVisible(row, col) {
+      // Row segment from (row, col-1) to (row, col)
+      // Adjacent quads: (row-1, col-1) above, (row, col-1) below
+      var above = row > 0 ? quadFacing[(row - 1) * (cols - 1) + (col - 1)] : -1;
+      var below = row < rows - 1 ? quadFacing[row * (cols - 1) + (col - 1)] : -1;
+      return above >= 0 || below >= 0;
+    }
+
+    function isColSegmentVisible(row, col) {
+      // Col segment from (row-1, col) to (row, col)
+      // Adjacent quads: (row-1, col-1) left, (row-1, col) right
+      var left = col > 0 ? quadFacing[(row - 1) * (cols - 1) + (col - 1)] : -1;
+      var right = col < cols - 1 ? quadFacing[(row - 1) * (cols - 1) + col] : -1;
+      return left >= 0 || right >= 0;
+    }
+
+    // Hoist fill setup variables for unified loop
+    var frgb, fr, fg, fb, ldx, ldy, ldz, ldLen;
     if (cfg.showFill) {
-      var frgb = hexToRGB(cfg.fillColor);
-      var fr = frgb[0];
-      var fg = frgb[1];
-      var fb = frgb[2];
+      frgb = hexToRGB(cfg.fillColor);
+      fr = frgb[0];
+      fg = frgb[1];
+      fb = frgb[2];
 
       // Normalize light direction
-      var ldx = cfg.lightDirX;
-      var ldy = cfg.lightDirY;
-      var ldz = cfg.lightDirZ;
-      var ldLen = Math.sqrt(ldx * ldx + ldy * ldy + ldz * ldz) || 1;
+      ldx = cfg.lightDirX;
+      ldy = cfg.lightDirY;
+      ldz = cfg.lightDirZ;
+      ldLen = Math.sqrt(ldx * ldx + ldy * ldy + ldz * ldz) || 1;
       ldx /= ldLen;
       ldy /= ldLen;
       ldz /= ldLen;
+    }
 
-      for (r = 0; r < rows - 1; r++) {
-        depthT = r / (rows - 1);
+    // Unified back-to-front row loop — fills occlude lines from farther rows
+    for (r = 0; r < rows; r++) {
+      depthT = r / (rows - 1);
+
+      // (a) Fill quads for row r → r+1
+      if (cfg.showFill && r < rows - 1) {
         alpha = cfg.fillOpacity;
         if (cfg.depthFade) alpha *= (0.15 + 0.85 * (1 - depthT * 0.7));
         for (c = 0; c < cols - 1; c++) {
@@ -546,21 +585,20 @@
           var i01 = (r + 1) * cols + c;
           var i11 = (r + 1) * cols + c + 1;
 
+          if (cfg.backfaceCull && quadFacing[r * (cols - 1) + c] <= 0) continue;
+
           var litR = fr;
           var litG = fg;
           var litB = fb;
 
           if (cfg.lightEnabled) {
-            // Compute surface normal from two edges of the quad (in 3D grid space)
-            // edge1 = (i10 - i00), edge2 = (i01 - i00)
-            var e1x = sp;                                     // col spacing
-            var e1y = 0;                                      // same row
-            var e1z = heights[i10] - heights[i00];            // height difference
-            var e2x = 0;                                      // same col
-            var e2y = sp;                                      // row spacing
-            var e2z = heights[i01] - heights[i00];            // height difference
+            var e1x = sp;
+            var e1y = 0;
+            var e1z = heights[i10] - heights[i00];
+            var e2x = 0;
+            var e2y = sp;
+            var e2z = heights[i01] - heights[i00];
 
-            // cross product e1 x e2 = normal
             var nx = e1y * e2z - e1z * e2y;
             var ny = e1z * e2x - e1x * e2z;
             var nz = e1x * e2y - e1y * e2x;
@@ -569,15 +607,12 @@
             ny /= nLen;
             nz /= nLen;
 
-            // Diffuse: dot(normal, -lightDir)
             var diff = -(nx * ldx + ny * ldy + nz * ldz);
             if (diff < 0) diff = 0;
 
-            // Specular: reflect light off surface, dot with view direction (0,0,1)
-            // reflect = lightDir - 2 * dot(lightDir, normal) * normal
             var dotLN = ldx * nx + ldy * ny + ldz * nz;
             var refZ = ldz - 2 * dotLN * nz;
-            var spec = -refZ; // dot(reflect, viewDir(0,0,-1))
+            var spec = -refZ;
             if (spec < 0) spec = 0;
             spec = Math.pow(spec, cfg.lightSpecPower);
 
@@ -599,12 +634,9 @@
           ctx.fill();
         }
       }
-    }
 
-    // Draw row lines (smooth curves through midpoints)
-    if (cfg.showRows) {
-      for (r = 0; r < rows; r++) {
-        depthT = r / (rows - 1);
+      // (b) Row line at row r
+      if (cfg.showRows) {
         alpha = cfg.lineOpacity;
         if (cfg.depthFade) alpha *= (0.15 + 0.85 * (1 - depthT * 0.7));
 
@@ -612,9 +644,7 @@
           ctx.strokeStyle = "rgba(" + lr + "," + lg + "," + lb + "," + alpha + ")";
         }
 
-        ctx.beginPath();
-        idx = r * cols;
-        ctx.moveTo(screenX[idx], screenY[idx]);
+        var rowPathActive = false;
 
         for (c = 1; c < cols; c++) {
           idx = r * cols + c;
@@ -622,81 +652,82 @@
           sx = screenX[idx];
           sy = screenY[idx];
 
+          if (cfg.backfaceCull && !isRowSegmentVisible(r, c)) {
+            if (rowPathActive) {
+              ctx.stroke();
+              rowPathActive = false;
+            }
+            continue;
+          }
+
           if (cfg.heightColor) {
             hNorm = Math.min(Math.abs(heights[pidx]) / (cfg.amplitude || 1), 1);
             bright = 0.4 + 0.6 * hNorm;
             ctx.strokeStyle = "rgba(" + Math.round(lr * bright) + "," + Math.round(lg * bright) + "," + Math.round(lb * bright) + "," + alpha + ")";
-            ctx.stroke();
+            if (rowPathActive) ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(screenX[pidx], screenY[pidx]);
+            rowPathActive = true;
+          }
+
+          if (!rowPathActive) {
+            ctx.beginPath();
+            ctx.moveTo(screenX[pidx], screenY[pidx]);
+            rowPathActive = true;
           }
 
           if (c < cols - 1) {
-            // Quadratic curve: control point is the current grid point,
-            // end point is the midpoint to the next grid point
             var nidx = r * cols + (c + 1);
-            var mx = (sx + screenX[nidx]) * 0.5;
-            var my = (sy + screenY[nidx]) * 0.5;
-            ctx.quadraticCurveTo(sx, sy, mx, my);
+            var nextRowVis = !cfg.backfaceCull || isRowSegmentVisible(r, c + 1);
+            if (nextRowVis) {
+              var mx = (sx + screenX[nidx]) * 0.5;
+              var my = (sy + screenY[nidx]) * 0.5;
+              ctx.quadraticCurveTo(sx, sy, mx, my);
+            } else {
+              ctx.lineTo(sx, sy);
+            }
           } else {
-            // Last segment — curve to the final point
             ctx.quadraticCurveTo(
               (screenX[pidx] + sx) * 0.5, (screenY[pidx] + sy) * 0.5,
               sx, sy
             );
           }
         }
-        ctx.stroke();
+        if (rowPathActive) ctx.stroke();
         lineCount += cols - 1;
       }
-    }
 
-    // Draw column lines (smooth curves through midpoints)
-    if (cfg.showCols) {
-      for (c = 0; c < cols; c++) {
-        idx = c;
-        depthT = 0;
+      // (c) Column segments from r-1 → r
+      if (cfg.showCols && r > 0) {
         alpha = cfg.lineOpacity;
+        if (cfg.depthFade) alpha *= (0.15 + 0.85 * (1 - depthT * 0.7));
 
         if (!cfg.heightColor) {
           ctx.strokeStyle = "rgba(" + lr + "," + lg + "," + lb + "," + alpha + ")";
-        }
-
-        ctx.beginPath();
-        ctx.moveTo(screenX[idx], screenY[idx]);
-
-        for (r = 1; r < rows; r++) {
-          idx = r * cols + c;
-          pidx = (r - 1) * cols + c;
-          sx = screenX[idx];
-          sy = screenY[idx];
-          depthT = r / (rows - 1);
-          alpha = cfg.lineOpacity;
-          if (cfg.depthFade) alpha *= (0.15 + 0.85 * (1 - depthT * 0.7));
-
-          if (cfg.heightColor) {
+          ctx.beginPath();
+          for (c = 0; c < cols; c++) {
+            idx = r * cols + c;
+            pidx = (r - 1) * cols + c;
+            if (cfg.backfaceCull && !isColSegmentVisible(r, c)) continue;
+            ctx.moveTo(screenX[pidx], screenY[pidx]);
+            ctx.lineTo(screenX[idx], screenY[idx]);
+          }
+          ctx.stroke();
+        } else {
+          for (c = 0; c < cols; c++) {
+            idx = r * cols + c;
+            pidx = (r - 1) * cols + c;
+            if (cfg.backfaceCull && !isColSegmentVisible(r, c)) continue;
             hNorm = Math.min(Math.abs(heights[pidx]) / (cfg.amplitude || 1), 1);
             bright = 0.4 + 0.6 * hNorm;
             ctx.strokeStyle = "rgba(" + Math.round(lr * bright) + "," + Math.round(lg * bright) + "," + Math.round(lb * bright) + "," + alpha + ")";
-            ctx.stroke();
             ctx.beginPath();
             ctx.moveTo(screenX[pidx], screenY[pidx]);
-          }
-
-          if (r < rows - 1) {
-            var nidxC = (r + 1) * cols + c;
-            var mxC = (sx + screenX[nidxC]) * 0.5;
-            var myC = (sy + screenY[nidxC]) * 0.5;
-            ctx.quadraticCurveTo(sx, sy, mxC, myC);
-          } else {
-            ctx.quadraticCurveTo(
-              (screenX[pidx] + sx) * 0.5, (screenY[pidx] + sy) * 0.5,
-              sx, sy
-            );
+            ctx.lineTo(screenX[idx], screenY[idx]);
+            ctx.stroke();
           }
         }
-        ctx.stroke();
-        lineCount += rows - 1;
+        lineCount += cols;
       }
     }
 
@@ -855,6 +886,7 @@
       body.appendChild(makeToggle("Show Cols", cfg.showCols, function (v) { cfg.showCols = v; }, function () { return cfg.showCols; }));
       body.appendChild(makeToggle("Depth Fade", cfg.depthFade, function (v) { cfg.depthFade = v; }, function () { return cfg.depthFade; }));
       body.appendChild(makeToggle("Height Brightness", cfg.heightColor, function (v) { cfg.heightColor = v; }, function () { return cfg.heightColor; }));
+      body.appendChild(makeToggle("Backface Cull", cfg.backfaceCull, function (v) { cfg.backfaceCull = v; }, function () { return cfg.backfaceCull; }));
     }));
   }
 
@@ -872,33 +904,32 @@
   }
 
   function appendStatsSection(panel) {
-    panel.appendChild(makeCollapsibleGroup("Stats", true, function (body) {
-      var row = document.createElement("div");
-      row.style.cssText = "display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.35);padding-top:4px;";
+    panel.appendChild(makeHeading("Stats"));
+    var row = document.createElement("div");
+    row.style.cssText = "display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,0.35);padding-top:4px;";
 
-      var fpsSpan = document.createElement("span");
-      fpsSpan.textContent = "FPS: ";
-      statsFpsEl = document.createElement("span");
-      statsFpsEl.textContent = "--";
-      fpsSpan.appendChild(statsFpsEl);
+    var fpsSpan = document.createElement("span");
+    fpsSpan.textContent = "FPS: ";
+    statsFpsEl = document.createElement("span");
+    statsFpsEl.textContent = "--";
+    fpsSpan.appendChild(statsFpsEl);
 
-      var ptsSpan = document.createElement("span");
-      ptsSpan.textContent = "Pts: ";
-      statsPointsEl = document.createElement("span");
-      statsPointsEl.textContent = "--";
-      ptsSpan.appendChild(statsPointsEl);
+    var ptsSpan = document.createElement("span");
+    ptsSpan.textContent = "Pts: ";
+    statsPointsEl = document.createElement("span");
+    statsPointsEl.textContent = "--";
+    ptsSpan.appendChild(statsPointsEl);
 
-      var lnsSpan = document.createElement("span");
-      lnsSpan.textContent = "Lines: ";
-      statsLinesEl = document.createElement("span");
-      statsLinesEl.textContent = "--";
-      lnsSpan.appendChild(statsLinesEl);
+    var lnsSpan = document.createElement("span");
+    lnsSpan.textContent = "Lines: ";
+    statsLinesEl = document.createElement("span");
+    statsLinesEl.textContent = "--";
+    lnsSpan.appendChild(statsLinesEl);
 
-      row.appendChild(fpsSpan);
-      row.appendChild(ptsSpan);
-      row.appendChild(lnsSpan);
-      body.appendChild(row);
-    }));
+    row.appendChild(fpsSpan);
+    row.appendChild(ptsSpan);
+    row.appendChild(lnsSpan);
+    panel.appendChild(row);
   }
 
   function appendCaptureSection(panel) {
@@ -976,6 +1007,7 @@
     });
 
     // Append all sections
+    appendStatsSection(panel);
     appendPresetsSection(panel);
     appendGridSection(panel);
     appendWaveSection(panel);
@@ -983,7 +1015,6 @@
     appendCameraSection(panel);
     appendAppearanceSection(panel);
     appendLightingSection(panel);
-    appendStatsSection(panel);
     appendCaptureSection(panel);
   }
 
