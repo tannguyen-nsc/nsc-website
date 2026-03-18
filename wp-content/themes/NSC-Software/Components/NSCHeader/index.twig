@@ -54,7 +54,9 @@
             </li>
           {% else %}
             <li>
-              <a href="{{ item.link|e('esc_url') }}" class="mobile-nav-link {{ item.current ? 'active' }} {{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>
+              {% set _is_contact_item = (item.title == 'Contact Us' or item.title == 'Contact') %}
+              {% set _show_active = item.current and not (isContactPage|default(false) and _is_contact_item) %}
+              <a href="{{ item.link|e('esc_url') }}" class="mobile-nav-link {{ _show_active ? 'active' : '' }} {{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>
                 {{ item.title|e }}
                 <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -95,7 +97,10 @@
                 </ul>
               </li>
             {% else %}
-              <li><a href="{{ item.link|e('esc_url') }}" class="{{ item.current ? 'active' }} {{ item.title == 'Contact Us' ? 'contact-btn' }} {{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
+              {# On contact page, do not add active to the contact menu item (contact-btn) #}
+              {% set _is_contact_item = (item.title == 'Contact Us' or item.title == 'Contact') %}
+              {% set _show_active = item.current and not (isContactPage|default(false) and _is_contact_item) %}
+              <li><a href="{{ item.link|e('esc_url') }}" class="{{ _show_active ? 'active' : '' }} {{ item.title == 'Contact Us' ? 'contact-btn' }} {{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
             {% endif %}
           {% endfor %}
         </ul>

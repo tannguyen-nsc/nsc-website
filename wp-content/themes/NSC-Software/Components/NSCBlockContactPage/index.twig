@@ -1,0 +1,73 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockContactPage">
+  {% set sectionBg = (backgroundImage.url|default(backgroundImage.src)) %}
+  <section class="contact" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/contact-us-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+    <div class="wrapper">
+      <div class="contact-main">
+        <div class="heading">
+          {% if headingIcon.url or headingIcon.src %}
+            <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+          {% elseif theme.buildUri %}
+            <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+          {% endif %}
+          {% if title %}<h2>{{ title|e }}</h2>{% endif %}
+        </div>
+        <div class="contact-tagline">
+          {% if contentLines %}
+            {% for line in contentLines|split("\n") %}
+              {% if line|trim %}<p>{{ line|trim|e }}</p>{% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+        {% if showForm %}
+          <div class="contact-form">
+            {% if cf7Shortcode|trim %}
+              {{ function('do_shortcode', cf7Shortcode|trim)|raw }}
+            {% else %}
+              <form action="{{ formAction|default('#')|e('esc_url') }}" method="post">
+                <div class="form-group">
+                  <label for="contact-name">{{ __('Your Full Name', 'NscSoftware')|e }}</label>
+                  <input type="text" id="contact-name" name="contact-name" placeholder="{{ __('Enter your full name', 'NscSoftware')|e }}" />
+                </div>
+                <div class="form-group">
+                  <label for="contact-email">{{ __('Your Work Email', 'NscSoftware')|e }}</label>
+                  <input type="email" id="contact-email" name="contact-email" placeholder="{{ __('Enter your Email', 'NscSoftware')|e }}" />
+                </div>
+                <div class="form-group">
+                  <label for="contact-message">{{ __('Your Message', 'NscSoftware')|e }}</label>
+                  <textarea id="contact-message" name="contact-message" placeholder="{{ __('Enter Your Message here', 'NscSoftware')|e }}"></textarea>
+                </div>
+                <button type="submit" class="btn">{{ __('Send', 'NscSoftware')|e }}</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="contact-offices">
+        {% if officesTitle %}
+          <h3 class="offices-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M21 11C21 10.7348 20.8946 10.4805 20.707 10.293C20.5195 10.1054 20.2652 10 20 10H19V21H20C20.2652 21 20.5195 20.8946 20.707 20.707C20.8946 20.5195 21 20.2652 21 20V11ZM14 17C14.5523 17 15 17.4477 15 18C15 18.5523 14.5523 19 14 19H10C9.44772 19 9 18.5523 9 18C9 17.4477 9.44772 17 10 17H14ZM14 13C14.5523 13 15 13.4477 15 14C15 14.5523 14.5523 15 14 15H10C9.44772 15 9 14.5523 9 14C9 13.4477 9.44772 13 10 13H14ZM14 9C14.5523 9 15 9.44772 15 10C15 10.5523 14.5523 11 14 11H10C9.44772 11 9 10.5523 9 10C9 9.44772 9.44772 9 10 9H14ZM14 5C14.5523 5 15 5.44772 15 6C15 6.55228 14.5523 7 14 7H10C9.44772 7 9 6.55228 9 6C9 5.44772 9.44772 5 10 5H14ZM3 20C3 20.2652 3.10543 20.5195 3.29297 20.707C3.48051 20.8946 3.73478 21 4 21H5V13H4C3.73478 13 3.48051 13.1054 3.29297 13.293C3.10543 13.4805 3 13.7348 3 14V20ZM17 4C17 3.73478 16.8946 3.48051 16.707 3.29297C16.5195 3.10543 16.2652 3 16 3H8C7.73478 3 7.4805 3.10543 7.29297 3.29297C7.10543 3.4805 7 3.73478 7 4V21H17V4ZM19 8H20C20.7957 8 21.5585 8.3163 22.1211 8.87891C22.6837 9.44151 23 10.2043 23 11V20C23 20.7957 22.6837 21.5585 22.1211 22.1211C21.5585 22.6837 20.7957 23 20 23H4C3.20435 23 2.44152 22.6837 1.87891 22.1211C1.3163 21.5585 1 20.7957 1 20V14C1 13.2044 1.3163 12.4415 1.87891 11.8789C2.44152 11.3163 3.20435 11 4 11H5V4C5 3.20435 5.3163 2.44152 5.87891 1.87891C6.44152 1.3163 7.20435 1 8 1H16C16.7956 1 17.5585 1.3163 18.1211 1.87891C18.6837 2.44152 19 3.20435 19 4V8Z" fill="#36C3DC"/>
+            </svg>
+            {{ officesTitle|e }}
+          </h3>
+        {% endif %}
+        {% if offices is iterable and offices|length %}
+          <div class="offices-list">
+            {% for office in offices %}
+              <div class="office-item">
+                {% if office.title %}<h3>{{ office.title|e }}</h3>{% endif %}
+                {% if office.address %}<p>{{ office.address|nl2br }}</p>{% endif %}
+                {% if office.phoneDisplay or office.phoneLink %}
+                  <p>Tel: {% if office.phoneLink %}<a href="tel:{{ office.phoneLink|e }}">{{ (office.phoneDisplay|default(office.phoneLink))|e }}</a>{% else %}{{ office.phoneDisplay|e }}{% endif %}</p>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

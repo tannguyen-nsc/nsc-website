@@ -118,6 +118,9 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
         $data['labels']['mobileHomeText'] = get_the_title($postId);
     }
 
+    // When on the contact page, do not add active class to the Contact Us menu item (contact-btn).
+    $data['isContactPage'] = is_page('contact');
+
     return $data;
 });
 

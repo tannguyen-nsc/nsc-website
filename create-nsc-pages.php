@@ -63,7 +63,7 @@ $pages = [
     ['title' => 'Blogs', 'slug' => 'blogs', 'template' => 'template-blogs.php'],
     ['title' => 'Career', 'slug' => 'career', 'template' => 'template-career.php'],
     ['title' => 'Case Studies', 'slug' => 'case-studies', 'template' => 'template-case-studies.php'],
-    ['title' => 'Contact', 'slug' => 'contact', 'template' => 'template-contact.php'],
+    ['title' => 'Contact', 'slug' => 'contact', 'template' => ''], // default = page.twig + pageComponents (Contact + Global Presence)
     ['title' => 'Our Capabilites', 'slug' => 'our-capabilites', 'template' => ''], // default = page.twig + pageComponents (Hero + Technology Capability)
     ['title' => 'Our Services', 'slug' => 'our-services', 'template' => ''], // default = page.twig + pageComponents (Hero + Services Details)
     ['title' => 'Master', 'slug' => 'master', 'template' => 'template-master.php'],
@@ -739,6 +739,76 @@ function getOurCapabilitiesPageComponents(): array
 }
 
 /**
+ * Contact page components matching frontend/build/contact.html (Contact section + Global Presence).
+ * Live content by default; use content_test=1 to prepend "[test] " to text. formAction and phoneLink preserved.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getContactPageComponents(): array
+{
+    $baseUrl = home_url('/');
+
+    return [
+        // 1. Contact (section.contact: form + offices)
+        [
+            'acf_fc_layout'  => 'nscBlockContactPage',
+            'title'          => 'CONTACT US',
+            'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
+            'showForm'       => 1,
+            'formAction'     => $baseUrl,
+            'cf7Shortcode'   => '',
+            'officesTitle'   => 'OUR OFFICES',
+            'offices'        => [
+                [
+                    'title'        => 'NSC Software Headquarters',
+                    'address'      => "Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam",
+                    'phoneDisplay' => '(+84) 866 639 497',
+                    'phoneLink'    => '+84866639497',
+                ],
+                [
+                    'title'        => 'NSC Software Ho Chi Minh',
+                    'address'      => "Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam",
+                    'phoneDisplay' => '(+84) 866 639 497',
+                    'phoneLink'    => '+84866639497',
+                ],
+                [
+                    'title'        => 'NSC Software USA',
+                    'address'      => '4245 N Central Expy, #490, Dallas, TX, USA 75205',
+                    'phoneDisplay' => '+1 (713) 428 2289',
+                    'phoneLink'    => '+17134282289',
+                ],
+                [
+                    'title'        => 'NSC Software Australia',
+                    'address'      => 'Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia',
+                    'phoneDisplay' => '+61 0488 860 719',
+                    'phoneLink'    => '+61488860719',
+                ],
+                [
+                    'title'        => 'NSC Software Europe',
+                    'address'      => 'A16 Am Hauptbahnhof, D-60306 Frankfurt am Main, Germany',
+                    'phoneDisplay' => '+49 170 1633520',
+                    'phoneLink'    => '+491701633520',
+                ],
+            ],
+            'options'        => ['theme' => ''],
+        ],
+        // 2. Global Presence (section.global-presence)
+        [
+            'acf_fc_layout' => 'nscBlockGlobalPresence',
+            'title'        => 'GLOBAL PRESENCE',
+            'locations'     => [
+                ['label' => 'Dallas', 'title' => 'Dallas', 'address' => "4245 N Central Expy, #490, Dallas, TX, USA 75205\nTel: ", 'phoneLink' => '+1 (713) 428 2289'],
+                ['label' => 'Germany', 'title' => 'Germany', 'address' => "Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany\nTel: ", 'phoneLink' => '(+49) 170 1633520'],
+                ['label' => 'Ha Noi', 'title' => 'NSC Software Headquarters', 'address' => "Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam\nTel: ", 'phoneLink' => '(+84) 866 639 497'],
+                ['label' => 'Ho Chi Minh City', 'title' => 'Ho Chi Minh', 'address' => "Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam\nTel: ", 'phoneLink' => '(+84) 866 639 497'],
+                ['label' => 'Sydney', 'title' => 'Sydney', 'address' => "Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia\nTel: ", 'phoneLink' => '(+61) 0488 860 719'],
+            ],
+            'options'       => ['theme' => ''],
+        ],
+    ];
+}
+
+/**
  * Recursively prepend "[test] " to all string values so you can verify the CMS loads editable data.
  * Preserves layout key, openInNewTab, showForm, and URL fields (url, formAction, buttonUrl, phoneLink).
  *
@@ -918,6 +988,28 @@ foreach ($pages as $page) {
             update_post_meta((int) $pageId, 'pageComponents', $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Our Capabilities: Hero + Technology Capability)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
+    } elseif ($slug === 'contact') {
+        // Contact page: seed components matching frontend/build/contact.html (Contact + Global Presence).
+        $components = getContactPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+        if (function_exists('update_field')) {
+            update_field('pageComponents', [], (int) $pageId);
+            update_field('pageComponents', $components, (int) $pageId);
+        } else {
+            delete_post_meta((int) $pageId, 'pageComponents');
+            update_post_meta((int) $pageId, 'pageComponents', $components);
+        }
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Contact: Contact Page + Global Presence)';
         if ($contentTest) {
             $msg .= ', content_test=1 (all text set to "[test]")';
         }

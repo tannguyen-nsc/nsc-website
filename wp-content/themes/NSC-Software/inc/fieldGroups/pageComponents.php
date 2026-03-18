@@ -25,6 +25,7 @@ add_action('NscSoftware/afterRegisterComponents', function () {
                     Components\NSCBlockBlogsArchive\getACFLayout(),
                     Components\NSCBlockBlogsHome\getACFLayout(),
                     Components\NSCBlockCompanySnapshot\getACFLayout(),
+                    Components\NSCBlockContactPage\getACFLayout(),
                     Components\NSCBlockContactUs\getACFLayout(),
                     Components\NSCBlockGlobalPresence\getACFLayout(),
                     Components\NSCBlockHero\getACFLayout(),
