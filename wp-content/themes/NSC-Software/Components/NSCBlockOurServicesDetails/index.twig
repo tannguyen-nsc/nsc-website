@@ -1,0 +1,78 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockOurServicesDetails">
+  <section class="our-services-details" {% if backgroundImage.url or backgroundImage.src %}style="background-image: url('{{ (backgroundImage.url|default(backgroundImage.src))|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/services-details-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+    <div class="wrapper">
+      <div class="info">
+        <div class="col">
+          {% if headingIcon.url or headingIcon.src %}
+            <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+          {% elseif theme.buildUri %}
+            <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+          {% endif %}
+          {% if titleLine1 %}<h2>{{ titleLine1|raw }}</h2>{% endif %}
+          {% if titleLine2 %}<h2>{{ titleLine2|raw }}</h2>{% endif %}
+          {% if titleLine3 %}<h2>{{ titleLine3|raw }}</h2>{% endif %}
+        </div>
+        <div class="col">
+          {% if introParagraphs %}{{ introParagraphs|raw }}{% endif %}
+        </div>
+      </div>
+      <div class="service-items">
+        <div class="col">
+          {% for item in serviceItems %}
+            <div class="service-item" data-service="{{ loop.index }}">
+              <h2><span>{{ item.number|default(loop.index) }}</span> {{ item.title|e }}</h2>
+              <div class="arrow-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="description">
+                {% if item.subtitle %}<h2>{{ item.subtitle|e }}</h2>{% endif %}
+                {% if item.description %}<p>{{ item.description|e }}</p>{% endif %}
+                {% if item.listItems is iterable and item.listItems|length %}
+                  <ul>
+                    {% for li in item.listItems %}
+                      {% if li.item %}<li>{{ li.item|e }}</li>{% endif %}
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="col right-column"></div>
+      </div>
+      {% if banner.title or banner.description or (banner.button.label and banner.button.url) %}
+        <div class="banner" {% if banner.backgroundImage.url or banner.backgroundImage.src %}style="background-image: url('{{ (banner.backgroundImage.url|default(banner.backgroundImage.src))|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/service-details-banner.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+          {% if banner.title %}<h2>{{ banner.title|raw }}</h2>{% endif %}
+          {% if banner.description %}{{ banner.description|raw }}{% endif %}
+          {% if banner.button.label and banner.button.url %}
+            <a href="{{ banner.button.url|e('esc_url') }}" class="btn" {{ banner.button.openInNewTab ? ' target="_blank" rel="noopener noreferrer"' }}>
+              {{ banner.button.label|e }}
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"></path>
+              </svg>
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="bottom-sheet-overlay" id="serviceDetailsBottomSheetOverlay"></div>
+    <div class="bottom-sheet" id="serviceDetailsBottomSheet">
+      <div class="bottom-sheet-header">
+        <h3 class="bottom-sheet-title" id="serviceDetailsBottomSheetTitle"></h3>
+        <button class="bottom-sheet-close" id="serviceDetailsBottomSheetClose" aria-label="{{ __('Close', 'NscSoftware')|e }}">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 7L7 21M7 7L21 21" stroke="#F9F9FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      <div class="bottom-sheet-content">
+        <div class="service-content" id="serviceDetailsBottomSheetContent"></div>
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

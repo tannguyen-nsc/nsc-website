@@ -1,6 +1,6 @@
 {% if not (options.hidden|default(0)) %}
-<nsc-software-component name="NSCBlockStats" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
-  <section class="stats {{ options.theme ? 'theme-' ~ options.theme : '' }}">
+<nsc-software-component name="NSCBlockStats">
+  <section class="stats">
   <div class="wrapper">
     {% if imageDesktop.url or imageDesktop.src %}
       <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="lg:block hidden" loading="lazy" />

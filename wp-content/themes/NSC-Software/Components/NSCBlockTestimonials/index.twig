@@ -1,7 +1,7 @@
 {% if not (options.hidden|default(0)) %}
-<nsc-software-component name="NSCBlockTestimonials" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+<nsc-software-component name="NSCBlockTestimonials">
   {% set sectionBg = (backgroundImage.url|default(backgroundImage.src)) %}
-  <section class="testimonials {{ options.theme ? 'theme-' ~ options.theme : '' }}" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/testimonials.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <section class="testimonials" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/testimonials.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
   <div class="heading">
     {% if headingIcon.url or headingIcon.src %}
       <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />

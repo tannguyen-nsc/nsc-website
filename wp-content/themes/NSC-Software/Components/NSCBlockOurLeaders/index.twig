@@ -1,0 +1,53 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockOurLeaders">
+  <section class="our-leaders">
+    {% if backgroundTop.url or backgroundTop.src %}
+      <img src="{{ (backgroundTop.url|default(backgroundTop.src))|e('esc_url') }}" alt="" class="leader-top lg:block hidden" loading="eager" fetchpriority="high" />
+    {% elseif theme.buildUri %}
+      <img src="{{ theme.buildUri }}/img/leaders-top-bg.png" alt="" class="leader-top lg:block hidden" loading="eager" fetchpriority="high" />
+    {% endif %}
+    {% if backgroundDesktop.url or backgroundDesktop.src %}
+      <img src="{{ (backgroundDesktop.url|default(backgroundDesktop.src))|e('esc_url') }}" alt="" class="lg:block hidden" loading="eager" fetchpriority="high" />
+    {% elseif theme.buildUri %}
+      <img src="{{ theme.buildUri }}/img/leaders-bg.png" alt="" class="lg:block hidden" loading="eager" fetchpriority="high" />
+    {% endif %}
+    {% if backgroundMobile.url or backgroundMobile.src %}
+      <img src="{{ (backgroundMobile.url|default(backgroundMobile.src))|e('esc_url') }}" alt="" class="lg:hidden" loading="eager" fetchpriority="high" />
+    {% elseif theme.buildUri %}
+      <img src="{{ theme.buildUri }}/img/mob-leaders-bg.png" alt="" class="lg:hidden" loading="eager" fetchpriority="high" />
+    {% endif %}
+
+    <div class="heading">
+      {% if headingIcon.url or headingIcon.src %}
+        <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+      {% elseif theme.buildUri %}
+        <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+      {% endif %}
+      <h2>{{ title|e }}</h2>
+    </div>
+    {% if content %}
+      <div class="content">
+        {{ content|raw }}
+      </div>
+    {% endif %}
+
+    <div class="wrapper">
+      {% for leader in leaders %}
+        <div class="leader">
+          <div class="image">
+            {% if leader.image.url or leader.image.src %}
+              <img src="{{ (leader.image.url|default(leader.image.src))|e('esc_url') }}" alt="{{ (leader.image.alt|default(leader.name))|e }}" loading="lazy" />
+            {% elseif theme.buildUri %}
+              <img src="{{ theme.buildUri }}/img/leader{{ loop.index }}.png" alt="{{ leader.name|e }}" loading="lazy" />
+            {% endif %}
+          </div>
+          <div class="content">
+            {% if leader.name %}<h3>{{ leader.name|e }}</h3>{% endif %}
+            {% if leader.role %}<p>{{ leader.role|e }}</p>{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

@@ -1,0 +1,34 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockAiInfo">
+  <section class="ai-info">
+    <div class="col">
+      {% if image.url or image.src %}
+        <img src="{{ (image.url|default(image.src))|e('esc_url') }}" alt="{{ (image.alt|default(''))|e }}" loading="lazy" />
+      {% elseif theme.buildUri %}
+        <img src="{{ theme.buildUri }}/img/ai-info-banner.png" alt="AI Info" loading="lazy" />
+      {% endif %}
+    </div>
+    <div class="col">
+      <div class="content">
+        {% for item in items %}
+          <div class="content-item">
+            <div class="heading">
+              {% if item.headingIcon.url or item.headingIcon.src %}
+                <img src="{{ (item.headingIcon.url|default(item.headingIcon.src))|e('esc_url') }}" alt="{{ (item.headingIcon.alt|default(''))|e }}" loading="lazy" />
+              {% elseif theme.buildUri %}
+                <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="" loading="lazy" />
+              {% endif %}
+              {% if item.title %}<h3>{{ item.title|e }}</h3>{% endif %}
+            </div>
+            {% if item.description %}
+              <div class="description">
+                <p>{{ item.description|e }}</p>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

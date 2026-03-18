@@ -1030,11 +1030,9 @@
         const headerKey = header.classList.contains('desktop-header') ? 'desktopHeader' : 'mobileHeader';
         
         if(typeof window[`init${headerKey}`] === 'undefined') {
-          if(header.classList.length > 0) {
-            window[`${headerKey}Class`] = Array.from(header.classList).find(cls => 
-              cls !== 'desktop-header' && cls !== 'mobile-header'
-            ) || '';
-          }
+          // Only preserve semantic header-type classes from CMS (home, transparent-floating), not utility classes (xl:hidden, hidden, etc.)
+          const semanticClasses = ['home', 'transparent-floating'];
+          window[`${headerKey}Class`] = Array.from(header.classList).find(cls => semanticClasses.includes(cls)) || '';
         } 
 
         window[`init${headerKey}`] = true;

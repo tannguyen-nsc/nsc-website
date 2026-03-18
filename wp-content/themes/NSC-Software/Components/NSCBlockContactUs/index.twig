@@ -1,7 +1,7 @@
 {% if not (options.hidden|default(0)) %}
-<nsc-software-component name="NSCBlockContactUs" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+<nsc-software-component name="NSCBlockContactUs">
   {% set sectionBg = (backgroundImage.url|default(backgroundImage.src)) %}
-  <section class="contact-us {{ options.theme ? 'theme-' ~ options.theme : '' }}" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/join-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <section class="contact-us" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/join-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
   <div class="wrapper">
     <div class="col">
       <div class="heading">

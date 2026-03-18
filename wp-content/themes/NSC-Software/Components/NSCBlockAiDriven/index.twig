@@ -1,7 +1,7 @@
 {% if not (options.hidden|default(0)) %}
-<nsc-software-component name="NSCBlockAiDriven" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+<nsc-software-component name="NSCBlockAiDriven">
   {% set sectionBg = (backgroundImage.url|default(backgroundImage.src)) %}
-  <section class="ai-driven {{ options.theme ? 'theme-' ~ options.theme : '' }}" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/ai-driven.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <section class="ai-driven" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/ai-driven.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
   <div class="wrapper">
     <div class="content animate__animated animate__zoomIn">
       <h2>{{ headline1|raw }}</h2>

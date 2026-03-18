@@ -1,5 +1,5 @@
 {% if not (options.hidden|default(0)) %}
-<nsc-software-component name="NSCBlockSectionHeading" class="heading {{ light ? 'light' : '' }} {{ options.theme ? 'theme-' ~ options.theme : '' }}" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+<nsc-software-component name="NSCBlockSectionHeading" class="heading {{ light ? 'light' : '' }}">
   {% if icon.url or icon.src %}
     <img src="{{ (icon.url|default(icon.src))|e('esc_url') }}" alt="{{ (icon.alt|default(''))|e }}" loading="lazy" />
   {% elseif theme.buildUri %}

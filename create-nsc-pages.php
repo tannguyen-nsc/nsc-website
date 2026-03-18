@@ -15,10 +15,13 @@ declare(strict_types=1);
  *   components to match frontend/src/index.html section order (Hero → Stats →
  *   Our Services → Why Us → How We Work → AI-Driven → Testimonials → Blogs →
  *   Contact Us). Home uses the default page template so it renders from components.
+ * - For the About page: seeds pageComponents to match frontend/build/about.html
+ *   (Hero left-text → Company Snapshot → Our Story → Our Leaders → Why Us →
+ *   Our Capabilities → Global Presence → Contact). About uses the default page template.
  * - URL fields in the seed use home_url('/') so saved data passes ACF URL validation.
  * - Add home_only=1 to only create/update the Home page and set it as front page.
- * - Add content_test=1 to prepend "[test] " to all text content so you can verify
- *   in the CMS that components load editable data while keeping live text (re-run without content_test=1 for live only).
+ * - Add content_test=1 to prepend "[test] " to all text content (Home and About) so you can verify
+ *   in the CMS that components load editable data; re-run without content_test=1 for live content only.
  */
 
 $requiredToken = 'nsc-create-pages-2026';
@@ -55,14 +58,14 @@ require_once ABSPATH . 'wp-admin/includes/image.php';
 
 $pages = [
     ['title' => 'Home', 'slug' => 'home', 'template' => ''], // default = page.twig + pageComponents
-    ['title' => 'About', 'slug' => 'about', 'template' => 'template-about.php'],
-    ['title' => 'AI', 'slug' => 'ai', 'template' => 'template-ai.php'],
+    ['title' => 'About', 'slug' => 'about', 'template' => ''], // default = page.twig + pageComponents (About Us sections)
+    ['title' => 'AI', 'slug' => 'ai', 'template' => ''], // default = page.twig + pageComponents (AI sections)
     ['title' => 'Blogs', 'slug' => 'blogs', 'template' => 'template-blogs.php'],
     ['title' => 'Career', 'slug' => 'career', 'template' => 'template-career.php'],
     ['title' => 'Case Studies', 'slug' => 'case-studies', 'template' => 'template-case-studies.php'],
     ['title' => 'Contact', 'slug' => 'contact', 'template' => 'template-contact.php'],
-    ['title' => 'Our Capabilites', 'slug' => 'our-capabilites', 'template' => 'template-our-capabilites.php'],
-    ['title' => 'Our Services', 'slug' => 'our-services', 'template' => 'template-our-services.php'],
+    ['title' => 'Our Capabilites', 'slug' => 'our-capabilites', 'template' => ''], // default = page.twig + pageComponents (Hero + Technology Capability)
+    ['title' => 'Our Services', 'slug' => 'our-services', 'template' => ''], // default = page.twig + pageComponents (Hero + Services Details)
     ['title' => 'Master', 'slug' => 'master', 'template' => 'template-master.php'],
     ['title' => 'Test', 'slug' => 'test', 'template' => 'template-test.php'],
 ];
@@ -307,6 +310,435 @@ function getHomePageComponents(): array
 }
 
 /**
+ * About page components matching frontend/build/about.html section order and content.
+ * Live content by default; use content_test=1 to prepend "[test] " to text.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getAboutPageComponents(): array
+{
+    $baseUrl = home_url('/');
+
+    return [
+        // 1. Hero (section.hero.left-text)
+        [
+            'acf_fc_layout'    => 'nscBlockHero',
+            'heroStyle'        => 'left_text',
+            'headline'         => '<sb>We\'re</sb> <span class="highlight primary">Vietnam\'s Premier</span> <br class="lg:hidden"> <sb>Software Development &</sb> <br> <sb>Consulting Company</sb>',
+            'description'      => '<p>Combining Vietnam\'s <b>Top 7% IT talents</b> - all <b>senior-level</b> engineers - with <b>AI-enabled delivery</b>, NSC Software helps global enterprises design, build, and scale secure, high-performing, and future-ready software solutions that drive long-term business value.</p>',
+            'button'           => ['label' => '', 'url' => '', 'openInNewTab' => 0],
+            'options'          => ['theme' => ''],
+        ],
+        // 2. Company Snapshot (section.company-stats-full)
+        [
+            'acf_fc_layout'  => 'nscBlockCompanySnapshot',
+            'title'          => 'Company Snapshot',
+            'stats'          => [
+                ['number' => '2021', 'suffix' => '', 'title' => "Founded \n Year", 'subtitle' => ''],
+                ['number' => '200', 'suffix' => '+', 'title' => 'Senior Expert', 'subtitle' => '(100% Senior-Level)'],
+                ['number' => '50', 'suffix' => '+', 'title' => "Global \n Clients", 'subtitle' => ''],
+                ['number' => '100', 'suffix' => '+', 'title' => "Successful \n Projects", 'subtitle' => ''],
+                ['number' => '100', 'suffix' => '%', 'title' => "English-Proficient \n Team", 'subtitle' => ''],
+            ],
+            'certImages'     => [],
+            'options'        => ['theme' => ''],
+        ],
+        // 3. Our Story (section.our-story)
+        [
+            'acf_fc_layout' => 'nscBlockOurStory',
+            'title'         => 'OUR STORY',
+            'content'       => '<p>NSC Software was born from Vietnam\'s spirit of <br class="hidden lg:block"> <b>resilience, intelligence</b>, and <b>creativity</b> - the same qualities that have defined our nation\'s growth in the modern era.</p>',
+            'columns'       => [
+                ['title' => "Our name carries deep roots in \n Vietnamese identity", 'description' => 'And our logo draws inspiration from two of the country\'s most iconic symbols - the map of Vietnam and the letter "S" that represents both shape and strength. Together, they symbolize our mission to elevate Vietnamese engineering talent to the world stage.'],
+                ['title' => "We take pride in representing \n Vietnam", 'description' => "A country rich in talent, discipline, and ambition - through our work with enterprises across Australia, the UK, Europe, and the US."],
+                ['title' => "At NSC, all of our engineers are \n senior professionals", 'description' => "Carefully selected from Vietnam's Top 7% IT talents. We combine this exceptional human expertise with AI-enabled delivery to build software that is scalable, secure, and transformative."],
+                ['title' => "Our purpose goes beyond \n building technology", 'description' => 'We help global organizations innovate with confidence, execute with precision, and grow with lasting value, while showcasing the world-class potential of Vietnamese engineers'],
+            ],
+            'options'       => ['theme' => ''],
+        ],
+        // 4. Our Leaders (section.our-leaders)
+        [
+            'acf_fc_layout' => 'nscBlockOurLeaders',
+            'title'        => 'Our Management Team',
+            'content'      => '<p>NSC Software is guided by experienced leaders committed to engineering excellence, innovation, <br class="hidden lg:block"> and <b>trusted partnerships worldwide.</b></p>',
+            'leaders'      => [
+                ['name' => 'Duc Vu', 'role' => 'CTO & Co-Founder'],
+                ['name' => 'Thanh Nguyen', 'role' => 'CEO & Founder'],
+                ['name' => 'Anthony Cursio', 'role' => 'Country Director, AU & NZ'],
+                ['name' => 'Heiko Hellstern', 'role' => 'Country Director, Germany'],
+            ],
+            'options'      => ['theme' => ''],
+        ],
+        // 5. Why NSC (section.why-us)
+        [
+            'acf_fc_layout' => 'nscBlockWhyUs',
+            'title'        => 'Why NSC Software?',
+            'items'        => [
+                ['title' => 'Senior-Led, AI-Driven Expertise', 'description' => 'Projects are guided by senior engineers and enhanced by AI for higher efficiency and quality.'],
+                ['title' => 'Time-Zone Aligned Collaboration', 'description' => 'Teams operate in overlapping hours with Europe, Australia and the US for real-time coordination.'],
+                ['title' => "Vietnam's Top 7% IT Talents", 'description' => 'Top 7% Vietnamese engineers, rigorously selected for technical excellence and problem-solving capability.'],
+                ['title' => '100% English-Proficient Team', 'description' => 'Seamless communication and collaboration with clients across global regions.'],
+                ['title' => '100% Senior-Level Engineers', 'description' => 'All engineers are senior professionals with a minimum of 6 years of experience.'],
+                ['title' => '6+ Years Minimum Experience', 'description' => 'Depth of technical expertise and delivery maturity across complex enterprise systems.'],
+                ['title' => 'High-Quality, Cost-Efficient Delivery', 'description' => 'Projects are guided by senior engineers and enhanced by AI for higher efficiency and quality.'],
+            ],
+            'options'      => ['theme' => ''],
+        ],
+        // 6. Our Capabilities (section.our-capabilities)
+        [
+            'acf_fc_layout' => 'nscBlockOurCapabilities',
+            'title'        => 'OUR CAPABILITIES',
+            'titleLine1'    => "Full-Stack \n Engineering.",
+            'titleLine2'    => 'Enterprise Delivery.',
+            'button'        => ['label' => 'Explore Full Technology Capabilities', 'url' => $baseUrl . 'our-capabilites/', 'openInNewTab' => 0],
+            'paragraphs'    => '<p>NSC Software delivers end-to-end technology capabilities - from software development, system architecture, and managed services to data, AI, blockchain, and enterprise platforms.</p><p>Backed by Vietnam\'s <b class="text-primary">Top 7%</b> senior engineers and AI-enabled delivery, we help global organizations modernize legacy systems, build innovative products, and scale operations with confidence and precision.</p>',
+            'options'       => ['theme' => ''],
+        ],
+        // 7. Global Presence (section.global-presence)
+        [
+            'acf_fc_layout' => 'nscBlockGlobalPresence',
+            'title'        => 'GLOBAL PRESENCE',
+            'locations'     => [
+                ['label' => 'Dallas', 'title' => 'Dallas', 'address' => "4245 N Central Expy, #490, Dallas, TX, USA 75205\nTel: ", 'phoneLink' => '+1 (713) 428 2289'],
+                ['label' => 'Germany', 'title' => 'Germany', 'address' => "Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany\nTel: ", 'phoneLink' => '(+49) 170 1633520'],
+                ['label' => 'Ha Noi', 'title' => 'NSC Software Headquarters', 'address' => "Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam\nTel: ", 'phoneLink' => '(+84) 866 639 497'],
+                ['label' => 'Ho Chi Minh City', 'title' => 'Ho Chi Minh', 'address' => "Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam\nTel: ", 'phoneLink' => '(+84) 866 639 497'],
+                ['label' => 'Sydney', 'title' => 'Sydney', 'address' => "Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia\nTel: ", 'phoneLink' => '(+61) 0488 860 719'],
+            ],
+            'options'       => ['theme' => ''],
+        ],
+        // 8. Contact Us (section.contact-us)
+        [
+            'acf_fc_layout' => 'nscBlockContactUs',
+            'title'         => 'CONTACT',
+            'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
+            'showForm'      => 1,
+            'formAction'    => $baseUrl,
+            'options'       => ['theme' => ''],
+        ],
+    ];
+}
+
+/**
+ * AI page components matching frontend/build/ai.html section order and content.
+ * Live content by default; use content_test=1 to prepend "[test] " to text.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getAiPageComponents(): array
+{
+    $baseUrl = home_url('/');
+
+    return [
+        // 1. Hero (section.hero.dark)
+        [
+            'acf_fc_layout'   => 'nscBlockHero',
+            'heroStyle'       => 'dark',
+            'headline'        => 'Engineering the Future with <br> <span class="text-primary">AI-Augmented Intelligence</span>',
+            'description'     => '<p>We don\'t replace engineers with AI. We equip them with superpowers. Experience software delivery that is <b>faster</b>, <b>smarter</b>, and <b>cost-optimized</b> for the enterprise era.</p>',
+            'button'          => ['label' => '', 'url' => '', 'openInNewTab' => 0],
+            'options'         => ['theme' => ''],
+        ],
+        // 2. AI Banner (section.ai-banner)
+        [
+            'acf_fc_layout' => 'nscBlockAiBanner',
+            'title'         => 'The 90% Seniority Advantage: Masters, <br class="hidden lg:block"> Not Apprentices',
+            'content'       => '<p>AI generates code. Our Senior Engineers generate <b>architecture, judgment</b>, and <b>value</b>. <br class="hidden lg:block"> We don\'t use AI to hide junior talent, we use it to amplify expert intuition. </p>',
+            'options'       => ['theme' => ''],
+        ],
+        // 3. AI Info (section.ai-info)
+        [
+            'acf_fc_layout' => 'nscBlockAiInfo',
+            'items'         => [
+                ['title' => 'AI Hallucinates, Seniors Validate', 'description' => 'Junior engineers accept AI suggestions blindly. Our seniors (avg. 5+ years exp) have the deep intuition to spot subtle AI bugs and security flaws instantly.'],
+                ['title' => 'AI Writes Functions, Seniors Build Systems', 'description' => 'AI is tactical; it sees lines of code. Our experts are strategic; they see the entire system architecture, ensuring scalability and maintainability that AI cannot comprehend.'],
+                ['title' => 'From "Coding" to "Orchestrating"', 'description' => 'With 90% senior talent, we skip the learning curve. Our engineers act as "Architects," orchestrating AI agents to deliver enterprise-grade solutions at 3x the speed of traditional teams.'],
+            ],
+            'options'       => ['theme' => ''],
+        ],
+        // 4. Timeline (section.timeline – Bionic Engineering Process)
+        [
+            'acf_fc_layout'    => 'nscBlockAiTimeline',
+            'title'           => 'THE "BIONIC" <br class="hidden lg:block"> ENGINEERING PROCESS',
+            'description'     => '<p>Integrating AI into every step of the SDLC to cut noise and amplify value.</p>',
+            'phases'           => [
+                ['milestone' => 'Phase 1', 'title' => 'Design & Specs', 'content' => '<p>Prompt-to-UI Prototyping.</p>'],
+                ['milestone' => 'Phase 2', 'title' => 'Development', 'content' => '<p>AI-Assisted Coding (Cursor/Copilot) <br> Reducing boilerplate by 40%.</p>'],
+                ['milestone' => 'Phase 3', 'title' => 'Quality Assurance', 'content' => '<p>Generative Testing <br> Autonomously covering 99% of edge cases.</p>'],
+                ['milestone' => 'Phase 4', 'title' => 'Modernization', 'content' => '<p>AI-Driven Refactoring <br> Decoding and upgrading legacy systems.</p>'],
+            ],
+            'quote'           => '<p>"At NSC, AI is embedded in our DNA. We leverage advanced Generative AI agents to automate repetitive coding tasks, allowing our senior engineers to dedicate 100% of their intellect to your complex business logic."</p>',
+            'options'         => ['theme' => ''],
+        ],
+        // 5. AI Impact (section.ai-impact)
+        [
+            'acf_fc_layout' => 'nscBlockAiImpact',
+            'title'         => 'TURNING AI HYPE INTO BUSINESS IMPACT',
+            'items'         => [
+                ['num' => '01', 'title' => '<span>01.</span> Enterprise GenAI & RAG', 'content' => '<p>Securely integrate LLMs with your proprietary data. We build intelligent Knowledge Bases and Context-Aware Chatbots using Retrieval-Augmented Generation (RAG) architecture.</p>'],
+                ['num' => '02', 'title' => '<span>02.</span> Computer Vision & OCR', 'content' => '<p>From automated document processing to intelligent surveillance. We deploy vision models that see, analyze, and act in real-time.</p>'],
+                ['num' => '03', 'title' => '<span>03.</span> Predictive Analytics & Forecasting', 'content' => '<p>Move from reactive to proactive. Leverage Machine Learning to predict market trends, detect fraud, and personalize customer experiences at scale.</p>'],
+                ['num' => '04', 'title' => '<span>04.</span> Software Development & Digital Solutions', 'content' => '<p>Prepare your infrastructure for the AI era. We clean your data, migrate workloads to the Cloud, and API-enable your legacy systems for seamless AI integration.</p>'],
+            ],
+            'options'        => ['theme' => ''],
+        ],
+        // 6. Capabilities Details (section.our-capabilities-details)
+        [
+            'acf_fc_layout' => 'nscBlockAiCapabilitiesDetails',
+            'title'         => 'ORCHESTRATING A BEST-IN-CLASS ECOSYSTEM',
+            'description'   => '<p>We partner with the world\'s leading platforms to build scalable, secure, and sovereign AI solutions.</p>',
+            'rows'          => [
+                ['title' => 'Foundation Models (LLMs)', 'badge' => '', 'images' => []],
+                ['title' => 'Efficient & Edge AI (SLMs)', 'badge' => '💰 Cost Optimized', 'images' => []],
+                ['title' => 'Development Frameworks', 'badge' => '', 'images' => []],
+                ['title' => 'Vector Databases <br> (AI Memory)', 'badge' => '', 'images' => []],
+                ['title' => 'Cloud & MLOps <br> Infrastructure', 'badge' => '', 'images' => []],
+                ['title' => 'AI Coding Tools (Internal)', 'badge' => '', 'images' => []],
+            ],
+            'quote'          => '<p>We are platform-agnostic. We choose the right model and infrastructure for your specific constraints and budget.</p>',
+            'options'        => ['theme' => ''],
+        ],
+        // 7. AI Security (section.ai-security)
+        [
+            'acf_fc_layout' => 'nscBlockAiSecurity',
+            'title'         => 'ENTERPRIES-GRADE <br>TRUST & SECURITY',
+            'subtitle'      => 'Three Pillars of Trust',
+            'items'         => [
+                ['title' => 'Zero-Data Retention', 'content' => 'Your data remains yours. We implement strict policies ensuring your proprietary information is never used to train public models.'],
+                ['title' => 'Compliance Ready', 'content' => 'Our AI development lifecycle adheres to ISO 27001, SOC 2, and GDPR standards. We integrate automated security guardrails to prevent AI hallucinations and vulnerabilities.'],
+                ['title' => 'Human-in-the-Loop', 'content' => 'AI proposes, Humans decide. We maintain rigorous human oversight on all critical code commits and strategic decisions.'],
+            ],
+            'options'       => ['theme' => ''],
+        ],
+        // 8. Contact Us (section.contact-us)
+        [
+            'acf_fc_layout' => 'nscBlockContactUs',
+            'title'         => 'CONTACT',
+            'contentLines'  => "Ideas that inspire.\nStories that shape the future.",
+            'showForm'      => 1,
+            'formAction'    => $baseUrl,
+            'options'       => ['theme' => ''],
+        ],
+    ];
+}
+
+/**
+ * Our Services page components matching frontend/build/our-services.html (Hero + Our Services Details).
+ * Live content by default; use content_test=1 to prepend "[test] " to text.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getOurServicesPageComponents(): array
+{
+    $baseUrl = home_url('/');
+
+    return [
+        // 1. Hero (section.hero.dark)
+        [
+            'acf_fc_layout' => 'nscBlockHero',
+            'heroStyle'     => 'dark',
+            'headline'      => '<span class="highlight primary">End-to-End</span> <br class="lg:hidden"> <sb>Technology Services</sb> <br> <sb>for</sb> <span class="highlight primary">Modern Enterprice</span>',
+            'description'   => '<p>Powered by Vietnam\'s <b>Top 7% senior engineers</b> and <b>AI-enabled delivery</b>, NSC Software provides a comprehensive suite of technology services that help organizations innovate, modernize, and scale with confidence.</p>',
+            'button'        => ['label' => '', 'url' => '', 'openInNewTab' => 0],
+            'options'       => ['theme' => ''],
+        ],
+        // 2. Our Services Details (section.our-services-details)
+        [
+            'acf_fc_layout'    => 'nscBlockOurServicesDetails',
+            'titleLine1'       => 'OUR SERVICES ',
+            'titleLine2'       => 'YOUR STRATEGIC',
+            'titleLine3'       => '<span class="highlight">ADVANTAGE</span>',
+            'introParagraphs' => '<p>We deliver full-cycle technology services - from software development and system architecture to AI, cloud, and enterprise platforms.</p><p>Our 100% senior engineering teams combine deep technical expertise with disciplined execution to help global organizations build secure, scalable, and high-performing digital systems.</p>',
+            'serviceItems'     => [
+                [
+                    'number'      => '1',
+                    'title'      => 'Software Development & Digital Solutions',
+                    'subtitle'   => 'Building scalable, secure, and user-centric software across web, mobile, and enterprise systems.',
+                    'description' => 'We deliver end-to-end software development with a strong focus on performance, user experience, and long-term business value. Whether modernizing legacy platforms or building new digital products, our senior engineers ensure reliability, scalability, and clean architecture.',
+                    'listItems'   => [
+                        ['item' => 'Custom Enterprise Software Development'],
+                        ['item' => 'Web Application Development'],
+                        ['item' => 'Mobile Application Development'],
+                        ['item' => 'Legacy System Modernization'],
+                        ['item' => 'API Development & Integration'],
+                        ['item' => 'Microservices Architecture'],
+                        ['item' => 'Cloud-Native Solutions'],
+                    ],
+                ],
+                [
+                    'number'      => '2',
+                    'title'      => 'Technology Consulting & Architecture',
+                    'subtitle'   => 'Aligning technology with business strategy through expert guidance and enterprise-grade architecture.',
+                    'description' => 'Our consulting practice helps organizations make the right technology decisions, design scalable systems, and plan for long-term modernization. We bring clarity, structure, and senior-level insight to complex technology landscapes.',
+                    'listItems'   => [
+                        ['item' => 'Technology Strategy & Roadmapping'],
+                        ['item' => 'AI Strategy & Adoption'],
+                        ['item' => 'Solution Architecture Design'],
+                        ['item' => 'Modernization & Migration Consulting'],
+                        ['item' => 'System Integration Consulting'],
+                        ['item' => 'Cloud & DevOps Consulting'],
+                        ['item' => 'Security Architecture & Compliance Design'],
+                    ],
+                ],
+                [
+                    'number'      => '3',
+                    'title'      => 'Cloud & DevOps Services',
+                    'subtitle'   => 'Cloud-native engineering and automated delivery pipelines for agility, security, and uptime.',
+                    'description' => 'We help enterprises adopt cloud-native principles, optimize cloud costs, and automate delivery pipelines. Our DevOps experts ensure consistent, secure, and efficient deployment practices across AWS, Azure, and GCP.',
+                    'listItems'   => [
+                        ['item' => 'Cloud Architecture & Engineering (AWS, Azure, GCP)'],
+                        ['item' => 'CI/CD Pipeline Setup & Automation'],
+                        ['item' => 'Cloud Cost Optimization & Monitoring'],
+                        ['item' => 'DevSecOps Implementation'],
+                        ['item' => 'Containerization (Docker, Kubernetes)'],
+                    ],
+                ],
+                [
+                    'number'      => '4',
+                    'title'      => 'Data Engineering & Analytics',
+                    'subtitle'   => 'Transforming data into actionable insights and intelligent business decisions.',
+                    'description' => 'We architect and build modern data systems to help organizations centralize, process, and analyze data effectively. Our solutions support both real-time and large-scale data workloads.',
+                    'listItems'   => [
+                        ['item' => 'Data pipeline, ETL/ELT'],
+                        ['item' => 'Data lakes, data warehouse'],
+                        ['item' => 'Real-time streaming'],
+                        ['item' => 'BI dashboard, analytics'],
+                        ['item' => 'Data quality, governance'],
+                    ],
+                ],
+                [
+                    'number'      => '5',
+                    'title'      => 'AI & Machine Learning',
+                    'subtitle'   => 'Leveraging AI to automate, optimize, and accelerate enterprise innovation.',
+                    'description' => 'From machine learning to generative AI, we help organizations adopt, integrate, and operationalize AI solutions that drive automation, intelligence, and new value creation.',
+                    'listItems'   => [
+                        ['item' => 'AI Strategy & Adoption'],
+                        ['item' => 'Machine Learning Solutions'],
+                        ['item' => 'Computer Vision & OCR'],
+                        ['item' => 'Natural Language Processing (NLP)'],
+                        ['item' => 'Generative AI & LLM Solutions'],
+                        ['item' => 'AI Deployment & MLOps'],
+                        ['item' => 'AI Integration & Automation'],
+                    ],
+                ],
+                [
+                    'number'      => '6',
+                    'title'      => 'Blockchain & Web3 Development',
+                    'subtitle'   => 'Building decentralized solutions that deliver trust, transparency, and digital ownership.',
+                    'description' => 'We develop secure and scalable Web3 applications, smart contracts, and cross-chain integrations. Our blockchain team has deep expertise in major networks and emerging decentralized ecosystems',
+                    'listItems'   => [
+                        ['item' => 'Smart Contract Development (Solidity, Rust)'],
+                        ['item' => 'DeFi, GameFi, SocialFi Platforms'],
+                        ['item' => 'NFT Marketplaces & Tokenization Platforms'],
+                        ['item' => 'Wallet & Payment Integration'],
+                        ['item' => 'Custom Blockchain Protocols & Tools'],
+                        ['item' => 'Cross-chain & Layer 2 Integration'],
+                    ],
+                ],
+                [
+                    'number'      => '7',
+                    'title'      => 'Quality Assurance & Testing Services',
+                    'subtitle'   => 'Ensuring software reliability, security, and performance through rigorous QA practices.',
+                    'description' => 'Our QA teams apply a mix of manual, automated, and performance testing to ensure every release meets enterprise-level standards for quality and security.',
+                    'listItems'   => [
+                        ['item' => 'Test Planning & QA Strategy'],
+                        ['item' => 'Manual Testing'],
+                        ['item' => 'Automation Testing'],
+                        ['item' => 'Performance & Load Testing'],
+                        ['item' => 'Security & Penetration Testing'],
+                    ],
+                ],
+                [
+                    'number'      => '8',
+                    'title'      => 'ERP, CRM & Business Platform Services',
+                    'subtitle'   => 'Streamlining operations and enabling growth through leading enterprise platforms.',
+                    'description' => 'We implement, customize, and integrate modern ERP and CRM systems to help businesses improve efficiency, automate workflows, and unify operations.',
+                    'listItems'   => [
+                        ['item' => 'Odoo Development & Customization'],
+                        ['item' => 'Microsoft Power Platform (PowerApps, Power Automate)'],
+                        ['item' => 'Dynamics 365 Customization & Integration'],
+                        ['item' => 'Salesforce Development'],
+                        ['item' => 'SAP Extensions & Integrations'],
+                        ['item' => 'Workflow Automation, RPA'],
+                        ['item' => 'ERP/CRM Custom Modules'],
+                        ['item' => 'Third-party System Integration'],
+                    ],
+                ],
+            ],
+            'banner' => [
+                'title'       => 'Ready to Build High-Performing <br class="hidden lg:block"> Digital Solutions',
+                'description' => '<p>Work with <b>Vietnam\'s Top 7%</b> senior <br class="lg:hidden"> engineers <br> to accelerate your technology  <br class="lg:hidden"> initiatives.</p>',
+                'button'      => [
+                    'label'        => 'Speak With Our Team',
+                    'url'          => $baseUrl . 'contact/',
+                    'openInNewTab' => 0,
+                ],
+            ],
+            'options' => ['theme' => ''],
+        ],
+    ];
+}
+
+/**
+ * Our Capabilities (Technology Capability) page components matching frontend/build/our-capabilites.html (Hero + Technology Capability).
+ * Live content by default; use content_test=1 to prepend "[test] " to text. Row images are empty; add in CMS.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getOurCapabilitiesPageComponents(): array
+{
+    return [
+        // 1. Hero (section.hero.dark)
+        [
+            'acf_fc_layout' => 'nscBlockHero',
+            'heroStyle'     => 'dark',
+            'headline'      => '<span class="highlight primary">End-to-End</span> <br class="lg:hidden"> <sb>Technology Services</sb> <br> <sb>for</sb> <span class="highlight primary">Modern Enterprice</span>',
+            'description'   => '<p>Powered by Vietnam\'s <b>Top 7% senior engineers</b> and <b>AI-enabled delivery</b>, NSC Software provides a comprehensive suite of technology services that help organizations innovate, modernize, and scale with confidence.</p>',
+            'button'        => ['label' => '', 'url' => '', 'openInNewTab' => 0],
+            'options'       => ['theme' => ''],
+        ],
+        // 2. Technology Capability (section.our-capabilities-details)
+        [
+            'acf_fc_layout' => 'nscBlockTechnologyCapability',
+            'title'         => 'TECHNOLOGY <br class="lg:hidden"> CAPABILITY',
+            'description'   => '<p class="center">Our expertise spans the full technology stack, from enterprise systems to emerging technologies, ensuring scalable and future-ready solutions.</p>',
+            'rows'          => [
+                ['title' => 'Backend Development', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
+                ['title' => 'Frontend Development', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
+                [
+                    'title'         => 'Mobile Development',
+                    'rightColClass' => '',
+                    'imageGroups'   => [
+                        ['label' => 'Android: ', 'images' => []],
+                        ['label' => 'iOS:: ', 'images' => []],
+                        ['label' => 'Cross-platform:: ', 'images' => []],
+                    ],
+                ],
+                ['title' => 'Database', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
+                [
+                    'title'         => 'Cloud & DevOps',
+                    'rightColClass' => '',
+                    'imageGroups'   => [
+                        ['label' => 'Cloud & Infrastructure: ', 'images' => []],
+                        ['label' => '', 'images' => []],
+                        ['label' => 'Containers & Automation:: ', 'images' => []],
+                        ['label' => '', 'images' => []],
+                        ['label' => 'Monitoring & Logging: ', 'images' => []],
+                        ['label' => '', 'images' => []],
+                    ],
+                ],
+                ['title' => 'Data Engineering', 'rightColClass' => '!gap-2', 'imageGroups' => [['label' => '', 'images' => []]]],
+                ['title' => 'AI & Machine Learning', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
+                ['title' => 'Blockchain', 'rightColClass' => '!gap-2', 'imageGroups' => [['label' => '', 'images' => []]]],
+                ['title' => 'Automation Quality Assurance', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
+                ['title' => 'Enterprise/Ecommerce Platforms', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
+            ],
+            'options'       => ['theme' => ''],
+        ],
+    ];
+}
+
+/**
  * Recursively prepend "[test] " to all string values so you can verify the CMS loads editable data.
  * Preserves layout key, openInNewTab, showForm, and URL fields (url, formAction, buttonUrl, phoneLink).
  *
@@ -406,6 +838,94 @@ foreach ($pages as $page) {
             'status'  => $action,
             'message' => $msg,
         ];
+    } elseif ($slug === 'about') {
+        // About page: seed components matching frontend/build/about.html (Hero→Company Snapshot→Our Story→Leaders→Why Us→Capabilities→Global Presence→Contact).
+        $components = getAboutPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+        if (function_exists('update_field')) {
+            update_field('pageComponents', [], (int) $pageId);
+            update_field('pageComponents', $components, (int) $pageId);
+        } else {
+            delete_post_meta((int) $pageId, 'pageComponents');
+            update_post_meta((int) $pageId, 'pageComponents', $components);
+        }
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (About sections)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
+    } elseif ($slug === 'ai') {
+        // AI page: seed components matching frontend/build/ai.html (Hero→AiBanner→AiInfo→Timeline→AiImpact→CapabilitiesDetails→AiSecurity→Contact).
+        $components = getAiPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+        if (function_exists('update_field')) {
+            update_field('pageComponents', [], (int) $pageId);
+            update_field('pageComponents', $components, (int) $pageId);
+        } else {
+            delete_post_meta((int) $pageId, 'pageComponents');
+            update_post_meta((int) $pageId, 'pageComponents', $components);
+        }
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (AI sections)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
+    } elseif ($slug === 'our-services') {
+        // Our Services page: seed components matching frontend/build/our-services.html (Hero + Our Services Details).
+        $components = getOurServicesPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+        if (function_exists('update_field')) {
+            update_field('pageComponents', [], (int) $pageId);
+            update_field('pageComponents', $components, (int) $pageId);
+        } else {
+            delete_post_meta((int) $pageId, 'pageComponents');
+            update_post_meta((int) $pageId, 'pageComponents', $components);
+        }
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Our Services: Hero + Services Details)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
+    } elseif ($slug === 'our-capabilites') {
+        // Our Capabilities page: seed components matching frontend/build/our-capabilites.html (Hero + Technology Capability).
+        $components = getOurCapabilitiesPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+        if (function_exists('update_field')) {
+            update_field('pageComponents', [], (int) $pageId);
+            update_field('pageComponents', $components, (int) $pageId);
+        } else {
+            delete_post_meta((int) $pageId, 'pageComponents');
+            update_post_meta((int) $pageId, 'pageComponents', $components);
+        }
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Our Capabilities: Hero + Technology Capability)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
     } else {
         $results[] = [
             'slug'    => $slug,
@@ -427,7 +947,7 @@ echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Page Setup</ti
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body>';
 echo '<h1>NSC Pages Setup</h1>';
-echo '<p>Done. Home page uses default template and pageComponents matching <code>frontend/src/index.html</code>. URL fields use your site base URL. Re-run to refresh Home components. Add <code>home_only=1</code> to update only the Home page. Add <code>content_test=1</code> to prepend "[test] " to all text so you can verify the CMS loads editable data.</p>';
+echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>content_test=1</code> to prepend "[test] " to all text on Home and About so you can verify the CMS loads editable data.</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $statusClass = $row['status'] === 'error' ? 'error' : 'ok';

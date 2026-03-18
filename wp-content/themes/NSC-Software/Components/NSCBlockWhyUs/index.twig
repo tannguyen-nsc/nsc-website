@@ -1,6 +1,6 @@
 {% if not (options.hidden|default(0)) %}
-<nsc-software-component name="NSCBlockWhyUs" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
-  <section id="why-us" class="why-us {{ options.theme ? 'theme-' ~ options.theme : '' }}">
+<nsc-software-component name="NSCBlockWhyUs">
+  <section id="why-us" class="why-us">
   {% if backgroundImage.url or backgroundImage.src %}
     <img src="{{ (backgroundImage.url|default(backgroundImage.src))|e('esc_url') }}" class="xl:block hidden" alt="" loading="lazy" />
   {% elseif theme.buildUri %}

@@ -1,0 +1,36 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockOurCapabilities">
+  <section class="our-capabilities">
+    <div class="heading">
+      {% if headingIcon.url or headingIcon.src %}
+        <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+      {% elseif theme.buildUri %}
+        <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+      {% endif %}
+      <h2>{{ title|e }}</h2>
+    </div>
+    <div class="wrapper">
+      <div class="capability-main">
+        <div class="capability-graphic"></div>
+        <div class="capability-content">
+          <div class="capability-left">
+            {% if titleLine1 %}<h3>{{ titleLine1|e }}</h3>{% endif %}
+            {% if titleLine2 %}<h3>{{ titleLine2|e }}</h3>{% endif %}
+            {% if button.label and button.url %}
+              <a href="{{ button.url|e('esc_url') }}" class="btn" {{ button.openInNewTab ? ' target="_blank" rel="noopener noreferrer"' }}>
+                {{ button.label|e }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
+                  <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#FFFFFF"/>
+                </svg>
+              </a>
+            {% endif %}
+          </div>
+          <div class="capability-right">
+            {% if paragraphs %}{{ paragraphs|raw }}{% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

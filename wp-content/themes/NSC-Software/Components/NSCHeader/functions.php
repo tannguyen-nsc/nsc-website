@@ -18,6 +18,7 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     $data['buildUri'] = $themeBuildUri;
     $data['menu'] = Timber::get_menu('navigation_main') ?? Timber::get_pages_menu();
     Menu\ensure_menu_item_classes($data['menu']);
+    Menu\set_current_ancestor_on_parents($data['menu']);
     $blogName = get_bloginfo('name');
 
     $data['logo'] = [
@@ -85,7 +86,20 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
 
     // Header type per page: home (class "home"), transparent_floating (class "transparent-floating"), or default (no extra class).
     $postId = get_queried_object_id();
-    $headerType = ($postId && function_exists('get_field')) ? (get_field('header_type', $postId) ?: '') : '';
+    if (!$postId && is_singular()) {
+        global $post;
+        $postId = ($post instanceof \WP_Post) ? (int) $post->ID : 0;
+    }
+    $headerType = '';
+    $rawHeaderType = null;
+    if ($postId && function_exists('get_field')) {
+        $rawHeaderType = get_field('header_type', $postId);
+        if (is_array($rawHeaderType)) {
+            $headerType = $rawHeaderType['value'] ?? $rawHeaderType[0] ?? '';
+        } else {
+            $headerType = is_string($rawHeaderType) ? $rawHeaderType : '';
+        }
+    }
     $data['headerType'] = in_array($headerType, ['home', 'transparent_floating'], true) ? $headerType : '';
     if ($data['headerType'] === 'transparent_floating') {
         $data['headerClass'] = 'transparent-floating';
@@ -93,6 +107,15 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
         $data['headerClass'] = 'home';
     } else {
         $data['headerClass'] = '';
+    }
+
+    // Labels (from options); mobile-center shows page title when on a singular page.
+    $data['labels'] = (isset($options['labels']) && is_array($options['labels'])) ? $options['labels'] : [];
+    if (empty($data['labels']['mobileHomeText'])) {
+        $data['labels']['mobileHomeText'] = __('Home', 'NscSoftware');
+    }
+    if ($postId && (is_singular() || is_front_page())) {
+        $data['labels']['mobileHomeText'] = get_the_title($postId);
     }
 
     return $data;

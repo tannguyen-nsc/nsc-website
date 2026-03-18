@@ -6,25 +6,6 @@
 
 namespace NscSoftware\FieldVariables;
 
-function getTheme($default = '')
-{
-    return [
-        'label' => __('Theme', 'NscSoftware'),
-        'name' => 'theme',
-        'type' => 'select',
-        'allow_null' => 0,
-        'multiple' => 0,
-        'ui' => 0,
-        'ajax' => 0,
-        'choices' => [
-            '' => __('(none)', 'NscSoftware'),
-            'light' => __('Light', 'NscSoftware'),
-            'dark' => __('Dark', 'NscSoftware'),
-        ],
-        'default_value' => $default,
-    ];
-}
-
 /**
  * Hidden option: when enabled, the component is not displayed on the front page.
  *

@@ -44,3 +44,39 @@ function set_item_classes(array $items, array $classes_by_id)
         }
     }
 }
+
+/**
+ * Set current_ancestor on parent menu items when any descendant is the current page.
+ * Used so "What We Do" gets active class when on Our Services or Our Capabilities.
+ *
+ * @param object|null $menu Timber\Menu or object with ->items.
+ * @return void
+ */
+function set_current_ancestor_on_parents($menu)
+{
+    if (!$menu || !isset($menu->items) || !is_array($menu->items)) {
+        return;
+    }
+    foreach ($menu->items as $item) {
+        if (!empty($item->children) && is_array($item->children)) {
+            $item->current_ancestor = has_current_descendant($item->children);
+        }
+    }
+}
+
+/**
+ * @param array $items Menu items (may have ->children, ->current).
+ * @return bool
+ */
+function has_current_descendant(array $items)
+{
+    foreach ($items as $item) {
+        if (!empty($item->current)) {
+            return true;
+        }
+        if (!empty($item->children) && is_array($item->children) && has_current_descendant($item->children)) {
+            return true;
+        }
+    }
+    return false;
+}

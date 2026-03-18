@@ -1,6 +1,8 @@
 <nsc-software-component name="NSCHeader">
+  
   {# Mobile Header (shows for mobile up to xl) #}
-  <header class="mobile-header xl:hidden{{ headerClass ? ' ' ~ headerClass : '' }}">
+  
+  <header class="mobile-header {% if headerClass %}{{ headerClass|e }}{% endif %} xl:hidden">
     <div class="mobile-header-wrapper">
       <div class="mobile-logo-wrapper">
         <a href="{{ site.link|e('esc_url') }}">
@@ -30,7 +32,7 @@
           {% set _item_class = (item.classes|default([])|join(' '))|trim %}
           {% if item.children %}
             <li class="mobile-dropdown-parent">
-              <a class="mobile-nav-link mobile-dropdown-toggle no-link-cursor {{ _item_class }}">
+              <a class="mobile-nav-link mobile-dropdown-toggle no-link-cursor {{ item.current_ancestor ? 'active' : '' }} {{ _item_class }}">
                 {{ item.title|e }}
                 <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -40,7 +42,7 @@
                 {% for child in item.children %}
                   {% set _child_class = (child.classes|default([])|join(' '))|trim %}
                   <li>
-                    <a href="{{ child.link|e('esc_url') }}" class="mobile-nav-link {{ _child_class }}" {{ child.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>
+                    <a href="{{ child.link|e('esc_url') }}" class="mobile-nav-link {{ child.current ? 'active' : '' }} {{ _child_class }}" {{ child.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>
                       {{ child.title|e }}
                       <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -67,7 +69,7 @@
   </header>
 
   {# Desktop Header (shows for xl and up) #}
-  <header class="desktop-header hidden xl:block{{ headerClass ? ' ' ~ headerClass : '' }}">
+  <header class="desktop-header {% if headerClass %}{{ headerClass|e }}{% endif %} hidden xl:block">
     <div class="wrapper">
       <logo>
         <a href="{{ site.link|e('esc_url') }}">
@@ -84,11 +86,11 @@
             {% set _item_class = (item.classes|default([])|join(' '))|trim %}
             {% if item.children %}
               <li>
-                <a class="no-link-cursor {{ _item_class }}">{{ item.title|e }} <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+                <a class="no-link-cursor {{ item.current_ancestor ? 'active' : '' }} {{ _item_class }}">{{ item.title|e }} <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
                 <ul class="dropdown">
                   {% for child in item.children %}
                     {% set _child_class = (child.classes|default([])|join(' '))|trim %}
-                    <li><a href="{{ child.link|e('esc_url') }}" class="{{ _child_class }}" {{ child.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ child.title|e }}</a></li>
+                    <li><a href="{{ child.link|e('esc_url') }}" class="{{ child.current ? 'active' : '' }} {{ _child_class }}" {{ child.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ child.title|e }}</a></li>
                   {% endfor %}
                 </ul>
               </li>

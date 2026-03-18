@@ -6,8 +6,8 @@
 #}
 {% if not (options.hidden|default(0)) %}
 {% set style = heroStyle|default('home') %}
-{% set sectionClass = 'hero ' ~ (style == 'left_text' ? 'left-text' : style) ~ (options.theme ? ' theme-' ~ options.theme : '') %}
-<nsc-software-component name="NSCBlockHero" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+{% set sectionClass = 'hero ' ~ (style == 'left_text' ? 'left-text' : style) %}
+<nsc-software-component name="NSCBlockHero">
   <section class="{{ sectionClass }}">
   {% if style == 'home' %}
     {# Home: single background image (wave canvas is injected by wave.js when .hero.home exists) #}

@@ -1,0 +1,41 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockCompanySnapshot">
+  <section class="company-stats-full">
+    <div class="heading light">
+      {% if headingIcon.url or headingIcon.src %}
+        <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+      {% elseif theme.buildUri %}
+        <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+      {% endif %}
+      <h2>{{ title|e }}</h2>
+    </div>
+    <div class="company-stats">
+      {% for stat in stats %}
+        <div class="stat animate__animated animate__flipInY">
+          <h2><span class="count">{{ stat.number|e }}</span>{{ stat.suffix|default('')|e }}</h2>
+          <div class="content">
+            <h3>{{ stat.title|e }}</h3>
+            {% if stat.subtitle %}<p>{{ stat.subtitle|e }}</p>{% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      {% if certImages|length %}
+        <div class="stat animate__animated animate__flipInY">
+          {% for cert in certImages %}
+            {% if cert.image.url or cert.image.src %}
+              <img src="{{ (cert.image.url|default(cert.image.src))|e('esc_url') }}" alt="{{ (cert.image.alt|default(''))|e }}" loading="lazy" />
+            {% elseif theme.buildUri %}
+              <img src="{{ theme.buildUri }}/img/ISO-27001-white.png" alt="Company Stats Icon" loading="lazy" />
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% elseif theme.buildUri %}
+        <div class="stat animate__animated animate__flipInY">
+          <img src="{{ theme.buildUri }}/img/ISO-27001-white.png" alt="Company Stats Icon" loading="lazy" />
+          <img src="{{ theme.buildUri }}/img/ISO-9001-2015-white.png" alt="Company Stats Icon" loading="lazy" />
+        </div>
+      {% endif %}
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

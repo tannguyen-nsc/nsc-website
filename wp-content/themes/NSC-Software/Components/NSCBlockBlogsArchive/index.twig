@@ -1,5 +1,5 @@
 {% if not (options.hidden|default(0)) %}
-<nsc-software-component name="NSCBlockBlogsArchive" class="blogs blogs-archive {{ options.theme ? 'theme-' ~ options.theme : '' }}" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+<nsc-software-component name="NSCBlockBlogsArchive" class="blogs blogs-archive">
   <div class="heading">
     {% if headingIcon.url or headingIcon.src %}
       <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />

@@ -1,7 +1,7 @@
 {% if not (options.hidden|default(0)) %}
-<nsc-software-component name="NSCBlockHowWeWork" {{ options.theme ? 'data-theme="' ~ options.theme ~ '"' }}>
+<nsc-software-component name="NSCBlockHowWeWork">
   {% set sectionBg = (backgroundImage.url|default(backgroundImage.src)) %}
-  <section class="how-we-work {{ options.theme ? 'theme-' ~ options.theme : '' }}" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/how-we-work.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <section class="how-we-work" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/how-we-work.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
   <div class="wrapper">
     <div class="heading animate__animated animate__zoomIn">
       {% if headingIcon.url %}
