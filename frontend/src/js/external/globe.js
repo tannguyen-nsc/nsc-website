@@ -27,6 +27,10 @@
   var BLOOM_THRESHOLD = 0;
   var EMISSIVE_INTENSITY = 0.17;
 
+  var DEFAULT_ROTATION_X = 18.5 * (Math.PI / 180);
+  var DEFAULT_ROTATION_Y = -96 * (Math.PI / 180);
+  var DEFAULT_ROTATION_Z = 2 * (Math.PI / 180);
+
   var GLOBE_RADIUS = 100;
   var WIREFRAME_RADIUS = 107;
   var WIRE_LAT_BANDS = 18;    // latitude bands between poles
@@ -90,6 +94,7 @@
   var containerEl, sectionEl, svgOverlay;
   var animFrameId = null;
   var autoRotate = false;
+  var resetOnLeave = true;
   var autoRotateResumeTimer = null;
   var isInitialized = false;
   var isDisposed = false;
@@ -1098,9 +1103,9 @@
     globeGroup.add(rimShellMesh);
 
     // Set initial rotation
-    globeGroup.rotation.x = 18.5 * (Math.PI / 180);
-    globeGroup.rotation.y = -96 * (Math.PI / 180);
-    globeGroup.rotation.z = 2 * (Math.PI / 180);
+    globeGroup.rotation.x = DEFAULT_ROTATION_X;
+    globeGroup.rotation.y = DEFAULT_ROTATION_Y;
+    globeGroup.rotation.z = DEFAULT_ROTATION_Z;
 
     // Start invisible for intro animation
     globeGroup.scale.set(0, 0, 0);
@@ -1115,6 +1120,23 @@
    * Smoothly rotate the globe to center on a specific point.
    * @param {number} index - Index into POINTS_DATA
    */
+  function rotateToDefault() {
+    if (!globeGroup) return;
+    var from = { x: globeGroup.rotation.x, y: globeGroup.rotation.y };
+    var targetY = DEFAULT_ROTATION_Y;
+    var delta = targetY - from.y;
+    delta = delta - Math.round(delta / (2 * Math.PI)) * 2 * Math.PI;
+    targetY = from.y + delta;
+    new TWEEN.Tween(from)
+      .to({ x: DEFAULT_ROTATION_X, y: targetY }, ROTATION_DURATION)
+      .easing(TWEEN.Easing.Cubic.InOut)
+      .onUpdate(function () {
+        globeGroup.rotation.x = from.x;
+        globeGroup.rotation.y = from.y;
+      })
+      .start();
+  }
+
   function rotateToPoint(index) {
     if (index < 0 || index >= POINTS_DATA.length || !globeGroup) return;
 
@@ -1288,6 +1310,9 @@
 
       item.addEventListener("mouseleave", function () {
         clearTimeout(autoRotateResumeTimer);
+        if (resetOnLeave) {
+          rotateToDefault();
+        }
       });
     });
   }
@@ -1624,6 +1649,16 @@
         if (globeGroup) globeGroup.rotation.z = v * Math.PI / 180;
       }, function () { return globeGroup ? globeGroup.rotation.z * 180 / Math.PI : null; })
     );
+    panel.appendChild(
+      makeSlider("Rotation Speed (ms)", 200, 3000, 50, ROTATION_DURATION, function (v) {
+        ROTATION_DURATION = v;
+      }, function () { return ROTATION_DURATION; })
+    );
+
+    panel.appendChild(makeToggle("Reset on leave", resetOnLeave,
+      function (v) { resetOnLeave = v; },
+      function () { return resetOnLeave; }
+    ));
 
     panel.appendChild(makeToggle("Auto-rotate", autoRotate,
       function (v) { autoRotate = v; },
@@ -2126,18 +2161,18 @@
     toggleRegistry = [];
     colorRegistry = [];
 
-    // Overlay wrapper — sits outside .why-us so overflow:hidden cannot clip it
+    // Overlay wrapper — anchored to bottom-right of the section
     var wrapper = document.createElement("div");
     wrapper.style.cssText =
-      "position:fixed;z-index:10001;pointer-events:none;top:0;left:0;width:0;height:0;";
-    document.body.appendChild(wrapper);
+      "position:absolute;z-index:10001;pointer-events:none;bottom:0;right:0;width:0;height:0;";
+    sectionEl.appendChild(wrapper);
     debugWrapper = wrapper;
 
     // Gear toggle button
     var btn = document.createElement("button");
     btn.textContent = "\u2699";
     btn.style.cssText =
-      "position:absolute;top:16px;right:16px;z-index:10000;width:32px;height:32px;" +
+      "position:absolute;bottom:16px;right:16px;z-index:10000;width:32px;height:32px;" +
       "border:none;border-radius:50%;background:rgba(0,0,0,0.5);color:#36C3DC;" +
       "font-size:18px;cursor:pointer;line-height:32px;text-align:center;padding:0;" +
       "pointer-events:auto;";
@@ -2148,9 +2183,9 @@
     // Panel
     var panel = document.createElement("div");
     panel.style.cssText =
-      "position:fixed;bottom:56px;right:16px;z-index:10000;background:rgba(0,0,0,0.85);" +
+      "position:absolute;bottom:56px;right:16px;z-index:10000;background:rgba(0,0,0,0.85);" +
       "color:#ccc;font:11px/1.6 monospace;padding:10px 12px;border-radius:6px;" +
-      "max-height:70vh;overflow-y:auto;display:none;min-width:220px;pointer-events:auto;";
+      "max-height:70vh;overflow-y:auto;display:none;min-width:220px;pointer-events:auto;text-align:left;";
     wrapper.appendChild(panel);
     debugPanel = panel;
 
