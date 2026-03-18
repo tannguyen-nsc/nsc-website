@@ -32,7 +32,9 @@
   "scripts": {
     "dev": "gulp",
     "build": "gulp prod",
-    "prod": "gulp prod"
+    "prod": "gulp prod",
+    "sync": "node scripts/sync-build-to-theme.js",
+    "build:sync": "npm run build && node scripts/sync-build-to-theme.js"
   },
   "repository": {
     "type": "git",

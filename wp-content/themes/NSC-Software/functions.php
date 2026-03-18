@@ -30,3 +30,21 @@ add_action('after_setup_theme', function () {
     // Translations can be filed in the /languages/ directory.
     load_theme_textdomain('NscSoftware', get_template_directory() . '/languages');
 });
+
+/**
+ * WP Mail SMTP: relax SSL verification when certificate verify fails (e.g. local/dev).
+ * Only applies when NSC_SMTP_RELAX_SSL is true in wp-config.php. Do not enable in production.
+ */
+add_filter('wp_mail_smtp_custom_options', function ($phpmailer) {
+    if (!defined('NSC_SMTP_RELAX_SSL') || !NSC_SMTP_RELAX_SSL) {
+        return $phpmailer;
+    }
+    $options = is_array($phpmailer->SMTPOptions) ? $phpmailer->SMTPOptions : [];
+    $ssl = isset($options['ssl']) && is_array($options['ssl']) ? $options['ssl'] : [];
+    $ssl['verify_peer'] = false;
+    $ssl['verify_peer_name'] = false;
+    $ssl['allow_self_signed'] = true;
+    $options['ssl'] = $ssl;
+    $phpmailer->SMTPOptions = $options;
+    return $phpmailer;
+});

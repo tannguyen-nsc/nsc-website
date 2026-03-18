@@ -299,12 +299,13 @@ function getHomePageComponents(): array
         ],
         // 9. Contact Us (section.contact-us)
         [
-            'acf_fc_layout' => 'nscBlockContactUs',
-            'title'         => 'CONTACT',
-            'contentLines'  => "Ideas that inspire.\nStories that shape the future.",
-            'showForm'      => 1,
-            'formAction'    => $baseUrl,
-            'options'       => ['theme' => ''],
+            'acf_fc_layout'  => 'nscBlockContactUs',
+            'title'          => 'CONTACT',
+            'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
+            'showForm'       => 1,
+            'cf7Shortcode'   => '[contact-form-7 id="" title="NSC Main Contact Form"]',
+            'formAction'     => $baseUrl,
+            'options'        => ['theme' => ''],
         ],
     ];
 }
@@ -409,12 +410,13 @@ function getAboutPageComponents(): array
         ],
         // 8. Contact Us (section.contact-us)
         [
-            'acf_fc_layout' => 'nscBlockContactUs',
-            'title'         => 'CONTACT',
+            'acf_fc_layout'  => 'nscBlockContactUs',
+            'title'          => 'CONTACT',
             'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
-            'showForm'      => 1,
-            'formAction'    => $baseUrl,
-            'options'       => ['theme' => ''],
+            'showForm'       => 1,
+            'cf7Shortcode'   => '[contact-form-7 id="" title="NSC Main Contact Form"]',
+            'formAction'     => $baseUrl,
+            'options'        => ['theme' => ''],
         ],
     ];
 }
@@ -512,12 +514,13 @@ function getAiPageComponents(): array
         ],
         // 8. Contact Us (section.contact-us)
         [
-            'acf_fc_layout' => 'nscBlockContactUs',
-            'title'         => 'CONTACT',
-            'contentLines'  => "Ideas that inspire.\nStories that shape the future.",
-            'showForm'      => 1,
-            'formAction'    => $baseUrl,
-            'options'       => ['theme' => ''],
+            'acf_fc_layout'  => 'nscBlockContactUs',
+            'title'          => 'CONTACT',
+            'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
+            'showForm'       => 1,
+            'cf7Shortcode'   => '[contact-form-7 id="" title="NSC Main Contact Form"]',
+            'formAction'     => $baseUrl,
+            'options'        => ['theme' => ''],
         ],
     ];
 }
@@ -756,7 +759,7 @@ function getContactPageComponents(): array
             'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
             'showForm'       => 1,
             'formAction'     => $baseUrl,
-            'cf7Shortcode'   => '',
+            'cf7Shortcode'   => '[contact-form-7 id="" title="NSC Main Contact Form"]',
             'officesTitle'   => 'OUR OFFICES',
             'offices'        => [
                 [
@@ -817,7 +820,7 @@ function getContactPageComponents(): array
  */
 function applyContentTest(array $components): array
 {
-    $preserveKeys = ['acf_fc_layout', 'openInNewTab', 'showForm', 'url', 'formAction', 'buttonUrl', 'phoneLink'];
+    $preserveKeys = ['acf_fc_layout', 'openInNewTab', 'showForm', 'url', 'formAction', 'buttonUrl', 'phoneLink', 'cf7Shortcode'];
     $out = [];
     foreach ($components as $k => $v) {
         if (in_array($k, $preserveKeys, true)) {

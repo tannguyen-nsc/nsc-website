@@ -39,10 +39,10 @@ add_filter('NscSoftware/addComponentData?name=NSCFooter', function ($data) {
     $sitemapItems = is_array($rawItems) ? $rawItems : (is_countable($rawItems) ? iterator_to_array($rawItems, false) : []);
     $data['sitemapItems'] = $sitemapItems;
     $n = count($sitemapItems);
-    $perCol = $n > 0 ? (int) ceil($n / 3) : 0;
-    $data['sitemapCol1'] = $perCol > 0 ? array_slice($sitemapItems, 0, $perCol) : [];
-    $data['sitemapCol2'] = $perCol > 0 ? array_slice($sitemapItems, $perCol, $perCol) : [];
-    $data['sitemapCol3'] = $perCol > 0 ? array_slice($sitemapItems, 2 * $perCol) : [];
+    // First column: 2 items. Last column: 2 items. Middle column: the rest (no overlap).
+    $data['sitemapCol1'] = array_slice($sitemapItems, 0, 2);
+    $data['sitemapCol3'] = $n >= 4 ? array_slice($sitemapItems, -2) : ($n === 3 ? array_slice($sitemapItems, 2, 1) : []);
+    $data['sitemapCol2'] = $n > 4 ? array_slice($sitemapItems, 2, $n - 4) : [];
     $options = Options::getTranslatable('NSCFooter');
     $data['companyName'] = $options['companyName'] ?? get_bloginfo('name');
     $data['companyDescription'] = $options['companyDescription'] ?? '';
