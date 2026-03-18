@@ -32,8 +32,8 @@
   var WIRE_LAT_BANDS = 18;    // latitude bands between poles
   var WIRE_LNG_COUNT = 26;    // points per band
   var WIRE_ARC_SEGMENTS = 6;  // interpolation segments per arc
-  var WIRE_LAT_LINEWIDTH = 1.0;    // latitude (horizontal) line width
-  var WIRE_LNG_LINEWIDTH = 0.5;    // longitude (diagonal+pole) line width
+  var WIRE_LAT_LINEWIDTH = 2;       // latitude (horizontal) line width
+  var WIRE_LNG_LINEWIDTH = 1;       // longitude (diagonal+pole) line width
   var WIRE_LAT_DASH_SIZE = 1.1;
   var WIRE_LAT_GAP_SIZE = 1.5;
   var WIRE_LNG_DASH_SIZE = 0.7;
@@ -122,22 +122,22 @@
   var connDotGlowIntensity = 2.6;
   var rimShellMesh = null;
   var RIM_SHELL_COLOR = "#32F4FE";
-  var RIM_SHELL_INTENSITY = 1.8;
+  var RIM_SHELL_INTENSITY = 3;
   var RIM_SHELL_POWER = 8;
   var RIM_SHELL_OPACITY = 0.5;
   var RIM_SHELL_FILL = 0.45;
   var RIM_SHELL_RADIUS = 100;
   var vietnamTileMesh = null;
-  var VIETNAM_TILE_LAT = 16;
-  var VIETNAM_TILE_LNG = 107;
-  var VIETNAM_TILE_SIZE = 88;
+  var VIETNAM_TILE_LAT = 18;
+  var VIETNAM_TILE_LNG = 110;
+  var VIETNAM_TILE_SIZE = 116;
   var VIETNAM_TILE_ALTITUDE = 0.05;
-  var VIETNAM_TILE_ROTATE_X = 0;    // degrees
+  var VIETNAM_TILE_ROTATE_X = -1;   // degrees
   var VIETNAM_TILE_ROTATE_Y = -180; // degrees
   var VIETNAM_TILE_ROTATE_Z = 4;    // degrees
-  var VIETNAM_TILE_OFFSET_X = 16;
+  var VIETNAM_TILE_OFFSET_X = 1;
   var VIETNAM_TILE_OFFSET_Y = 4.5;
-  var VIETNAM_TILE_OFFSET_Z = 0;
+  var VIETNAM_TILE_OFFSET_Z = 7;
   var introAnimating = false;
   var connectorDrawProgress = 1;
 
@@ -885,10 +885,10 @@
   }
 
   function createLights() {
-    ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
     scene.add(ambientLight);
 
-    keyLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    keyLight = new THREE.DirectionalLight(0xffffff, 2.45);
     keyLight.position.set(100, 200, 100);
     scene.add(keyLight);
 
@@ -896,16 +896,33 @@
     fillLight.position.set(-100, -50, 200);
     scene.add(fillLight);
 
-    backLight = new THREE.DirectionalLight(0xffffff, 1.6);
+    backLight = new THREE.DirectionalLight(new THREE.Color("#19dcff"), 2.5);
     backLight.position.set(-135, -300, 300);
     scene.add(backLight);
 
-    for (var i = 0; i < 4; i++) {
-      spotLights[i] = new THREE.DirectionalLight(0xffffff, 1.6);
-      spotLights[i].position.set(-135, -300, 300);
-      spotLights[i].visible = false;
-      scene.add(spotLights[i]);
-    }
+    // Spot light 1
+    spotLights[0] = new THREE.DirectionalLight(new THREE.Color("#19dcff"), 1.3);
+    spotLights[0].position.set(300, -15, -30);
+    spotLights[0].visible = true;
+    scene.add(spotLights[0]);
+
+    // Spot light 2
+    spotLights[1] = new THREE.DirectionalLight(new THREE.Color("#19dcff"), 0.7);
+    spotLights[1].position.set(-135, 160, 300);
+    spotLights[1].visible = true;
+    scene.add(spotLights[1]);
+
+    // Spot light 3
+    spotLights[2] = new THREE.DirectionalLight(0xffffff, 1.6);
+    spotLights[2].position.set(-135, -300, 300);
+    spotLights[2].visible = false;
+    scene.add(spotLights[2]);
+
+    // Spot light 4
+    spotLights[3] = new THREE.DirectionalLight(0xffffff, 1.6);
+    spotLights[3].position.set(-135, -300, 300);
+    spotLights[3].visible = false;
+    scene.add(spotLights[3]);
   }
 
   // ---------------------------------------------------------------------------
@@ -1080,11 +1097,10 @@
     rimShellMesh.renderOrder = 999;
     globeGroup.add(rimShellMesh);
 
-    // Set initial rotation to face Hanoi
-    var initial = latLngToRotation(POINTS_DATA[0].lat, POINTS_DATA[0].lng);
-    globeGroup.rotation.x = initial.x;
-    globeGroup.rotation.y = initial.y;
-    globeGroup.rotation.z = -12 * (Math.PI / 180);
+    // Set initial rotation
+    globeGroup.rotation.x = 18.5 * (Math.PI / 180);
+    globeGroup.rotation.y = -96 * (Math.PI / 180);
+    globeGroup.rotation.z = 2 * (Math.PI / 180);
 
     // Start invisible for intro animation
     globeGroup.scale.set(0, 0, 0);
