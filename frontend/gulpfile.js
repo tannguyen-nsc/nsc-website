@@ -224,9 +224,10 @@ function prodClean() {
 }
 
 /**
- * Build version only: set base URL to home.html.
- * - Replaces href="./" with href="home.html" in all built HTML.
- * - Copies index.html to home.html so the static build home page is at home.html.
+ * Build version only: set base URL to home.html so Home menu is correct for both index and home.
+ * - Replaces href="./" with href="home.html" in all built HTML (desktop and mobile home links).
+ * - Copies index.html to home.html so both index.html and home.html serve as the home page;
+ *   both files have the Home menu item active (desktop and mobile) when viewed.
  */
 function prodBuildBaseUrl(done) {
   const buildBase = path.resolve(options.paths.build.base);
@@ -254,7 +255,7 @@ function prodBuildBaseUrl(done) {
   }
   console.log(
     "\n\t" + logSymbols.info,
-    `Build base URL set to ${BUILD_HOME} (all home links point to home.html).\n`
+    `Build base URL set to ${BUILD_HOME} (all home links point to home.html; index.html and ${BUILD_HOME} both act as home with Home menu active).\n`
   );
   done();
 }
