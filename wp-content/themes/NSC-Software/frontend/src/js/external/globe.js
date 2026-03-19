@@ -27,13 +27,17 @@
   var BLOOM_THRESHOLD = 0;
   var EMISSIVE_INTENSITY = 0.17;
 
+  var DEFAULT_ROTATION_X = 18.5 * (Math.PI / 180);
+  var DEFAULT_ROTATION_Y = -96 * (Math.PI / 180);
+  var DEFAULT_ROTATION_Z = 2 * (Math.PI / 180);
+
   var GLOBE_RADIUS = 100;
   var WIREFRAME_RADIUS = 107;
   var WIRE_LAT_BANDS = 18;    // latitude bands between poles
   var WIRE_LNG_COUNT = 26;    // points per band
   var WIRE_ARC_SEGMENTS = 6;  // interpolation segments per arc
-  var WIRE_LAT_LINEWIDTH = 1.0;    // latitude (horizontal) line width
-  var WIRE_LNG_LINEWIDTH = 0.5;    // longitude (diagonal+pole) line width
+  var WIRE_LAT_LINEWIDTH = 2;       // latitude (horizontal) line width
+  var WIRE_LNG_LINEWIDTH = 1;       // longitude (diagonal+pole) line width
   var WIRE_LAT_DASH_SIZE = 1.1;
   var WIRE_LAT_GAP_SIZE = 1.5;
   var WIRE_LNG_DASH_SIZE = 0.7;
@@ -64,13 +68,13 @@
   var VIETNAM_TILE_IMAGE_URL = BUILD_BASE_URI ? BUILD_BASE_URI + "/img/s.png" : "./img/s.png";
 
   var POINTS_DATA = [
-    { lat: 22.00, lng: 100.00, label: "Senior-Led, AI-Driven Expertise" },
-    { lat: 23.00, lng: 125.50, label: "Time-Zone Aligned Collaboration" },
-    { lat: 15.00, lng: 99.50, label: "Vietnam's Top 7% IT Talents" },
-    { lat: 14.00, lng: 122.00, label: "100% English-Proficient Team" },
-    { lat: 7.50, lng: 100.00, label: "100% Senior-Level Engineers" },
-    { lat: 5.50, lng: 122.50, label: "High-Quality, Cost-Efficient Delivery" },
-    { lat: 1.35, lng: 100.50, label: "6+ Years Minimum Experience" }
+    { lat: 22.00, lng: 100.00, camLat: 22.00, camLng: 100.00, label: "Senior-Led, AI-Driven Expertise" },
+    { lat: 23.00, lng: 125.50, camLat: 23.00, camLng: 125.50, label: "Time-Zone Aligned Collaboration" },
+    { lat: 15.00, lng: 99.50, camLat: 15.00, camLng: 99.50, label: "Vietnam's Top 7% IT Talents" },
+    { lat: 14.00, lng: 122.00, camLat: 14.00, camLng: 122.00, label: "100% English-Proficient Team" },
+    { lat: 7.50, lng: 100.00, camLat: 7.50, camLng: 100.00, label: "100% Senior-Level Engineers" },
+    { lat: 5.50, lng: 122.50, camLat: 5.50, camLng: 122.50, label: "High-Quality, Cost-Efficient Delivery" },
+    { lat: 1.35, lng: 100.50, camLat: 1.35, camLng: 100.50, label: "6+ Years Minimum Experience" }
   ];
 
   // Left-column card indices connect from right edge; right-column from left edge.
@@ -90,6 +94,7 @@
   var containerEl, sectionEl, svgOverlay;
   var animFrameId = null;
   var autoRotate = false;
+  var resetOnLeave = true;
   var autoRotateResumeTimer = null;
   var isInitialized = false;
   var isDisposed = false;
@@ -120,24 +125,30 @@
   var CONNECTOR_DOT_SIZE = 7;
   var connDotBaseColor = new THREE.Color(CONNECTOR_DOT_COLOR);
   var connDotGlowIntensity = 2.6;
+  var cameraAnchorMesh = null;
+  var CAMERA_ANCHOR_DOT_COLOR = "#FFD700";
+  var CAMERA_ANCHOR_DOT_SIZE = 7;
+  var camAnchorBaseColor = new THREE.Color(CAMERA_ANCHOR_DOT_COLOR);
+  var camAnchorGlowIntensity = 2.6;
+  var showCameraAnchors = false;
   var rimShellMesh = null;
   var RIM_SHELL_COLOR = "#32F4FE";
-  var RIM_SHELL_INTENSITY = 1.8;
+  var RIM_SHELL_INTENSITY = 3;
   var RIM_SHELL_POWER = 8;
   var RIM_SHELL_OPACITY = 0.5;
   var RIM_SHELL_FILL = 0.45;
   var RIM_SHELL_RADIUS = 100;
   var vietnamTileMesh = null;
-  var VIETNAM_TILE_LAT = 16;
-  var VIETNAM_TILE_LNG = 107;
-  var VIETNAM_TILE_SIZE = 88;
+  var VIETNAM_TILE_LAT = 18;
+  var VIETNAM_TILE_LNG = 110;
+  var VIETNAM_TILE_SIZE = 116;
   var VIETNAM_TILE_ALTITUDE = 0.05;
-  var VIETNAM_TILE_ROTATE_X = 0;    // degrees
+  var VIETNAM_TILE_ROTATE_X = -1;   // degrees
   var VIETNAM_TILE_ROTATE_Y = -180; // degrees
   var VIETNAM_TILE_ROTATE_Z = 4;    // degrees
-  var VIETNAM_TILE_OFFSET_X = 16;
+  var VIETNAM_TILE_OFFSET_X = 1;
   var VIETNAM_TILE_OFFSET_Y = 4.5;
-  var VIETNAM_TILE_OFFSET_Z = 0;
+  var VIETNAM_TILE_OFFSET_Z = 7;
   var introAnimating = false;
   var connectorDrawProgress = 1;
 
@@ -589,6 +600,24 @@
       } else if (connectorDashed) {
         path.setAttribute("stroke-dasharray", connectorDashSize + " " + connectorGapSize);
       }
+
+      // Draw dashed line from connector elbow to camera anchor point
+      if (showCameraAnchors) {
+        var camWorld = latLngToWorld(point.camLat, point.camLng, connectorAltitude);
+        var camScreen = projectToScreen(camWorld, camera, renderer.domElement);
+        if (camScreen.visible) {
+          var camX = camScreen.x + offsetX;
+          var camY = camScreen.y + offsetY;
+          var camPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          camPath.setAttribute("d", "M" + midX + "," + cardY + " L" + camX + "," + camY);
+          camPath.setAttribute("fill", "none");
+          camPath.setAttribute("stroke", CAMERA_ANCHOR_DOT_COLOR);
+          camPath.setAttribute("stroke-width", String(connectorWidth));
+          camPath.setAttribute("stroke-dasharray", "6 4");
+          camPath.setAttribute("opacity", "0.7");
+          svgOverlay.appendChild(camPath);
+        }
+      }
     });
   }
 
@@ -761,6 +790,60 @@
   }
 
   // ---------------------------------------------------------------------------
+  // Camera Anchor Dots (rotation target markers)
+  // ---------------------------------------------------------------------------
+
+  function createCameraAnchorDots() {
+    var positions = [];
+    POINTS_DATA.forEach(function (point) {
+      var phi = (90 - point.camLat) * (Math.PI / 180);
+      var theta = (90 - point.camLng) * (Math.PI / 180);
+      var r = GLOBE_RADIUS * (1 + connectorAltitude);
+      positions.push(
+        r * Math.sin(phi) * Math.cos(theta),
+        r * Math.cos(phi),
+        r * Math.sin(phi) * Math.sin(theta)
+      );
+    });
+    var geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+
+    var canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 64;
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(32, 32, 30, 0, Math.PI * 2);
+    ctx.fillStyle = "#ffffff";
+    ctx.fill();
+
+    var mat = new THREE.PointsMaterial({
+      color: new THREE.Color(CAMERA_ANCHOR_DOT_COLOR),
+      size: CAMERA_ANCHOR_DOT_SIZE,
+      map: new THREE.CanvasTexture(canvas),
+      transparent: true,
+      alphaTest: 0.5,
+      sizeAttenuation: true,
+      depthWrite: false,
+    });
+    mat.toneMapped = false;
+    return new THREE.Points(geo, mat);
+  }
+
+  function updateCameraAnchorDotPosition(index) {
+    if (!cameraAnchorMesh) return;
+    var point = POINTS_DATA[index];
+    var phi = (90 - point.camLat) * (Math.PI / 180);
+    var theta = (90 - point.camLng) * (Math.PI / 180);
+    var r = GLOBE_RADIUS * (1 + connectorAltitude);
+    var positions = cameraAnchorMesh.geometry.attributes.position.array;
+    positions[index * 3] = r * Math.sin(phi) * Math.cos(theta);
+    positions[index * 3 + 1] = r * Math.cos(phi);
+    positions[index * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+    cameraAnchorMesh.geometry.attributes.position.needsUpdate = true;
+  }
+
+  // ---------------------------------------------------------------------------
   // Fresnel Rim Shell
   // ---------------------------------------------------------------------------
 
@@ -885,10 +968,10 @@
   }
 
   function createLights() {
-    ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+    ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
     scene.add(ambientLight);
 
-    keyLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    keyLight = new THREE.DirectionalLight(0xffffff, 2.45);
     keyLight.position.set(100, 200, 100);
     scene.add(keyLight);
 
@@ -896,16 +979,33 @@
     fillLight.position.set(-100, -50, 200);
     scene.add(fillLight);
 
-    backLight = new THREE.DirectionalLight(0xffffff, 1.6);
+    backLight = new THREE.DirectionalLight(new THREE.Color("#19dcff"), 2.5);
     backLight.position.set(-135, -300, 300);
     scene.add(backLight);
 
-    for (var i = 0; i < 4; i++) {
-      spotLights[i] = new THREE.DirectionalLight(0xffffff, 1.6);
-      spotLights[i].position.set(-135, -300, 300);
-      spotLights[i].visible = false;
-      scene.add(spotLights[i]);
-    }
+    // Spot light 1
+    spotLights[0] = new THREE.DirectionalLight(new THREE.Color("#19dcff"), 1.3);
+    spotLights[0].position.set(300, -15, -30);
+    spotLights[0].visible = true;
+    scene.add(spotLights[0]);
+
+    // Spot light 2
+    spotLights[1] = new THREE.DirectionalLight(new THREE.Color("#19dcff"), 0.7);
+    spotLights[1].position.set(-135, 160, 300);
+    spotLights[1].visible = true;
+    scene.add(spotLights[1]);
+
+    // Spot light 3
+    spotLights[2] = new THREE.DirectionalLight(0xffffff, 1.6);
+    spotLights[2].position.set(-135, -300, 300);
+    spotLights[2].visible = false;
+    scene.add(spotLights[2]);
+
+    // Spot light 4
+    spotLights[3] = new THREE.DirectionalLight(0xffffff, 1.6);
+    spotLights[3].position.set(-135, -300, 300);
+    spotLights[3].visible = false;
+    scene.add(spotLights[3]);
   }
 
   // ---------------------------------------------------------------------------
@@ -1075,16 +1175,21 @@
     connectorDotsMesh.material.color.copy(connDotBaseColor).multiplyScalar(connDotGlowIntensity);
     globeGroup.add(connectorDotsMesh);
 
+    // Camera anchor dots (rotation target markers, hidden by default)
+    cameraAnchorMesh = createCameraAnchorDots();
+    cameraAnchorMesh.material.color.copy(camAnchorBaseColor).multiplyScalar(camAnchorGlowIntensity);
+    cameraAnchorMesh.visible = showCameraAnchors;
+    globeGroup.add(cameraAnchorMesh);
+
     // Fresnel rim shell (rendered last for correct additive blending)
     rimShellMesh = createRimShell(RIM_SHELL_RADIUS);
     rimShellMesh.renderOrder = 999;
     globeGroup.add(rimShellMesh);
 
-    // Set initial rotation to face Hanoi
-    var initial = latLngToRotation(POINTS_DATA[0].lat, POINTS_DATA[0].lng);
-    globeGroup.rotation.x = initial.x;
-    globeGroup.rotation.y = initial.y;
-    globeGroup.rotation.z = -12 * (Math.PI / 180);
+    // Set initial rotation
+    globeGroup.rotation.x = DEFAULT_ROTATION_X;
+    globeGroup.rotation.y = DEFAULT_ROTATION_Y;
+    globeGroup.rotation.z = DEFAULT_ROTATION_Z;
 
     // Start invisible for intro animation
     globeGroup.scale.set(0, 0, 0);
@@ -1099,12 +1204,29 @@
    * Smoothly rotate the globe to center on a specific point.
    * @param {number} index - Index into POINTS_DATA
    */
+  function rotateToDefault() {
+    if (!globeGroup) return;
+    var from = { x: globeGroup.rotation.x, y: globeGroup.rotation.y };
+    var targetY = DEFAULT_ROTATION_Y;
+    var delta = targetY - from.y;
+    delta = delta - Math.round(delta / (2 * Math.PI)) * 2 * Math.PI;
+    targetY = from.y + delta;
+    new TWEEN.Tween(from)
+      .to({ x: DEFAULT_ROTATION_X, y: targetY }, ROTATION_DURATION)
+      .easing(TWEEN.Easing.Cubic.InOut)
+      .onUpdate(function () {
+        globeGroup.rotation.x = from.x;
+        globeGroup.rotation.y = from.y;
+      })
+      .start();
+  }
+
   function rotateToPoint(index) {
     if (index < 0 || index >= POINTS_DATA.length || !globeGroup) return;
 
     var target = latLngToRotation(
-      POINTS_DATA[index].lat,
-      POINTS_DATA[index].lng
+      POINTS_DATA[index].camLat,
+      POINTS_DATA[index].camLng
     );
 
     // Normalize Y rotation to avoid >180-degree spins
@@ -1272,6 +1394,9 @@
 
       item.addEventListener("mouseleave", function () {
         clearTimeout(autoRotateResumeTimer);
+        if (resetOnLeave) {
+          rotateToDefault();
+        }
       });
     });
   }
@@ -1608,6 +1733,16 @@
         if (globeGroup) globeGroup.rotation.z = v * Math.PI / 180;
       }, function () { return globeGroup ? globeGroup.rotation.z * 180 / Math.PI : null; })
     );
+    panel.appendChild(
+      makeSlider("Rotation Speed (ms)", 200, 3000, 50, ROTATION_DURATION, function (v) {
+        ROTATION_DURATION = v;
+      }, function () { return ROTATION_DURATION; })
+    );
+
+    panel.appendChild(makeToggle("Reset on leave", resetOnLeave,
+      function (v) { resetOnLeave = v; },
+      function () { return resetOnLeave; }
+    ));
 
     panel.appendChild(makeToggle("Auto-rotate", autoRotate,
       function (v) { autoRotate = v; },
@@ -1924,20 +2059,38 @@
 
   function appendCityControlsSection(panel) {
     panel.appendChild(makeCollapsibleGroup("Why-Us Points", true, function (container) {
+      container.appendChild(
+        makeToggle("Show Cam Anchors", showCameraAnchors, function (v) {
+          showCameraAnchors = v;
+          if (cameraAnchorMesh) cameraAnchorMesh.visible = v;
+        }, function () { return showCameraAnchors; })
+      );
       for (var ci = 0; ci < POINTS_DATA.length; ci++) {
         (function (i) {
           container.appendChild(makeHeading(POINTS_DATA[i].label));
           container.appendChild(
-            makeSlider("Lat", -90, 90, 0.5, POINTS_DATA[i].lat, function (v) {
+            makeSlider("Conn Lat", -90, 90, 0.5, POINTS_DATA[i].lat, function (v) {
               POINTS_DATA[i].lat = v;
               updateConnectorDotPosition(i);
             }, function () { return POINTS_DATA[i].lat; })
           );
           container.appendChild(
-            makeSlider("Lng", -180, 180, 0.5, POINTS_DATA[i].lng, function (v) {
+            makeSlider("Conn Lng", -180, 180, 0.5, POINTS_DATA[i].lng, function (v) {
               POINTS_DATA[i].lng = v;
               updateConnectorDotPosition(i);
             }, function () { return POINTS_DATA[i].lng; })
+          );
+          container.appendChild(
+            makeSlider("Cam Lat", -90, 90, 0.5, POINTS_DATA[i].camLat, function (v) {
+              POINTS_DATA[i].camLat = v;
+              updateCameraAnchorDotPosition(i);
+            }, function () { return POINTS_DATA[i].camLat; })
+          );
+          container.appendChild(
+            makeSlider("Cam Lng", -180, 180, 0.5, POINTS_DATA[i].camLng, function (v) {
+              POINTS_DATA[i].camLng = v;
+              updateCameraAnchorDotPosition(i);
+            }, function () { return POINTS_DATA[i].camLng; })
           );
         })(ci);
       }
@@ -2110,18 +2263,18 @@
     toggleRegistry = [];
     colorRegistry = [];
 
-    // Overlay wrapper — sits outside .why-us so overflow:hidden cannot clip it
+    // Overlay wrapper — anchored to bottom-right of the section
     var wrapper = document.createElement("div");
     wrapper.style.cssText =
-      "position:fixed;z-index:10001;pointer-events:none;top:0;left:0;width:0;height:0;";
-    document.body.appendChild(wrapper);
+      "position:absolute;z-index:10001;pointer-events:none;bottom:0;right:0;width:0;height:0;";
+    sectionEl.appendChild(wrapper);
     debugWrapper = wrapper;
 
     // Gear toggle button
     var btn = document.createElement("button");
     btn.textContent = "\u2699";
     btn.style.cssText =
-      "position:absolute;top:16px;right:16px;z-index:10000;width:32px;height:32px;" +
+      "position:absolute;bottom:16px;right:16px;z-index:10000;width:32px;height:32px;" +
       "border:none;border-radius:50%;background:rgba(0,0,0,0.5);color:#36C3DC;" +
       "font-size:18px;cursor:pointer;line-height:32px;text-align:center;padding:0;" +
       "pointer-events:auto;";
@@ -2132,9 +2285,9 @@
     // Panel
     var panel = document.createElement("div");
     panel.style.cssText =
-      "position:fixed;bottom:56px;right:16px;z-index:10000;background:rgba(0,0,0,0.85);" +
+      "position:absolute;bottom:56px;right:16px;z-index:10000;background:rgba(0,0,0,0.85);" +
       "color:#ccc;font:11px/1.6 monospace;padding:10px 12px;border-radius:6px;" +
-      "max-height:70vh;overflow-y:auto;display:none;min-width:220px;pointer-events:auto;";
+      "max-height:70vh;overflow-y:auto;display:none;min-width:220px;pointer-events:auto;text-align:left;";
     wrapper.appendChild(panel);
     debugPanel = panel;
 
@@ -2279,6 +2432,13 @@
       rimShellMesh.geometry.dispose();
       rimShellMesh.material.dispose();
       rimShellMesh = null;
+    }
+
+    if (cameraAnchorMesh) {
+      cameraAnchorMesh.geometry.dispose();
+      cameraAnchorMesh.material.map.dispose();
+      cameraAnchorMesh.material.dispose();
+      cameraAnchorMesh = null;
     }
 
     wireframeMesh = null;
