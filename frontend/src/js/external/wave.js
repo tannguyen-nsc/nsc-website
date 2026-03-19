@@ -21,7 +21,7 @@
     gridSpacing: 14,
     amplitude: 96,
     frequency: 0.057,
-    speed: 2.1,
+    speed: 0.5,
     octaves: 4,
     turbulence: 0.8,
     cursorStrength: 20,
