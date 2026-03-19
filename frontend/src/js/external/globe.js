@@ -2180,6 +2180,8 @@
             z: +(globeGroup.rotation.z * 180 / Math.PI).toFixed(2),
           } : null,
           autoRotate: autoRotate,
+          resetOnLeave: resetOnLeave,
+          rotationDuration: ROTATION_DURATION,
         },
         vietnamTile: {
           enabled: vietnamTileMesh ? vietnamTileMesh.visible : null,
@@ -2244,6 +2246,15 @@
           dotSize: CONNECTOR_DOT_SIZE,
           dotGlow: connDotGlowIntensity,
         },
+        whyUsPoints: POINTS_DATA.map(function (p) {
+          return {
+            label: p.label,
+            lat: p.lat,
+            lng: p.lng,
+            camLat: p.camLat,
+            camLng: p.camLng,
+          };
+        }),
       };
       console.log("[NSCGlobe] Capture:", JSON.stringify(snapshot, null, 2));
       console.log("[NSCGlobe] Capture (object):", snapshot);
