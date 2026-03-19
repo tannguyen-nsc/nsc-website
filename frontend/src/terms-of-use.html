@@ -30,7 +30,7 @@
   </head>
   <body>
     <!-- Mobile Header (shows for mobile up to lg screen) -->
-    <header class="mobile-header xl:hidden">
+    <header class="mobile-header transparent-floating xl:hidden">
       <div class="mobile-header-wrapper">
         <logo class="mobile-logo-wrapper">
           <a href="./">
@@ -39,7 +39,7 @@
           </a>
         </logo>
         <div class="mobile-center">
-          <span class="mobile-home-text">Technology Capabilities</span>
+          <span class="mobile-home-text">Terms Conditions</span>
         </div>
         <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -57,7 +57,7 @@
         </button>
         <ul class="mobile-nav-list">
           <li>
-            <a href="./" class="mobile-nav-link">
+            <a href="./" class="mobile-nav-link active">
               Home
               <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -81,7 +81,7 @@
             </a>
           </li>
           <li class="mobile-dropdown-parent">
-            <a class="mobile-nav-link mobile-dropdown-toggle active no-link-cursor">
+            <a class="mobile-nav-link mobile-dropdown-toggle no-link-cursor">
               What We Do
               <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -97,7 +97,7 @@
                 </a>
               </li>
               <li>
-                <a href="our-capabilites.html" class="mobile-nav-link active">
+                <a href="our-capabilites.html" class="mobile-nav-link">
                   Technology Capabilities
                   <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -174,7 +174,7 @@
     </header>
 
     <!-- Desktop Header (shows for screens above lg) -->
-    <header class="desktop-header hidden xl:block">
+    <header class="desktop-header transparent-floating hidden xl:block">
       <div class="wrapper">
         <logo>
           <a href="#"><img src="./img/logo-white.png" class="logo-white" alt="Logo" loading="eager" fetchpriority="high" />
@@ -182,13 +182,13 @@
         </logo>
         <nav>
           <ul class="nav">
-            <li><a href="./">Home</a></li>
+            <li><a href="./" class="active">Home</a></li>
             <li><a href="about.html">About Us</a></li>
             <li><a href="ai.html" class="highlight">AI</a></li>
-            <li><a class="active no-link-cursor">What We Do <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+            <li><a class="no-link-cursor">What We Do <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
             <ul class="dropdown">
               <li><a href="our-services.html">Our Services</a></li>
-              <li><a href="our-capabilites.html" class="active">Technology Capabilities</a></li>
+              <li><a href="our-capabilites.html">Technology Capabilities</a></li>
             </ul>
             </li>
             <li><a href="blogs.html">Blog</a></li>
@@ -210,180 +210,67 @@
       </div>
     </header>
 
-    <section class="hero dark">
-      <img src="./img/hero-dark.png" alt="Hero Image" loading="lazy" />
-      <div class="headlines animate__animated animate__zoomIn">
-        <h1>
-          <span class="highlight primary">End-to-End</span> <br class="lg:hidden"> <sb>Technology Services</sb> <br>
-          <sb>for</sb> <span class="highlight primary">Modern Enterprice</span>
-        </h1>
-        <div class="description">
-          <br class="lg:hidden">
-          <p>
-            Powered by Vietnam’s <b>Top 7% senior engineers</b> and <b>AI-enabled delivery</b>, NSC Software provides a comprehensive suite of technology services that help organizations innovate, modernize, and scale with confidence.
-          </p>
-        </div>
-      </div>
-    </section>
-
-    <section class="our-capabilities-details">
-      <div class="heading">
-        <img src="./img/heading-icon.png" alt="Heading Icon" loading="lazy" />
-        <h2>TECHNOLOGY <br class="lg:hidden"> CAPABILITY</h2>
-      </div>
+    <section class="default-text-content" style="background-image:url('./img/default-content-bg.png');">
       <div class="wrapper">
-        <div class="description">
-          <p class="center">Our expertise spans the full technology stack, from enterprise systems to emerging technologies, ensuring scalable and future-ready solutions.</p>  
+        <div class="heading">
+          <h2>Terms of Use</h2>
         </div>
-        <div class="content">
-          <div class="col left-col">
-            <h2>Backend Development</h2>
-          </div>
-          <div class="col right-col">
-            <img src="./img/backend-1.png" alt="Backend Development 1" loading="lazy" />
-            <img src="./img/backend-2.png" alt="Backend Development 2" loading="lazy" />
-            <img src="./img/backend-3.png" alt="Backend Development 3" loading="lazy" />
-            <img src="./img/backend-4.png" alt="Backend Development 4" loading="lazy" />
-            <img src="./img/backend-5.png" alt="Backend Development 5" loading="lazy" />
-            <img src="./img/backend-6.png" alt="Backend Development 6" loading="lazy" />
-            <img src="./img/backend-7.png" alt="Backend Development 7" loading="lazy" />
-            <img src="./img/backend-8.png" alt="Backend Development 8" loading="lazy" />
-            <img src="./img/backend-9.png" alt="Backend Development 9" loading="lazy" />
-            <img src="./img/backend-10.png" alt="Backend Development 10" loading="lazy" />
-          </div>
-          <div class="col left-col">
-            <h2>Frontend Development</h2>
-          </div>
-          <div class="col right-col">
-            <img src="./img/frontend-1.png" alt="Frontend Development 1" loading="lazy" />
-            <img src="./img/frontend-2.png" alt="Frontend Development 2" loading="lazy" />
-            <img src="./img/frontend-3.png" alt="Frontend Development 3" loading="lazy" />
-            <img src="./img/frontend-4.png" alt="Frontend Development 4" loading="lazy" />
-          </div>
-          <div class="col left-col">
-            <h2>Mobile Development</h2>
-          </div>
-          <div class="col right-col">
-            <div class="row"> 
-              <span>Android: </span>
-              <img src="./img/mobile-1.png" alt="Mobile Development 1" loading="lazy" />
-              <img src="./img/mobile-2.png" alt="Mobile Development 2" loading="lazy" />
-            </div>
-            <div class="row"> 
-              <span>iOS:: </span>
-              <img src="./img/mobile-3.png" alt="Mobile Development 3" loading="lazy" />
-              <img src="./img/mobile-4.png" alt="Mobile Development 4" loading="lazy" />
-            </div>
-            <div class="row"> 
-              <span>Cross-platform:: </span>
-              <img src="./img/mobile-5.png" alt="Mobile Development 5" loading="lazy" />
-              <img src="./img/mobile-6.png" alt="Mobile Development 5" loading="lazy" />
-            </div>
-              
-          </div>
-          <div class="col left-col">
-            <h2>Database</h2>
-          </div>
-          <div class="col right-col">
-            <img src="./img/database-1.png" alt="Database 1" loading="lazy" />
-            <img src="./img/database-2.png" alt="Database 2" loading="lazy" />
-            <img src="./img/database-3.png" alt="Database 3" loading="lazy" />
-            <img src="./img/database-4.png" alt="Database 4" loading="lazy" />  
-            <img src="./img/database-5.png" alt="Database 5" loading="lazy" />
-            <img src="./img/database-6.png" alt="Database 6" loading="lazy" />
-            <img src="./img/database-7.png" alt="Database 7" loading="lazy" />
-            <img src="./img/database-8.png" alt="Database 8" loading="lazy" />  
-          </div>
-          <div class="col left-col">
-            <h2>Cloud & DevOps</h2>
-          </div>
-          <div class="col right-col">
-            <div class="row"> 
-              <span>Cloud & Infrastructure: </span>
-            </div>
-            <div class="row"> 
-              <img src="./img/devops-1.png" alt="Cloud & Infrastructure 1" loading="lazy" />
-              <img src="./img/devops-2.png" alt="Cloud & Infrastructure 2" loading="lazy" />
-              <img src="./img/devops-3.png" alt="Cloud & Infrastructure 3" loading="lazy" />
-              <img src="./img/devops-4.png" alt="Cloud & Infrastructure 4" loading="lazy" />
-              <img src="./img/devops-5.png" alt="Cloud & Infrastructure 5" loading="lazy" />
-            </div>
-            <div class="row"> 
-              <span>Containers & Automation:: </span>
-            </div>
-            <div class="row"> 
-              <img src="./img/devops-6.png" alt="Containers & Automation 1" loading="lazy" />
-              <img src="./img/devops-7.png" alt="Containers & Automation 2" loading="lazy" />
-              <img src="./img/devops-8.png" alt="Containers & Automation 3" loading="lazy" />
-              <img src="./img/devops-9.png" alt="Containers & Automation 4" loading="lazy" />
-              <img src="./img/devops-10.png" alt="Containers & Automation 5" loading="lazy" />
-              <img src="./img/devops-11.png" alt="Containers & Automation 6" loading="lazy" />
-            </div>
-            <div class="row"> 
-              <span>Monitoring & Logging: </span>
-            </div>
-            <div class="row"> 
-              <img src="./img/devops-12.png" alt="Monitoring & Logging 1" loading="lazy" />
-              <img src="./img/devops-13.png" alt="Monitoring & Logging 2" loading="lazy" />
-              <img src="./img/devops-14.png" alt="Monitoring & Logging 3" loading="lazy" />
-            </div>
-          </div>
-          <div class="col left-col">
-            <h2>Data Engineering</h2>
-          </div>
-          <div class="col right-col !gap-2">
-            <img src="./img/engineer-1.png" alt="Data Engineering 1" loading="lazy" />  
-            <img src="./img/engineer-2.png" alt="Data Engineering 2" loading="lazy" />
-            <img src="./img/engineer-3.png" alt="Data Engineering 3" loading="lazy" />
-            <img src="./img/engineer-4.png" alt="Data Engineering 4" loading="lazy" />  
-            <img src="./img/engineer-5.png" alt="Data Engineering 5" loading="lazy" />
-            <img src="./img/engineer-6.png" alt="Data Engineering 6" loading="lazy" />
-            <img src="./img/engineer-7.png" alt="Data Engineering 7" loading="lazy" />
-            <img src="./img/engineer-8.png" alt="Data Engineering 8" loading="lazy" />  
-          </div>
-          <div class="col left-col">
-            <h2>AI & Machine Learning</h2>
-          </div>
-          <div class="col right-col"> 
-            <img src="./img/ai-1.png" alt="AI & Machine Learning 1" loading="lazy" />  
-            <img src="./img/ai-2.png" alt="AI & Machine Learning 2" loading="lazy" />
-            <img src="./img/ai-3.png" alt="AI & Machine Learning 3" loading="lazy" />
-            <img src="./img/ai-4.png" alt="AI & Machine Learning 4" loading="lazy" />  
-          </div>
-          <div class="col left-col">
-            <h2>Blockchain</h2>
-          </div>
-          <div class="col right-col !gap-2"> 
-            <img src="./img/blockchain-1.png" alt="Blockchain 1" loading="lazy" />  
-            <img src="./img/blockchain-2.png" alt="Blockchain 2" loading="lazy" />
-            <img src="./img/blockchain-3.png" alt="Blockchain 3" loading="lazy" />
-            <img src="./img/blockchain-4.png" alt="Blockchain 4" loading="lazy" />  
-            <img src="./img/blockchain-5.png" alt="Blockchain 5" loading="lazy" />  
-            <img src="./img/blockchain-6.png" alt="Blockchain 6" loading="lazy" />
-            <img src="./img/blockchain-7.png" alt="Blockchain 7" loading="lazy" />
-            <img src="./img/blockchain-8.png" alt="Blockchain 8" loading="lazy" />  
-            <img src="./img/blockchain-9.png" alt="Blockchain 9" loading="lazy" />  
-          </div>
-          <div class="col left-col">
-            <h2>Automation Quality Assurance</h2>
-          </div>
-          <div class="col right-col"> 
-            <img src="./img/qa-1.png" alt="Automation Quality Assurance 1" loading="lazy" />  
-            <img src="./img/qa-2.png" alt="Automation Quality Assurance 2" loading="lazy" />
-            <img src="./img/qa-3.png" alt="Automation Quality Assurance 3" loading="lazy" />
-            <img src="./img/qa-4.png" alt="Automation Quality Assurance 4" loading="lazy" />  
-            <img src="./img/qa-5.png" alt="Automation Quality Assurance 5" loading="lazy" />  
-            <img src="./img/qa-6.png" alt="Automation Quality Assurance 6" loading="lazy" />
-          </div>
-          <div class="col left-col">
-            <h2>Enterprise/Ecommerce Platforms</h2>
-          </div>  
-          <div class="col right-col"> 
-            <img src="./img/enterprise-1.png" alt="Enterprise/Ecommerce Platforms 1" loading="lazy" />  
-            <img src="./img/enterprise-2.png" alt="Enterprise/Ecommerce Platforms 2" loading="lazy" />
-            <img src="./img/enterprise-3.png" alt="Enterprise/Ecommerce Platforms 3" loading="lazy" />
-            <img src="./img/enterprise-4.png" alt="Enterprise/Ecommerce Platforms 4" loading="lazy" />  
-          </div>
+        <div class="text-content">
+          <p><strong>Terms and conditions agreement</strong></p>
+          <p>NSC Software's website is available for any user world wide. NSC Software creates and maintains this website for information purposes only. By using this web site you shall be deemed to have accepted, and agreed to be bound by these terms and conditions and to comply with all applicable laws and regulations. You agreed not to interrupt or attempt to interrupt the operation of this website in any manner. You may not use this website if you do not accept these terms.</p>
+
+          <p><strong>Limited license</strong></p>
+          <p>This website and all content of this website, patents, copyright, trademark and other intellectual property rights are property of NSC Software and are protected by world wide copyright laws. You agreed to comply with all copyright laws world wide in your use of this website. NSC Software grants no express or implied rights under any patents, trademarks, copyrights or trade secret information. You may not modify, copy, transmit, sell or distribute in whole or in part of this website except that NSC Software grants you not-exclusive, non-commercial, limited use of this website. You may not use any part or a whole of this website in order to create a part of new website and/or when you use even links on the Internet to create it without NSC Software's prior written consent. Notwithstanding the foregoing, any software and other materials that are made available for downloading, access, or other use from this site with their own license terms, conditions, and notices will be governed by such terms, conditions, and notices.</p>
+          <p>Violation of any of these agreements will result in automatically termination of any rights granted to you without prior notice. While NSC Software prohibits such conduct and content on its website, you understand and agree that NSC Software cannot be responsible for the content posted on its website and you nonetheless may be exposed to such materials and that you are solely responsible for any content that you create, transmit or display while using the website and for the consequences of your actions (including any loss or damage which NSC Software may suffer) by doing so.</p>
+
+          <p><strong>Blog</strong></p>
+          <p>The intent of NSC Software's blogs is to share information with the community. We invite you to submit comments or posts for consideration. However, before you begin using blog service, we need to make clear our respective rights and responsibilities related to this service. By accessing, creating or contributing to any blog hosted at this website, and in consideration for the service we provide to you, you must read and agree to these blog terms of service and the following terms and conditions and policies, including any future amendments. NSC Software reserves the rights to remove any comment or user from NSC Software blogs when it or that user violates the terms and conditions of use listed below.</p>
+          <p>You shall accept and agree that all content posted to NSC Software's blog service is the sole responsibility of the individual who originally posted the content. You understand also, that all opinions expressed by users of this site are expressed strictly in their individual capacities, and not as representatives of NSC Software and any of its affiliates.</p>
+          <p>You shall not violate or threaten to violate intellectual property rights such as trademarks, copyrights of NSC Software or any third party.</p>
+          <p>You shall not violate or threaten to violate the legal rights, image copyrights of NSC Software or any third party.</p>
+          <p>You shall not defame, abuse, harass or discriminate NSC Software or any third party.</p>
+          <p>You shall not create a false identity for the purpose of misleading others or pretend to be another person of any organization or cooperation's representative in order to use this service.</p>
+          <p>You shall not in any manner post, publish or upload unlawful topic that could result in or lead to crime such as children prostitution, regulated chemical transaction, fraud, bank account transaction.</p>
+          <p>You shall not use obscene, racist, or sexually explicit language.</p>
+          <p>You shall not upload or otherwise make available, files that contain images, photographs, software or other material protected by intellectual property laws, and not as limitation, copyrights or trademarks laws unless you own or control the rights thereto or have received all necessary consent to do the same.</p>
+          <p>You shall not conduct any contests or publish or propagate any forwards.</p>
+          <p>You shall not post or publish a commercial nature designed to promote a service or product.</p>
+          <p>You shall not copy and distribute, upload files that contain virus, code, files or any other similar software or programs that may result in the damage of software or hardware and/or hinder the operation of NSC Software or another user's computer.</p>
+          <p>You shall not distribute promotion information or spam mails in contradiction with NSC Software's regulations.</p>
+          <p>You accepted and agreed that NSC Software may, at its sole discretion, modify, monitor, remove or edit any content that you contribute.</p>
+          <p>You shall indemnify and hold harmless NSC Software from any claims and loss incurred by NSC Software as a result of your violation of these terms of use.</p>
+
+          <p><strong>Links to other websites</strong></p>
+          <p>You shall not create links to any part of NSC Software's website or directly to website itself from any other websites unless NSC Software grants approval in writing, and, as a further condition to being permitted to link to this website, you agree that NSC Software at any time, in its sole discretion, terminate permission to link to this website.</p>
+          <p>This site contains links to other websites which have their own terms of use and provisions. We do not control any content or operation on those websites and therefore take no responsibility of those websites' content and/or any harm or damage to you that may incur during your using of those websites. These links are created in order to facilitate your using only. NSC Software does not imply any other third party and/or any product or service and therefore we takes no responsibility of the accuracy or, in other word, any content or safety of any operation of those websites. You accepted and agreed that we do not take any direct or indirect responsibility of any harm or damage or any expense that resulted from your trust and using of those linked websites' content, product or service. You understand that your use of those links and websites is at your sole risk.</p>
+
+          <p><strong>Text provided in different languages</strong></p>
+          <p>NSC Software's website makes available certain posted information under text format not only in English but also in other languages. You shall understand, accept and agree that the information provided on the website is translated either by a person or by computer software with no human review, and therefore NSC Software takes no responsibility to assure the accuracy or completeness of the translation no matter what in which way the translation is performed. Additional conditions are provided in Disclaimer of Warranty part below.</p>
+
+          <p><strong>Disclaimer of Warranty</strong></p>
+          <p>YOU UNDERSTAND THAT YOUR USE OF THIS WEBSITE IS THE SOLE RESPONSIBILITY OF YOUR OWN. WE ARE ALWAYS CAREFUL DURING CONSTRUCTION AND MAINTAINANCE OF THIS WEBSITE. ALL OF THE INFORMATION, INSTRUCTIONS, SOFTWARE, PRODUCTS, PROGRAM, AND SERVICES ARE OFFERED ON A STRICTLY "AS IS" BASIS. THE WEBSITE IS OFFERED AS A FREE PUBLIC RESOURCE, WITHOUT ANY WARRANTIES, EXPRESS OR IMPLIED WHATSOEVER. IN PARTICULARLY, ANY AND ALL WARRANTIES OF FITNESS FOR USE OR MERCHANTABILITY ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. WITHOUT LIMITATION, NSC Software MAKES NO WARRANTY OR GUARANTEES THAT THIS WEBSITE WILL BE UNINTERRUPTED, TIMELY, SECURE, OR ERROR-FREE. THE CONTENT ON THE WEBSITE IS FOR THE PURPOSE OF INFORMATION PROVISION ONLY AND SHOULD NOT BE CONSTRUED AS TECHNICAL ADVICE OF ANY MANNER. NSC Software ASSUMES NO RESPONSIBILITY FOR UPDATING THIS WEBSITE TO KEEP YOUR INFORMATION CURRENT OR TO ENSURE THE ACCURACY OR COMPLETENESS OF ANY POSTED INFORMATION.</p>
+
+          <p><strong>LIABILITY LIMITATION</strong></p>
+          <p>YOU UNDERSTAND AND AGREE THAT YOU USE THE WEBSITE AT YOUR OWN DISCRETION AND AT YOUR SOLE RISK. YOU UNDERSTAND AND AGREE THAT, IN NO EVENT, FPT CORPORATION, NSC Software AND ALL OF ITS AFFILIATES WILL BE LIABLE TO YOU OR ANY PARTY ON ALL HARMS AND DAMAGES (INCLUDING DIRECT AND INDIRECT DAMAGES, SPECIAL DAMAGES OR CONSEQUENTIAL DAMAGES OF ANY TYPE WHATSOEVER) RELATED TO OR ARISING FROM THE USE OF OUR WEBSITE, EVEN IF NSC Software IS EXPRESSLY ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. BY USING OUR WEBSITE, YOU WILL BE SOLELY RESPONSIBLE FOR:</p>
+          <p>ANY LOSS OR INJURY CAUSED, IN WHOLE OR IN PART, BY ITS ACTIONS, OMISSIONS, OR NEGLIGENCE, OR FOR CONTIGENCIES BEYOND ITS CONTROL, IN PROCURING, COMPILING OR DELIVERING OR THE POSTED INFORMATION IN THIS WEBSITE;</p>
+          <p>ANY ERRORS, OMISSONS, OR INACCURACIES IN THE INFORMATION REGARDLESS OF HOW CAUSED, OR DELAYS OR INTERRUPTIOS IN DELIVERY OF THE INFORMATION; OR</p>
+          <p>ANY DOWNLOAD OR OTHERWISE OBTAIN MATERIALS, INFORMATION, PRODUCTS, SOFTWARE, PROGRAMS THAT MAY RESULT, INCLUDING LOSS OF DATA OR DAMAGE TO YOUR COMPUTER SYSTEM. YOU SHALL COMMIT TO MAKE COMPENSATION TO NSC Software FOR ANY RESPONSIBILITY, HARM, DAMAGE, JURISDICTION, LEGAL PROCEEDING, EXPENSES (INCLUDING LEGAL EXPENSES) RELATED TO OR ARISING DIRECTLY OR INDIRECTLY TO YOUR VIOLATION OR FAILURE TO COMPLY WITH ANY TERMS AND CONDITIONS ON USING OF THIS WEBSITE.</p>
+
+          <p><strong>Violation &amp; Service Termination</strong></p>
+          <p>Should you violate and against any applicable laws, in any manner, these Terms of Use, provisions or Privacy Statement relating to your use of this website, NSC Software reserves the rights to postpone or terminate the authorization, rights and license given to you for accessing and using of this website at any point of time at its sole discretion.</p>
+
+          <p><strong>Choice of Laws</strong></p>
+          <p>These Terms of Use and provisions stated herewith will be governed by and construed in accordance with the laws of Socialist Republic of Vietnam, without giving effect to its conflict of laws provisions or your actual country, territory of residence. Any claims, legal proceeding or litigation arising in connection with these Terms of Use will be brought solely in Vietnam, and you consent to the jurisdiction of such courts.</p>
+
+          <p><strong>Privacy Policy</strong></p>
+          <p>Please be sure to read our Privacy Statement, which is incorporated herein by reference.</p>
+
+          <p><strong>Change of these Terms of Use</strong></p>
+          <p>NSC Software reserves the rights, at its sole discretion, to modify or terminate this service for any reason, without notice at any time. You are responsible for regularly reviewing these terms. Your continued use of this website constitutes your agreement to all such terms.</p>
+
+          <p><strong>Copyright Notice</strong></p>
+          <p>© 2022 NSC Software Co.Ltd. All rights reserved. NSC Software respects the intellectual property of others, and requires that you do the same.</p>
+          <p>This website is provided by NSC Software as a service to its customers and may be used for informational purposes only and should not be construed as legal advice. If you need legal advice, contact a lawyer.</p>
         </div>
       </div>
     </section>
@@ -574,7 +461,7 @@
                 <path d="M19.5 10.5C19.5 9.70435 19.8163 8.94151 20.3789 8.37891C20.9415 7.8163 21.7043 7.5 22.5 7.5H25.5V4.5H22.5C20.9087 4.5 19.383 5.13259 18.2578 6.25781C17.1326 7.38303 16.5 8.9087 16.5 10.5V15C16.5 15.8284 15.8284 16.5 15 16.5H12V19.5H15C15.8284 19.5 16.5 20.1716 16.5 21V31.5H19.5V21C19.5 20.1716 20.1716 19.5 21 19.5H24.3296L25.0796 16.5H21C20.1716 16.5 19.5 15.8284 19.5 15V10.5ZM22.5 13.5H27C27.4619 13.5 27.8979 13.7131 28.1821 14.0771C28.4663 14.4411 28.5665 14.9153 28.4546 15.3633L26.9546 21.3633C26.7877 22.031 26.1883 22.5 25.5 22.5H22.5V33C22.5 33.8284 21.8284 34.5 21 34.5H15C14.1716 34.5 13.5 33.8284 13.5 33V22.5H10.5C9.67157 22.5 9 21.8284 9 21V15C9 14.1716 9.67157 13.5 10.5 13.5H13.5V10.5C13.5 8.11305 14.4489 5.82455 16.1367 4.13672C17.8245 2.44889 20.1131 1.5 22.5 1.5H27C27.8284 1.5 28.5 2.17157 28.5 3V9C28.5 9.82843 27.8284 10.5 27 10.5H22.5V13.5Z" fill="#36C3DC"/>
                 </svg>
             </a>
-                        <!-- <a href="#" class="social-icon youtube" aria-label="YouTube">
+            <!--             <!-- <a href="#" class="social-icon youtube" aria-label="YouTube">
               <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M7.14654 6.68107C14.3449 5.64016 21.6557 5.64016 28.8541 6.68107L30.3951 6.91984L30.5474 6.95353C31.3005 7.1601 31.9874 7.55858 32.5396 8.11076C33.0918 8.66297 33.4903 9.34984 33.6968 10.1029C33.7046 10.1313 33.7113 10.1606 33.7173 10.1894C34.8086 15.3393 34.8086 20.6605 33.7173 25.8105C33.7113 25.8392 33.7046 25.8685 33.6968 25.8969L32.2525 25.4999H32.2496L33.6968 25.8969C33.4903 26.65 33.0918 27.3369 32.5396 27.8891C31.9874 28.4413 31.3005 28.8397 30.5474 29.0463L30.1504 27.599V27.6005L30.5474 29.0463C30.4976 29.06 30.4461 29.0715 30.3951 29.08L28.8541 29.3188C21.1414 30.4343 13.2997 30.3549 5.60553 29.08L5.85162 27.5917L5.45318 29.0463C4.70012 28.8397 4.01317 28.4413 3.46099 27.8891C2.97765 27.4057 2.61245 26.819 2.39019 26.1752L2.30377 25.8969L2.28326 25.8105L3.75103 25.4999H3.74957L2.28326 25.8105C1.19204 20.6605 1.19204 15.3393 2.28326 10.1894C2.28935 10.1606 2.296 10.1313 2.30377 10.1029C2.51031 9.34984 2.90882 8.66297 3.46099 8.11076C4.01317 7.55859 4.70011 7.1601 5.45318 6.95353C5.50306 6.93986 5.5545 6.92829 5.60553 6.91984L7.14654 6.68107ZM5.60553 29.08C5.55452 29.0715 5.50305 29.06 5.45318 29.0463L5.85015 27.6005L5.60553 29.08ZM29.8062 9.86418C21.9874 8.57992 14.0117 8.57976 6.19293 9.86418C5.96353 9.93651 5.75413 10.0615 5.58355 10.2319C5.40549 10.4099 5.2748 10.6306 5.20416 10.872C4.21707 15.5721 4.21726 20.4262 5.20416 25.1264C5.27471 25.3683 5.40516 25.5896 5.58355 25.768C5.75369 25.9379 5.96275 26.0618 6.19146 26.1342C14.0108 27.4192 21.9868 27.4189 29.8062 26.1342C30.036 26.0619 30.2462 25.9386 30.417 25.768C30.5953 25.5897 30.7244 25.3682 30.795 25.1264C31.782 20.426 31.7822 15.5723 30.795 10.872C30.7243 10.6307 30.595 10.4098 30.417 10.2319C30.2461 10.0612 30.0361 9.93644 29.8062 9.86418ZM14.2613 12.1947C14.6726 11.9619 15.1657 11.9378 15.5928 12.1215L15.7715 12.2138L23.2715 16.7138L22.4996 17.9999L23.2715 19.2861L15.7715 23.7861C15.3082 24.0639 14.7314 24.0713 14.2613 23.8051C13.791 23.5388 13.501 23.0403 13.501 22.4999V13.4999C13.501 12.9595 13.791 12.461 14.2613 12.1947ZM16.501 19.85L19.5845 17.9999L16.501 16.1484V19.85ZM23.2715 16.7138C23.7234 16.9849 24.001 17.473 24.001 17.9999C24.001 18.5268 23.7234 19.015 23.2715 19.2861L22.501 17.9999L23.2715 16.7138Z" fill="#36C3DC"/>
                 </svg>
@@ -586,6 +473,37 @@
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+    </script>
+    <script type="module">
+      import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+      import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+      import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+      import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+      import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+      THREE.EffectComposer = EffectComposer;
+      THREE.RenderPass = RenderPass;
+      THREE.ShaderPass = ShaderPass;
+      THREE.UnrealBloomPass = UnrealBloomPass;
+      THREE.OutputPass = OutputPass;
+      window.dispatchEvent(new Event('three-addons-ready'));
+    </script>
+    <script src="./js/external/three-fat-lines.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/three-globe@2.45.0/dist/three-globe.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@23/dist/tween.umd.js" defer></script>
+    <script src="./js/external/globe.js" defer></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js" defer></script>
+    <script src="./js/open-positions.js" defer></script>
+    <script src="./js/blog-list.js" defer></script>
+    <script src="./js/case-studies.js" defer></script>
+    <script src="./js/external/wave.js" defer></script>
     <script src="./js/scripts.js" defer></script>
   </body>
 </html>

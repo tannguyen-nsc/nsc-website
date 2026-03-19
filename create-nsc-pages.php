@@ -7,6 +7,7 @@ declare(strict_types=1);
  * Usage:
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&home_only=1
+ *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&policies_only=1
  *
  * Notes:
  * - Runs idempotently (creates missing pages, updates existing by slug).
@@ -20,8 +21,10 @@ declare(strict_types=1);
  *   Our Capabilities → Global Presence → Contact). About uses the default page template.
  * - URL fields in the seed use home_url('/') so saved data passes ACF URL validation.
  * - Add home_only=1 to only create/update the Home page and set it as front page.
- * - Add content_test=1 to prepend "[test] " to all text content (Home and About) so you can verify
- *   in the CMS that components load editable data; re-run without content_test=1 for live content only.
+ * - Add policies_only=1 to only create/update Privacy Policy, Cookies Policy, and Terms of Use pages.
+ * - Add content_test=1 to prepend "[test] " to text (policy page titles only; policy HTML body preserved) so you can verify in the CMS.
+ * - Privacy Policy, Cookies Policy, Terms of Use use default template and one NSC Block: Policy Page; content from policy-content/*.html.
+ * - Footer policy links (Privacy Policy, Cookies Policy, Terms of Use) are set in runGlobalOptions.php (legalLinks).
  */
 
 $requiredToken = 'nsc-create-pages-2026';
@@ -66,6 +69,9 @@ $pages = [
     ['title' => 'Contact', 'slug' => 'contact', 'template' => ''], // default = page.twig + pageComponents (Contact + Global Presence)
     ['title' => 'Our Capabilites', 'slug' => 'our-capabilites', 'template' => ''], // default = page.twig + pageComponents (Hero + Technology Capability)
     ['title' => 'Our Services', 'slug' => 'our-services', 'template' => ''], // default = page.twig + pageComponents (Hero + Services Details)
+    ['title' => 'Privacy Policy', 'slug' => 'privacy-policy', 'template' => ''],
+    ['title' => 'Cookies Policy', 'slug' => 'cookies-policy', 'template' => ''],
+    ['title' => 'Terms of Use', 'slug' => 'terms-of-use', 'template' => ''],
     ['title' => 'Master', 'slug' => 'master', 'template' => 'template-master.php'],
     ['title' => 'Test', 'slug' => 'test', 'template' => 'template-test.php'],
 ];
@@ -742,6 +748,24 @@ function getOurCapabilitiesPageComponents(): array
 }
 
 /**
+ * Policy page (single block: heading + WYSIWYG content). Used for Privacy Policy, Cookies Policy, Terms of Use.
+ * Content is loaded from policy-content/*.html. Use content_test=1 to prepend "[test] " to title only (content preserved).
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getPolicyPageComponents(string $title, string $contentHtml): array
+{
+    return [
+        [
+            'acf_fc_layout' => 'nscBlockPolicyPage',
+            'title'         => $title,
+            'content'       => $contentHtml,
+            'options'       => ['theme' => ''],
+        ],
+    ];
+}
+
+/**
  * Contact page components matching frontend/build/contact.html (Contact section + Global Presence).
  * Live content by default; use content_test=1 to prepend "[test] " to text. formAction and phoneLink preserved.
  *
@@ -820,7 +844,7 @@ function getContactPageComponents(): array
  */
 function applyContentTest(array $components): array
 {
-    $preserveKeys = ['acf_fc_layout', 'openInNewTab', 'showForm', 'url', 'formAction', 'buttonUrl', 'phoneLink', 'cf7Shortcode'];
+    $preserveKeys = ['acf_fc_layout', 'openInNewTab', 'showForm', 'url', 'formAction', 'buttonUrl', 'phoneLink', 'cf7Shortcode', 'content'];
     $out = [];
     foreach ($components as $k => $v) {
         if (in_array($k, $preserveKeys, true)) {
@@ -840,11 +864,17 @@ function applyContentTest(array $components): array
     return $out;
 }
 
-$homeOnly   = isset($_GET['home_only']) && $_GET['home_only'] === '1';
-$contentTest = isset($_GET['content_test']) && $_GET['content_test'] === '1';
+$homeOnly      = isset($_GET['home_only']) && $_GET['home_only'] === '1';
+$policiesOnly  = isset($_GET['policies_only']) && $_GET['policies_only'] === '1';
+$contentTest   = isset($_GET['content_test']) && $_GET['content_test'] === '1';
 if ($homeOnly) {
     $pages = array_filter($pages, static function (array $p) {
         return $p['slug'] === 'home';
+    });
+} elseif ($policiesOnly) {
+    $policySlugs = ['privacy-policy', 'cookies-policy', 'terms-of-use'];
+    $pages = array_filter($pages, static function (array $p) use ($policySlugs) {
+        return in_array($p['slug'], $policySlugs, true);
     });
 }
 
@@ -1021,6 +1051,34 @@ foreach ($pages as $page) {
             'status'  => $action,
             'message' => $msg,
         ];
+    } elseif ($slug === 'privacy-policy' || $slug === 'cookies-policy' || $slug === 'terms-of-use') {
+        $policyTitles = [
+            'privacy-policy'  => 'Privacy Policy for NSC Software',
+            'cookies-policy'   => 'Cookies Policy',
+            'terms-of-use'     => 'Terms of Use',
+        ];
+        $contentPath = __DIR__ . '/policy-content/' . $slug . '.html';
+        $contentHtml = is_file($contentPath) ? file_get_contents($contentPath) : '<p>Content not found. Add ' . $slug . '.html to policy-content/.</p>';
+        $components = getPolicyPageComponents($policyTitles[ $slug ], $contentHtml);
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+        if (function_exists('update_field')) {
+            update_field('pageComponents', [], (int) $pageId);
+            update_field('pageComponents', $components, (int) $pageId);
+        } else {
+            delete_post_meta((int) $pageId, 'pageComponents');
+            update_post_meta((int) $pageId, 'pageComponents', $components);
+        }
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents set (Policy: ' . $policyTitles[ $slug ] . ')';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (title prefixed with "[test]")';
+        }
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
     } else {
         $results[] = [
             'slug'    => $slug,
@@ -1030,11 +1088,13 @@ foreach ($pages as $page) {
     }
 }
 
-// Set Home as front page (always when Home exists, so home_only runs work correctly).
-$homePage = get_page_by_path('home', OBJECT, 'page');
-if ($homePage instanceof WP_Post) {
-    update_option('show_on_front', 'page');
-    update_option('page_on_front', (int) $homePage->ID);
+// Set Home as front page when Home was processed (full run or home_only); skip when policies_only=1.
+if (!$policiesOnly) {
+    $homePage = get_page_by_path('home', OBJECT, 'page');
+    if ($homePage instanceof WP_Post) {
+        update_option('show_on_front', 'page');
+        update_option('page_on_front', (int) $homePage->ID);
+    }
 }
 
 header('Content-Type: text/html; charset=utf-8');
@@ -1042,7 +1102,7 @@ echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Page Setup</ti
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body>';
 echo '<h1>NSC Pages Setup</h1>';
-echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>content_test=1</code> to prepend "[test] " to all text on Home and About so you can verify the CMS loads editable data.</p>';
+echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>policies_only=1</code> to update only Privacy Policy, Cookies Policy, and Terms of Use. Add <code>content_test=1</code> to prepend "[test] " to text so you can verify the CMS loads editable data.</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $statusClass = $row['status'] === 'error' ? 'error' : 'ok';

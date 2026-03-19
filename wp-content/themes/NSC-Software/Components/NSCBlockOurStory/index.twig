@@ -17,7 +17,7 @@
     <div class="wrapper">
       {% for col in columns %}
         <div class="col">
-          {% if col.title %}<h2>{{ col.title|e }}</h2>{% endif %}
+          {% if col.title %}<h2>{{ col.title|raw }}</h2>{% endif %}
           {% if col.description %}
             <div class="description">
               <p>{{ col.description|e }}</p>

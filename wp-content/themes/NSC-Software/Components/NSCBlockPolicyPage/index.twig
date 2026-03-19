@@ -1,0 +1,12 @@
+{% if not (options.hidden|default(0)) %}
+<section class="default-text-content"{% if theme.buildUri %} style="background-image: url('{{ theme.buildUri }}/img/default-content-bg.png');"{% endif %}>
+  <div class="wrapper">
+    <div class="heading">
+      <h2>{{ title|e }}</h2>
+    </div>
+    <div class="text-content">
+      {{ content|raw }}
+    </div>
+  </div>
+</section>
+{% endif %}

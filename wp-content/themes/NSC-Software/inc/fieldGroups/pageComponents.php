@@ -34,6 +34,7 @@ add_action('NscSoftware/afterRegisterComponents', function () {
                     Components\NSCBlockOurLeaders\getACFLayout(),
                     Components\NSCBlockOurServices\getACFLayout(),
                     Components\NSCBlockOurServicesDetails\getACFLayout(),
+                    Components\NSCBlockPolicyPage\getACFLayout(),
                     Components\NSCBlockOurStory\getACFLayout(),
                     Components\NSCBlockSectionHeading\getACFLayout(),
                     Components\NSCBlockStats\getACFLayout(),
