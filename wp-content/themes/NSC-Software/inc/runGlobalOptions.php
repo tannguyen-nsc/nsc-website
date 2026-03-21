@@ -184,12 +184,53 @@ add_action('template_redirect', function () use ($requiredToken) {
     }
     $results[] = ['scope' => 'NSCHeader', 'field' => 'Labels', 'status' => 'ok', 'message' => 'mobileHomeText, languageLabel, ariaLabel'];
 
+    // Blog categories (Technology, Cultures) for archive filters
+    $blogCategories = [
+        'Technology' => 'technology',
+        'Cultures'   => 'cultures',
+    ];
+    foreach ($blogCategories as $catName => $catSlug) {
+        $exists = term_exists($catSlug, 'category');
+        if (!$exists) {
+            $t = wp_insert_term($catName, 'category', ['slug' => $catSlug]);
+            if (is_wp_error($t)) {
+                $results[] = ['scope' => 'Blog', 'field' => 'Category ' . $catName, 'status' => 'error', 'message' => $t->get_error_message()];
+            } else {
+                $results[] = ['scope' => 'Blog', 'field' => 'Category', 'status' => 'ok', 'message' => 'Created: ' . $catName];
+            }
+        } else {
+            $results[] = ['scope' => 'Blog', 'field' => 'Category', 'status' => 'ok', 'message' => $catName . ' already exists'];
+        }
+    }
+
+    // Translatable: NSC Blog Single — About the author (dummy content)
+    $optionPrefixBlogSingle = 'translatable_NSCBlogSingle_';
+    if (function_exists('update_field')) {
+        update_field(
+            $optionPrefixBlogSingle . 'aboutAuthorContent',
+            '<p><strong>NSC Editorial Team</strong> shares practical insights from our engineering and delivery teams across Vietnam, Australia, Europe, and the US.</p><p>We focus on software quality, AI-enabled delivery, and culture that helps distributed teams ship with confidence.</p>',
+            'option'
+        );
+        update_field(
+            $optionPrefixBlogSingle . 'aboutAuthorLink',
+            [
+                'linkLabel'    => 'Meet our team',
+                'linkUrl'      => $baseUrl . 'about/',
+                'openInNewTab' => 0,
+            ],
+            'option'
+        );
+        // Avatar: leave unset in options UI, or set attachment ID if you add media later
+        update_field($optionPrefixBlogSingle . 'aboutAuthorAvatar', false, 'option');
+    }
+    $results[] = ['scope' => 'NSCBlogSingle', 'field' => 'About the author', 'status' => 'ok', 'message' => 'content + profile link (avatar empty — upload in NSC Theme Options → Global → Blog)'];
+
     header('Content-Type: text/html; charset=utf-8');
     echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Global Options</title>';
     echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
     echo '</head><body>';
-    echo '<h1>NSC Global Options (Header & Footer)</h1>';
-    echo '<p>Menus and translatable options have been set. Edit in WP Admin → Translatable Options → NSC Header / NSC Footer.</p>';
+    echo '<h1>NSC Global Options (Header, Footer & Blog)</h1>';
+    echo '<p>Menus, blog categories (Technology, Cultures), About the author (Blog), and theme options have been set. Edit in WP Admin → NSC Theme Options → Global → NSC Header / NSC Footer / NSC Blog Single (under Blog).</p>';
     echo '<table><thead><tr><th>Scope</th><th>Field</th><th>Status</th><th>Details</th></tr></thead><tbody>';
     foreach ($results as $row) {
         $statusClass = $row['status'] === 'error' ? 'error' : 'ok';

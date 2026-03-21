@@ -3,94 +3,352 @@
 namespace NscSoftware\Components\NSCBlockBlogsArchive;
 
 use NscSoftware\FieldVariables;
-use NscSoftware\Utils\Options;
 use Timber\Timber;
 
 const POST_TYPE = 'post';
 const TAXONOMY = 'category';
+const VUE_POSTS_MAX = 500;
 
-add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($data) {
-    $data['uuid'] = $data['uuid'] ?? wp_generate_uuid4();
-    $postsPerPage = (int) ($data['postsPerPage'] ?? $data['options']['postsPerPage'] ?? 12);
-    // On a static Page, paged is not in main query; use request (e.g. /blogs/?paged=2)
-    $paged = get_query_var('paged');
-    if (!$paged && isset($_GET['paged'])) {
-        $paged = (int) $_GET['paged'];
+/**
+ * @return array<string, string>
+ */
+function default_archive_list_labels(): array
+{
+    return [
+        'blogsListHeading' => __('Blogs', 'NscSoftware'),
+        'searchPlaceholder' => __('Search', 'NscSoftware'),
+        'searchResultSingular' => __('result', 'NscSoftware'),
+        'searchResultPlural' => __('results', 'NscSoftware'),
+        'allCategoriesLabel' => __('All Categories', 'NscSoftware'),
+        'readMore' => __('Read More', 'NscSoftware'),
+        'previous' => __('Prev', 'NscSoftware'),
+        'next' => __('Next', 'NscSoftware'),
+        'noBlogFound' => __('No blog found.', 'NscSoftware'),
+    ];
+}
+
+/**
+ * @param array<string, mixed> $raw
+ * @return array<string, string>
+ */
+function normalize_archive_list_labels(array $raw): array
+{
+    $out = default_archive_list_labels();
+    foreach ($out as $key => $default) {
+        if (!array_key_exists($key, $raw)) {
+            continue;
+        }
+        $v = $raw[$key];
+        if (is_string($v) && $v !== '') {
+            $out[$key] = $v;
+        }
     }
-    $paged = max(1, (int) $paged);
 
-    // Build base query args for posts
+    return $out;
+}
+
+function is_uncategorized_category(\WP_Term $term): bool
+{
+    return $term->taxonomy === 'category' && $term->slug === 'uncategorized';
+}
+
+/**
+ * First non-Uncategorized category name, or empty.
+ */
+function primary_public_category_name(int $postId): string
+{
+    $cats = get_the_category($postId);
+    if (empty($cats) || !is_array($cats)) {
+        return '';
+    }
+    foreach ($cats as $cat) {
+        if (!$cat instanceof \WP_Term) {
+            continue;
+        }
+        if ($cat->slug === 'uncategorized') {
+            continue;
+        }
+
+        return (string) $cat->name;
+    }
+
+    return '';
+}
+
+/**
+ * Featured image URL: Timber thumbnail, else WP featured image, else placeholder.
+ *
+ * @param object $post Timber Post-like with ID, optional thumbnail
+ */
+function resolve_post_list_image_url($post, string $placeholderUrl): string
+{
+    if (!is_object($post) || !isset($post->ID)) {
+        return $placeholderUrl;
+    }
+    $id = (int) $post->ID;
+    if (!empty($post->thumbnail)) {
+        $thumb = $post->thumbnail;
+        if (is_object($thumb) && !empty($thumb->src)) {
+            return (string) $thumb->src;
+        }
+    }
+    $url = get_the_post_thumbnail_url($id, 'large');
+    if ($url) {
+        return $url;
+    }
+    $url = get_the_post_thumbnail_url($id, 'medium_large');
+    if ($url) {
+        return $url;
+    }
+
+    return $placeholderUrl;
+}
+
+/**
+ * @param array<int, mixed> $rows
+ */
+function flexible_rows_include_blogs_archive(array $rows): bool
+{
+    foreach ($rows as $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+        if (($row['acf_fc_layout'] ?? '') === 'nscBlockBlogsArchive') {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * True when the main query is a singular Page whose flexible content includes Blogs (Archive).
+ * Uses get_field when available; falls back to raw meta scan so enqueue / detection still works if ACF
+ * returns an unexpected shape for pageComponents.
+ */
+function current_page_includes_blogs_archive_block(): bool
+{
+    if (!is_singular('page')) {
+        return false;
+    }
+    $pageId = (int) get_queried_object_id();
+    if ($pageId <= 0) {
+        return false;
+    }
+
+    if (function_exists('get_field')) {
+        $components = get_field('pageComponents', $pageId);
+        if (is_array($components) && flexible_rows_include_blogs_archive($components)) {
+            return true;
+        }
+    }
+
+    // Seeded blogs page slug from create-nsc-pages.php
+    if (is_page(['blogs', 'blog'])) {
+        return true;
+    }
+
+    // Last resort: serialized flexible rows in post meta (layout name stored as string).
+    $raw = get_post_meta($pageId, 'pageComponents', true);
+    if (is_array($raw) && flexible_rows_include_blogs_archive($raw)) {
+        return true;
+    }
+    $allMeta = get_post_meta($pageId);
+    if (is_array($allMeta)) {
+        foreach ($allMeta as $values) {
+            foreach ((array) $values as $v) {
+                if (is_string($v) && strpos($v, 'nscBlockBlogsArchive') !== false) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @param object $post Timber Post-like object with ID, content
+ */
+function post_plain_excerpt($post, int $maxLen = 280): string
+{
+    $id = (int) $post->ID;
+    $text = get_the_excerpt($id);
+    if ($text === '') {
+        $text = (string) ($post->content ?? '');
+    }
+    $text = wp_strip_all_tags($text);
+    $text = preg_replace('/\s+/', ' ', $text);
+    $text = trim($text);
+    if ($maxLen > 0 && strlen($text) > $maxLen) {
+        $text = substr($text, 0, $maxLen) . '…';
+    }
+
+    return $text;
+}
+
+/**
+ * @return list<array{id:int,title:string,excerpt:string,category:string,image:string,link:string}>
+ */
+function build_vue_blog_items(string $placeholderImageUrl): array
+{
     $args = [
         'post_status' => 'publish',
         'post_type' => POST_TYPE,
-        'posts_per_page' => $postsPerPage,
-        'paged' => $paged,
+        'posts_per_page' => VUE_POSTS_MAX,
+        'orderby' => 'date',
+        'order' => 'DESC',
         'ignore_sticky_posts' => 1,
     ];
+    $collection = Timber::get_posts($args);
+    $posts = is_object($collection) && method_exists($collection, 'to_array')
+        ? $collection->to_array()
+        : (array) $collection;
 
-    // Category filter: from query var or GET (when using static page as blog archive)
-    $cat = get_query_var('cat') ?: (isset($_GET['cat']) ? (int) $_GET['cat'] : 0);
-    $categoryName = get_query_var('category_name') ?: (isset($_GET['category_name']) ? sanitize_title($_GET['category_name']) : '');
-    if ($cat) {
-        $args['cat'] = $cat;
-    } elseif ($categoryName) {
-        $args['category_name'] = $categoryName;
+    $items = [];
+    foreach ($posts as $post) {
+        if (!is_object($post) || !isset($post->ID)) {
+            continue;
+        }
+        $catName = primary_public_category_name((int) $post->ID);
+        $img = resolve_post_list_image_url($post, $placeholderImageUrl);
+
+        $items[] = [
+            'id' => (int) $post->ID,
+            'title' => html_entity_decode((string) $post->title, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
+            'excerpt' => post_plain_excerpt($post),
+            'category' => $catName,
+            'image' => $img,
+            'link' => (string) $post->link,
+        ];
     }
 
-    $query = new \WP_Query($args);
-    $timberPosts = Timber::get_posts($args);
-    $data['posts'] = is_object($timberPosts) && method_exists($timberPosts, 'to_array')
-        ? $timberPosts->to_array()
-        : (array) $timberPosts;
+    return $items;
+}
 
-    // Pagination (static page: use ?paged=n)
-    $baseUrl = get_permalink(get_the_ID());
-    $sep = strpos($baseUrl, '?') !== false ? '&' : '?';
-    $data['pagination'] = [
-        'current' => $paged,
-        'total' => (int) $query->max_num_pages,
-        'prev' => null,
-        'next' => null,
+/**
+ * @return list<Post>
+ */
+function get_featured_posts_for_archive(): array
+{
+    $q = [
+        'post_type' => POST_TYPE,
+        'post_status' => 'publish',
+        'posts_per_page' => 4,
+        'ignore_sticky_posts' => 1,
+        'orderby' => 'date',
+        'order' => 'DESC',
+        'meta_query' => [
+            [
+                'key' => 'nsc_featured_article',
+                'value' => '1',
+                'compare' => '=',
+            ],
+        ],
     ];
-    if ($paged > 1) {
-        $data['pagination']['prev'] = (object) [
-            'link' => $baseUrl . $sep . 'paged=' . ($paged - 1),
-        ];
-    }
-    if ($paged < $data['pagination']['total']) {
-        $data['pagination']['next'] = (object) [
-            'link' => $baseUrl . $sep . 'paged=' . ($paged + 1),
-        ];
+    $featured = Timber::get_posts($q);
+    $arr = is_object($featured) && method_exists($featured, 'to_array')
+        ? $featured->to_array()
+        : (array) $featured;
+
+    if (count($arr) >= 1) {
+        return $arr;
     }
 
-    // Terms for filter (categories) – links use current page + query for static Blogs page
+    $fallback = Timber::get_posts([
+        'post_type' => POST_TYPE,
+        'post_status' => 'publish',
+        'posts_per_page' => 4,
+        'ignore_sticky_posts' => 1,
+        'orderby' => 'date',
+        'order' => 'DESC',
+    ]);
+
+    return is_object($fallback) && method_exists($fallback, 'to_array')
+        ? $fallback->to_array()
+        : (array) $fallback;
+}
+
+add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($data) {
+    $data['uuid'] = $data['uuid'] ?? wp_generate_uuid4();
+
+    $buildUri = trailingslashit(get_template_directory_uri()) . 'frontend/build';
+    $data['buildUri'] = $buildUri;
+    $placeholderImage = $buildUri . 'img/blog1.png';
+
+    $listLabels = normalize_archive_list_labels(
+        is_array($data['listLabels'] ?? null) ? $data['listLabels'] : []
+    );
+
+    $data['blogsListHeading'] = $listLabels['blogsListHeading'];
+    $data['labels'] = [
+        'readMore' => $listLabels['readMore'],
+    ];
+
+    $vueBlogs = build_vue_blog_items($placeholderImage);
+
+    $filterDefs = [
+        ['id' => 'all', 'label' => $listLabels['allCategoriesLabel']],
+    ];
     $terms = get_terms([
         'taxonomy' => TAXONOMY,
         'hide_empty' => true,
     ]);
-    $currentPageUrl = get_permalink(get_the_ID());
-    $queriedSlug = $categoryName ?: '';
-    $data['terms'] = [];
-    $data['terms'][] = (object) [
-        'link' => $currentPageUrl,
-        'title' => $data['labels']['allPosts'] ?? __('All', 'NscSoftware'),
-        'isActive' => empty($cat) && empty($categoryName),
-    ];
-    foreach ($terms as $term) {
-        $timberTerm = Timber::get_term($term);
-        $timberTerm->link = $currentPageUrl . (strpos($currentPageUrl, '?') !== false ? '&' : '?') . 'category_name=' . $term->slug;
-        $timberTerm->isActive = ($queriedSlug && $term->slug === $queriedSlug) || ($cat && (int) $cat === $term->term_id);
-        $data['terms'][] = $timberTerm;
+    if (!is_wp_error($terms)) {
+        foreach ($terms as $term) {
+            if (!$term instanceof \WP_Term || is_uncategorized_category($term)) {
+                continue;
+            }
+            $filterDefs[] = [
+                'id' => $term->name,
+                'label' => $term->name,
+            ];
+        }
     }
 
-    $data['labels'] = Options::getTranslatable('NSCBlockBlogsArchive')['labels'] ?? [];
-    $data['buildUri'] = trailingslashit(get_template_directory_uri()) . 'frontend/build';
-    $data['loadMore'] = Options::getGlobal('NSCBlockBlogsArchive')['loadMore'] ?? false;
+    $vuePayload = [
+        'blogs' => $vueBlogs,
+        'filters' => $filterDefs,
+        'perPage' => 6,
+        'labels' => [
+            'searchPlaceholder' => $listLabels['searchPlaceholder'],
+            'searchResultSingular' => $listLabels['searchResultSingular'],
+            'searchResultPlural' => $listLabels['searchResultPlural'],
+            'readMore' => $listLabels['readMore'],
+            'previous' => $listLabels['previous'],
+            'next' => $listLabels['next'],
+            'empty' => $listLabels['noBlogFound'],
+        ],
+    ];
+
+    $encoded = wp_json_encode(
+        $vuePayload,
+        JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE
+    );
+    $data['blog_vue_data_json'] = $encoded !== false
+        ? $encoded
+        : wp_json_encode(
+            [
+                'blogs' => [],
+                'filters' => [['id' => 'all', 'label' => __('All Categories', 'NscSoftware')]],
+                'perPage' => 6,
+                'labels' => [
+                    'empty' => __('No blog found.', 'NscSoftware'),
+                ],
+            ],
+            JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE
+        );
+
+    $featuredTimber = get_featured_posts_for_archive();
+    $data['featuredPosts'] = $featuredTimber;
+
+    $data['posts'] = [];
+    $data['pagination'] = ['current' => 1, 'total' => 1, 'prev' => null, 'next' => null];
+    $data['terms'] = [];
 
     return $data;
 });
 
-// Allow paged and category on the Blogs page
 add_action('init', function () {
     add_rewrite_tag('%paged%', '([^/]+)');
 });
@@ -98,77 +356,9 @@ add_action('init', function () {
 add_filter('query_vars', function ($vars) {
     $vars[] = 'cat';
     $vars[] = 'category_name';
+
     return $vars;
 });
-
-Options::addGlobal('NSCBlockBlogsArchive', [
-    [
-        'label' => __('Load More button', 'NscSoftware'),
-        'name' => 'loadMore',
-        'type' => 'true_false',
-        'default_value' => 0,
-        'ui' => 1,
-    ],
-]);
-
-Options::addTranslatable('NSCBlockBlogsArchive', [
-    [
-        'label' => __('Labels', 'NscSoftware'),
-        'name' => 'labelsTab',
-        'type' => 'tab',
-        'placement' => 'top',
-        'endpoint' => 0,
-    ],
-    [
-        'label' => '',
-        'name' => 'labels',
-        'type' => 'group',
-        'sub_fields' => [
-            [
-                'label' => __('Filter by', 'NscSoftware'),
-                'name' => 'filterBy',
-                'type' => 'text',
-                'default_value' => __('Filter by', 'NscSoftware'),
-            ],
-            [
-                'label' => __('All', 'NscSoftware'),
-                'name' => 'allPosts',
-                'type' => 'text',
-                'default_value' => __('All', 'NscSoftware'),
-            ],
-            [
-                'label' => __('Read More', 'NscSoftware'),
-                'name' => 'readMore',
-                'type' => 'text',
-                'default_value' => __('Read More', 'NscSoftware'),
-            ],
-            [
-                'label' => __('Previous', 'NscSoftware'),
-                'name' => 'previous',
-                'type' => 'text',
-                'default_value' => __('Prev', 'NscSoftware'),
-            ],
-            [
-                'label' => __('Next', 'NscSoftware'),
-                'name' => 'next',
-                'type' => 'text',
-                'default_value' => __('Next', 'NscSoftware'),
-            ],
-            [
-                'label' => __('Load More', 'NscSoftware'),
-                'name' => 'loadMore',
-                'type' => 'text',
-                'default_value' => __('Load More', 'NscSoftware'),
-            ],
-            [
-                'label' => __('No posts found', 'NscSoftware'),
-                'name' => 'noPostsFound',
-                'type' => 'text',
-                'default_value' => __('No post found.', 'NscSoftware'),
-            ],
-        ],
-    ],
-]);
 
 function getACFLayout()
 {
@@ -195,6 +385,7 @@ function getACFLayout()
                 'name' => 'title',
                 'type' => 'text',
                 'default_value' => 'BLOGS',
+                'instructions' => __('Shown in the top heading row (with icon).', 'NscSoftware'),
             ],
             [
                 'label' => __('Description', 'NscSoftware'),
@@ -202,6 +393,78 @@ function getACFLayout()
                 'type' => 'wysiwyg',
                 'toolbar' => 'basic',
                 'media_upload' => 0,
+                'instructions' => __('Optional. Not shown in the archive layout (matches static blogs build). Use the Hero block above for intro text.', 'NscSoftware'),
+            ],
+            [
+                'label' => __('Labels', 'NscSoftware'),
+                'name' => 'labelsTab',
+                'type' => 'tab',
+                'placement' => 'top',
+                'endpoint' => 0,
+            ],
+            [
+                'label' => __('Blog list & filters', 'NscSoftware'),
+                'name' => 'listLabels',
+                'type' => 'group',
+                'sub_fields' => [
+                    [
+                        'label' => __('Blogs list heading', 'NscSoftware'),
+                        'name' => 'blogsListHeading',
+                        'type' => 'text',
+                        'default_value' => 'Blogs',
+                        'instructions' => __('Heading above the searchable list (below Featured).', 'NscSoftware'),
+                    ],
+                    [
+                        'label' => __('Search placeholder', 'NscSoftware'),
+                        'name' => 'searchPlaceholder',
+                        'type' => 'text',
+                        'default_value' => 'Search',
+                    ],
+                    [
+                        'label' => __('Search: word after count when 1 match', 'NscSoftware'),
+                        'name' => 'searchResultSingular',
+                        'type' => 'text',
+                        'default_value' => 'result',
+                        'instructions' => __('e.g. “1 result”.', 'NscSoftware'),
+                    ],
+                    [
+                        'label' => __('Search: word after count when 0 or 2+ matches', 'NscSoftware'),
+                        'name' => 'searchResultPlural',
+                        'type' => 'text',
+                        'default_value' => 'results',
+                        'instructions' => __('e.g. “0 results”, “5 results”.', 'NscSoftware'),
+                    ],
+                    [
+                        'label' => __('All categories (filter button)', 'NscSoftware'),
+                        'name' => 'allCategoriesLabel',
+                        'type' => 'text',
+                        'default_value' => 'All Categories',
+                    ],
+                    [
+                        'label' => __('Read more', 'NscSoftware'),
+                        'name' => 'readMore',
+                        'type' => 'text',
+                        'default_value' => 'Read More',
+                    ],
+                    [
+                        'label' => __('Previous (pagination)', 'NscSoftware'),
+                        'name' => 'previous',
+                        'type' => 'text',
+                        'default_value' => 'Prev',
+                    ],
+                    [
+                        'label' => __('Next (pagination)', 'NscSoftware'),
+                        'name' => 'next',
+                        'type' => 'text',
+                        'default_value' => 'Next',
+                    ],
+                    [
+                        'label' => __('No blog found (empty list)', 'NscSoftware'),
+                        'name' => 'noBlogFound',
+                        'type' => 'text',
+                        'default_value' => 'No blog found.',
+                    ],
+                ],
             ],
             [
                 'label' => __('Options', 'NscSoftware'),
@@ -211,12 +474,13 @@ function getACFLayout()
                 'endpoint' => 0,
             ],
             [
-                'label' => __('Posts per page', 'NscSoftware'),
+                'label' => __('Posts per page (legacy)', 'NscSoftware'),
                 'name' => 'postsPerPage',
                 'type' => 'number',
                 'default_value' => 12,
                 'min' => 1,
                 'max' => 100,
+                'instructions' => __('The archive list uses Vue with data from WordPress posts (up to ' . VUE_POSTS_MAX . '). This field is kept for compatibility.', 'NscSoftware'),
             ],
             [
                 'label' => '',

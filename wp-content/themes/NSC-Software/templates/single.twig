@@ -1,13 +1,90 @@
 {% extends 'templates/_document.twig' %}
 
 {% block content %}
-  <article>
-    <header>
-      <h1>{{ post.title|e }}</h1>
-      {% if post.date %}<time datetime="{{ post.date('c') }}">{{ post.date }}</time>{% endif %}
-    </header>
-    <section class="wp-block-post-content">
-      {{ post.content }}
-    </section>
-  </article>
+  {% set featured = post.meta('nsc_featured_article') %}
+  {% set related_heading = post.meta('nsc_related_heading')|default('Related content') %}
+  {% set related_links = post.meta('nsc_related_links') %}
+  {% set author = blog_single|default({}) %}
+  {% set avatar = author.aboutAuthorAvatar|default(null) %}
+  {% set author_content = author.aboutAuthorContent|default('') %}
+  {% set author_link = author.aboutAuthorLink|default({}) %}
+
+  <section class="blog-list-details blog-single"{% if theme.buildUri %} style="background-image:url('{{ theme.buildUri }}/img/blogs-bg-details.png');"{% endif %}>
+    <div class="heading">
+      {% if theme.buildUri %}
+        <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="" loading="lazy" />
+      {% endif %}
+      <h2>{{ __('BLOG', 'NscSoftware')|e }}</h2>
+    </div>
+    <div class="wrapper">
+      <div class="blogs-wrapper">
+        <div class="featured-content blog-single__grid">
+          <div class="col featured-main blog-single__main">
+            {% if featured %}
+              <div class="featured-header blog-single__featured-badge">
+                <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M16.6816 0.00732422C17.0465 0.0371221 17.3983 0.156317 17.707 0.353027L17.8579 0.457031L18 0.574219C18.318 0.85919 18.5492 1.22988 18.665 1.64355L21.0454 10.8765C21.1124 11.1358 21.2471 11.3726 21.4365 11.562C21.6259 11.7513 21.8628 11.8862 22.1221 11.9531L31.3242 14.3247L31.5249 14.3877C31.8694 14.5139 32.1774 14.7229 32.4229 14.9956L32.647 15.2886C32.8774 15.6492 33.0014 16.0695 33.0015 16.5C33.0015 16.9924 32.8398 17.472 32.5415 17.8638C32.2431 18.2556 31.8239 18.5385 31.3491 18.6694L22.1221 21.0469C21.8626 21.1139 21.626 21.25 21.4365 21.4395C21.2474 21.6287 21.111 21.8645 21.0439 22.1235L18.6724 31.3271C18.5312 31.8293 18.2477 32.2462 17.8564 32.543C17.4653 32.8397 16.9881 33.0014 16.4971 33.0015C16.0061 33.0015 15.5289 32.8396 15.1377 32.543C14.7465 32.2462 14.4629 31.8293 14.3306 31.3564L11.9502 22.125C11.8832 21.8656 11.7485 21.6289 11.5591 21.4395C11.3696 21.25 11.1329 21.1139 10.8735 21.0469L1.67139 18.6738C1.06295 18.4587 0.713885 18.1983 0.455566 17.8564C0.160381 17.4658 0 16.9896 0 16.5C8.11703e-05 16.0105 0.160456 15.5341 0.455566 15.1436C0.750728 14.7532 1.16543 14.4701 1.63623 14.3364L10.8735 11.9517C11.1328 11.8847 11.3696 11.7498 11.5591 11.5605C11.7482 11.3716 11.883 11.1352 11.9502 10.8765L14.3232 1.67285C14.4644 1.17075 14.748 0.753765 15.1392 0.457031C15.6489 0.123181 16.0686 0 16.4985 0L16.6816 0.00732422Z" fill="#36C3DC"/>
+                </svg>
+                <h3>{{ __('Featured', 'NscSoftware')|e }}</h3>
+              </div>
+            {% endif %}
+            <article class="blog-single__article wp-block-post-content">
+              <header class="blog-single__header">
+                <h1 class="blog-single__title">{{ post.title|e }}</h1>
+                {% if post.date %}
+                  <time class="blog-single__date" datetime="{{ post.date('c') }}">{{ post.date }}</time>
+                {% endif %}
+              </header>
+              <div class="blog-single__body">
+                {{ post.content }}
+              </div>
+            </article>
+          </div>
+          <aside class="col featured-sidebar blog-single__sidebar">
+            {% if related_links is iterable and related_links|length > 0 %}
+              <div class="sidebar-section blog-single__related">
+                <h3 class="blog-single__sidebar-title">{{ related_heading|e }}</h3>
+                <ul class="blog-single__related-list">
+                  {% for row in related_links %}
+                    {% set url = row.linkUrl|default(row.link_url|default('')) %}
+                    {% set rlabel = row.linkLabel|default(row.link_label|default('')) %}
+                    {% if url %}
+                      <li>
+                        <a href="{{ url|e('esc_url') }}" class="blog-single__related-link"{% if row.openInNewTab|default(row.open_in_new_tab|default(0)) %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                          {{ (rlabel ?: url)|e }}
+                        </a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
+            {% if avatar and (avatar.url or avatar.src) or author_content or author_link.linkUrl|default('') %}
+              <div class="sidebar-section blog-single__about-author">
+                <h3 class="blog-single__sidebar-title">{{ __('About the author', 'NscSoftware')|e }}</h3>
+                {% if avatar and (avatar.url or avatar.src) %}
+                  <div class="blog-single__author-avatar">
+                    <img src="{{ (avatar.url|default(avatar.src))|e('esc_url') }}" alt="{{ (avatar.alt|default(''))|e }}" loading="lazy" width="80" height="80" />
+                  </div>
+                {% endif %}
+                {% if author_content %}
+                  <div class="blog-single__author-content">{{ author_content|raw }}</div>
+                {% endif %}
+                {% set alUrl = author_link.linkUrl|default(author_link.link_url|default('')) %}
+                {% if alUrl %}
+                  <a href="{{ alUrl|e('esc_url') }}" class="read-more blog-single__author-link"{% if author_link.openInNewTab|default(author_link.open_in_new_tab|default(0)) %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                    {{ author_link.linkLabel|default(author_link.link_label|default(__('View profile', 'NscSoftware')))|e }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                {% endif %}
+              </div>
+            {% endif %}
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
 {% endblock %}

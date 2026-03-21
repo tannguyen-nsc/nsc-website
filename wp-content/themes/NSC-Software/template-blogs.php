@@ -1,12 +1,11 @@
 <?php
 /*
-Template Name: NSC Blogs (static)
+Template Name: NSC Blogs (static build)
 *
-* Renders the static frontend build blogs.html.
-* For a component-based Blogs page with full post list and category filter:
-* 1. In Pages, edit the Blogs page and set "Template" to "Default" (or "NSC Page").
-* 2. Add the "NSC Block: Blogs (Archive)" component to the page.
-* 3. You can then show the Blogs item in the menu (if it was hidden previously).
+* Legacy: renders the static frontend build blogs.html via template-static-build-page.php.
+*
+* Recommended: use the default page template for the Blogs page and add components
+* (NSC Block: Hero + NSC Block: Blogs (Archive)) — see create-nsc-pages.php getBlogsPageComponents().
 */
 
 $buildTemplate = 'blogs.html';

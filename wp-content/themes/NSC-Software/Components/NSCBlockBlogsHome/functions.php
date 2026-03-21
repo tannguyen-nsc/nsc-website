@@ -3,7 +3,6 @@
 namespace NscSoftware\Components\NSCBlockBlogsHome;
 
 use NscSoftware\FieldVariables;
-use NscSoftware\Utils\Options;
 use Timber\Timber;
 
 const POST_TYPE = 'post';
@@ -65,7 +64,8 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsHome', function ($dat
     $data['latestPosts'] = $latestPosts->to_array();
 
     $data['blogPageUrl'] = $blogPageUrl;
-    $data['labels'] = Options::getTranslatable('NSCBlockBlogsHome')['labels'] ?? [];
+    $labels = $data['labels'] ?? [];
+    $data['labels'] = is_array($labels) ? $labels : [];
     $data['buildUri'] = trailingslashit(get_template_directory_uri()) . 'frontend/build';
 
     return $data;
@@ -108,6 +108,43 @@ function getACFLayout()
                 'name' => 'descriptionParagraph',
                 'type' => 'textarea',
                 'default_value' => 'Stay updated with insights, stories, and perspectives from NSC Software, where we explore how technology, innovation, and people drive business transformation.',
+            ],
+            [
+                'label' => __('Labels', 'NscSoftware'),
+                'name' => 'labels',
+                'type' => 'group',
+                'sub_fields' => [
+                    [
+                        'label' => __('Featured Insights title', 'NscSoftware'),
+                        'name' => 'featuredTitle',
+                        'type' => 'text',
+                        'default_value' => 'Featured Insights',
+                    ],
+                    [
+                        'label' => __('Featured Insights description', 'NscSoftware'),
+                        'name' => 'featuredDescription',
+                        'type' => 'text',
+                        'default_value' => 'Explore in-depth perspectives from our experts on software development, digital transformation, and emerging technology trends.',
+                    ],
+                    [
+                        'label' => __('Latest Updates title', 'NscSoftware'),
+                        'name' => 'latestTitle',
+                        'type' => 'text',
+                        'default_value' => 'Latest Updates',
+                    ],
+                    [
+                        'label' => __('Latest Updates description', 'NscSoftware'),
+                        'name' => 'latestDescription',
+                        'type' => 'text',
+                        'default_value' => 'Keep up with our latest news, events, and knowledge sharing from the NSC team.',
+                    ],
+                    [
+                        'label' => __('Read More', 'NscSoftware'),
+                        'name' => 'readMore',
+                        'type' => 'text',
+                        'default_value' => 'Read More',
+                    ],
+                ],
             ],
             [
                 'label' => __('Featured Insights category', 'NscSoftware'),
@@ -187,50 +224,3 @@ function getACFLayout()
         ],
     ];
 }
-
-Options::addTranslatable('NSCBlockBlogsHome', [
-    [
-        'label' => __('Labels', 'NscSoftware'),
-        'name' => 'labelsTab',
-        'type' => 'tab',
-        'placement' => 'top',
-        'endpoint' => 0,
-    ],
-    [
-        'label' => '',
-        'name' => 'labels',
-        'type' => 'group',
-        'sub_fields' => [
-            [
-                'label' => __('Featured Insights title', 'NscSoftware'),
-                'name' => 'featuredTitle',
-                'type' => 'text',
-                'default_value' => 'Featured Insights',
-            ],
-            [
-                'label' => __('Featured Insights description', 'NscSoftware'),
-                'name' => 'featuredDescription',
-                'type' => 'text',
-                'default_value' => 'Explore in-depth perspectives from our experts on software development, digital transformation, and emerging technology trends.',
-            ],
-            [
-                'label' => __('Latest Updates title', 'NscSoftware'),
-                'name' => 'latestTitle',
-                'type' => 'text',
-                'default_value' => 'Latest Updates',
-            ],
-            [
-                'label' => __('Latest Updates description', 'NscSoftware'),
-                'name' => 'latestDescription',
-                'type' => 'text',
-                'default_value' => 'Keep up with our latest news, events, and knowledge sharing from the NSC team.',
-            ],
-            [
-                'label' => __('Read More', 'NscSoftware'),
-                'name' => 'readMore',
-                'type' => 'text',
-                'default_value' => 'Read More',
-            ],
-        ],
-    ],
-]);

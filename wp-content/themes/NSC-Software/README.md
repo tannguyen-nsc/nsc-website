@@ -216,8 +216,8 @@ Here we use the [ACF Field Group Composer](https://github.com/NSC-Softwarewp/acf
 
 NSC-Software includes several utility functions for creating Advanced Custom Fields options pages. Briefly, these are:
 
-* `NSC-Software\Utils\Options::addTranslatable`<br> Adds fields into a new group inside the Translatable Options options page. When used with the WPML plugin, these fields will be returned in the current language.
-* `NSC-Software\Utils\Options::addGlobal`<br> Adds fields into a new group inside the Global Options options page. When used with WPML, these fields will always be returned from the primary language. In this way these fields are *global* and cannot be translated.
+* `NSC-Software\Utils\Options::addTranslatable`<br> Adds fields into a new group inside the **NSC Theme Options** admin menu (default submenu **Global**). The parent options screen slug in the URL is `NSCThemeOptions` (e.g. `admin.php?page=NSCThemeOptions-Global`). When used with the WPML plugin, these fields will be returned in the current language.
+* `NSC-Software\Utils\Options::addGlobal`<br> Adds fields that are stored with a `global_` prefix and read in the primary language under WPML. They appear under **NSC Theme Options → Global** (same screen as translatable fields such as header/footer)—there is no separate top-level **Global Options** menu.
 * `NSC-Software\Utils\Options::getTranslatable` <br> Retrieve a translatable option.
 * `NSC-Software\Utils\Options::getGlobal` <br> Retrieve a global option.
 
@@ -225,7 +225,7 @@ NSC-Software includes several utility functions for creating Advanced Custom Fie
 
 Timber provides [a `resize` filter to resize images](https://timber.github.io/docs/reference/timber-imagehelper/#resize) on first page load. Resizing many images at the same time can result in a server timeout. That's why NSC-Software provides a `resizeDynamic` filter, that resizes images asynchronously upon first request of the image itself. Resized images are stored in `uploads/resized`. To regenerate all image sizes and file versions, delete the folder.
 
-To enable Dynamic Resize, go to **Global Options -> Timber Dynamic Resize**.
+To enable Dynamic Resize, go to **NSC Theme Options → Global → Timber Dynamic Resize**.
 
 ### Twig Extensions
 

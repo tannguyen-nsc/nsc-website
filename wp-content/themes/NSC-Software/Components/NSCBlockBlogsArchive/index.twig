@@ -1,74 +1,175 @@
 {% if not (options.hidden|default(0)) %}
-<nsc-software-component name="NSCBlockBlogsArchive" class="blogs blogs-archive">
-  <div class="heading">
-    {% if headingIcon.url or headingIcon.src %}
-      <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
-    {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
-    {% endif %}
-    <h2>{{ title|default('BLOGS')|e }}</h2>
-  </div>
-  <div class="wrapper">
-    {% if description %}
-      <div class="description">{{ description|raw }}</div>
-    {% endif %}
-    {% if terms|length > 1 %}
-      <ul class="filter">
-        {% for term in terms %}
-          <li class="item">
-            <a href="{{ term.link|e('esc_url') }}" class="button {{ term.isActive ? '' : 'button--outlined' }}">
-              <span class="visuallyHidden">{{ labels.filterBy|e }}</span>{{ term.title|e }}
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
-    {% if posts|length > 0 %}
-      <ul data-ref="posts" class="posts blog-list">
-        {% for post in posts %}
-          <li class="post item" data-theme="reset">
-            <a class="link" href="{{ post.link|e('esc_url') }}">
-              {% if post.thumbnail and post.thumbnail.src %}
-                <div class="thumbnail">
-                  <img src="{{ post.thumbnail.src|e('esc_url') }}" alt="{{ post.thumbnail.alt|default(post.title)|e }}" loading="lazy" />
-                </div>
-              {% endif %}
-              <div class="content-wrapper">
-                <h2 class="post-title">{{ post.title|e }}</h2>
-                {% if post.excerpt %}
-                  <p class="excerpt">{{ post.excerpt.read_more(false)|e }}</p>
-                {% endif %}
-                <span class="read-more">{{ labels.readMore|default('Read More')|e }}
-                  <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
-                    <path d="M0.195262 0.195262C0.455612 -0.0650874 0.877621 -0.0650874 1.13797 0.195262L5.13797 4.19526C5.39832 4.45561 5.39832 4.87762 5.13797 5.13797L1.13797 9.13797C0.877621 9.39832 0.455612 9.39832 0.195262 9.13797C-0.0650874 8.87762 -0.0650874 8.45561 0.195262 8.19526L3.72391 4.66662L0.195262 1.13797C-0.0650874 0.877621 -0.0650874 0.455612 0.195262 0.195262Z" fill="#36C3DC"/>
-                  </svg>
-                </span>
-              </div>
-            </a>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="posts-empty">{{ labels.noPostsFound|default('No post found.')|e }}</p>
-    {% endif %}
-
-    {% if pagination.total > 1 %}
-      {% if loadMore and pagination.next %}
-        <div data-ref="pagination" class="pagination">
-          <a data-ref="loadMore" href="{{ pagination.next.link|e('esc_url') }}" class="button button-loadMore">{{ labels.loadMore|e }}</a>
-        </div>
-      {% else %}
-        <div class="pagination">
-          {% if pagination.prev %}
-            <a href="{{ pagination.prev.link|e('esc_url') }}" class="button button-previous">{{ labels.previous|e }}</a>
-          {% endif %}
-          {% if pagination.next %}
-            <a href="{{ pagination.next.link|e('esc_url') }}" class="button button-next">{{ labels.next|e }}</a>
-          {% endif %}
-        </div>
+<nsc-software-component name="NSCBlockBlogsArchive">
+  <section class="blog-list-details"{% if theme.buildUri %} style="background-image:url('{{ theme.buildUri|e('esc_url') }}/img/blogs-bg-details.png');"{% endif %}>
+    <div class="heading">
+      {% if headingIcon.url or headingIcon.src %}
+        <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+      {% elseif theme.buildUri %}
+        <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
       {% endif %}
-    {% endif %}
-  </div>
+      <h2>{{ title|default('BLOGS')|e }}</h2>
+    </div>
+    <div class="wrapper">
+      {% if featuredPosts|length > 0 %}
+      <div class="blogs-wrapper">
+          <div class="featured-header">
+            <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M16.6816 0.00732422C17.0465 0.0371221 17.3983 0.156317 17.707 0.353027L17.8579 0.457031L18 0.574219C18.318 0.85919 18.5492 1.22988 18.665 1.64355C18.6678 1.65333 18.6713 1.66302 18.6738 1.67285L21.0454 10.8765C21.1124 11.1358 21.2471 11.3726 21.4365 11.562C21.6259 11.7513 21.8628 11.8862 22.1221 11.9531L31.3242 14.3247L31.3491 14.332L31.5249 14.3877C31.8694 14.5139 32.1774 14.7229 32.4229 14.9956L32.5415 15.1377L32.647 15.2886C32.8774 15.6492 33.0014 16.0695 33.0015 16.5C33.0015 16.9924 32.8398 17.472 32.5415 17.8638C32.2431 18.2556 31.8239 18.5385 31.3491 18.6694L31.3242 18.6753L30.9507 17.2236L30.9478 17.2163L31.3242 18.6753L22.1221 21.0469C21.8626 21.1139 21.626 21.25 21.4365 21.4395C21.2474 21.6287 21.111 21.8645 21.0439 22.1235L18.6724 31.3271L18.6636 31.3564L17.2515 30.9609L17.2192 30.9521L18.6636 31.3564C18.5312 31.8293 18.2477 32.2462 17.8564 32.543C17.4653 32.8397 16.9881 33.0014 16.4971 33.0015C16.0061 33.0015 15.5289 32.8396 15.1377 32.543C14.7465 32.2462 14.4629 31.8293 14.3306 31.3564L15.7822 30.9492L15.75 30.958L14.3306 31.3564C14.3278 31.3467 14.3243 31.337 14.3218 31.3271L11.9502 22.125L14.8564 21.3765L16.4956 27.7441L18.1392 21.3765C18.3401 20.5981 18.747 19.8868 19.3154 19.3184C19.8841 18.7497 20.5949 18.343 21.3735 18.1421L27.7441 16.5L21.3735 14.8579C20.595 14.6571 19.884 14.2516 19.3154 13.6831C18.7468 13.1145 18.34 12.4037 18.1392 11.625L16.4971 5.25439L14.855 11.625C14.6537 12.403 14.2486 13.1151 13.6802 13.6831C13.1116 14.2513 12.4004 14.6558 11.6221 14.8564L5.25293 16.4985L11.6221 18.1421C12.4007 18.343 13.1116 18.7497 13.6802 19.3184C14.2485 19.8867 14.6541 20.5968 14.855 21.375L11.9502 22.125C11.8832 21.8656 11.7485 21.6289 11.5591 21.4395C11.3696 21.25 11.1329 21.1139 10.8735 21.0469L1.67139 18.6738L2.04492 17.2236L2.0376 17.2485L1.67139 18.6738L1.63623 18.665L1.46191 18.6079C1.06295 18.4587 0.713885 18.1983 0.455566 17.8564C0.160381 17.4658 0 16.9896 0 16.5C8.11703e-05 16.0105 0.160456 15.5341 0.455566 15.1436C0.750728 14.7532 1.16543 14.4701 1.63623 14.3364L1.66992 14.3262L2.03613 15.75L2.03906 15.7573L1.66992 14.3262L10.8735 11.9517C11.1328 11.8847 11.3696 11.7498 11.5591 11.5605C11.7482 11.3716 11.883 11.1352 11.9502 10.8765L14.3232 1.67285L15.7837 2.04932L15.7764 2.04785L14.3232 1.67285C14.3258 1.66303 14.3293 1.65332 14.332 1.64355C14.4644 1.17075 14.748 0.753765 15.1392 0.457031L15.2886 0.353027C15.6489 0.123181 16.0686 0 16.4985 0L16.6816 0.00732422ZM2.99854 27C2.17011 27 1.49707 26.3284 1.49707 25.5C1.49727 24.6717 2.17023 24 2.99854 24C2.99873 23.1717 3.67023 22.5 4.49854 22.5C5.27507 22.5004 5.91324 23.0912 5.98975 23.8477L5.99854 24L6.15088 24.0088C6.90725 24.0855 7.49835 24.7234 7.49854 25.5C7.49854 26.3282 6.82663 26.9996 5.99854 27C5.99854 27.8282 5.32663 28.4996 4.49854 28.5C3.67011 28.5 2.99854 27.8284 2.99854 27ZM26.9985 9V7.5H25.4985C24.6701 7.5 23.9985 6.82843 23.9985 6C23.9987 5.17174 24.6702 4.5 25.4985 4.5H26.9985V3C26.9987 2.17174 27.6702 1.5 28.4985 1.5C29.3265 1.5004 29.9983 2.17199 29.9985 3V4.5H31.4985C32.3265 4.5004 32.9983 5.17199 32.9985 6C32.9985 6.82818 32.3266 7.4996 31.4985 7.5H29.9985V9C29.9985 9.82818 29.3266 10.4996 28.4985 10.5C27.6701 10.5 26.9985 9.82843 26.9985 9Z" fill="#36C3DC"/>
+            </svg>
+            <h3>{{ __('Featured', 'NscSoftware')|e }}</h3>
+          </div>
+          <div class="featured-content">
+            <div class="col featured-main">
+              {% set main = featuredPosts[0] %}
+              <div class="main-post">
+                <div class="post-image">
+                  {% set mainImg = '' %}
+                  {% if main.thumbnail and main.thumbnail.src %}
+                    {% set mainImg = main.thumbnail.src %}
+                  {% else %}
+                    {% set mainImg = function('get_the_post_thumbnail_url', main.id, 'large')|default('') %}
+                  {% endif %}
+                  {% if mainImg %}
+                    <img src="{{ mainImg|e('esc_url') }}" alt="{{ main.title|e }}" loading="lazy" />
+                  {% elseif theme.buildUri %}
+                    <img src="{{ theme.buildUri|e('esc_url') }}/img/blog1.png" alt="" loading="lazy" />
+                  {% endif %}
+                </div>
+                <div class="post-content">
+                  <h2><a href="{{ main.link|e('esc_url') }}">{{ main.title|e }}</a></h2>
+                  {% if main.excerpt %}
+                    <p class="post-description">{{ main.excerpt.read_more(false)|striptags|e }}</p>
+                  {% endif %}
+                  <a href="{{ main.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% if featuredPosts|length > 1 %}
+              <div class="col featured-sidebar">
+                <div class="sidebar-items">
+                  {% for post in featuredPosts|slice(1, 3) %}
+                    <div class="sidebar-item">
+                      <div class="item-thumbnail">
+                        {% set sideImg = '' %}
+                        {% if post.thumbnail and post.thumbnail.src %}
+                          {% set sideImg = post.thumbnail.src %}
+                        {% else %}
+                          {% set sideImg = function('get_the_post_thumbnail_url', post.id, 'large')|default('') %}
+                        {% endif %}
+                        {% if sideImg %}
+                          <img src="{{ sideImg|e('esc_url') }}" alt="{{ post.title|e }}" loading="lazy" />
+                        {% elseif theme.buildUri %}
+                          <img src="{{ theme.buildUri|e('esc_url') }}/img/blog1.png" alt="" loading="lazy" />
+                        {% endif %}
+                      </div>
+                      <div class="item-content">
+                        <h3><a href="{{ post.link|e('esc_url') }}">{{ post.title|e }}</a></h3>
+                        {% if post.excerpt %}
+                          <p class="item-excerpt">{{ post.excerpt.read_more(false)|striptags|e }}</p>
+                        {% endif %}
+                        <a href="{{ post.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </a>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+      </div>
+      {% endif %}
+
+        <script>
+          window.blogVueData = {{ (blog_vue_data_json|default('{}'))|raw }};
+        </script>
+
+        <div class="blogs-list" id="blog-list-app" v-cloak>
+          <div class="blogs-list-header">
+            <div class="blogs-title">
+              <svg width="27" height="33" viewBox="0 0 27 33" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M0 28.5V4.5C0 3.30653 0.474445 2.16227 1.31836 1.31836C2.16227 0.474445 3.30653 0 4.5 0H18C18.3978 0 18.7792 0.158148 19.0605 0.439453L26.5605 7.93945C26.8419 8.22076 27 8.60218 27 9V28.5C27 29.6935 26.5256 30.8377 25.6816 31.6816C24.8377 32.5256 23.6935 33 22.5 33H4.5C3.30653 33 2.16227 32.5256 1.31836 31.6816C0.474446 30.8377 0 29.6935 0 28.5ZM10.5 22.5C11.3284 22.5 12 23.1716 12 24C12 24.8284 11.3284 25.5 10.5 25.5H7.5C6.67157 25.5 6 24.8284 6 24C6 23.1716 6.67157 22.5 7.5 22.5H10.5ZM19.5 22.5C20.3284 22.5 21 23.1716 21 24C21 24.8284 20.3284 25.5 19.5 25.5H16.5C15.6716 25.5 15 24.8284 15 24C15 23.1716 15.6716 22.5 16.5 22.5H19.5ZM10.5 16.5C11.3284 16.5 12 17.1716 12 18C12 18.8284 11.3284 19.5 10.5 19.5H7.5C6.67157 19.5 6 18.8284 6 18C6 17.1716 6.67157 16.5 7.5 16.5H10.5ZM19.5 16.5C20.3284 16.5 21 17.1716 21 18C21 18.8284 20.3284 19.5 19.5 19.5H16.5C15.6716 19.5 15 18.8284 15 18C15 17.1716 15.6716 16.5 16.5 16.5H19.5ZM18 7.5C18 7.89782 18.1581 8.27924 18.4395 8.56055C18.7208 8.84185 19.1022 9 19.5 9H23.3789L18 3.62109V7.5ZM3 28.5C3 28.8978 3.15815 29.2792 3.43945 29.5605C3.72076 29.8419 4.10218 30 4.5 30H22.5C22.8978 30 23.2792 29.8419 23.5605 29.5605C23.8419 29.2792 24 28.8978 24 28.5V12H19.5C18.3065 12 17.1623 11.5256 16.3184 10.6816C15.4744 9.83773 15 8.69347 15 7.5V3H4.5C4.10217 3 3.72076 3.15815 3.43945 3.43945C3.15815 3.72076 3 4.10217 3 4.5V28.5Z" fill="#36C3DC"/>
+              </svg>
+              <h2>{{ blogsListHeading|default('Blogs')|e }}</h2>
+            </div>
+            {% verbatim %}
+            <div class="blogs-filters">
+              <div class="blogs-search">
+                <label class="search-input-wrap" for="blogsSearchInput">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M11 4C7.13401 4 4 7.13401 4 11C4 14.866 7.13401 18 11 18C12.6574 18 14.1803 17.4215 15.3789 16.4565L19.2929 20.2929C19.6834 20.6834 20.3166 20.6834 20.7071 20.2929C21.0976 19.9024 21.0976 19.2692 20.7071 18.8787L16.7935 15.0425C17.6474 13.8615 18 12.3964 18 11C18 7.13401 14.866 4 11 4ZM6 11C6 8.23858 8.23858 6 11 6C13.7614 6 16 8.23858 16 11C16 13.7614 13.7614 16 11 16C8.23858 16 6 13.7614 6 11Z" fill="currentColor"/>
+                  </svg>
+                  <input
+                    id="blogsSearchInput"
+                    type="search"
+                    v-model.trim="searchQuery"
+                    :placeholder="(uiLabels && uiLabels.searchPlaceholder) || 'Search'"
+                    aria-label="Search blogs by title, excerpt, or category"
+                  />
+                  <span class="results-count" v-if="searchQuery && searchQuery.trim().length">{{ searchResultsSummary }}</span>
+                </label>
+              </div>
+              <button type="button" class="filter-btn" :class="{ 'filter-active': activeFilter === filter.id }" v-for="filter in filters" :key="filter.id" @click="setFilter(filter.id)">
+                <svg v-if="activeFilter === filter.id" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M13.3333 4L6 11.3333L2.66667 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                {{ filter.label }}
+              </button>
+            </div>
+          </div>
+          <div class="blogs-posts">
+            <template v-if="paginatedPosts.length">
+              <article class="blog-post" v-for="post in paginatedPosts" :key="post.id">
+                <div class="post-image">
+                  <img :src="post.image" :alt="post.title" loading="lazy" />
+                </div>
+                <div class="post-content">
+                  <h3><a :href="post.link">{{ post.title }}</a></h3>
+                  <p class="post-excerpt">{{ post.excerpt }}</p>
+                  <div class="post-footer">
+                    <span class="post-category" v-if="post.category">{{ post.category }}</span>
+                    <a :href="post.link" class="read-more-link">{{ (uiLabels && uiLabels.readMore) || 'Read More' }}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </article>
+            </template>
+            <div v-else class="blogs-empty">
+              <p>{{ (uiLabels && uiLabels.empty) || 'No blog found.' }}</p>
+            </div>
+          </div>
+          <div class="pagination blogs-pagination" v-if="totalPages > 1">
+            <button type="button" class="pagination-prev" :disabled="currentPage <= 1" @click="setPage(currentPage - 1)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              {{ (uiLabels && uiLabels.previous) || 'Prev' }}
+            </button>
+            <div class="pagination-numbers">
+              <template v-for="page in displayPages" :key="page.num || 'ellipsis'">
+                <button v-if="!page.isEllipsis" type="button" class="pagination-num" :class="{ 'pagination-num-active': currentPage === page.num }" @click="setPage(page.num)">{{ page.num }}</button>
+                <span v-else class="pagination-ellipsis">...</span>
+              </template>
+            </div>
+            <button type="button" class="pagination-next" :disabled="currentPage >= totalPages" @click="setPage(currentPage + 1)">
+              {{ (uiLabels && uiLabels.next) || 'Next' }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+            {% endverbatim %}
+        </div>
+    </div>
+  </section>
 </nsc-software-component>
 {% endif %}

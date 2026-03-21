@@ -12,16 +12,19 @@ class Options
 {
     public const OPTION_TYPES = [
         'translatable' => [
-            'title' => 'Translatable Options',
+            'title' => 'NSC Theme Options',
+            /** Admin URL: wp-admin/admin.php?page=NSCThemeOptions (subpages e.g. NSCThemeOptions-Global). */
+            'menu_slug' => 'NSCThemeOptions',
             'icon' => 'dashicons-translation',
             'translatable' => true
         ],
-        'global' => [
-            'title' => 'Global Options',
-            'icon' => 'dashicons-admin-site',
-            'translatable' => false
-        ]
     ];
+
+    /**
+     * Option storage types merged into component data (see inc/options.php) that are not top-level admin menus.
+     * "global" fields register under NSC Theme Options → same submenu as translatable (e.g. Global) so there is no separate Global Options menu.
+     */
+    public const COMPONENT_MERGE_OPTION_TYPES = ['translatable', 'global'];
 
     /**
      * The initialized state of the class.
@@ -60,20 +63,17 @@ class Options
         add_action('current_screen', function ($currentScreen) {
             $currentScreenId = strtolower($currentScreen->id);
             foreach (static::OPTION_TYPES as $optionType => $option) {
+                if (empty(static::$optionPages[$optionType]['menu_slug'])) {
+                    continue;
+                }
                 $isTranslatable = $option['translatable'];
-                // NOTE: because the first subpage starts with toplevel instead (there is no overview page).
-                $toplevelPageId = strtolower('toplevel_page_' . $optionType);
-                $menuTitle = static::$optionPages[$optionType]['menu_title'];
-                // NOTE: all other subpages have the parent menu-title in front instead.
-                $subPageId = strtolower(
-                    sanitize_title($menuTitle) . '_page_' . $optionType
-                );
+                $parentSlug = (string) static::$optionPages[$optionType]['menu_slug'];
+                $toplevelPageId = strtolower('toplevel_page_' . $parentSlug);
+                // Submenus use {parent_slug}_page_{submenu_slug} (all lowercased by WP).
+                $submenuPrefix = strtolower($parentSlug) . '_page_';
                 $isCurrentPage =
-                    StringHelpers::startsWith(
-                        $toplevelPageId,
-                        $currentScreenId
-                    ) ||
-                    StringHelpers::startsWith($subPageId, $currentScreenId);
+                    StringHelpers::startsWith($toplevelPageId, $currentScreenId) ||
+                    StringHelpers::startsWith($submenuPrefix, $currentScreenId);
                 if (!$isTranslatable && $isCurrentPage) {
                     // Set acf field values to default language.
                     add_filter(
@@ -103,7 +103,9 @@ class Options
         if (empty(static::$optionPages[$optionType])) {
             $option = static::OPTION_TYPES[$optionType];
             $title = _x($option['title'], 'title', 'NscSoftware');
-            $slug = ucfirst($optionType) . 'Options';
+            $slug = !empty($option['menu_slug'])
+                ? (string) $option['menu_slug']
+                : (ucfirst($optionType) . 'Options');
 
             acf_add_options_page([
                 'page_title'  => $title,
@@ -129,7 +131,7 @@ class Options
      *
      * @return void
      */
-    protected static function createOptionSubPage(string $optionType, string $optionCategory = "Default")
+    protected static function createOptionSubPage(string $optionType, string $optionCategory = 'Global')
     {
         if (empty(static::$optionPages[$optionType]['sub_pages'][$optionCategory])) {
             $optionPage = static::createOptionPage($optionType);
@@ -222,12 +224,15 @@ class Options
         $optionType = lcfirst($optionType);
         $scope = ucfirst($scope);
 
-        if (!isset(static::OPTION_TYPES[$optionType])) {
+        if ($optionType === 'global') {
+            $isTranslatable = false;
+        } elseif (!isset(static::OPTION_TYPES[$optionType])) {
             return false;
+        } else {
+            $isTranslatable = static::OPTION_TYPES[$optionType]['translatable'];
         }
 
         $prefix = implode('_', [$optionType, $scope, '']);
-        $isTranslatable = static::OPTION_TYPES[$optionType]['translatable'];
         if (empty($fieldName)) {
             $optionNames = ((static::$registeredOptions[$optionType] ?? [])[$scope] ?? []);
             return array_combine(
@@ -252,7 +257,7 @@ class Options
      *
      * @return void
      */
-    public static function addTranslatable(string $scope, array $fields, string $category = 'Default')
+    public static function addTranslatable(string $scope, array $fields, string $category = 'Global')
     {
         static::addOptions($scope, $fields, 'translatable', $category);
     }
@@ -266,7 +271,7 @@ class Options
      *
      * @return void
      */
-    public static function addGlobal(string $scope, array $fields, string $category = 'Default')
+    public static function addGlobal(string $scope, array $fields, string $category = 'Global')
     {
         static::addOptions($scope, $fields, 'global', $category);
     }
@@ -281,11 +286,13 @@ class Options
      *
      * @return void
      */
-    public static function addOptions(string $scope, array $fields, string $type, string $category = 'Default')
+    public static function addOptions(string $scope, array $fields, string $type, string $category = 'Global')
     {
-        static::createOptionSubPage($type, $category);
+        // Global-scope options use the same ACF options screen as NSC Theme Options (no top-level "Global Options" menu).
+        $pageType = $type === 'global' ? 'translatable' : $type;
+        static::createOptionSubPage($pageType, $category);
         $fieldGroupTitle = StringHelpers::splitCamelCase($scope);
-        $optionsPageSlug = self::$optionPages[$type]['sub_pages'][$category]['menu_slug'];
+        $optionsPageSlug = self::$optionPages[$pageType]['sub_pages'][$category]['menu_slug'];
         $fieldGroupName = implode('_', [$type, $scope]);
         static::addOptionsFieldGroup(
             $fieldGroupName,

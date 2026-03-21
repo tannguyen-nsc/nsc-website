@@ -5,9 +5,11 @@
  * 2) Copies wp-content/themes/NSC-Software/frontend/build (exclude test.html)
  *    to nsc:/var/www/html/wp-content/themes/NSC-Software/frontend
  *
- * Prerequisites: rsync in PATH, ssh host "nsc" configured (e.g. in ~/.ssh/config)
+ * Uses rsync when available; otherwise tar + ssh (works on Windows with built-in tar + OpenSSH).
+ *
  * Run from repo root: node scripts/deploy.js
- * Or set DEPLOY_SSH_HOST to use a different host (default: nsc).
+ * From frontend: npm run deploy
+ * Set DEPLOY_SSH_HOST to override host (default: nsc).
  */
 const path = require('path');
 const fs = require('fs');
@@ -18,6 +20,7 @@ const frontendBuild = path.join(repoRoot, 'frontend', 'build');
 const themeBuild = path.join(repoRoot, 'wp-content', 'themes', 'NSC-Software', 'frontend', 'build');
 const sshHost = process.env.DEPLOY_SSH_HOST || 'nsc';
 const remoteWebroot = '/var/www/html';
+const remoteThemeDir = `${remoteWebroot}/wp-content/themes/NSC-Software/frontend`;
 
 if (!fs.existsSync(frontendBuild)) {
   console.error('Error: frontend build not found at', frontendBuild);
@@ -30,18 +33,60 @@ if (!fs.existsSync(themeBuild)) {
   process.exit(1);
 }
 
-function rsync(srcDir, dest, excludes) {
+function hasRsync() {
+  try {
+    execSync('rsync --version', { stdio: 'pipe', shell: true });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Path safe for tar -C on Windows (forward slashes). */
+function tarChdir(dir) {
+  return path.resolve(dir).replace(/\\/g, '/');
+}
+
+/**
+ * Stream directory to remote via tar over ssh (no rsync required).
+ * Does not delete remote files removed locally (unlike rsync --delete).
+ */
+function deployWithTar(localDir, remoteDestDir, excludes) {
+  const chdir = tarChdir(localDir);
+  const excludeArgs = excludes.map((f) => `--exclude=${f}`).join(' ');
+  const remoteCmd = `cd ${remoteDestDir} && tar -xf -`;
+  const cmd = `tar -cf - ${excludeArgs} -C "${chdir}" . | ssh ${sshHost} "${remoteCmd}"`;
+  execSync(cmd, { stdio: 'inherit', shell: true });
+}
+
+function deployWithRsync(srcDir, dest, excludes) {
   const excludeArgs = excludes.map((f) => `--exclude=${f}`).join(' ');
   const cmd = `rsync -avz --delete ${excludeArgs} "${srcDir}/" "${sshHost}:${dest}"`;
   execSync(cmd, { stdio: 'inherit', shell: true });
 }
 
+const useRsync = hasRsync();
+if (useRsync) {
+  console.log('Using rsync for deploy.\n');
+} else {
+  console.log('rsync not found; using tar + ssh (Windows-friendly).\n');
+}
+
 console.log('Deploying to', sshHost + ':' + remoteWebroot, '...\n');
 
 console.log('[1/2] Frontend build -> ' + remoteWebroot + '/ (excluding index.html, test.html)');
-rsync(frontendBuild, remoteWebroot, ['index.html', 'test.html']);
+if (useRsync) {
+  deployWithRsync(frontendBuild, remoteWebroot, ['index.html', 'test.html']);
+} else {
+  deployWithTar(frontendBuild, remoteWebroot, ['index.html', 'test.html']);
+}
 
-console.log('\n[2/2] NSC theme frontend build -> ' + remoteWebroot + '/wp-content/themes/NSC-Software/frontend/ (excluding test.html)');
-rsync(themeBuild, remoteWebroot + '/wp-content/themes/NSC-Software/frontend', ['test.html']);
+console.log('\n[2/2] NSC theme frontend build -> ' + remoteThemeDir + '/ (excluding test.html)');
+if (useRsync) {
+  deployWithRsync(themeBuild, remoteThemeDir, ['test.html']);
+} else {
+  execSync(`ssh ${sshHost} "mkdir -p ${remoteThemeDir}"`, { stdio: 'inherit', shell: true });
+  deployWithTar(themeBuild, remoteThemeDir, ['test.html']);
+}
 
 console.log('\nDeploy done.');

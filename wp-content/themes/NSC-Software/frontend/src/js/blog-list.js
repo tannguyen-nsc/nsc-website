@@ -134,18 +134,50 @@
   initFeaturedSidebarItems();
 
   var BLOG_LIST_SELECTOR = '#blog-list-app';
-  var PER_PAGE = 6;
+  var root =
+    typeof window.blogVueData === 'object' && window.blogVueData !== null
+      ? window.blogVueData
+      : {};
+  var PER_PAGE = parseInt(String(root.perPage || '6'), 10) || 6;
 
   var el = document.querySelector(BLOG_LIST_SELECTOR);
   if (!el || typeof Vue === 'undefined') return;
 
-  var filters = [
+  var defaultFilters = [
     { id: 'all', label: 'All Categories' },
     { id: 'Technology', label: 'Technology' },
     { id: 'Cultures', label: 'Cultures' }
   ];
+  var filters =
+    Array.isArray(root.filters) && root.filters.length
+      ? root.filters.slice()
+      : defaultFilters.slice();
 
   var defaultBlogs = [];
+
+  /** Plain object; never null/undefined so template property access never throws. */
+  function normalizeUiLabels(raw) {
+    var base = {
+      searchPlaceholder: 'Search',
+      searchResultSingular: 'result',
+      searchResultPlural: 'results',
+      readMore: 'Read More',
+      previous: 'Prev',
+      next: 'Next',
+      empty: 'No blog found.'
+    };
+    if (raw == null || typeof raw !== 'object' || Array.isArray(raw)) {
+      return base;
+    }
+    var out = {};
+    for (var k in base) {
+      if (Object.prototype.hasOwnProperty.call(base, k)) {
+        out[k] =
+          typeof raw[k] === 'string' && raw[k] !== '' ? raw[k] : base[k];
+      }
+    }
+    return out;
+  }
 
   function getBlogsFromWindow() {
     var data = window.blogVueData;
@@ -164,6 +196,7 @@
         currentPage: 1,
         perPage: PER_PAGE,
         filters: filters,
+        uiLabels: normalizeUiLabels(root.labels),
         viewportWidth: window.innerWidth,
         loading: false,
         loadError: null
@@ -190,7 +223,9 @@
 
         if (active !== 'all') {
           list = list.filter(function (blog) {
-            return (blog.category || '').toLowerCase() === active;
+            var c = (blog.category || '').toLowerCase();
+            var a = (active || '').toLowerCase();
+            return c === a;
           });
         }
 
@@ -198,6 +233,18 @@
       },
       filteredResultCount: function () {
         return this.filteredBlogs.length;
+      },
+      searchResultsSummary: function () {
+        var q = (this.searchQuery || '').trim();
+        if (!q.length) {
+          return '';
+        }
+        var n = this.filteredResultCount;
+        var labels = normalizeUiLabels(this.uiLabels);
+        var sing = String(labels.searchResultSingular || 'result').trim();
+        var plur = String(labels.searchResultPlural || 'results').trim();
+        var word = n === 1 ? sing : plur;
+        return n + ' ' + word;
       },
       totalPages: function () {
         var n = this.filteredResultCount;

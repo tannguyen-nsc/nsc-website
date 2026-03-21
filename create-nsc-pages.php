@@ -7,6 +7,7 @@ declare(strict_types=1);
  * Usage:
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&home_only=1
+ *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&blogs_only=1
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&policies_only=1
  *
  * Notes:
@@ -16,15 +17,19 @@ declare(strict_types=1);
  *   components to match frontend/src/index.html section order (Hero → Stats →
  *   Our Services → Why Us → How We Work → AI-Driven → Testimonials → Blogs →
  *   Contact Us). Home uses the default page template so it renders from components.
+ * - For the Blogs page: default template + pageComponents = Hero (dark, blogs copy with links to
+ *   Home / About / AI / Our Services / Technology Capabilities) + NSC Block: Blogs (Archive) with Vue list fed from WP posts.
  * - For the About page: seeds pageComponents to match frontend/build/about.html
  *   (Hero left-text → Company Snapshot → Our Story → Our Leaders → Why Us →
  *   Our Capabilities → Global Presence → Contact). About uses the default page template.
  * - URL fields in the seed use home_url('/') so saved data passes ACF URL validation.
  * - Add home_only=1 to only create/update the Home page and set it as front page.
+ * - Add blogs_only=1 to only create/update the Blogs page (default template + Hero + Blogs Archive components).
  * - Add policies_only=1 to only create/update Privacy Policy, Cookies Policy, and Terms of Use pages.
  * - Add content_test=1 to prepend "[test] " to text (policy page titles only; policy HTML body preserved) so you can verify in the CMS.
  * - Privacy Policy, Cookies Policy, Terms of Use use default template and one NSC Block: Policy Page; content from policy-content/*.html.
  * - Footer policy links (Privacy Policy, Cookies Policy, Terms of Use) are set in runGlobalOptions.php (legalLinks).
+ * - Blog seed (30 posts, categories, ACF sidebar): use create-nsc-blog-posts.php with token nsc-create-blog-posts-2026.
  */
 
 $requiredToken = 'nsc-create-pages-2026';
@@ -63,7 +68,7 @@ $pages = [
     ['title' => 'Home', 'slug' => 'home', 'template' => ''], // default = page.twig + pageComponents
     ['title' => 'About', 'slug' => 'about', 'template' => ''], // default = page.twig + pageComponents (About Us sections)
     ['title' => 'AI', 'slug' => 'ai', 'template' => ''], // default = page.twig + pageComponents (AI sections)
-    ['title' => 'Blogs', 'slug' => 'blogs', 'template' => 'template-blogs.php'],
+    ['title' => 'Blogs', 'slug' => 'blogs', 'template' => ''], // default + Hero + Blogs (Archive), Vue uses WP posts
     ['title' => 'Career', 'slug' => 'career', 'template' => 'template-career.php'],
     ['title' => 'Case Studies', 'slug' => 'case-studies', 'template' => 'template-case-studies.php'],
     ['title' => 'Contact', 'slug' => 'contact', 'template' => ''], // default = page.twig + pageComponents (Contact + Global Presence)
@@ -300,6 +305,13 @@ function getHomePageComponents(): array
                 'buttonLabel' => 'Explore all articles on the NSC Blog',
                 'buttonUrl'   => $baseUrl,
                 'openInNewTab' => 0,
+            ],
+            'labels'               => [
+                'featuredTitle'       => 'Featured Insights',
+                'featuredDescription' => 'Explore in-depth perspectives from our experts on software development, digital transformation, and emerging technology trends.',
+                'latestTitle'         => 'Latest Updates',
+                'latestDescription'   => 'Keep up with our latest news, events, and knowledge sharing from the NSC team.',
+                'readMore'            => 'Read More',
             ],
             'options'              => ['theme' => ''],
         ],
@@ -766,6 +778,51 @@ function getPolicyPageComponents(string $title, string $contentHtml): array
 }
 
 /**
+ * Blogs listing page: Hero (dark, same messaging as frontend/src/blogs.html) + archive block (Vue + WP posts).
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getBlogsPageComponents(): array
+{
+    $baseUrl = home_url('/');
+    $description = '<p>At NSC Software, technology is only as powerful as the people building it. From engineering insights to culture and teamwork, our blog shows how NSC builds software — and how it connects to the wider story on our '
+        . '<a href="' . esc_url($baseUrl) . '">Home</a>, '
+        . '<a href="' . esc_url($baseUrl . 'about/') . '">About</a>, '
+        . '<a href="' . esc_url($baseUrl . 'ai/') . '">AI</a>, '
+        . '<a href="' . esc_url($baseUrl . 'our-services/') . '">Our Services</a>, '
+        . 'and <a href="' . esc_url($baseUrl . 'our-capabilites/') . '">Technology Capabilities</a> pages.</p>';
+
+    return [
+        [
+            'acf_fc_layout' => 'nscBlockHero',
+            'heroStyle' => 'dark',
+            'headline' => '<sb>Discover the People Behind the Code</sb>',
+            'description' => $description,
+            'button' => ['label' => '', 'url' => '', 'openInNewTab' => 0],
+            'options' => ['theme' => ''],
+        ],
+        [
+            'acf_fc_layout' => 'nscBlockBlogsArchive',
+            'title' => 'BLOGS',
+            'description' => '<p>Browse articles from the NSC team. Category filters and search use live WordPress posts (featured area uses posts marked “Featured article” in the sidebar, or the latest posts).</p>',
+            'postsPerPage' => 12,
+            'listLabels' => [
+                'blogsListHeading' => 'Blogs',
+                'searchPlaceholder' => 'Search',
+                'searchResultSingular' => 'result',
+                'searchResultPlural' => 'results',
+                'allCategoriesLabel' => 'All Categories',
+                'readMore' => 'Read More',
+                'previous' => 'Prev',
+                'next' => 'Next',
+                'noBlogFound' => 'No blog found.',
+            ],
+            'options' => ['theme' => ''],
+        ],
+    ];
+}
+
+/**
  * Contact page components matching frontend/build/contact.html (Contact section + Global Presence).
  * Live content by default; use content_test=1 to prepend "[test] " to text. formAction and phoneLink preserved.
  *
@@ -865,11 +922,16 @@ function applyContentTest(array $components): array
 }
 
 $homeOnly      = isset($_GET['home_only']) && $_GET['home_only'] === '1';
+$blogsOnly     = isset($_GET['blogs_only']) && $_GET['blogs_only'] === '1';
 $policiesOnly  = isset($_GET['policies_only']) && $_GET['policies_only'] === '1';
 $contentTest   = isset($_GET['content_test']) && $_GET['content_test'] === '1';
 if ($homeOnly) {
     $pages = array_filter($pages, static function (array $p) {
         return $p['slug'] === 'home';
+    });
+} elseif ($blogsOnly) {
+    $pages = array_filter($pages, static function (array $p) {
+        return $p['slug'] === 'blogs';
     });
 } elseif ($policiesOnly) {
     $policySlugs = ['privacy-policy', 'cookies-policy', 'terms-of-use'];
@@ -1051,6 +1113,28 @@ foreach ($pages as $page) {
             'status'  => $action,
             'message' => $msg,
         ];
+    } elseif ($slug === 'blogs') {
+        // Blogs page: Hero (dark) + Blogs (Archive); Vue list loads from WP posts (run create-nsc-blog-posts.php to seed).
+        $components = getBlogsPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+        if (function_exists('update_field')) {
+            update_field('pageComponents', [], (int) $pageId);
+            update_field('pageComponents', $components, (int) $pageId);
+        } else {
+            delete_post_meta((int) $pageId, 'pageComponents');
+            update_post_meta((int) $pageId, 'pageComponents', $components);
+        }
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Blogs: Hero + Archive / Vue)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
     } elseif ($slug === 'privacy-policy' || $slug === 'cookies-policy' || $slug === 'terms-of-use') {
         $policyTitles = [
             'privacy-policy'  => 'Privacy Policy for NSC Software',
@@ -1102,7 +1186,7 @@ echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Page Setup</ti
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body>';
 echo '<h1>NSC Pages Setup</h1>';
-echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>policies_only=1</code> to update only Privacy Policy, Cookies Policy, and Terms of Use. Add <code>content_test=1</code> to prepend "[test] " to text so you can verify the CMS loads editable data.</p>';
+echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>blogs_only=1</code> to update only the Blogs page (Hero + Archive). Add <code>policies_only=1</code> to update only Privacy Policy, Cookies Policy, and Terms of Use. Add <code>content_test=1</code> to prepend "[test] " to text so you can verify the CMS loads editable data.</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $statusClass = $row['status'] === 'error' ? 'error' : 'ok';

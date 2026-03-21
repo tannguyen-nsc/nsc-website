@@ -51,10 +51,23 @@ add_action('wp_enqueue_scripts', function () use ($buildUri, $buildPath) {
 
     $jsPath = $buildPath . '/js/scripts.js';
     if (file_exists($jsPath)) {
+        $buildScriptDeps = ['jquery', 'nsc-slick'];
+        // scripts.js bundles blog-list.js (Blogs archive). Vue 3 must load first whenever build JS runs;
+        // conditional enqueue was fragile (ACF/get_field vs. saved meta), leaving Vue undefined while
+        // #blog-list-app exists — then the list never mounts.
+        wp_enqueue_script(
+            'nsc-vue3',
+            'https://unpkg.com/vue@3/dist/vue.global.prod.js',
+            [],
+            '3',
+            true
+        );
+        wp_script_add_data('nsc-vue3', 'defer', true);
+        $buildScriptDeps[] = 'nsc-vue3';
         wp_enqueue_script(
             'nsc-software-build',
             $buildUri . '/js/scripts.js',
-            ['jquery', 'nsc-slick'],
+            $buildScriptDeps,
             filemtime($jsPath),
             true
         );

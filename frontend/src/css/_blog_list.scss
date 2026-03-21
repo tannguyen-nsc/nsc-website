@@ -28,11 +28,14 @@
           .main-post {
             @apply flex flex-col;
 
+            // Match static blogs build: fixed visual frame; WP featured images vary in ratio/size
             .post-image {
-              @apply w-full mb-4 lg:mb-6;
+              @apply relative w-full mb-4 lg:mb-6 overflow-hidden bg-[#f0f0f0];
+              @apply aspect-[16/10] sm:aspect-[16/9] lg:aspect-[16/9];
+              @apply max-h-[230px] sm:max-h-[240px] md:max-h-[280px] lg:max-h-[320px] xl:max-h-[360px];
 
               img {
-                @apply w-full h-auto object-cover;
+                @apply block h-full w-full object-cover object-center;
               }
             }
 
@@ -122,7 +125,8 @@
   }
 
   .blogs-list {
-    @apply bg-white mt-12 lg:mt-16 max-w-full xl:max-w-[1280px] mx-auto;
+    /* Match parent .wrapper width — avoid a narrower column when the list is empty */
+    @apply bg-white mt-12 lg:mt-16 w-full min-w-0 max-w-none;
   
     .blogs-list-header {
       @apply flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 lg:gap-6 border-b border-[#E5E5E5] pb-4 lg:pb-5 px-4;
@@ -177,7 +181,8 @@
           }
 
           .results-count {
-            @apply absolute right-3 top-1/2 -translate-y-1/2 text-xs lg:text-sm text-[#5E6B78] whitespace-nowrap pointer-events-none;
+            /* Above the full-width input so “N results” is not painted underneath */
+            @apply absolute right-3 top-1/2 z-[1] -translate-y-1/2 text-xs lg:text-sm text-[#5E6B78] whitespace-nowrap pointer-events-none;
           }
         }
   
@@ -205,7 +210,15 @@
     }
   
     .blogs-posts {
-      @apply flex flex-col mb-12 lg:mb-16;
+      @apply flex flex-col mb-12 lg:mb-16 w-full min-w-0;
+    }
+
+    .blogs-empty {
+      @apply w-full min-w-0 rounded border border-[#E5E5E5] bg-[#F9F9FB] py-10 px-5 sm:px-8 lg:py-14 lg:px-12 text-center;
+
+      p {
+        @apply m-0 text-base lg:text-lg font-medium text-[#5E6B78] leading-relaxed max-w-xl mx-auto;
+      }
     }
   
     .blog-post {
