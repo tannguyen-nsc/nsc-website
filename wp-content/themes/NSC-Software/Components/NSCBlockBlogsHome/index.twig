@@ -1,3 +1,29 @@
+{% macro post_image(post, theme) %}
+  {% set postId = post.id|default(post.ID|default(0)) %}
+  {% set img = '' %}
+  {% if post.thumbnail and post.thumbnail.src %}
+    {% set img = post.thumbnail.src %}
+  {% elseif postId %}
+    {% set img = function('get_the_post_thumbnail_url', postId, 'large')|default('') %}
+    {% if not img %}
+      {% set img = function('get_the_post_thumbnail_url', postId, 'medium_large')|default('') %}
+    {% endif %}
+  {% endif %}
+  {% if not img and theme.buildUri|default('') %}
+    {% set img = theme.buildUri ~ '/img/blog1.png' %}
+  {% endif %}
+  {% if img %}
+    {% set alt = '' %}
+    {% if post.thumbnail and post.thumbnail.alt %}
+      {% set alt = post.thumbnail.alt %}
+    {% else %}
+      {% set alt = post.title %}
+    {% endif %}
+    <img src="{{ img|e('esc_url') }}" alt="{{ alt|e }}" loading="lazy" />
+  {% endif %}
+{% endmacro %}
+{% import _self as blogs_home %}
+
 {% if not (options.hidden|default(0)) %}
 <nsc-software-component name="NSCBlockBlogsHome">
   <section class="blogs no-padding-top">
@@ -25,9 +51,9 @@
           {% if featuredPosts|length > 0 %}
             {% set mainFeatured = featuredPosts[0] %}
             <div class="content">
-              {% if mainFeatured.thumbnail.src %}
-                <img src="{{ mainFeatured.thumbnail.src|e('esc_url') }}" alt="{{ mainFeatured.thumbnail.alt|default(mainFeatured.title)|e }}" loading="lazy" />
-              {% endif %}
+              <div class="post-image">
+                {{ blogs_home.post_image(mainFeatured, theme) }}
+              </div>
               <h2><a href="{{ mainFeatured.link|e('esc_url') }}">{{ mainFeatured.title|e }}</a></h2>
               <a href="{{ mainFeatured.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
                 <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
@@ -38,12 +64,10 @@
         </div>
         {% if featuredPosts|length > 1 %}
           <div class="items">
-            {% for post in featuredPosts|slice(1, 3) %}
+            {% for post in featuredPosts|slice(1) %}
               <div class="item">
                 <div class="thumbnail">
-                  {% if post.thumbnail.src %}
-                    <img src="{{ post.thumbnail.src|e('esc_url') }}" alt="{{ post.thumbnail.alt|default(post.title)|e }}" loading="lazy" />
-                  {% endif %}
+                  {{ blogs_home.post_image(post, theme) }}
                 </div>
                 <div class="content-wrapper">
                   <h2><a href="{{ post.link|e('esc_url') }}">{{ post.title|e }}</a></h2>
@@ -67,9 +91,9 @@
           {% if latestPosts|length > 0 %}
             {% set mainLatest = latestPosts[0] %}
             <div class="content">
-              {% if mainLatest.thumbnail.src %}
-                <img src="{{ mainLatest.thumbnail.src|e('esc_url') }}" alt="{{ mainLatest.thumbnail.alt|default(mainLatest.title)|e }}" loading="lazy" />
-              {% endif %}
+              <div class="post-image">
+                {{ blogs_home.post_image(mainLatest, theme) }}
+              </div>
               <h2><a href="{{ mainLatest.link|e('esc_url') }}">{{ mainLatest.title|e }}</a></h2>
               <a href="{{ mainLatest.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
                 <svg xmlns="http://www.w3.org/2000/svg" width="6" height="10" viewBox="0 0 6 10" fill="none">
@@ -80,12 +104,10 @@
         </div>
         {% if latestPosts|length > 1 %}
           <div class="items">
-            {% for post in latestPosts|slice(1, 3) %}
+            {% for post in latestPosts|slice(1) %}
               <div class="item">
                 <div class="thumbnail">
-                  {% if post.thumbnail.src %}
-                    <img src="{{ post.thumbnail.src|e('esc_url') }}" alt="{{ post.thumbnail.alt|default(post.title)|e }}" loading="lazy" />
-                  {% endif %}
+                  {{ blogs_home.post_image(post, theme) }}
                 </div>
                 <div class="content-wrapper">
                   <h2><a href="{{ post.link|e('esc_url') }}">{{ post.title|e }}</a></h2>

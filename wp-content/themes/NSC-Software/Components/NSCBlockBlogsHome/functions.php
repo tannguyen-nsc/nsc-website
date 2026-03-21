@@ -12,7 +12,12 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsHome', function ($dat
     $currentPostId = get_the_ID();
     $excludeCurrent = $currentPostId ? [$currentPostId] : [];
 
-    // Featured Insights: from selected category or first 4 posts if no category
+    $opts = isset($data['options']) && is_array($data['options']) ? $data['options'] : [];
+    $rawHomeLimit = $opts['homeBlogPostsLimit'] ?? null;
+    $postsLimit = ($rawHomeLimit === null || $rawHomeLimit === '') ? 4 : (int) $rawHomeLimit;
+    $postsLimit = max(1, min(24, $postsLimit));
+
+    // Featured Insights: from selected category or latest posts if no category
     $featuredCategoryIds = [];
     if (!empty($data['featuredCategory'])) {
         $raw = $data['featuredCategory'];
@@ -28,7 +33,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsHome', function ($dat
     $featuredArgs = [
         'post_status' => 'publish',
         'post_type' => POST_TYPE,
-        'posts_per_page' => 4,
+        'posts_per_page' => $postsLimit,
         'ignore_sticky_posts' => 1,
         'post__not_in' => $excludeCurrent,
     ];
@@ -38,14 +43,14 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsHome', function ($dat
     $featuredPosts = Timber::get_posts($featuredArgs);
     $data['featuredPosts'] = $featuredPosts->to_array();
 
-    // Latest Updates: exclude featured post IDs, get 4 most recent
+    // Latest Updates: exclude featured post IDs, get N most recent
     $excludeIds = array_merge($excludeCurrent, array_map(function ($p) {
         return $p->ID;
     }, $data['featuredPosts']));
     $latestArgs = [
         'post_status' => 'publish',
         'post_type' => POST_TYPE,
-        'posts_per_page' => 4,
+        'posts_per_page' => $postsLimit,
         'ignore_sticky_posts' => 1,
         'post__not_in' => $excludeIds,
     ];
@@ -218,6 +223,7 @@ function getACFLayout()
                 'type' => 'group',
                 'layout' => 'row',
                 'sub_fields' => [
+                    FieldVariables\getBlogHomePostsLimitField(),
                     FieldVariables\getHidden(),
                 ],
             ],

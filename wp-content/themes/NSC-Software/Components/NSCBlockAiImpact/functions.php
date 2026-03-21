@@ -41,6 +41,7 @@ function getACFLayout()
                 'name' => 'items',
                 'type' => 'repeater',
                 'min' => 1,
+                'max' => 30,
                 'layout' => 'block',
                 'sub_fields' => [
                     [
@@ -73,6 +74,7 @@ function getACFLayout()
                 'type' => 'group',
                 'layout' => 'row',
                 'sub_fields' => [
+                    FieldVariables\getRepeaterItemLimitField(4),
                     FieldVariables\getHidden(),
                 ],
             ],

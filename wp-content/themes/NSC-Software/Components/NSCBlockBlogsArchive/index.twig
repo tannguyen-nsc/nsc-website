@@ -51,7 +51,7 @@
             {% if featuredPosts|length > 1 %}
               <div class="col featured-sidebar">
                 <div class="sidebar-items">
-                  {% for post in featuredPosts|slice(1, 3) %}
+                  {% for post in featuredPosts|slice(1) %}
                     <div class="sidebar-item">
                       <div class="item-thumbnail">
                         {% set sideImg = '' %}

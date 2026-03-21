@@ -35,10 +35,17 @@
           }
           
           .content {
-            @apply p-6 border-t border-[#E5E5E5] ;
-            
-            img {
-              @apply w-full h-48 sm:h-auto object-cover mb-4;
+            @apply p-6 border-t border-[#E5E5E5];
+
+            // Match blog archive / static build: fixed frame; WP featured images vary in ratio/size
+            .post-image {
+              @apply relative w-full mb-4 lg:mb-6 overflow-hidden bg-[#f0f0f0];
+              @apply aspect-[16/10] sm:aspect-[16/9] lg:aspect-[16/9];
+              @apply max-h-[230px] sm:max-h-[240px] md:max-h-[280px] lg:max-h-[320px] xl:max-h-[360px];
+
+              img {
+                @apply block h-full w-full object-cover object-center;
+              }
             }
             
             h2 {
@@ -75,10 +82,10 @@
             align-items: stretch;
             
             .thumbnail {
-              @apply flex-shrink-0 w-[120px] h-[120px];
-              
+              @apply flex-shrink-0 w-[120px] h-[120px] lg:w-[160px] lg:h-[160px] overflow-hidden bg-[#f0f0f0];
+
               img {
-                @apply w-full h-full object-cover;
+                @apply w-full h-full object-cover object-center;
               }
             }
             

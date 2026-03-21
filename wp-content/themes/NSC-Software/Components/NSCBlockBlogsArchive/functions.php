@@ -229,12 +229,13 @@ function build_vue_blog_items(string $placeholderImageUrl): array
 /**
  * @return list<Post>
  */
-function get_featured_posts_for_archive(): array
+function get_featured_posts_for_archive(int $limit = 4): array
 {
+    $limit = max(1, min(24, $limit));
     $q = [
         'post_type' => POST_TYPE,
         'post_status' => 'publish',
-        'posts_per_page' => 4,
+        'posts_per_page' => $limit,
         'ignore_sticky_posts' => 1,
         'orderby' => 'date',
         'order' => 'DESC',
@@ -258,7 +259,7 @@ function get_featured_posts_for_archive(): array
     $fallback = Timber::get_posts([
         'post_type' => POST_TYPE,
         'post_status' => 'publish',
-        'posts_per_page' => 4,
+        'posts_per_page' => $limit,
         'ignore_sticky_posts' => 1,
         'orderby' => 'date',
         'order' => 'DESC',
@@ -275,6 +276,14 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($
     $buildUri = trailingslashit(get_template_directory_uri()) . 'frontend/build';
     $data['buildUri'] = $buildUri;
     $placeholderImage = $buildUri . 'img/blog1.png';
+
+    $opts = isset($data['options']) && is_array($data['options']) ? $data['options'] : [];
+    $rawFeaturedLimit = $opts['featuredPostsLimit'] ?? null;
+    $featuredLimit = ($rawFeaturedLimit === null || $rawFeaturedLimit === '') ? 4 : (int) $rawFeaturedLimit;
+    $featuredLimit = max(1, min(24, $featuredLimit));
+    $rawBlogListPerPage = $opts['blogListPerPage'] ?? null;
+    $blogListPerPage = ($rawBlogListPerPage === null || $rawBlogListPerPage === '') ? 6 : (int) $rawBlogListPerPage;
+    $blogListPerPage = max(1, min(48, $blogListPerPage));
 
     $listLabels = normalize_archive_list_labels(
         is_array($data['listLabels'] ?? null) ? $data['listLabels'] : []
@@ -309,7 +318,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($
     $vuePayload = [
         'blogs' => $vueBlogs,
         'filters' => $filterDefs,
-        'perPage' => 6,
+        'perPage' => $blogListPerPage,
         'labels' => [
             'searchPlaceholder' => $listLabels['searchPlaceholder'],
             'searchResultSingular' => $listLabels['searchResultSingular'],
@@ -331,7 +340,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($
             [
                 'blogs' => [],
                 'filters' => [['id' => 'all', 'label' => __('All Categories', 'NscSoftware')]],
-                'perPage' => 6,
+                'perPage' => $blogListPerPage,
                 'labels' => [
                     'empty' => __('No blog found.', 'NscSoftware'),
                 ],
@@ -339,7 +348,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($
             JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE
         );
 
-    $featuredTimber = get_featured_posts_for_archive();
+    $featuredTimber = get_featured_posts_for_archive($featuredLimit);
     $data['featuredPosts'] = $featuredTimber;
 
     $data['posts'] = [];
@@ -396,16 +405,10 @@ function getACFLayout()
                 'instructions' => __('Optional. Not shown in the archive layout (matches static blogs build). Use the Hero block above for intro text.', 'NscSoftware'),
             ],
             [
-                'label' => __('Labels', 'NscSoftware'),
-                'name' => 'labelsTab',
-                'type' => 'tab',
-                'placement' => 'top',
-                'endpoint' => 0,
-            ],
-            [
                 'label' => __('Blog list & filters', 'NscSoftware'),
                 'name' => 'listLabels',
                 'type' => 'group',
+                'instructions' => __('Labels for the searchable blog list, filters, and pagination.', 'NscSoftware'),
                 'sub_fields' => [
                     [
                         'label' => __('Blogs list heading', 'NscSoftware'),
@@ -474,20 +477,13 @@ function getACFLayout()
                 'endpoint' => 0,
             ],
             [
-                'label' => __('Posts per page (legacy)', 'NscSoftware'),
-                'name' => 'postsPerPage',
-                'type' => 'number',
-                'default_value' => 12,
-                'min' => 1,
-                'max' => 100,
-                'instructions' => __('The archive list uses Vue with data from WordPress posts (up to ' . VUE_POSTS_MAX . '). This field is kept for compatibility.', 'NscSoftware'),
-            ],
-            [
                 'label' => '',
                 'name' => 'options',
                 'type' => 'group',
                 'layout' => 'row',
                 'sub_fields' => [
+                    FieldVariables\getArchiveFeaturedPostsLimitField(),
+                    FieldVariables\getArchiveBlogListPerPageField(),
                     FieldVariables\getHidden(),
                 ],
             ],

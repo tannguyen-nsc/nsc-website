@@ -84,3 +84,69 @@ function getTextAlignment($args = [])
         'default_value' => $options['default']
     ];
 }
+
+/**
+ * Options tab: max rows from the Content repeater to output on the front (first N).
+ *
+ * @return array<string, mixed>
+ */
+function getRepeaterItemLimitField(int $default = 4, int $min = 1, int $max = 30)
+{
+    return [
+        'label' => __('Max items (content repeater)', 'NscSoftware'),
+        'name' => 'repeaterItemLimit',
+        'type' => 'number',
+        'default_value' => $default,
+        'min' => $min,
+        'max' => $max,
+        'instructions' => __('Only the first this many repeater rows are shown. You can add more rows in the editor (up to the row limit) if needed.', 'NscSoftware'),
+    ];
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function getBlogHomePostsLimitField()
+{
+    return [
+        'label' => __('Max posts (Featured & Latest)', 'NscSoftware'),
+        'name' => 'homeBlogPostsLimit',
+        'type' => 'number',
+        'default_value' => 4,
+        'min' => 1,
+        'max' => 24,
+        'instructions' => __('Applies to both Featured Insights and Latest Updates lists.', 'NscSoftware'),
+    ];
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function getArchiveFeaturedPostsLimitField()
+{
+    return [
+        'label' => __('Max featured posts', 'NscSoftware'),
+        'name' => 'featuredPostsLimit',
+        'type' => 'number',
+        'default_value' => 4,
+        'min' => 1,
+        'max' => 24,
+        'instructions' => __('Number of posts in the Featured area (1 large + rest in sidebar).', 'NscSoftware'),
+    ];
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function getArchiveBlogListPerPageField()
+{
+    return [
+        'label' => __('Blog list: posts per page', 'NscSoftware'),
+        'name' => 'blogListPerPage',
+        'type' => 'number',
+        'default_value' => 6,
+        'min' => 1,
+        'max' => 48,
+        'instructions' => __('Used by the searchable blog list (Vue pagination).', 'NscSoftware'),
+    ];
+}
