@@ -128,7 +128,7 @@
       @apply xl:w-[55%] xl:mr-0 xl:pl-4 xl:pr-12 2xl:pr-20 text-black;
 
       .description {
-        @apply px-0 text-justify;
+        @apply px-4 lg:px-0 text-justify;
       }
 
       .buttons {

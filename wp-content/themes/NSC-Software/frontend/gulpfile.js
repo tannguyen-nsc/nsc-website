@@ -13,6 +13,8 @@
 */
 
 const { src, dest, watch, series, parallel } = require("gulp");
+const fs = require("fs");
+const path = require("path");
 const clean = require("gulp-clean"); //For Cleaning build/dist for fresh export
 const options = require("./config"); //paths and other options from config.js
 const browserSync = require("browser-sync").create();
@@ -221,6 +223,43 @@ function prodClean() {
   );
 }
 
+/**
+ * Build version only: set base URL to home.html so Home menu is correct for both index and home.
+ * - Replaces href="./" with href="home.html" in all built HTML (desktop and mobile home links).
+ * - Copies index.html to home.html so both index.html and home.html serve as the home page;
+ *   both files have the Home menu item active (desktop and mobile) when viewed.
+ */
+function prodBuildBaseUrl(done) {
+  const buildBase = path.resolve(options.paths.build.base);
+  const BUILD_HOME = "home.html";
+  const homeHref = 'href="home.html"';
+  const rootHref = 'href="./"';
+
+  if (!fs.existsSync(buildBase)) {
+    done();
+    return;
+  }
+  const files = fs.readdirSync(buildBase).filter((f) => f.endsWith(".html"));
+  for (const file of files) {
+    const filePath = path.join(buildBase, file);
+    let content = fs.readFileSync(filePath, "utf8");
+    if (content.includes(rootHref)) {
+      content = content.split(rootHref).join(homeHref);
+      fs.writeFileSync(filePath, content, "utf8");
+    }
+  }
+  const indexPath = path.join(buildBase, "index.html");
+  const homePath = path.join(buildBase, BUILD_HOME);
+  if (fs.existsSync(indexPath)) {
+    fs.copyFileSync(indexPath, homePath);
+  }
+  console.log(
+    "\n\t" + logSymbols.info,
+    `Build base URL set to ${BUILD_HOME} (all home links point to home.html; index.html and ${BUILD_HOME} both act as home with Home menu active).\n`
+  );
+  done();
+}
+
 function buildFinish(done) {
   console.log(
     "\n\t" + logSymbols.info,
@@ -247,5 +286,6 @@ exports.prod = series(
     prodFonts,
     prodThirdParty
   ), //Run All tasks in parallel
+  prodBuildBaseUrl, // Build version only: home links → home.html, copy index.html → home.html
   buildFinish
 );

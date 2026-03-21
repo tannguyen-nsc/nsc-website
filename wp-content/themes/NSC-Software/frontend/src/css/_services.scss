@@ -123,27 +123,35 @@
         }
         
         &:first-child {
-          @apply w-full flex-[0_0_100%] lg:justify-between max-w-full bg-transparent border-0 lg:w-full lg:max-w-full lg:bg-white lg:border self-stretch xl:min-h-[250px] 2xl:min-h-[240px];
+          @apply w-full flex-[0_0_100%] lg:justify-between max-w-full bg-transparent border-0 lg:w-full lg:max-w-full lg:bg-white self-stretch xl:min-h-[250px] 2xl:min-h-[240px];
           
           .description {
             @apply text-center text-black lg:text-left block visible opacity-100 pt-4 text-base 2xl:text-xl font-medium lg:font-semibold ;
           }
 
           .buttons {
-            @apply text-left;
+            @apply text-left m-auto mt-4 lg:ml-0 lg:pl-0 lg:pb-0 lg:mb-0;
             .btn {
-              @apply text-primary m-auto mt-4 lg:ml-0 lg:pl-0 lg:pb-0 lg:my-0 border-transparent bg-transparent;
+              @apply text-white hover:text-primary;
               svg {
                 &.right {
-                  @apply hidden lg:block;
+                  @apply block;
                 }
   
                 &.down {
-                  @apply block lg:hidden;
+                  @apply hidden;
                 }
   
                 path {
-                  @apply fill-primary stroke-primary;
+                  @apply fill-white;
+                }
+              }
+
+              &:hover {
+                svg {
+                  path {
+                    @apply fill-primary;
+                  }
                 }
               }
             }

@@ -34,6 +34,7 @@
     "build": "gulp prod",
     "prod": "gulp prod",
     "sync": "node scripts/sync-build-to-theme.js",
+    "sync:theme-dir": "node scripts/sync-frontend-dir-to-theme.js",
     "build:sync": "npm run build && node scripts/sync-build-to-theme.js",
     "deploy": "node ../scripts/deploy.js"
   },
