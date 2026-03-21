@@ -17,8 +17,9 @@
       }
     }
     
+    // Match .blog-list-details: clear gap above Featured / Latest columns
     .blogs-wrapper {
-      @apply grid grid-cols-1 lg:grid-cols-2 pb-8 lg:pb-12;
+      @apply mt-12 lg:mt-16 grid grid-cols-1 lg:grid-cols-2 pb-8 lg:pb-12;
       
       .col {
         @apply flex flex-col border border-[#E5E5E5] bg-[#F9F9FB];
@@ -35,11 +36,12 @@
           }
           
           .content {
-            @apply p-6 border-t border-[#E5E5E5];
+            // flex + gap: spacing above main article title (h2) won’t collapse like margins
+            @apply flex flex-col gap-5 lg:gap-7 p-6 border-t border-[#E5E5E5];
 
             // Match blog archive / static build: fixed frame; WP featured images vary in ratio/size
             .post-image {
-              @apply relative w-full mb-4 lg:mb-6 overflow-hidden bg-[#f0f0f0];
+              @apply relative w-full overflow-hidden bg-[#f0f0f0];
               @apply aspect-[16/10] sm:aspect-[16/9] lg:aspect-[16/9];
               @apply max-h-[230px] sm:max-h-[240px] md:max-h-[280px] lg:max-h-[320px] xl:max-h-[360px];
 
@@ -49,7 +51,7 @@
             }
             
             h2 {
-              @apply text-base lg:text-lg font-semibold lg:font-medium  text-black mb-4;
+              @apply text-base lg:text-lg font-semibold lg:font-medium text-black m-0;
               
               a {
                 @apply text-black hover:text-primary transition-colors duration-300;
