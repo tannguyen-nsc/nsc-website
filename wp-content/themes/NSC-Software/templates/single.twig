@@ -1,90 +1,175 @@
 {% extends 'templates/_document.twig' %}
 
 {% block content %}
-  {% set featured = post.meta('nsc_featured_article') %}
   {% set related_heading = post.meta('nsc_related_heading')|default('Related content') %}
   {% set related_links = post.meta('nsc_related_links') %}
   {% set author = blog_single|default({}) %}
   {% set avatar = author.aboutAuthorAvatar|default(null) %}
   {% set author_content = author.aboutAuthorContent|default('') %}
   {% set author_link = author.aboutAuthorLink|default({}) %}
+  {% set about_author_heading = (author.aboutAuthorHeading|default(''))|trim ?: __('About the author', 'NscSoftware') %}
+  {% set share_article_label = (author.shareArticleLabel|default(''))|trim ?: __('Share article:', 'NscSoftware') %}
+  {% set read_sfx_one = (author.readingTimeSuffixSingular|default(''))|trim ?: __('min read', 'NscSoftware') %}
+  {% set read_sfx_many = (author.readingTimeSuffixPlural|default(''))|trim ?: __('mins read', 'NscSoftware') %}
+  {% set read_suffix = reading_minutes_display == 1 ? read_sfx_one : read_sfx_many %}
 
-  <section class="blog-list-details blog-single"{% if theme.buildUri %} style="background-image:url('{{ theme.buildUri }}/img/blogs-bg-details.png');"{% endif %}>
-    <div class="heading">
-      {% if theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="" loading="lazy" />
-      {% endif %}
-      <h2>{{ __('BLOG', 'NscSoftware')|e }}</h2>
-    </div>
+  <section class="blog-details blog-list-details blog-single"{% if theme.buildUri %} style="background-image:url('{{ theme.buildUri|e('esc_url') }}/img/blogs-bg-details.png');"{% endif %} aria-label="{{ __('Blog article', 'NscSoftware')|e }}">
     <div class="wrapper">
-      <div class="blogs-wrapper">
-        <div class="featured-content blog-single__grid">
-          <div class="col featured-main blog-single__main">
-            {% if featured %}
-              <div class="featured-header blog-single__featured-badge">
-                <svg width="33" height="33" viewBox="0 0 33 33" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M16.6816 0.00732422C17.0465 0.0371221 17.3983 0.156317 17.707 0.353027L17.8579 0.457031L18 0.574219C18.318 0.85919 18.5492 1.22988 18.665 1.64355L21.0454 10.8765C21.1124 11.1358 21.2471 11.3726 21.4365 11.562C21.6259 11.7513 21.8628 11.8862 22.1221 11.9531L31.3242 14.3247L31.5249 14.3877C31.8694 14.5139 32.1774 14.7229 32.4229 14.9956L32.647 15.2886C32.8774 15.6492 33.0014 16.0695 33.0015 16.5C33.0015 16.9924 32.8398 17.472 32.5415 17.8638C32.2431 18.2556 31.8239 18.5385 31.3491 18.6694L22.1221 21.0469C21.8626 21.1139 21.626 21.25 21.4365 21.4395C21.2474 21.6287 21.111 21.8645 21.0439 22.1235L18.6724 31.3271C18.5312 31.8293 18.2477 32.2462 17.8564 32.543C17.4653 32.8397 16.9881 33.0014 16.4971 33.0015C16.0061 33.0015 15.5289 32.8396 15.1377 32.543C14.7465 32.2462 14.4629 31.8293 14.3306 31.3564L11.9502 22.125C11.8832 21.8656 11.7485 21.6289 11.5591 21.4395C11.3696 21.25 11.1329 21.1139 10.8735 21.0469L1.67139 18.6738C1.06295 18.4587 0.713885 18.1983 0.455566 17.8564C0.160381 17.4658 0 16.9896 0 16.5C8.11703e-05 16.0105 0.160456 15.5341 0.455566 15.1436C0.750728 14.7532 1.16543 14.4701 1.63623 14.3364L10.8735 11.9517C11.1328 11.8847 11.3696 11.7498 11.5591 11.5605C11.7482 11.3716 11.883 11.1352 11.9502 10.8765L14.3232 1.67285C14.4644 1.17075 14.748 0.753765 15.1392 0.457031C15.6489 0.123181 16.0686 0 16.4985 0L16.6816 0.00732422Z" fill="#36C3DC"/>
-                </svg>
-                <h3>{{ __('Featured', 'NscSoftware')|e }}</h3>
-              </div>
+      <div class="blog-details__top">
+        <article class="blog-details__main">
+          <nav class="blog-details__breadcrumbs" aria-label="{{ __('Breadcrumb', 'NscSoftware')|e }}">
+            <a href="{{ home_url|e('esc_url') }}">{{ __('Home', 'NscSoftware')|e }}</a>
+            <span class="blog-details__bc-sep" aria-hidden="true">&gt;</span>
+            <a href="{{ blog_archive_url|e('esc_url') }}">{{ __('Blog', 'NscSoftware')|e }}</a>
+            <span class="blog-details__bc-sep" aria-hidden="true">&gt;</span>
+            {% if primary_category %}
+              <span class="blog-details__bc-current">{{ primary_category.name|e }}</span>
+            {% else %}
+              <span class="blog-details__bc-current">{{ __('Article', 'NscSoftware')|e }}</span>
             {% endif %}
-            <article class="blog-single__article wp-block-post-content">
-              <header class="blog-single__header">
-                <h1 class="blog-single__title">{{ post.title|e }}</h1>
-                {% if post.date %}
-                  <time class="blog-single__date" datetime="{{ post.date('c') }}">{{ post.date }}</time>
-                {% endif %}
-              </header>
-              <div class="blog-single__body">
-                {{ post.content }}
-              </div>
-            </article>
-          </div>
-          <aside class="col featured-sidebar blog-single__sidebar">
-            {% if related_links is iterable and related_links|length > 0 %}
-              <div class="sidebar-section blog-single__related">
-                <h3 class="blog-single__sidebar-title">{{ related_heading|e }}</h3>
-                <ul class="blog-single__related-list">
-                  {% for row in related_links %}
-                    {% set url = row.linkUrl|default(row.link_url|default('')) %}
-                    {% set rlabel = row.linkLabel|default(row.link_label|default('')) %}
-                    {% if url %}
-                      <li>
-                        <a href="{{ url|e('esc_url') }}" class="blog-single__related-link"{% if row.openInNewTab|default(row.open_in_new_tab|default(0)) %} target="_blank" rel="noopener noreferrer"{% endif %}>
-                          {{ (rlabel ?: url)|e }}
-                        </a>
-                      </li>
-                    {% endif %}
-                  {% endfor %}
-                </ul>
-              </div>
-            {% endif %}
+          </nav>
 
-            {% if avatar and (avatar.url or avatar.src) or author_content or author_link.linkUrl|default('') %}
-              <div class="sidebar-section blog-single__about-author">
-                <h3 class="blog-single__sidebar-title">{{ __('About the author', 'NscSoftware')|e }}</h3>
-                {% if avatar and (avatar.url or avatar.src) %}
-                  <div class="blog-single__author-avatar">
-                    <img src="{{ (avatar.url|default(avatar.src))|e('esc_url') }}" alt="{{ (avatar.alt|default(''))|e }}" loading="lazy" width="80" height="80" />
-                  </div>
-                {% endif %}
-                {% if author_content %}
-                  <div class="blog-single__author-content">{{ author_content|raw }}</div>
-                {% endif %}
-                {% set alUrl = author_link.linkUrl|default(author_link.link_url|default('')) %}
-                {% if alUrl %}
-                  <a href="{{ alUrl|e('esc_url') }}" class="read-more blog-single__author-link"{% if author_link.openInNewTab|default(author_link.open_in_new_tab|default(0)) %} target="_blank" rel="noopener noreferrer"{% endif %}>
-                    {{ author_link.linkLabel|default(author_link.link_label|default(__('View profile', 'NscSoftware')))|e }}
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </a>
-                {% endif %}
+          <h1 class="blog-details__title">{{ post.title|e }}</h1>
+
+          <p class="blog-details__meta">
+            {% if post.date %}
+              <time datetime="{{ post.date('c') }}">{{ post.date|e }}</time>
+            {% endif %}
+            <span class="blog-details__meta-sep" aria-hidden="true">|</span>
+            {% if primary_category %}
+              <span>{{ primary_category.name|e }}</span>
+            {% else %}
+              <span>{{ __('Uncategorized', 'NscSoftware')|e }}</span>
+            {% endif %}
+            <span class="blog-details__meta-sep" aria-hidden="true">|</span>
+            <span class="blog-details__meta-read" data-post-id="{{ post.id }}" data-estimate="{{ reading_minutes_display }}" data-min-read-suffix-singular="{{ read_sfx_one|e('html_attr') }}" data-min-read-suffix-plural="{{ read_sfx_many|e('html_attr') }}">{{ reading_minutes_display }} {{ read_suffix|e }}</span>
+          </p>
+
+          <div class="blog-details__body wp-block-post-content">
+            {{ post.content }}
+          </div>
+
+          <footer class="blog-details__article-footer">
+            {% if post_tags is iterable and post_tags|length > 0 %}
+              <div class="blog-details__tags blog-details__tags--plain">
+                {% for tag in post_tags %}
+                  <span class="blog-details__tag blog-details__tag--text">#{{ tag.name|e }}</span>
+                {% endfor %}
               </div>
             {% endif %}
-          </aside>
-        </div>
+            <div class="blog-details__share">
+              <span class="blog-details__share-label">{{ share_article_label|e }}</span>
+              <div class="blog-details__share-icons">
+                <a href="#" class="blog-details__share-btn" data-blog-share="facebook" aria-label="{{ __('Share on Facebook', 'NscSoftware')|e }}" target="_blank" rel="noopener noreferrer">
+                  <svg width="24" height="24" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M19.5 10.5C19.5 9.70435 19.8163 8.94151 20.3789 8.37891C20.9415 7.8163 21.7043 7.5 22.5 7.5H25.5V4.5H22.5C20.9087 4.5 19.383 5.13259 18.2578 6.25781C17.1326 7.38303 16.5 8.9087 16.5 10.5V15C16.5 15.8284 15.8284 16.5 15 16.5H12V19.5H15C15.8284 19.5 16.5 20.1716 16.5 21V31.5H19.5V21C19.5 20.1716 20.1716 19.5 21 19.5H24.3296L25.0796 16.5H21C20.1716 16.5 19.5 15.8284 19.5 15V10.5ZM22.5 13.5H27C27.4619 13.5 27.8979 13.7131 28.1821 14.0771C28.4663 14.4411 28.5665 14.9153 28.4546 15.3633L26.9546 21.3633C26.7877 22.031 26.1883 22.5 25.5 22.5H22.5V33C22.5 33.8284 21.8284 34.5 21 34.5H15C14.1716 34.5 13.5 33.8284 13.5 33V22.5H10.5C9.67157 22.5 9 21.8284 9 21V15C9 14.1716 9.67157 13.5 10.5 13.5H13.5V10.5C13.5 8.11305 14.4489 5.82455 16.1367 4.13672C17.8245 2.44889 20.1131 1.5 22.5 1.5H27C27.8284 1.5 28.5 2.17157 28.5 3V9C28.5 9.82843 27.8284 10.5 27 10.5H22.5V13.5Z" fill="currentColor"/>
+                  </svg>
+                </a>
+                <a href="#" class="blog-details__share-btn" data-blog-share="linkedin" aria-label="{{ __('Share on LinkedIn', 'NscSoftware')|e }}" target="_blank" rel="noopener noreferrer">
+                  <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M9 12C9.82843 12 10.5 12.6716 10.5 13.5V31.5C10.5 32.3284 9.82843 33 9 33H3C2.17157 33 1.5 32.3284 1.5 31.5V13.5C1.5 12.6716 2.17157 12 3 12H9ZM31.5 21C31.5 19.0109 30.7093 17.1038 29.3027 15.6973C27.8962 14.2907 25.9891 13.5 24 13.5C22.0109 13.5 20.1038 14.2907 18.6973 15.6973C17.2907 17.1038 16.5 19.0109 16.5 21V30H19.5V21C19.5 19.8065 19.9744 18.6623 20.8184 17.8184C21.6623 16.9744 22.8065 16.5 24 16.5C25.1935 16.5 26.3377 16.9744 27.1816 17.8184C28.0256 18.6623 28.5 19.8065 28.5 21V30H31.5V21ZM4.5 30H7.5V15H4.5V30ZM7.5 6C7.5 5.17157 6.82843 4.5 6 4.5C5.17157 4.5 4.5 5.17157 4.5 6C4.5 6.82843 5.17157 7.5 6 7.5C6.82843 7.5 7.5 6.82843 7.5 6ZM34.5 31.5C34.5 32.3284 33.8284 33 33 33H27C26.1716 33 25.5 32.3284 25.5 31.5V21C25.5 20.6022 25.3419 20.2208 25.0605 19.9395C24.7792 19.6581 24.3978 19.5 24 19.5C23.6022 19.5 23.2208 19.6581 22.9395 19.9395C22.6581 20.2208 22.5 20.6022 22.5 21V31.5C22.5 32.3284 21.8284 33 21 33H15C14.1716 33 13.5 32.3284 13.5 31.5V21C13.5 18.2152 14.6056 15.5438 16.5747 13.5747C18.5438 11.6056 21.2152 10.5 24 10.5C26.7848 10.5 29.4562 11.6056 31.4253 13.5747C33.3944 15.5438 34.5 18.2152 34.5 21V31.5ZM10.5 6C10.5 8.48528 8.48528 10.5 6 10.5C3.51472 10.5 1.5 8.48528 1.5 6C1.5 3.51472 3.51472 1.5 6 1.5C8.48528 1.5 10.5 3.51472 10.5 6Z" fill="currentColor"/>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </footer>
+        </article>
+
+        <aside class="blog-details__sidebar" aria-label="{{ __('Sidebar', 'NscSoftware')|e }}">
+          {% if avatar and (avatar.url or avatar.src) or author_content or author_link.linkUrl|default('') %}
+            <div class="blog-details__author-section mb-6 lg:mb-8">
+              <h2 class="blog-details__author-heading">{{ about_author_heading|e }}</h2>
+              <div class="blog-details__card blog-details__author">
+                <div class="blog-details__author-inner">
+                  {% if avatar and (avatar.url or avatar.src) %}
+                    <div class="blog-details__author-logo-wrap">
+                      <img src="{{ (avatar.url|default(avatar.src))|e('esc_url') }}" alt="{{ (avatar.alt|default(''))|e }}" class="blog-details__author-logo" loading="lazy" width="120" height="120" />
+                    </div>
+                  {% endif %}
+                  {% if author_content %}
+                    <div class="blog-details__author-wysiwyg">{{ author_content|raw }}</div>
+                  {% endif %}
+                  {% set alUrl = author_link.linkUrl|default(author_link.link_url|default('')) %}
+                  {% if alUrl %}
+                    <a href="{{ alUrl|e('esc_url') }}" class="blog-details__text-link"{% if author_link.openInNewTab|default(author_link.open_in_new_tab|default(0)) %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                      {{ author_link.linkLabel|default(author_link.link_label|default(__('View profile', 'NscSoftware')))|e }}
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+
+          {% if related_links is iterable and related_links|length > 0 %}
+            <div class="sidebar-section blog-single__related blog-details__card blog-details__services mb-6 lg:mb-8">
+              <h2 class="blog-details__card-title">{{ related_heading|e }}</h2>
+              <ul class="blog-details__service-list">
+                {% for row in related_links %}
+                  {% set url = row.linkUrl|default(row.link_url|default('')) %}
+                  {% set rlabel = row.linkLabel|default(row.link_label|default('')) %}
+                  {% if url %}
+                    <li>
+                      <a href="{{ url|e('esc_url') }}"{% if row.openInNewTab|default(row.open_in_new_tab|default(0)) %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ (rlabel ?: url)|e }}</a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+
+          {% set connect_title = (author.connectBoxTitle|default(''))|trim %}
+          {% set connect_label = (author.connectBoxButtonLabel|default(''))|trim %}
+          {% set connect_url = (author.connectBoxButtonUrl|default(''))|trim %}
+          {% set connect_bg = author.connectBoxBackground|default(null) %}
+          {% if connect_title != '' or (connect_label != '' and connect_url != '') %}
+            <div class="blog-details__cta blog-single__connect-cta"{% if connect_bg is iterable and (connect_bg.url|default('') != '' or connect_bg.src|default('') != '') %} style="background-image:url('{{ (connect_bg.url|default(connect_bg.src))|e('esc_url') }}');"{% endif %}>
+              {% if connect_title != '' %}
+                <p class="blog-details__cta-title">{{ connect_title|e }}</p>
+              {% endif %}
+              {% if connect_label != '' and connect_url != '' %}
+                <a href="{{ connect_url|e('esc_url') }}" class="blog-details__cta-btn"{% if author.connectBoxOpenNewTab|default(0) %} target="_blank" rel="noopener noreferrer"{% endif %}>
+                  {{ connect_label|e }}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              {% endif %}
+            </div>
+          {% endif %}
+        </aside>
       </div>
+
+      {% if related_blog_posts is iterable and related_blog_posts|length > 0 %}
+        <div class="blog-details__related">
+          <h2 class="blog-details__related-heading">{{ (related_articles_heading|default(__('Related Articles', 'NscSoftware')))|e }}</h2>
+          <div class="blog-details__related-grid">
+            {% for rp in related_blog_posts %}
+              <article class="blog-details__related-card">
+                <a href="{{ rp.link|e('esc_url') }}" class="blog-details__related-img-wrap">
+                  {% if rp.thumbnail %}
+                    <img src="{{ rp.thumbnail.src|e('esc_url') }}" alt="" loading="lazy" />
+                  {% endif %}
+                </a>
+                <div class="blog-details__related-body">
+                  <h3><a href="{{ rp.link|e('esc_url') }}">{{ rp.title|e }}</a></h3>
+                  {% set rex = rp.post_excerpt|default('') %}
+                  {% if rex|trim == '' %}
+                    {% set rex = function('wp_strip_all_tags', rp.content|default('')) %}
+                  {% endif %}
+                  <p>{{ function('wp_trim_words', rex, 26, '…') }}</p>
+                  <a href="{{ rp.link|e('esc_url') }}" class="blog-details__text-link">{{ __('Read More', 'NscSoftware')|e }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+          <div class="blog-details__related-footer">
+            <a href="{{ blog_archive_url|e('esc_url') }}" class="blog-details__text-link blog-details__view-all">{{ __('View All Articles', 'NscSoftware')|e }}
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </section>
 {% endblock %}

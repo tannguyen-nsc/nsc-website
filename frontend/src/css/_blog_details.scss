@@ -1,11 +1,7 @@
-// Standalone blog-details.html: offset content below fixed transparent header (same idea as .default-text-content)
-body.page-blog-details .blog-details {
-  @apply mt-20 lg:mt-14;
-}
 
 // Single blog post (desktop: main + sidebar; mobile: stacked)
 .blog-details {
-  @apply relative flex flex-col items-center bg-white px-4 pb-12 pt-8 lg:pb-16 lg:pt-16;
+  @apply relative flex flex-col items-center bg-white px-4 pb-12 pt-8 lg:pb-16 lg:pt-24;
 
   .wrapper {
     @apply z-10 w-full max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
@@ -75,8 +71,24 @@ body.page-blog-details .blog-details {
     @apply m-0 pt-2 text-xl lg:text-2xl font-bold text-black lg:text-2xl;
   }
 
+  &__h3 {
+    @apply m-0 pt-1 text-lg font-bold text-neutral-900 lg:text-xl;
+  }
+
+  &__divider {
+    @apply my-6 border-0 border-t border-[#E5E5E5] lg:my-8;
+  }
+
+  &__callout {
+    @apply my-6 rounded-md border border-primary/25 bg-[#F4F8FB] px-4 py-3 text-sm font-medium text-neutral-800 lg:my-8 lg:px-5 lg:py-4 lg:text-base;
+  }
+
   &__list {
-    @apply list-disc space-y-2 pl-6 marker:text-primary;
+    @apply list-disc list-inside space-y-2 pl-0 text-left marker:text-black;
+
+    li::marker {
+      font-size: 0.55em;
+    }
   }
 
   &__article-footer {
@@ -89,6 +101,10 @@ body.page-blog-details .blog-details {
 
   &__tag {
     @apply inline-flex items-center rounded-md bg-neutral-100 px-3 py-0.5 text-sm font-medium text-neutral-600 no-underline transition-colors hover:bg-neutral-200;
+  }
+
+  &__tags--plain &__tag--text {
+    @apply cursor-default no-underline hover:bg-neutral-100;
   }
 
   &__share {

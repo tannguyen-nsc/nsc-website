@@ -177,12 +177,11 @@ add_action('template_redirect', function () use ($requiredToken) {
 
     if (function_exists('update_field')) {
         update_field($optionPrefixHeader . 'labels', [
-            'mobileHomeText' => 'Home',
-            'languageLabel'  => 'Language: English',
-            'ariaLabel'      => 'Main navigation',
+            'languageLabel' => 'Language: English',
+            'ariaLabel'     => 'Main navigation',
         ], 'option');
     }
-    $results[] = ['scope' => 'NSCHeader', 'field' => 'Labels', 'status' => 'ok', 'message' => 'mobileHomeText, languageLabel, ariaLabel'];
+    $results[] = ['scope' => 'NSCHeader', 'field' => 'Labels', 'status' => 'ok', 'message' => 'languageLabel, ariaLabel'];
 
     // Blog categories (Technology, Cultures) for archive filters
     $blogCategories = [
@@ -208,29 +207,48 @@ add_action('template_redirect', function () use ($requiredToken) {
     if (function_exists('update_field')) {
         update_field(
             $optionPrefixBlogSingle . 'aboutAuthorContent',
-            '<p><strong>NSC Editorial Team</strong> shares practical insights from our engineering and delivery teams across Vietnam, Australia, Europe, and the US.</p><p>We focus on software quality, AI-enabled delivery, and culture that helps distributed teams ship with confidence.</p>',
+            '<p class="blog-details__author-name">NSC Software Co., LTD</p>'
+            . '<p class="blog-details__author-subtitle">Vietnam\'s Premier Software Development and Consulting Company</p>'
+            . '<p class="blog-details__author-lead">We\'re Vietnam Premier\'s Software Development &amp; Consulting Company</p>'
+            . '<p class="blog-details__author-desc">Combining Vietnam\'s Top 7% IT talents - all senior-level engineers - with AI-enabled delivery, NSC Software helps global enterprises design, build, and scale secure, high-performing, and future-ready software solutions that drive long-term business value.</p>',
             'option'
         );
         update_field(
             $optionPrefixBlogSingle . 'aboutAuthorLink',
             [
-                'linkLabel'    => 'Meet our team',
-                'linkUrl'      => $baseUrl . 'about/',
-                'openInNewTab' => 0,
+                'linkLabel'    => 'LinkedIn Profile',
+                'linkUrl'      => 'https://www.linkedin.com/company/nscsoftware/',
+                'openInNewTab' => 1,
             ],
             'option'
         );
         // Avatar: leave unset in options UI, or set attachment ID if you add media later
         update_field($optionPrefixBlogSingle . 'aboutAuthorAvatar', false, 'option');
+
+        update_field($optionPrefixBlogSingle . 'connectBoxTitle', 'Need an innovative and reliable tech partner?', 'option');
+        update_field($optionPrefixBlogSingle . 'connectBoxButtonLabel', "Let's Connect", 'option');
+        update_field($optionPrefixBlogSingle . 'connectBoxButtonUrl', $baseUrl . 'contact/', 'option');
+        update_field($optionPrefixBlogSingle . 'connectBoxOpenNewTab', 0, 'option');
+        update_field($optionPrefixBlogSingle . 'connectBoxBackground', false, 'option');
+
+        update_field($optionPrefixBlogSingle . 'aboutAuthorHeading', 'About the author', 'option');
+        update_field($optionPrefixBlogSingle . 'shareArticleLabel', 'Share article:', 'option');
+        update_field($optionPrefixBlogSingle . 'readingTimeSuffixSingular', 'min read', 'option');
+        update_field($optionPrefixBlogSingle . 'readingTimeSuffixPlural', 'mins read', 'option');
+
+        update_field($optionPrefixBlogSingle . 'relatedArticlesHeading', 'Related Articles', 'option');
+        update_field($optionPrefixBlogSingle . 'relatedPostsLimit', 3, 'option');
     }
-    $results[] = ['scope' => 'NSCBlogSingle', 'field' => 'About the author', 'status' => 'ok', 'message' => 'content + profile link (avatar empty — upload in NSC Theme Options → Global → Blog)'];
+    $results[] = ['scope' => 'NSCBlogSingle', 'field' => 'About the author', 'status' => 'ok', 'message' => 'content (blog-details-style) + LinkedIn link (avatar empty — Theme Options → Blog)'];
+    $results[] = ['scope' => 'NSCBlogSingle', 'field' => 'Related articles', 'status' => 'ok', 'message' => 'heading + relatedPostsLimit=3 (sidebar links use each post’s Related links field)'];
+    $results[] = ['scope' => 'NSCBlogSingle', 'field' => 'Connect box', 'status' => 'ok', 'message' => 'CTA title, button, URL (optional background in Theme Options → Blog)'];
 
     header('Content-Type: text/html; charset=utf-8');
     echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Global Options</title>';
     echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
     echo '</head><body>';
     echo '<h1>NSC Global Options (Header, Footer & Blog)</h1>';
-    echo '<p>Menus, blog categories (Technology, Cultures), About the author (Blog), and theme options have been set. Edit in WP Admin → NSC Theme Options → Global → NSC Header / NSC Footer / NSC Blog Single (under Blog).</p>';
+    echo '<p>Menus, blog categories (Technology, Cultures), blog single (author, related services, related posts count, connect box), and theme options have been set. Edit in WP Admin → NSC Theme Options → <strong>Global</strong> (Header/Footer) or <strong>Blog</strong> (NSC Blog Single).</p>';
     echo '<table><thead><tr><th>Scope</th><th>Field</th><th>Status</th><th>Details</th></tr></thead><tbody>';
     foreach ($results as $row) {
         $statusClass = $row['status'] === 'error' ? 'error' : 'ok';

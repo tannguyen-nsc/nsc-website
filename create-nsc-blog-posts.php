@@ -350,6 +350,253 @@ function nsc_blog_seed_block_for_index(int $i): array
     ];
 }
 
+/**
+ * Pull quotes aligned with blog-details-style blockquotes (one per index, cycles).
+ */
+function nsc_blog_seed_pull_quotes(): array
+{
+    return [
+        'Building for regulated environments means every design choice is tested against security, auditability, and long-term maintainability—not just feature velocity.',
+        'The teams that win globally invest in thin slices of value, fast feedback loops, and documentation that still makes sense six months later.',
+        'Culture is what people do when nobody is watching the dashboard—how they escalate, how they admit uncertainty, and how they ship fixes.',
+        'AI in delivery is a force multiplier only when humans own the oracles, the sampling strategy, and the story you tell stakeholders.',
+        'Scale is rarely a language problem; it is a boundaries problem between contexts, data ownership, and integration contracts.',
+        'Remote work that lasts protects maker time, measures outcomes instead of hours online, and rotates the cost of late meetings.',
+        'Security left-shifted is cheaper than security as a gate: lightweight checklists beat forty-page PDFs nobody reads.',
+        'Observability is not more logs—it is tying user journeys to service graphs so on-call stops playing telephone.',
+        'Technical debt is a portfolio: some bets buy speed, others mortgage your ability to hire—name the interest rate.',
+        'Great rituals reflect how teams actually win: shipping, learning, and helping a customer breathe easier—not forced cheer.',
+    ];
+}
+
+/**
+ * Tag names for wp_set_post_tags (displayed as plain text on single).
+ *
+ * @return list<string>
+ */
+function nsc_blog_seed_tag_pool(): array
+{
+    return [
+        'Agile', 'AI', 'APIs', 'Cloud', 'Culture', 'Data', 'DevOps', 'Engineering',
+        'FinTech', 'Kubernetes', 'Leadership', 'Microservices', 'NSC', 'Observability',
+        'Quality', 'Remote', 'Security', 'UX', 'Vietnam Tech', 'Delivery', 'Product',
+        'Open Source', 'Documentation', 'Performance', 'Accessibility', 'Mentoring',
+    ];
+}
+
+/**
+ * @return list<string>
+ */
+function nsc_blog_seed_tags_for_post(int $index): array
+{
+    $pool = nsc_blog_seed_tag_pool();
+    $n    = count($pool);
+    $want = 3 + ($index % 3); // 3–5 tags
+    $out  = [];
+    $step = max(1, (int) floor($n / 7));
+    $start = ($index * $step * 3) % $n;
+    for ($t = 0; $t < $want; $t++) {
+        $out[] = $pool[($start + $t * $step) % $n];
+    }
+
+    return array_values(array_unique($out));
+}
+
+/**
+ * Unsigned crc32 for seeded “random” picks (stable per title + variant).
+ */
+function nsc_blog_seed_hash_u(string $s): int
+{
+    return (int) sprintf('%u', crc32($s));
+}
+
+/**
+ * @return int Combined seed for this post’s body randomization.
+ */
+function nsc_blog_seed_body_seed(int $variant, string $title): int
+{
+    return nsc_blog_seed_hash_u($title) ^ ($variant * 2654435761);
+}
+
+function nsc_blog_seed_pick(string $salt, int $seed, int $percent): bool
+{
+    return (nsc_blog_seed_hash_u($salt . '|' . $seed) % 100) < max(0, min(100, $percent));
+}
+
+/**
+ * Fisher–Yates shuffle with deterministic RNG.
+ *
+ * @param list<string> $keys
+ * @return list<string>
+ */
+function nsc_blog_seed_shuffle_keys(array $keys, int $seed): array
+{
+    $a = array_values($keys);
+    $n = count($a);
+    for ($i = $n - 1; $i > 0; $i--) {
+        $j = nsc_blog_seed_hash_u('shuffle|' . $seed . '|' . $i) % ($i + 1);
+        $tmp = $a[$i];
+        $a[$i] = $a[$j];
+        $a[$j] = $tmp;
+    }
+
+    return $a;
+}
+
+/**
+ * @return list<string>
+ */
+function nsc_blog_seed_h3_titles(): array
+{
+    return [
+        'What changed in the last sprint',
+        'Signals we watch in production',
+        'How we run discovery with stakeholders',
+        'Risks we surface early',
+        'A note on tooling choices',
+        'When to simplify the architecture',
+        'Handover checklist we use',
+        'Metrics that actually matter here',
+        'Working agreements that stuck',
+        'Security and compliance touchpoints',
+        'Cost vs speed trade-offs',
+        'What we would do differently next time',
+    ];
+}
+
+/**
+ * Rich HTML: random subset of blocks + random order (seeded by variant + title).
+ * Adds optional h3, divider, second blockquote beyond static blog-details baseline.
+ *
+ * @param list<string> $bullets
+ */
+function nsc_blog_seed_rich_html(
+    int $variant,
+    string $title,
+    string $p1,
+    string $p2,
+    string $p3,
+    array $bullets,
+    string $imgUrl1,
+    string $imgUrl2,
+    string $pullQuote,
+    string $midHeading,
+    string $closingHeading
+): string {
+    $seed = nsc_blog_seed_body_seed($variant, $title);
+    $pick = static function (string $salt, int $pct) use ($seed): bool {
+        return nsc_blog_seed_pick($salt, $seed, $pct);
+    };
+
+    $lead = wp_trim_words($p1, 26, '…');
+
+    $ulItems = array_map(
+        static function (string $t): string {
+            return '<li>' . esc_html($t) . '</li>';
+        },
+        $bullets
+    );
+    $ul = '<ul class="blog-details__list">' . implode('', $ulItems) . '</ul>';
+
+    $ordered = array_slice($bullets, 0, min(3, count($bullets)));
+    $olItems = array_map(
+        static function (string $t): string {
+            return '<li>' . esc_html($t) . '</li>';
+        },
+        $ordered
+    );
+    $ol = '<ol class="blog-details__list">' . implode('', $olItems) . '</ol>';
+
+    $wrapUp = 'If you are planning a similar initiative, start with a thin end-to-end slice, instrument it in production, and expand scope only when telemetry supports the next bet.';
+
+    $quotes = nsc_blog_seed_pull_quotes();
+    $q2 = $quotes[($variant + 3) % count($quotes)];
+    $h3List = nsc_blog_seed_h3_titles();
+    $h3Title = $h3List[nsc_blog_seed_hash_u('h3|' . $title . $seed) % count($h3List)];
+
+    $alt1 = $title . ' — team collaboration';
+    $alt2 = $title . ' — delivery context';
+
+    $parts = [
+        'lead' => '<p class="blog-details__lead">' . esc_html($lead) . '</p>',
+        'p1' => '<p>' . esc_html($p1) . '</p>',
+        'p2' => '<p>' . esc_html($p2) . '</p>',
+        'p3' => '<p>' . esc_html($p3) . '</p>',
+        'fig1' => sprintf(
+            '<figure class="blog-details__figure wp-block-image size-large"><img src="%s" alt="%s" loading="lazy" width="1200" height="675" /></figure>',
+            esc_url($imgUrl1),
+            esc_attr($alt1)
+        ),
+        'fig2' => sprintf(
+            '<figure class="blog-details__figure wp-block-image size-large"><img src="%s" alt="%s" loading="lazy" width="1200" height="675" /></figure>',
+            esc_url($imgUrl2),
+            esc_attr($alt2)
+        ),
+        'quote' => '<blockquote class="blog-details__blockquote"><p>' . esc_html($pullQuote) . '</p></blockquote>',
+        'quote2' => '<blockquote class="blog-details__blockquote"><p>' . esc_html($q2) . '</p></blockquote>',
+        'h2mid' => '<h2 class="blog-details__h2">' . esc_html($midHeading) . '</h2>',
+        'h3' => '<h3 class="blog-details__h3">' . esc_html($h3Title) . '</h3>',
+        'h2close' => '<h2 class="blog-details__h2">' . esc_html($closingHeading) . '</h2>',
+        'ul' => $ul,
+        'ol' => $ol,
+        'p_wrap' => '<p>' . esc_html($wrapUp) . '</p>',
+        'hr' => '<hr class="blog-details__divider" />',
+    ];
+
+    $include = ['p1'];
+    if ($pick('inc_lead', 62)) {
+        $include[] = 'lead';
+    }
+    if ($pick('inc_p2', 78)) {
+        $include[] = 'p2';
+    }
+    if ($pick('inc_p3', 58)) {
+        $include[] = 'p3';
+    }
+    if ($pick('inc_fig1', 64)) {
+        $include[] = 'fig1';
+    }
+    if ($pick('inc_fig2', 42)) {
+        $include[] = 'fig2';
+    }
+    if ($pick('inc_quote', 58)) {
+        $include[] = 'quote';
+    }
+    if ($pick('inc_quote2', 28)) {
+        $include[] = 'quote2';
+    }
+    if ($pick('inc_h2mid', 68)) {
+        $include[] = 'h2mid';
+    }
+    if ($pick('inc_h3', 48)) {
+        $include[] = 'h3';
+    }
+    if ($pick('inc_ul', 60)) {
+        $include[] = 'ul';
+    }
+    if ($pick('inc_ol', 38)) {
+        $include[] = 'ol';
+    }
+    if ($pick('inc_h2close', 55)) {
+        $include[] = 'h2close';
+    }
+    if ($pick('inc_pwrap', 58)) {
+        $include[] = 'p_wrap';
+    }
+    if ($pick('inc_hr', 32)) {
+        $include[] = 'hr';
+    }
+
+    $include = nsc_blog_seed_shuffle_keys($include, $seed);
+
+    $out = '';
+    foreach ($include as $key) {
+        $out .= $parts[$key] ?? '';
+    }
+
+    return $out;
+}
+
 $imageMap     = nscBlogSeedGetImageIds();
 $categories   = nscBlogSeedEnsureCategories();
 $relatedPool  = nscBlogSeedRelatedPool($baseUrl);
@@ -371,29 +618,49 @@ foreach ($titles as $title) {
     ]);
     $postId = !empty($existing) ? (int) $existing[0] : 0;
 
-    $imgFile = $blogFiles[($i * 5 + 2) % count($blogFiles)];
-    $imgUrl  = esc_url($imgUriBase . $imgFile);
+    $imgIdx1 = ($i * 5 + 2) % count($blogFiles);
+    $imgIdx2 = ($imgIdx1 + 3) % count($blogFiles);
+    $imgFile = $blogFiles[$imgIdx1];
+    $imgFile2 = $blogFiles[$imgIdx2];
+    $imgUrl1  = esc_url($imgUriBase . $imgFile);
+    $imgUrl2  = esc_url($imgUriBase . $imgFile2);
 
     $block = nsc_blog_seed_block_for_index($i);
     $p1    = $block['p1'];
     $p2    = $block['p2'];
     $p3    = $block['p3'];
-    $lis   = array_map(
-        static function (string $t): string {
-            return '<li>' . esc_html($t) . '</li>';
-        },
-        $block['bullets']
-    );
-    $ul = '<ul>' . implode('', $lis) . '</ul>';
 
-    $content = sprintf(
-        '<p>%s</p><figure class="wp-block-image"><img src="%s" alt="%s" loading="lazy" /></figure><p>%s</p><h2>Key takeaways</h2><p>%s</p>%s',
-        esc_html($p1),
-        $imgUrl,
-        esc_attr($title),
-        esc_html($p2),
-        esc_html($p3),
-        $ul
+    $quotes   = nsc_blog_seed_pull_quotes();
+    $pullQuote = $quotes[($i - 1) % count($quotes)];
+
+    $midHeadings = [
+        'What we are seeing in practice',
+        'Patterns that hold up in delivery',
+        'How teams reduce risk while moving faster',
+        'From theory to shipped software',
+        'What this means for your next quarter',
+    ];
+    $closeHeadings = [
+        'Key takeaways',
+        'Summary',
+        'Next steps for leaders',
+        'Closing notes',
+    ];
+    $midHeading    = $midHeadings[($i - 1) % count($midHeadings)];
+    $closingHeading = $closeHeadings[($i - 1) % count($closeHeadings)];
+
+    $content = nsc_blog_seed_rich_html(
+        $i,
+        $title,
+        $p1,
+        $p2,
+        $p3,
+        $block['bullets'],
+        $imgUrl1,
+        $imgUrl2,
+        $pullQuote,
+        $midHeading,
+        $closingHeading
     );
 
     // Excerpt: unique per post (list + title context), not the old shared lorem lead.
@@ -435,6 +702,8 @@ foreach ($titles as $title) {
         set_post_thumbnail($postId, $thumbId);
     }
 
+    wp_set_post_tags($postId, nsc_blog_seed_tags_for_post($i), false);
+
     $featured = ($i % 4 === 1) ? 1 : 0;
 
     $start    = ($i * 3) % count($relatedPool);
@@ -464,7 +733,7 @@ header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Blog Posts Seed</title>';
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:1100px}th,td{border:1px solid #ddd;padding:8px;font-size:13px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body><h1>NSC Blog Posts</h1>';
-echo '<p>Seeded or updated ' . count($results) . ' posts. Categories: Technology, Cultures. ACF: featured, related links. Thumbnails from build images when sideload works.</p>';
+echo '<p>Seeded or updated ' . count($results) . ' posts. Categories: Technology, Cultures. Rich HTML body (blog-details-style), tags, ACF featured + related links. Thumbnails from build images when sideload works.</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $cls = $row['status'] === 'error' ? 'error' : 'ok';

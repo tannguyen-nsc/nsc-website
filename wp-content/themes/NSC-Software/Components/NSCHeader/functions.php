@@ -19,6 +19,8 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     $data['menu'] = Timber::get_menu('navigation_main') ?? Timber::get_pages_menu();
     Menu\ensure_menu_item_classes($data['menu']);
     Menu\set_current_ancestor_on_parents($data['menu']);
+    Menu\mark_blog_archive_menu_active($data['menu']);
+    Menu\set_current_ancestor_on_parents($data['menu']);
     $blogName = get_bloginfo('name');
 
     $data['logo'] = [
@@ -109,13 +111,22 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
         $data['headerClass'] = '';
     }
 
-    // Labels (from options); mobile-center shows page title when on a singular page.
-    $data['labels'] = (isset($options['labels']) && is_array($options['labels'])) ? $options['labels'] : [];
-    if (empty($data['labels']['mobileHomeText'])) {
-        $data['labels']['mobileHomeText'] = __('Home', 'NscSoftware');
+    // Blog single: match blog-details layout (transparent bar + white logos on both mobile and desktop).
+    if (is_singular('post')) {
+        $data['headerType'] = 'transparent_floating';
+        $data['headerClass'] = 'transparent-floating';
     }
-    if ($postId && (is_singular() || is_front_page())) {
+
+    // Labels from options (no mobile title field — derived: Blog section → "Blog", singular → title, else Home).
+    $data['labels'] = (isset($options['labels']) && is_array($options['labels'])) ? $options['labels'] : [];
+    if (Menu\is_blog_navigation_context()) {
+        $data['labels']['mobileHomeText'] = __('Blog', 'NscSoftware');
+    } elseif ($postId && is_singular()) {
         $data['labels']['mobileHomeText'] = get_the_title($postId);
+    } elseif (is_front_page() && $postId) {
+        $data['labels']['mobileHomeText'] = get_the_title($postId);
+    } else {
+        $data['labels']['mobileHomeText'] = __('Home', 'NscSoftware');
     }
 
     // When on the contact page, do not add active class to the Contact Us menu item (contact-btn).
@@ -176,12 +187,6 @@ Options::addTranslatable('NSCHeader', [
         'name' => 'labels',
         'type' => 'group',
         'sub_fields' => [
-            [
-                'label' => __('Mobile home text', 'NscSoftware'),
-                'name' => 'mobileHomeText',
-                'type' => 'text',
-                'default_value' => __('Home', 'NscSoftware'),
-            ],
             [
                 'label' => __('Language label', 'NscSoftware'),
                 'name' => 'languageLabel',

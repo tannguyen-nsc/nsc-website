@@ -30,6 +30,7 @@ const purgecss = require("gulp-purgecss"); // Remove Unused CSS from Styles
 const logSymbols = require("log-symbols"); //For Symbolic Console logs :) :P
 const includePartials = require("gulp-file-include"); //For supporting partials if required
 
+// Resolve @@include paths from ./src so master.html → partials/*.html always works
 const fileIncludeOpts = {
   prefix: "@@",
   basepath: path.join(__dirname, "src"),
