@@ -1,137 +1,77 @@
 (function () {
   'use strict';
 
-  function initFeaturedSidebarItems() {
-    var sidebarItems = Array.from(
-      document.querySelectorAll('.blog-list-details .featured-sidebar .sidebar-item')
-    );
+  /** Featured sidebar: 3-line excerpt if title is 1 line, 2-line excerpt if title wraps (2+ lines). */
+  function measureTitleLineCount(titleEl) {
+    var st = window.getComputedStyle(titleEl);
+    var lh = st.lineHeight;
+    var linePx;
+    if (!lh || lh === 'normal') {
+      linePx = (parseFloat(st.fontSize) || 16) * 1.25;
+    } else {
+      linePx = parseFloat(lh) || 20;
+    }
+    var h = titleEl.scrollHeight;
+    var n = Math.round(h / linePx);
+    if (n < 1) {
+      n = 1;
+    }
+    return n;
+  }
 
-    if (!sidebarItems.length) {
+  function applyFeaturedSidebarExcerptClamp() {
+    var items = document.querySelectorAll(
+      '.blog-list-details .featured-sidebar .sidebar-item'
+    );
+    if (!items.length) {
       return;
     }
 
-    sidebarItems.forEach(function (item) {
+    var isLg = window.matchMedia('(min-width: 1024px)').matches;
+
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      var h3 = item.querySelector('.item-content h3');
       var excerpt = item.querySelector('.item-excerpt');
-      if (!excerpt) {
-        return;
+      if (!h3 || !excerpt) {
+        continue;
       }
 
-      if (!excerpt.dataset.fullText) {
-        excerpt.dataset.fullText = (excerpt.textContent || '')
-          .replace(/\s+/g, ' ')
-          .trim();
-      }
-    });
-
-    function trimExcerptToFit(content, excerpt) {
-      var fullText = (excerpt.dataset.fullText || '').trim();
-      excerpt.textContent = fullText;
-
-      if (!fullText || content.scrollHeight <= content.clientHeight) {
-        return;
+      if (!isLg) {
+        excerpt.removeAttribute('data-line-clamp');
+        continue;
       }
 
-      function buildCutText(length) {
-        var sliced = fullText.slice(0, length).trimEnd();
-        var withoutPartialWord = sliced.replace(/\s+\S*$/, '').trimEnd();
-        var finalText = withoutPartialWord || sliced;
-        return finalText.replace(/(\.{3})+$/, '').trimEnd() + '...';
-      }
-
-      var low = 0;
-      var high = Math.max(0, fullText.length - 1);
-      var best = '...';
-
-      while (low <= high) {
-        var mid = Math.floor((low + high) / 2);
-        var candidate = buildCutText(mid);
-
-        excerpt.textContent = candidate;
-
-        if (content.scrollHeight <= content.clientHeight) {
-          best = candidate;
-          low = mid + 1;
-        } else {
-          high = mid - 1;
-        }
-      }
-
-      excerpt.textContent = best;
+      var lines = measureTitleLineCount(h3);
+      var clamp = lines <= 1 ? 3 : 2;
+      excerpt.setAttribute('data-line-clamp', String(clamp));
     }
-
-    function applySidebarItemLayout() {
-      var isDesktop = window.matchMedia('(min-width: 1024px)').matches;
-
-      sidebarItems.forEach(function (item) {
-        var thumbnail = item.querySelector('.item-thumbnail');
-        var content = item.querySelector('.item-content');
-        var excerpt = item.querySelector('.item-excerpt');
-
-        if (!thumbnail || !content) {
-          return;
-        }
-
-        content.style.height = '';
-
-        if (excerpt && excerpt.dataset.fullText) {
-          excerpt.textContent = excerpt.dataset.fullText;
-        }
-
-        if (excerpt) {
-          if (isDesktop) {
-            // Disable CSS line-clamp so JS truncation controls ending with "..."
-            excerpt.style.display = 'block';
-            excerpt.style.overflow = 'visible';
-            excerpt.style.webkitLineClamp = 'unset';
-            excerpt.style.webkitBoxOrient = 'initial';
-          } else {
-            excerpt.style.removeProperty('display');
-            excerpt.style.removeProperty('overflow');
-            excerpt.style.removeProperty('-webkit-line-clamp');
-            excerpt.style.removeProperty('-webkit-box-orient');
-          }
-        }
-
-        if (!isDesktop) {
-          return;
-        }
-
-        var thumbnailHeight = thumbnail.offsetHeight;
-        if (thumbnailHeight > 0) {
-          content.style.height = thumbnailHeight + 'px';
-        }
-
-        if (excerpt && excerpt.dataset.fullText) {
-          trimExcerptToFit(content, excerpt);
-        }
-      });
-    }
-
-    var resizeTimer = null;
-    function handleResize() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () {
-        applySidebarItemLayout();
-      }, 150);
-    }
-
-    sidebarItems.forEach(function (item) {
-      var image = item.querySelector('.item-thumbnail img');
-      if (!image) {
-        return;
-      }
-
-      if (!image.complete) {
-        image.addEventListener('load', applySidebarItemLayout);
-      }
-    });
-
-    window.addEventListener('resize', handleResize, { passive: true });
-    window.addEventListener('load', applySidebarItemLayout);
-    requestAnimationFrame(applySidebarItemLayout);
   }
 
-  initFeaturedSidebarItems();
+  var sidebarClampTimer = null;
+  function scheduleFeaturedSidebarExcerptClamp() {
+    clearTimeout(sidebarClampTimer);
+    sidebarClampTimer = setTimeout(function () {
+      applyFeaturedSidebarExcerptClamp();
+    }, 100);
+  }
+
+  applyFeaturedSidebarExcerptClamp();
+  window.addEventListener('resize', scheduleFeaturedSidebarExcerptClamp, {
+    passive: true
+  });
+  window.addEventListener('load', scheduleFeaturedSidebarExcerptClamp);
+  requestAnimationFrame(function () {
+    requestAnimationFrame(applyFeaturedSidebarExcerptClamp);
+  });
+
+  document
+    .querySelectorAll('.blog-list-details .featured-sidebar .sidebar-item .item-thumbnail img')
+    .forEach(function (img) {
+      if (!img.complete) {
+        img.addEventListener('load', scheduleFeaturedSidebarExcerptClamp);
+      }
+    });
 
   var BLOG_LIST_SELECTOR = '#blog-list-app';
   var root =
@@ -332,7 +272,15 @@
       },
       loadBlogs: function () {
         this.loadError = null;
-        this.blogs = getBlogsFromWindow();
+        var fallback = 'blog-details.html';
+        this.blogs = getBlogsFromWindow().map(function (post) {
+          var p = Object.assign({}, post);
+          var lk = (p.link || '').trim();
+          if (!lk || lk === '#' || lk === 'javascript:void(0)') {
+            p.link = fallback;
+          }
+          return p;
+        });
       }
     },
     mounted: function () {

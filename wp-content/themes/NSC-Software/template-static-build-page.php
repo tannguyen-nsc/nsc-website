@@ -24,6 +24,7 @@ $pageMap = [
     'about.html' => 'about',
     'ai.html' => 'ai',
     'blogs.html' => 'blogs',
+    'blog-details.html' => 'blog-details',
     'career.html' => 'career',
     'case-studies.html' => 'case-studies',
     'contact.html' => 'contact',

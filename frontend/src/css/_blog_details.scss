@@ -1,0 +1,250 @@
+// Standalone blog-details.html: offset content below fixed transparent header (same idea as .default-text-content)
+body.page-blog-details .blog-details {
+  @apply mt-20 lg:mt-14;
+}
+
+// Single blog post (desktop: main + sidebar; mobile: stacked)
+.blog-details {
+  @apply relative flex flex-col items-center bg-white px-4 pb-12 pt-8 lg:pb-16 lg:pt-16;
+
+  .wrapper {
+    @apply z-10 w-full max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
+  }
+
+  &__top {
+    @apply grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start lg:gap-12;
+  }
+
+  &__main {
+    @apply lg:col-span-8;
+  }
+
+  &__breadcrumbs {
+    @apply mb-4 flex flex-wrap items-center gap-2 text-sm lg:text-base font-medium lg:mb-5;
+
+    a {
+      @apply hover:text-primary;
+    }
+  }
+
+  &__bc-sep {
+    @apply text-sm;
+  }
+
+  &__bc-current {
+    @apply text-primary;
+  }
+
+  &__title {
+    @apply mb-4 text-xl lg:text-3xl font-bold leading-tight text-black sm:text-3xl lg:mb-5 lg:text-4xl xl:text-[40px];
+  }
+
+  &__meta {
+    @apply mb-8 flex flex-wrap items-center gap-2 text-sm lg:text-base font-medium text-[#737373] lg:mb-10;
+  }
+
+  &__meta-sep {
+    @apply text-[#737373];
+  }
+
+  &__body {
+    @apply space-y-5 text-sm lg:text-base font-medium leading-relaxed lg:space-y-6 lg:text-lg;
+  }
+
+  &__lead {
+    @apply bg-white px-5 py-4 shadow-lg border border-[#E5E5E5] lg:px-6 lg:py-5;
+  }
+
+  &__figure {
+    @apply -mx-0 my-6 lg:my-8;
+
+    img {
+      @apply max-h-[420px] w-full object-cover lg:max-h-[480px];
+    }
+  }
+
+  &__blockquote {
+    @apply my-6 border-l-4 border-primary bg-[#F4F8FB] py-1 pl-5 pr-4 lg:pl-6;
+
+    p {
+      @apply m-0 text-base font-medium text-neutral-800 lg:text-lg;
+    }
+  }
+
+  &__h2 {
+    @apply m-0 pt-2 text-xl lg:text-2xl font-bold text-black lg:text-2xl;
+  }
+
+  &__list {
+    @apply list-disc space-y-2 pl-6 marker:text-primary;
+  }
+
+  &__article-footer {
+    @apply mt-10 flex flex-col gap-6 border-t border-[#E5E5E5] pt-8 lg:mt-12;
+  }
+
+  &__tags {
+    @apply flex flex-wrap items-center gap-2 gap-y-3;
+  }
+
+  &__tag {
+    @apply inline-flex items-center rounded-md bg-neutral-100 px-3 py-0.5 text-sm font-medium text-neutral-600 no-underline transition-colors hover:bg-neutral-200;
+  }
+
+  &__share {
+    @apply flex flex-col gap-3 sm:flex-row sm:items-center;
+  }
+
+  &__share-label {
+    @apply text-base font-bold uppercase tracking-wide text-black;
+  }
+
+  &__share-icons {
+    @apply flex items-center gap-3;
+  }
+
+  &__share-btn {
+    @apply flex items-center justify-center text-primary transition-opacity hover:opacity-80;
+
+    svg {
+      @apply h-5 w-5;
+    }
+  }
+
+  &__sidebar {
+    @apply flex flex-col gap-6 lg:col-span-4 lg:gap-8;
+  }
+
+  &__author-section {
+    @apply flex flex-col gap-3 lg:gap-4;
+  }
+
+  &__author-heading {
+    @apply m-0 text-base font-bold uppercase text-black;
+  }
+
+  &__card {
+    @apply rounded-lg border border-[#E5E5E5] bg-white p-5 shadow-sm lg:p-6;
+  }
+
+  // About the author: title in .author-section; card uses author-box-bg.png
+  &__card.blog-details__author {
+    @apply relative overflow-hidden rounded-none border border-[#E5E5E5] border-t-0 bg-white bg-[url('../img/author-box-bg.png')] bg-cover bg-center bg-no-repeat p-0 shadow-lg;
+  }
+
+  &__author-inner {
+    @apply relative z-[1] p-5 lg:p-6;
+  }
+
+  // Related services: no surrounding box
+  &__card.blog-details__services {
+    @apply rounded-none border-0 bg-transparent p-0 shadow-none lg:p-0;
+  }
+
+  &__card-title {
+    @apply m-0 mb-4 text-base font-bold uppercase;
+  }
+
+  &__author-logo-wrap {
+    @apply mb-3 flex h-[120px] w-[120px] flex-shrink-0 items-center justify-center border border-[#E5E5E5] bg-white p-3;
+  }
+
+  &__author-logo {
+    @apply h-auto w-auto max-h-full max-w-full object-contain object-center;
+  }
+
+  &__author-name {
+    @apply m-0 mb-1 text-base font-bold text-black;
+  }
+
+  &__author-subtitle {
+    @apply m-0 mb-4 text-sm font-medium leading-snug text-[#737373];
+  }
+
+  &__author-lead {
+    @apply m-0 mb-3 mt-6 text-base font-medium leading-snug;
+  }
+
+  &__author-desc {
+    @apply m-0 mb-4 mt-6 text-base font-medium leading-relaxed;
+  }
+
+  &__service-list {
+    @apply m-0 flex list-none flex-col gap-3 p-0;
+
+    a {
+      @apply text-xs font-bold text-primary hover:underline;
+    }
+  }
+
+  &__cta {
+    @apply relative flex min-h-[400px] flex-col items-center justify-center overflow-hidden rounded-none bg-[#e8f6fa] bg-[url('../img/connect-box-bg.png')] bg-cover bg-center bg-no-repeat px-10 py-10 text-center shadow-[inset_0_0_0_1px_rgba(54,195,220,0.2)] lg:px-0 lg:py-12;
+  }
+
+  &__cta-title {
+    @apply relative z-[1] m-0 mx-auto mb-5 max-w-md text-4xl lg:text-3xl 2xl:text-4xl font-bold uppercase leading-snug text-black lg:mb-6 text-primary;
+  }
+
+  &__cta-btn {
+    @apply relative z-[1] inline-flex items-center justify-center gap-2 rounded-none bg-primary px-5 py-2 text-base font-bold text-white no-underline transition-opacity hover:opacity-90 lg:px-6 lg:py-2;
+    svg{
+      @apply h-5 w-5;
+    }
+  }
+
+  &__text-link {
+    @apply inline-flex items-center gap-1 text-xs font-bold text-primary no-underline transition-all hover:gap-2;
+
+    svg {
+      @apply flex-shrink-0;
+    }
+  }
+
+  &__related {
+    @apply mt-14 border-t border-[#E5E5E5] pt-12 lg:mt-16 lg:pt-16;
+  }
+
+  &__related-heading {
+    @apply m-0 mb-8 text-center text-3xl font-bold text-black lg:mb-10;
+  }
+
+  &__related-grid {
+    @apply grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 lg:gap-8;
+  }
+
+  &__related-card {
+    @apply flex h-full flex-col overflow-hidden rounded-none border border-[#E5E5E5] bg-white shadow-[0_10px_40px_rgba(0,0,0,0.08)];
+  }
+
+  &__related-img-wrap {
+    @apply block aspect-[16/10] overflow-hidden bg-[#f0f0f0];
+
+    img {
+      @apply h-full w-full object-cover transition-transform duration-300 hover:scale-105;
+    }
+  }
+
+  &__related-body {
+    @apply flex flex-grow flex-col gap-2 p-4 lg:p-5;
+
+    h3 {
+      @apply m-0 text-base font-semibold lg:text-lg lg:font-bold leading-snug text-black lg:text-lg;
+
+      a {
+        @apply text-black no-underline transition-colors hover:text-primary;
+      }
+    }
+
+    p {
+      @apply m-0 flex-grow text-sm leading-relaxed text-neutral-600 line-clamp-2 lg:text-base;
+    }
+  }
+
+  &__related-footer {
+    @apply mt-10 flex justify-center lg:mt-12;
+  }
+
+  &__view-all {
+    @apply text-xs font-bold text-primary;
+  }
+}

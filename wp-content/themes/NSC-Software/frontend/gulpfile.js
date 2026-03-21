@@ -30,6 +30,11 @@ const purgecss = require("gulp-purgecss"); // Remove Unused CSS from Styles
 const logSymbols = require("log-symbols"); //For Symbolic Console logs :) :P
 const includePartials = require("gulp-file-include"); //For supporting partials if required
 
+const fileIncludeOpts = {
+  prefix: "@@",
+  basepath: path.join(__dirname, "src"),
+};
+
 //Load Previews on Browser on dev
 function livePreview(done) {
   browserSync.init({
@@ -37,6 +42,7 @@ function livePreview(done) {
       baseDir: options.paths.dist.base,
     },
     port: options.config.port || 5000,
+    startPath: "/master.html",
   });
   done();
 }
@@ -51,7 +57,7 @@ function previewReload(done) {
 //Development Tasks
 function devHTML() {
   return src(`${options.paths.src.base}/**/*.html`)
-    .pipe(includePartials())
+    .pipe(includePartials(fileIncludeOpts))
     .pipe(dest(options.paths.dist.base));
 }
 
@@ -131,7 +137,7 @@ function devClean() {
 //Production Tasks (Optimized Build for Live/Production Sites)
 function prodHTML() {
   return src(`${options.paths.src.base}/**/*.{html,php}`)
-    .pipe(includePartials())
+    .pipe(includePartials(fileIncludeOpts))
     .pipe(dest(options.paths.build.base));
 }
 
