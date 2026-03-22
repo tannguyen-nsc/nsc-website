@@ -157,3 +157,58 @@ function mark_menu_items_matching_blog_path(array $items, string $blogPath): boo
 
     return $matched;
 }
+
+/**
+ * Mark the menu item that points at the Career page as current on single job posts.
+ * WordPress does not treat the job CPT as part of the career page hierarchy.
+ *
+ * @param object|null $menu Timber\Menu or object with ->items.
+ */
+function mark_career_menu_active_for_job_single($menu): void
+{
+    if (!is_singular('job') || !$menu || !isset($menu->items) || !is_array($menu->items)) {
+        return;
+    }
+
+    $careerPage = get_page_by_path('career', OBJECT, 'page');
+    if (!$careerPage instanceof \WP_Post) {
+        return;
+    }
+
+    $careerUrl = get_permalink($careerPage);
+    $careerPath = nsc_menu_item_path((string) $careerUrl);
+    if ($careerPath === '') {
+        return;
+    }
+
+    mark_menu_items_matching_career_path($menu->items, $careerPath);
+}
+
+/**
+ * @param array $items Menu items (may have ->children, ->link).
+ */
+function mark_menu_items_matching_career_path(array $items, string $careerPath): bool
+{
+    $matched = false;
+    foreach ($items as $item) {
+        $link = '';
+        if (isset($item->link) && is_string($item->link)) {
+            $link = $item->link;
+        } elseif (isset($item->url) && is_string($item->url)) {
+            $link = $item->url;
+        }
+        $path = nsc_menu_item_path($link);
+        if ($path !== '' && $path === $careerPath) {
+            $item->current = true;
+            $matched = true;
+        }
+        if (!empty($item->children) && is_array($item->children)) {
+            if (mark_menu_items_matching_career_path($item->children, $careerPath)) {
+                $item->current_ancestor = true;
+                $matched = true;
+            }
+        }
+    }
+
+    return $matched;
+}

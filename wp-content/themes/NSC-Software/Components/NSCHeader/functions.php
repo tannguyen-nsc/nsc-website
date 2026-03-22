@@ -20,6 +20,7 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     Menu\ensure_menu_item_classes($data['menu']);
     Menu\set_current_ancestor_on_parents($data['menu']);
     Menu\mark_blog_archive_menu_active($data['menu']);
+    Menu\mark_career_menu_active_for_job_single($data['menu']);
     Menu\set_current_ancestor_on_parents($data['menu']);
     $blogName = get_bloginfo('name');
 
@@ -121,6 +122,8 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     $data['labels'] = (isset($options['labels']) && is_array($options['labels'])) ? $options['labels'] : [];
     if (Menu\is_blog_navigation_context()) {
         $data['labels']['mobileHomeText'] = __('Blog', 'NscSoftware');
+    } elseif (is_singular('job')) {
+        $data['labels']['mobileHomeText'] = __('Careers', 'NscSoftware');
     } elseif ($postId && is_singular()) {
         $data['labels']['mobileHomeText'] = get_the_title($postId);
     } elseif (is_front_page() && $postId) {
