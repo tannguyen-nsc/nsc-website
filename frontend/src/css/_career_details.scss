@@ -1,7 +1,7 @@
 // Career job detail (white page bg, centered content) + apply form band
 
 .career-details {
-  @apply relative flex flex-col items-center bg-white px-4 pb-12 pt-8 lg:pb-0 lg:pt-24;
+  @apply relative flex flex-col items-center bg-white px-4 pb-12 pt-24 lg:pb-0;
 
   &__shell {
     @apply relative w-full;
@@ -21,26 +21,30 @@
 
   &__main {
     @apply rounded-none border border-[#E5E5E5] bg-white p-5 shadow-[0_4px_24px_rgba(0,0,0,0.06)] lg:col-span-8 lg:p-8;
+
+     h2 {
+        @apply text-base lg:text-xl font-bold;
+     }
   }
 
   &__breadcrumbs {
-    @apply mb-6 flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-600 lg:mb-8 lg:text-base;
+    @apply mb-4 flex flex-wrap items-center gap-2 text-sm lg:text-base font-medium lg:mb-5;
 
     a {
-      @apply text-neutral-600 no-underline transition-colors hover:text-primary;
+      @apply hover:text-primary;
     }
   }
 
   &__bc-sep {
-    @apply text-neutral-400;
+    @apply text-sm;
   }
 
   &__bc-current {
-    @apply font-semibold text-primary;
+    @apply text-primary;
   }
 
   &__title {
-    @apply mb-4 text-xl font-bold uppercase leading-tight text-black sm:text-2xl lg:mb-5 lg:text-3xl xl:text-[32px];
+    @apply mb-4 text-xl lg:text-3xl font-bold leading-tight text-black sm:text-3xl lg:mb-5 lg:text-4xl xl:text-[40px];
   }
 
   &__tags {
@@ -48,7 +52,7 @@
   }
 
   &__tag {
-    @apply inline-flex items-center rounded-lg border border-primary bg-white px-3 py-1 text-xs font-semibold text-primary lg:text-sm;
+    @apply inline-flex items-center rounded-lg border border-primary bg-white px-3 py-1 text-sm font-semibold text-primary;
   }
 
   &__apply-cta {
@@ -72,7 +76,7 @@
   }
 
   &__skill-label {
-    @apply m-0 text-sm font-medium leading-snug text-black lg:text-base;
+    @apply m-0 text-sm font-semibold lg:font-medium leading-snug text-black lg:text-base;
   }
 
   /* Fixed segment width so 1–5 (or more) segments keep the same pill size (not stretched). */
@@ -123,7 +127,7 @@
 
   /* Match blog-details__list disc size and layout */
   &__side-list {
-    @apply m-0 list-disc list-inside space-y-2 pl-0 text-left text-sm font-medium leading-relaxed text-neutral-700 marker:text-black [&_li::marker]:text-[0.55em] lg:text-lg;
+    @apply m-0 list-disc list-inside pl-0 text-left text-base font-medium leading-relaxed text-neutral-700 marker:text-black [&_li::marker]:text-[0.55em];
   }
 
   &__share-icons {
@@ -162,9 +166,9 @@
 
     /* Location <select>: chevron + layout; specificity beats @tailwindcss/forms `select`. */
     select.career-details__select {
-      @apply [color-scheme:light] w-full cursor-pointer appearance-none rounded-none border-0 border-b-2 border-b-[#99CDE4] border-t-0 border-l-0 border-r-0 bg-white/20 bg-[url('../img/chevron-down-white.svg')] bg-[length:1.25rem_1.25rem] bg-[right_0.65rem_center] bg-no-repeat px-3 py-2.5 pr-11 text-sm font-semibold uppercase tracking-wide text-white shadow-none transition-[border-color] duration-150;
+      @apply [color-scheme:light] w-full cursor-pointer appearance-none rounded-none border-0 border-b-2 border-b-[#99CDE4] border-t-0 border-l-0 border-r-0 bg-white/20 bg-[url('../img/chevron-down-white.svg')] bg-[length:1.25rem_1.25rem] bg-[right_0.65rem_center] bg-no-repeat px-3 py-2.5 pr-11 text-sm font-medium tracking-wide text-white/70 shadow-none transition-[border-color] duration-150;
       @apply focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:border-b-[#99CDE4] focus:bg-[url('../img/chevron-down-white.svg')] focus:outline-none focus:ring-0 focus-visible:bg-[url('../img/chevron-down-white.svg')] focus-visible:outline-none;
-      @apply lg:py-3 lg:text-base;
+      @apply lg:py-3;
 
       option,
       optgroup {
@@ -205,10 +209,10 @@
   &__input,
   &__textarea,
   &__select {
-    @apply w-full rounded-none border-0 border-b-2 border-b-[#99CDE4] bg-white/20 px-3 py-2.5 text-sm font-semibold uppercase tracking-wide text-white shadow-none transition-[border-color] duration-150;
+    @apply w-full rounded-none border-0 border-b-2 border-b-[#99CDE4] bg-white/20 px-3 py-2.5 text-sm font-medium  tracking-wide text-white/70 shadow-none transition-[border-color] duration-150;
     @apply placeholder:font-semibold placeholder:uppercase placeholder:tracking-wide placeholder:text-[rgba(255,255,255,0.55)];
     @apply focus:border-b-[#99CDE4] focus:outline-none focus:ring-0 focus-visible:outline-none;
-    @apply lg:py-3 lg:text-base;
+    @apply lg:py-3;
   }
 
   &__input--readonly,
@@ -268,7 +272,7 @@
   }
 
   &__upload-hint {
-    @apply text-xs text-white/75 lg:text-sm;
+    @apply text-xs text-white/75 lg:text-sm font-medium;
   }
 
   &__apply-footer {
@@ -288,7 +292,7 @@
   }
 
   &__submit {
-    @apply inline-flex w-full items-center justify-center gap-2 rounded-none bg-white px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-primary no-underline transition-opacity hover:opacity-90 lg:w-auto lg:px-10 lg:text-base;
+    @apply inline-flex w-full items-center justify-center gap-2 rounded-none bg-white px-8 py-3.5 text-base font-bold uppercase tracking-wide text-primary no-underline transition-opacity hover:opacity-90 lg:w-auto ;
 
     svg {
       @apply h-4 w-4;

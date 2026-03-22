@@ -1,7 +1,7 @@
 
 // Single blog post (desktop: main + sidebar; mobile: stacked)
 .blog-details {
-  @apply relative flex flex-col items-center bg-white px-4 pb-12 pt-8 lg:pb-16 lg:pt-24;
+  @apply relative flex flex-col items-center bg-white px-4 pb-12 pt-24 lg:pb-16;
 
   .wrapper {
     @apply z-10 w-full max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];

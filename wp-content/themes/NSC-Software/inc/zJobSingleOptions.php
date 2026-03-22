@@ -1,7 +1,7 @@
 <?php
 
 /**
- * NSC Theme Options → Careers: job single sidebar (Why us, Share) + Apply (CF7 shortcode).
+ * NSC Theme Options → Careers: job single sidebar (Why us, Share), key technologies label, Apply (CF7 shortcode).
  *
  * @see single-job.php templates/single-job.twig
  */
@@ -46,6 +46,20 @@ add_action('NscSoftware/afterRegisterComponents', static function (): void {
             'type' => 'text',
             'default_value' => __('Share this vacancy', 'NscSoftware'),
             'instructions' => __('Share icons use the same behavior as blog post detail (Facebook / LinkedIn popup with this page URL).', 'NscSoftware'),
+        ],
+        [
+            'label' => __('Job detail', 'NscSoftware'),
+            'name' => 'jobSingleDetailTab',
+            'type' => 'tab',
+            'placement' => 'top',
+            'endpoint' => 0,
+        ],
+        [
+            'label' => __('“Key technologies” label', 'NscSoftware'),
+            'name' => 'jobKeyTechnologiesLabel',
+            'type' => 'text',
+            'default_value' => __('Key technologies', 'NscSoftware'),
+            'instructions' => __('Label before the comma-separated list on job single (shown when the job has key technologies). A colon is added after the label.', 'NscSoftware'),
         ],
         [
             'label' => __('Apply section', 'NscSoftware'),

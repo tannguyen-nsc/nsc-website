@@ -7,6 +7,13 @@ use NscSoftware\Utils\Asset;
 use NscSoftware\Utils\Options;
 use Timber\Timber;
 
+// Nav menu helpers live in inc/ (not Composer PSR-4). Load explicitly so career/job-single
+// helpers exist even if inc load order or deployment differs on the server.
+$menuItemClasses = get_template_directory() . '/inc/menuItemClasses.php';
+if (is_readable($menuItemClasses)) {
+    require_once $menuItemClasses;
+}
+
 add_action('init', function () {
     register_nav_menus([
         'navigation_main' => __('Navigation Main', 'NscSoftware'),
@@ -20,7 +27,9 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     Menu\ensure_menu_item_classes($data['menu']);
     Menu\set_current_ancestor_on_parents($data['menu']);
     Menu\mark_blog_archive_menu_active($data['menu']);
-    Menu\mark_career_menu_active_for_job_single($data['menu']);
+    if (function_exists('NscSoftware\\Menu\\mark_career_menu_active_for_job_single')) {
+        Menu\mark_career_menu_active_for_job_single($data['menu']);
+    }
     Menu\set_current_ancestor_on_parents($data['menu']);
     $blogName = get_bloginfo('name');
 
