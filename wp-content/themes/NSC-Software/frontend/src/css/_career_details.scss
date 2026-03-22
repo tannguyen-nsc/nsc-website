@@ -1,0 +1,415 @@
+// Career job detail (white page bg, centered content) + apply form band
+
+.career-details {
+  @apply relative flex flex-col items-center bg-white px-4 pb-12 pt-8 lg:pb-0 lg:pt-24;
+
+  &__shell {
+    @apply relative w-full;
+  }
+
+  &__shell-inner {
+    @apply z-10 mx-auto w-full max-w-full pb-8 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] lg:pb-12;
+  }
+
+  &__card {
+    @apply m-0 rounded-none bg-transparent p-0;
+  }
+
+  &__grid {
+    @apply grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-start lg:gap-12;
+  }
+
+  &__main {
+    @apply rounded-none border border-[#E5E5E5] bg-white p-5 shadow-[0_4px_24px_rgba(0,0,0,0.06)] lg:col-span-8 lg:p-8;
+  }
+
+  &__breadcrumbs {
+    @apply mb-6 flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-600 lg:mb-8 lg:text-base;
+
+    a {
+      @apply text-neutral-600 no-underline transition-colors hover:text-primary;
+    }
+  }
+
+  &__bc-sep {
+    @apply text-neutral-400;
+  }
+
+  &__bc-current {
+    @apply font-semibold text-primary;
+  }
+
+  &__title {
+    @apply mb-4 text-xl font-bold uppercase leading-tight text-black sm:text-2xl lg:mb-5 lg:text-3xl xl:text-[32px];
+  }
+
+  &__tags {
+    @apply mb-6 flex flex-wrap gap-2 lg:mb-8;
+  }
+
+  &__tag {
+    @apply inline-flex items-center rounded-lg border border-primary bg-white px-3 py-1 text-xs font-semibold text-primary lg:text-sm;
+  }
+
+  &__apply-cta {
+    @apply mb-8 inline-flex items-center gap-2 rounded-none bg-primary px-5 py-2.5 text-sm font-bold uppercase tracking-wide text-white no-underline transition-opacity hover:opacity-90 lg:mb-10 lg:px-6 lg:text-base;
+
+    svg {
+      @apply h-4 w-4 flex-shrink-0;
+    }
+  }
+
+  &__h2 {
+    @apply mb-4 text-base font-bold uppercase tracking-wide text-black lg:mb-5 lg:text-lg;
+  }
+
+  &__skills {
+    @apply mb-8 grid list-none grid-cols-1 gap-x-8 gap-y-6 p-0 sm:grid-cols-2 lg:mb-10 lg:grid-cols-3;
+  }
+
+  &__skill {
+    @apply flex min-w-0 flex-col gap-2.5;
+  }
+
+  &__skill-label {
+    @apply m-0 text-sm font-medium leading-snug text-black lg:text-base;
+  }
+
+  /* Fixed segment width so 1–5 (or more) segments keep the same pill size (not stretched). */
+  &__skill-bar {
+    @apply inline-flex max-w-full flex-wrap gap-1 lg:gap-1.5;
+  }
+
+  &__skill-bar-segment {
+    @apply h-0.5 min-h-[2px] w-7 shrink-0 grow-0 rounded-lg bg-[#D4D4D4] lg:h-[3px] lg:min-h-[3px] lg:w-8;
+
+    &.is-filled {
+      @apply bg-primary;
+    }
+  }
+
+  /* Static + CMS: --process = primary segments; skill--none (legacy skil--none) = muted remainder. */
+  &__skill--process &__skill-bar-segment {
+    @apply bg-primary;
+    &.skill--none,
+    &.skil--none {
+      @apply bg-[#CECECE];
+    }
+  }
+
+  &__body {
+    @apply space-y-4 text-sm font-medium leading-relaxed text-neutral-800 lg:space-y-5 lg:text-base;
+
+    p {
+      @apply m-0;
+    }
+
+    strong {
+      @apply font-bold text-black;
+    }
+  }
+
+  &__sidebar {
+    @apply flex flex-col gap-8 lg:col-span-4 lg:gap-10;
+  }
+
+  &__side-block {
+    @apply flex flex-col gap-4;
+  }
+
+  &__side-title {
+    @apply m-0 text-base font-bold uppercase tracking-wide text-black;
+  }
+
+  /* Match blog-details__list disc size and layout */
+  &__side-list {
+    @apply m-0 list-disc list-inside space-y-2 pl-0 text-left text-sm font-medium leading-relaxed text-neutral-700 marker:text-black [&_li::marker]:text-[0.55em] lg:text-lg;
+  }
+
+  &__share-icons {
+    @apply flex items-center gap-4;
+
+    a {
+      @apply flex items-center justify-center text-primary transition-opacity hover:opacity-80;
+    }
+
+    svg {
+      @apply h-[20px] w-[20px];
+    }
+  }
+
+  /* ——— Apply section: background lives on .career-details__apply-wrapper ——— */
+  &__apply {
+    @apply relative mt-0 flex w-full flex-col items-center overflow-hidden mb-12 lg:mb-16;
+  }
+
+  &__apply-inner {
+    @apply relative z-[1] flex w-full flex-col items-center;
+  }
+
+  &__apply-wrapper {
+    @apply relative mx-auto w-full max-w-full bg-[url('../img/apply-form-bg.png')] bg-cover bg-center bg-no-repeat px-5 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:max-w-[90%] lg:px-10 lg:py-12 xl:max-w-[1140px] xl:px-12 xl:py-14 2xl:max-w-[1280px];
+  }
+
+  /* Uses global `section .heading` + `.light` (white title on gradient) */
+  &__apply .heading {
+    @apply mb-8 lg:mb-10;
+  }
+
+  /* 960px @ 1920px → 50vw ratio, max 960px, min 20rem on small screens */
+  &__apply-form {
+    @apply mx-auto flex w-full max-w-[clamp(20rem,50vw,960px)] flex-col gap-10 lg:gap-12;
+  }
+
+  &__apply-row {
+    @apply flex flex-col gap-5 lg:gap-0;
+
+    &--2 {
+      @apply gap-y-5 lg:grid lg:grid-cols-2 lg:gap-x-12 lg:gap-y-6;
+    }
+  }
+
+  /* Underline-only fields (match design: light rule, no box, muted placeholders) */
+  &__field {
+    @apply flex min-w-0 flex-col gap-0;
+
+    &--full {
+      @apply w-full;
+    }
+
+    &--select {
+      @apply relative;
+    }
+  }
+
+  &__label {
+    @apply sr-only;
+  }
+
+  &__input,
+  &__textarea,
+  &__select {
+    @apply w-full rounded-none border-0 border-b-2 border-b-[#99CDE4] bg-white/20 px-3 py-2.5 text-sm font-semibold uppercase tracking-wide text-white shadow-none transition-[border-color] duration-150;
+    @apply placeholder:font-semibold placeholder:uppercase placeholder:tracking-wide placeholder:text-[rgba(255,255,255,0.55)];
+    @apply focus:border-b-[#99CDE4] focus:outline-none focus:ring-0 focus-visible:outline-none;
+    @apply lg:py-3 lg:text-base;
+  }
+
+  &__input--readonly,
+  &__input--position-lock {
+    @apply cursor-default text-white/90 caret-transparent selection:bg-transparent;
+  }
+
+  &__input--position-lock {
+    @apply select-none;
+  }
+
+  &__textarea {
+    @apply min-h-[3rem] resize-y font-medium normal-case tracking-normal text-white placeholder:uppercase;
+  }
+
+  select.career-details__select {
+    @apply [color-scheme:light] w-full cursor-pointer appearance-none rounded-none border-0 border-b-2 border-b-[#99CDE4] border-t-0 border-l-0 border-r-0 bg-white/20 bg-[url('../img/chevron-down-white.svg')] bg-[length:1.25rem_1.25rem] bg-[right_0.65rem_center] bg-no-repeat px-3 py-2.5 pr-11 text-sm font-semibold uppercase tracking-wide text-white shadow-none transition-[border-color] duration-150;
+    @apply focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:border-b-[#99CDE4] focus:bg-[url('../img/chevron-down-white.svg')] focus:outline-none focus:ring-0 focus-visible:bg-[url('../img/chevron-down-white.svg')] focus-visible:outline-none;
+    @apply lg:py-3 lg:text-base;
+
+    option,
+    optgroup {
+      @apply bg-white font-medium text-black;
+    }
+  }
+
+  /* Autofill: white/20 field + white text */
+  &__input:-webkit-autofill,
+  &__textarea:-webkit-autofill,
+  &__select:-webkit-autofill {
+    @apply transition-[background-color] duration-[99999s] ease-out [-webkit-text-fill-color:#fff] shadow-[inset_0_0_0_1000px_rgb(255_255_255/0.2)];
+  }
+
+  &__apply-or {
+    @apply m-0 text-center text-sm font-bold uppercase tracking-widest text-white/80 lg:text-base;
+  }
+
+  &__upload {
+    @apply relative w-full;
+  }
+
+  &__upload-input {
+    @apply sr-only;
+
+    &:focus + .career-details__upload-label {
+      @apply ring-2 ring-white ring-offset-2 ring-offset-transparent;
+    }
+  }
+
+  &__upload-label {
+    @apply flex cursor-pointer flex-col items-center justify-center gap-3 border-2 border-dashed border-white/80 bg-white/5 px-6 py-10 text-center transition-colors hover:bg-white/10 lg:py-12;
+  }
+
+  &__upload-icon {
+    @apply text-white;
+
+    svg {
+      @apply h-12 w-12;
+    }
+  }
+
+  &__upload-text {
+    @apply text-sm font-semibold text-white lg:text-base;
+
+    strong {
+      @apply text-white underline decoration-2 underline-offset-2;
+    }
+  }
+
+  &__upload-hint {
+    @apply text-xs text-white/75 lg:text-sm;
+  }
+
+  &__apply-footer {
+    @apply flex flex-col gap-6 pt-2 lg:flex-row lg:items-center lg:justify-between lg:pt-4;
+  }
+
+  &__consent {
+    @apply flex cursor-pointer items-start gap-3 text-sm font-medium text-white lg:max-w-xl lg:text-base;
+
+    input {
+      @apply mt-1 h-4 w-4 shrink-0 cursor-pointer rounded-sm border-white text-primary focus:ring-white;
+    }
+
+    a {
+      @apply font-bold text-white underline underline-offset-2 hover:no-underline;
+    }
+  }
+
+  &__submit {
+    @apply inline-flex w-full items-center justify-center gap-2 rounded-none bg-white px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-primary no-underline transition-opacity hover:opacity-90 lg:w-auto lg:px-10 lg:text-base;
+
+    svg {
+      @apply h-4 w-4;
+    }
+  }
+}
+
+/*
+ * Contact Form 7: CF7 wraps fields in .wpcf7-form-control-wrap and may add <p> tags.
+ * Normalize so the layout matches the static career-details apply form.
+ */
+/* Wrapper only (form carries .career-details__apply-form in theme); match static layout */
+.career-details__apply-form--cf7 {
+  @apply w-full;
+
+  .wpcf7 {
+    @apply w-full max-w-none;
+  }
+
+  /* Vertical rhythm matches static form; width/clamp come from .career-details__apply-form on <form> */
+  form.wpcf7-form {
+    @apply m-0 flex w-full flex-col gap-10 p-0 lg:gap-12;
+  }
+
+  .wpcf7-form p {
+    @apply m-0 w-full;
+  }
+
+  .career-details__apply-row--2 {
+    @apply flex flex-col gap-y-5 lg:grid lg:grid-cols-2 lg:gap-x-12 lg:gap-y-6;
+  }
+
+  .career-details__apply-row--2 > br {
+    @apply hidden;
+  }
+
+  .career-details__apply-row--2 > p,
+  .career-details__apply-row--2 p {
+    @apply contents w-auto max-w-none;
+  }
+
+  form.wpcf7-form .career-details__apply-footer > p,
+  form.wpcf7-form .career-details__apply-footer p {
+    @apply m-0 w-auto min-w-0 flex-shrink-0;
+  }
+
+  .wpcf7-form-control-wrap {
+    @apply block w-full min-w-0;
+  }
+
+  /* Hoist file input next to label so input:focus + label works like static HTML */
+  .career-details__upload .wpcf7-form-control-wrap {
+    @apply contents;
+  }
+
+  /* CF7 adds .wpcf7-not-valid on the control wrap when validation fails */
+  .wpcf7-form-control-wrap.wpcf7-not-valid {
+    .career-details__input,
+    .career-details__select,
+    .career-details__textarea {
+      @apply border-b-red-400;
+    }
+  }
+
+  /* .screen-reader-response, .wpcf7-not-valid-tip, .nsc-cv-stage-msg: single-job.twig <style> + JS */
+
+  .wpcf7-response-output {
+    @apply m-0 mt-4 w-full rounded-md border-2 px-4 py-3 text-sm font-medium;
+  }
+
+  /* CF7 toggles form state classes: sent | failed | aborted | spam | invalid | … */
+  form.wpcf7-form.init .wpcf7-response-output,
+  form.wpcf7-form.resetting .wpcf7-response-output,
+  form.wpcf7-form.submitting .wpcf7-response-output {
+    @apply hidden;
+  }
+
+  form.wpcf7-form.sent .wpcf7-response-output {
+    @apply border-emerald-400 bg-emerald-500/20 text-emerald-100;
+  }
+
+  form.wpcf7-form.failed .wpcf7-response-output,
+  form.wpcf7-form.aborted .wpcf7-response-output {
+    @apply border-red-500 bg-red-500/20 text-red-100;
+  }
+
+  form.wpcf7-form.spam .wpcf7-response-output {
+    @apply border-orange-500 bg-orange-500/20 text-orange-100;
+  }
+
+  form.wpcf7-form.invalid .wpcf7-response-output,
+  form.wpcf7-form.unaccepted .wpcf7-response-output,
+  form.wpcf7-form.payment-required .wpcf7-response-output {
+    @apply border-red-500 bg-red-500/20 text-red-100;
+  }
+
+  .career-details__consent .wpcf7-form-control-wrap {
+    @apply inline-block w-full max-w-none align-top;
+  }
+
+  .career-details__consent .wpcf7-list-item {
+    @apply m-0 flex items-start gap-3 p-0;
+  }
+
+  .career-details__consent .wpcf7-list-item label {
+    @apply m-0 flex cursor-pointer items-start gap-3 text-sm font-medium text-white lg:text-base;
+  }
+
+  .career-details__consent input[type="checkbox"] {
+    @apply mt-1 h-4 w-4 shrink-0 cursor-pointer rounded-sm border-white text-primary focus:ring-white;
+  }
+
+  input.wpcf7-submit,
+  button.wpcf7-submit {
+    @apply cursor-pointer border-0;
+  }
+}
+
+.page-career-details {
+  .desktop-header.transparent-floating .logo-white,
+  .desktop-header.transparent-floating .logo {
+    @apply transition-opacity duration-300;
+  }
+
+  .mobile-header.transparent-floating .mobile-logo-white,
+  .mobile-header.transparent-floating .mobile-logo-colored {
+    @apply transition-opacity duration-300;
+  }
+}

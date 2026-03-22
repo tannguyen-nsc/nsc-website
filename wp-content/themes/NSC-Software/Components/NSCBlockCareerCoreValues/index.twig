@@ -1,0 +1,28 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockCareerCoreValues">
+  <section class="core-values">
+    {% if theme.buildUri %}
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/values-bg.png" alt="" class="lg:block hidden bg" loading="eager" fetchpriority="high" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/mob-values-bg.png" alt="" class="lg:hidden bg" loading="eager" fetchpriority="high" />
+    {% endif %}
+    <div class="heading light">
+      {% if headingIcon.url or headingIcon.src %}
+        <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+      {% elseif theme.buildUri %}
+        <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" loading="lazy" />
+      {% endif %}
+      <h2>{{ title|default('CORE VALUES')|e }}</h2>
+    </div>
+    <div class="wrapper">
+      {% for row in values|default([]) %}
+        <div class="col">
+          <h3>{{ row.valueTitle|default('')|e }}</h3>
+          {% if row.valueDescription %}
+            <p>{{ row.valueDescription|e|nl2br }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

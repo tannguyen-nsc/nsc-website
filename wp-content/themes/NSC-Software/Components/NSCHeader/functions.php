@@ -111,8 +111,8 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
         $data['headerClass'] = '';
     }
 
-    // Blog single: match blog-details layout (transparent bar + white logos on both mobile and desktop).
-    if (is_singular('post')) {
+    // Blog / job single: match blog-details & career-details layout (transparent bar + white logos).
+    if (is_singular('post') || is_singular('job')) {
         $data['headerType'] = 'transparent_floating';
         $data['headerClass'] = 'transparent-floating';
     }

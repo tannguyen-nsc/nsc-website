@@ -2542,44 +2542,48 @@
   }
 
   /**
-   * Blog post share links: Facebook / LinkedIn sharers with current page URL (uses canonical when present).
+   * Blog + job single share links: Facebook / LinkedIn sharers with current page URL (canonical when present).
    */
   function initBlogShareLinks() {
-    const container = document.querySelector('.blog-details__share-icons');
-    if (!container) return;
+    const containers = document.querySelectorAll(
+      '.blog-details__share-icons, .career-details__share-icons'
+    );
+    if (!containers.length) return;
     const canonical = document.querySelector('link[rel="canonical"]');
     const pageUrl = (canonical && canonical.href) || window.location.href;
     const encoded = encodeURIComponent(pageUrl);
     const popupFeatures =
       'width=626,height=436,menubar=no,toolbar=no,status=no,scrollbars=yes,resizable=yes';
 
-    container.querySelectorAll('[data-blog-share]').forEach((anchor) => {
-      const kind = anchor.getAttribute('data-blog-share');
-      let shareUrl = '';
-      if (kind === 'facebook') {
-        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encoded}`;
-      } else if (kind === 'linkedin') {
-        shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encoded}`;
-      }
-      if (!shareUrl) return;
+    containers.forEach((container) => {
+      container.querySelectorAll('[data-blog-share]').forEach((anchor) => {
+        const kind = anchor.getAttribute('data-blog-share');
+        let shareUrl = '';
+        if (kind === 'facebook') {
+          shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encoded}`;
+        } else if (kind === 'linkedin') {
+          shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encoded}`;
+        }
+        if (!shareUrl) return;
 
-      anchor.href = shareUrl;
-      anchor.addEventListener('click', (e) => {
-        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
-          return;
-        }
-        e.preventDefault();
-        const win = window.open(shareUrl, 'blogShare', popupFeatures);
-        if (win) {
-          win.focus();
-          try {
-            win.opener = null;
-          } catch (err) {
-            /* ignore */
+        anchor.href = shareUrl;
+        anchor.addEventListener('click', (e) => {
+          if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+            return;
           }
-        } else {
-          window.location.href = shareUrl;
-        }
+          e.preventDefault();
+          const win = window.open(shareUrl, 'blogShare', popupFeatures);
+          if (win) {
+            win.focus();
+            try {
+              win.opener = null;
+            } catch (err) {
+              /* ignore */
+            }
+          } else {
+            window.location.href = shareUrl;
+          }
+        });
       });
     });
   }

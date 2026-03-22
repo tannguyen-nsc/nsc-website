@@ -8,6 +8,7 @@ declare(strict_types=1);
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&home_only=1
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&blogs_only=1
+ *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&career_only=1
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&policies_only=1
  *
  * Notes:
@@ -25,6 +26,7 @@ declare(strict_types=1);
  * - URL fields in the seed use home_url('/') so saved data passes ACF URL validation.
  * - Add home_only=1 to only create/update the Home page and set it as front page.
  * - Add blogs_only=1 to only create/update the Blogs page (default template + Hero + Blogs Archive components).
+ * - Add career_only=1 to only create/update the Career page (default template + Hero + We are NSC + Core values + Jobs archive / Vue).
  * - Add policies_only=1 to only create/update Privacy Policy, Cookies Policy, and Terms of Use pages.
  * - Add content_test=1 to prepend "[test] " to text (policy page titles only; policy HTML body preserved) so you can verify in the CMS.
  * - Privacy Policy, Cookies Policy, Terms of Use use default template and one NSC Block: Policy Page; content from policy-content/*.html.
@@ -69,7 +71,7 @@ $pages = [
     ['title' => 'About', 'slug' => 'about', 'template' => ''], // default = page.twig + pageComponents (About Us sections)
     ['title' => 'AI', 'slug' => 'ai', 'template' => ''], // default = page.twig + pageComponents (AI sections)
     ['title' => 'Blogs', 'slug' => 'blogs', 'template' => ''], // default + Hero + Blogs (Archive), Vue uses WP posts
-    ['title' => 'Career', 'slug' => 'career', 'template' => 'template-career.php'],
+    ['title' => 'Career', 'slug' => 'career', 'template' => ''], // default + pageComponents (frontend/src/career.html sections)
     ['title' => 'Case Studies', 'slug' => 'case-studies', 'template' => 'template-case-studies.php'],
     ['title' => 'Contact', 'slug' => 'contact', 'template' => ''], // default = page.twig + pageComponents (Contact + Global Presence)
     ['title' => 'Our Capabilites', 'slug' => 'our-capabilites', 'template' => ''], // default = page.twig + pageComponents (Hero + Technology Capability)
@@ -133,6 +135,39 @@ function nscGetTestimonialBuildImageIds(): array
         $avatarIds[] = $id > 0 ? $id : 0;
     }
     return ['logo_ids' => $logoIds, 'testimonial_avatar_ids' => $avatarIds];
+}
+
+/**
+ * Sideload one asset from theme frontend/build/img into the media library. Returns attachment ID or 0.
+ */
+function nscSideloadBuildImageByFilename(string $filename): int
+{
+    $buildUri = get_template_directory_uri() . '/frontend/build';
+    $existing = get_posts([
+        'post_type'      => 'attachment',
+        'post_status'    => 'any',
+        'posts_per_page' => 1,
+        'meta_query'     => [['key' => 'nsc_build_asset', 'value' => $filename, 'compare' => '=']],
+    ]);
+    if (!empty($existing)) {
+        return (int) $existing[0]->ID;
+    }
+    $url = $buildUri . '/img/' . rawurlencode($filename);
+    $tmp = download_url($url);
+    if (is_wp_error($tmp)) {
+        return 0;
+    }
+    $file = ['name' => $filename, 'tmp_name' => $tmp];
+    $id   = media_handle_sideload($file, 0, $filename);
+    if (is_file($tmp)) {
+        @unlink($tmp);
+    }
+    if (is_wp_error($id)) {
+        return 0;
+    }
+    update_post_meta((int) $id, 'nsc_build_asset', $filename);
+
+    return (int) $id;
 }
 
 /**
@@ -823,6 +858,75 @@ function getBlogsPageComponents(): array
 }
 
 /**
+ * Career page: Hero (dark, career copy) + We are NSC + Core values + Open positions (Vue + CPT job / job_category).
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getCareerPageComponents(): array
+{
+    $heroImgId = nscSideloadBuildImageByFilename('hero-career.png');
+
+    $weAreBody = '<p>Founded in Vietnam with a global vision, NSC Software delivers innovative software solutions that empower enterprises worldwide. We foster a <b class="text-primary">collaborative</b>, <b class="text-primary">performance-driven</b>, and <b class="text-primary">learning-focused culture</b>, where our disciplined and passionate team tackles challenges with precision.</p>'
+        . '<p>Committed to <b class="text-primary">global standards</b> and continuous growth, we invest in technical and language training, enabling our team to excel on international projects. Our goal is to be <b class="text-primary">Asia’s most trusted partner in software development and consulting</b>, positioning Vietnam as a leading global IT hub.</p>';
+
+    $hero = [
+        'acf_fc_layout' => 'nscBlockHero',
+        'heroStyle'     => 'dark',
+        'headline'      => 'Careers at NSC Software <br> At NSC, we <span class="highlight primary">CARE</span> <br> about your Careers!',
+        'description'   => '',
+        'button'        => ['label' => '', 'url' => '', 'openInNewTab' => 0],
+        'options'       => ['theme' => ''],
+    ];
+    if ($heroImgId > 0) {
+        $hero['image'] = $heroImgId;
+    }
+
+    return [
+        $hero,
+        [
+            'acf_fc_layout' => 'nscBlockCareerWeAreNsc',
+            'heading'       => 'WE ARE NSC <br class="hidden xl:block"> SOFTWARE',
+            'body'          => $weAreBody,
+            'ctaText'       => 'Join NSC and help shape the future of software',
+            'ctaUrl'        => '#open-positions-app',
+            'options'       => ['theme' => ''],
+        ],
+        [
+            'acf_fc_layout' => 'nscBlockCareerCoreValues',
+            'title'         => 'CORE VALUES',
+            'values'        => [
+                ['valueTitle' => 'Premier', 'valueDescription' => 'We deliver premier software development and consulting services, ensuring excellence in every solution we provide.'],
+                ['valueTitle' => 'Talented', 'valueDescription' => 'We empower Vietnam\'s top engineers to demonstrate their capabilities, innovate boldly, and make a global impact.'],
+                ['valueTitle' => 'Innovative', 'valueDescription' => 'We embrace emerging technologies and creative thinking to build future-ready, impactful solutions for our clients.'],
+                ['valueTitle' => 'Committed', 'valueDescription' => 'We are dedicated to our clients\' success, going the extra mile to deliver value, quality, and long-term partnerships.'],
+                ['valueTitle' => 'Trusted', 'valueDescription' => 'We build long-lasting relationships through integrity, transparency, and consistent performance across every engagement.'],
+            ],
+            'options'       => ['theme' => ''],
+        ],
+        [
+            'acf_fc_layout' => 'nscBlockJobsArchive',
+            'title'         => 'OPEN POSITIONS',
+            'intro'         => '<p>At NSC, we\'re always looking for passionate talents to grow with us. Explore our open roles and join a collaborative, global team shaping impactful engineering solutions.</p>',
+            'listLabels'    => [
+                'allPositionsLabel'       => 'All Positions',
+                'allPositionsMobileLabel' => 'All',
+                'previous'                => 'Previous',
+                'next'                    => 'Next',
+                'noPositionsFound'        => 'No positions found.',
+                'loadingText'             => 'Loading positions...',
+                'errorText'               => 'Could not load positions.',
+                'applyNow'                => 'Apply Now',
+            ],
+            'options'       => [
+                'jobsPerPage' => 5,
+                'defaultTab'  => 'all',
+                'theme'       => '',
+            ],
+        ],
+    ];
+}
+
+/**
  * Contact page components matching frontend/build/contact.html (Contact section + Global Presence).
  * Live content by default; use content_test=1 to prepend "[test] " to text. formAction and phoneLink preserved.
  *
@@ -923,6 +1027,7 @@ function applyContentTest(array $components): array
 
 $homeOnly      = isset($_GET['home_only']) && $_GET['home_only'] === '1';
 $blogsOnly     = isset($_GET['blogs_only']) && $_GET['blogs_only'] === '1';
+$careerOnly    = isset($_GET['career_only']) && $_GET['career_only'] === '1';
 $policiesOnly  = isset($_GET['policies_only']) && $_GET['policies_only'] === '1';
 $contentTest   = isset($_GET['content_test']) && $_GET['content_test'] === '1';
 if ($homeOnly) {
@@ -932,6 +1037,10 @@ if ($homeOnly) {
 } elseif ($blogsOnly) {
     $pages = array_filter($pages, static function (array $p) {
         return $p['slug'] === 'blogs';
+    });
+} elseif ($careerOnly) {
+    $pages = array_filter($pages, static function (array $p) {
+        return $p['slug'] === 'career';
     });
 } elseif ($policiesOnly) {
     $policySlugs = ['privacy-policy', 'cookies-policy', 'terms-of-use'];
@@ -1135,6 +1244,28 @@ foreach ($pages as $page) {
             'status'  => $action,
             'message' => $msg,
         ];
+    } elseif ($slug === 'career') {
+        // Career page: Hero + We are NSC + Core values + Jobs archive (Vue; tabs from job_category, rows from CPT job).
+        $components = getCareerPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+        if (function_exists('update_field')) {
+            update_field('pageComponents', [], (int) $pageId);
+            update_field('pageComponents', $components, (int) $pageId);
+        } else {
+            delete_post_meta((int) $pageId, 'pageComponents');
+            update_post_meta((int) $pageId, 'pageComponents', $components);
+        }
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Career: Hero + We are NSC + Core values + Jobs archive / Vue)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
     } elseif ($slug === 'privacy-policy' || $slug === 'cookies-policy' || $slug === 'terms-of-use') {
         $policyTitles = [
             'privacy-policy'  => 'Privacy Policy for NSC Software',
@@ -1186,7 +1317,7 @@ echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Page Setup</ti
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body>';
 echo '<h1>NSC Pages Setup</h1>';
-echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>blogs_only=1</code> to update only the Blogs page (Hero + Archive). Add <code>policies_only=1</code> to update only Privacy Policy, Cookies Policy, and Terms of Use. Add <code>content_test=1</code> to prepend "[test] " to text so you can verify the CMS loads editable data.</p>';
+echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>blogs_only=1</code> to update only the Blogs page (Hero + Archive). Add <code>career_only=1</code> to update only the Career page (Hero + We are NSC + Core values + Jobs archive / Vue). Add <code>policies_only=1</code> to update only Privacy Policy, Cookies Policy, and Terms of Use. Add <code>content_test=1</code> to prepend "[test] " to text so you can verify the CMS loads editable data. Job listings: <code>create-nsc-job-posts.php?token=nsc-create-job-posts-2026</code>.</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $statusClass = $row['status'] === 'error' ? 'error' : 'ok';

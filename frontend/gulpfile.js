@@ -77,9 +77,17 @@ function devScripts() {
     `${options.paths.src.js}/libs/**/*.js`,
     `${options.paths.src.js}/**/*.js`,
     `!${options.paths.src.js}/**/external/*`,
+    `!${options.paths.src.js}/job-apply/**/*.js`,
   ])
     .pipe(concat({ path: "scripts.js" }))
     .pipe(dest(options.paths.dist.js));
+}
+
+/** Standalone WP job-apply scripts (enqueued separately; not part of scripts.js). */
+function devJobApplyScripts() {
+  return src(`${options.paths.src.js}/job-apply/**/*.js`).pipe(
+    dest(`${options.paths.dist.js}/job-apply`)
+  );
 }
 
 function devExternalScripts() {
@@ -114,7 +122,10 @@ function watchFiles() {
     [options.config.tailwindjs, `${options.paths.src.css}/**/*.scss`],
     series(devStyles, previewReload)
   );
-  watch(`${options.paths.src.js}/**/*.js`, series(devScripts, previewReload));
+  watch(
+    `${options.paths.src.js}/**/*.js`,
+    series(devScripts, devJobApplyScripts, previewReload)
+  );
   watch(`${options.paths.src.js}/external/**/*.js`, series(devExternalScripts, previewReload));
   watch(`${options.paths.src.img}/**/*`, series(devImages, previewReload));
   watch(`${options.paths.src.fonts}/**/*`, series(devFonts, previewReload));
@@ -179,10 +190,17 @@ function prodScripts() {
     `${options.paths.src.js}/libs/**/*.js`,
     `${options.paths.src.js}/**/*.js`,
     `!${options.paths.src.js}/**/external/*`,
+    `!${options.paths.src.js}/job-apply/**/*.js`,
   ])
     .pipe(concat({ path: "scripts.js" }))
     .pipe(uglify())
     .pipe(dest(options.paths.build.js));
+}
+
+function prodJobApplyScripts() {
+  return src(`${options.paths.src.js}/job-apply/**/*.js`)
+    .pipe(uglify())
+    .pipe(dest(`${options.paths.build.js}/job-apply`));
 }
 
 function prodExternalScripts() {
@@ -277,7 +295,7 @@ function buildFinish(done) {
 
 exports.default = series(
   devClean, // Clean Dist Folder
-  parallel(devStyles, devScripts, devExternalScripts, devImages, devFonts, devThirdParty, devHTML), //Run All tasks in parallel
+  parallel(devStyles, devScripts, devJobApplyScripts, devExternalScripts, devImages, devFonts, devThirdParty, devHTML), //Run All tasks in parallel
   livePreview, // Live Preview Build
   watchFiles // Watch for Live Changes
 );
@@ -287,6 +305,7 @@ exports.prod = series(
   parallel(
     prodStyles,
     prodScripts,
+    prodJobApplyScripts,
     prodExternalScripts,
     prodImages,
     prodHTML,
