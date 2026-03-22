@@ -148,7 +148,7 @@
   }
 
   &__apply-wrapper {
-    @apply relative mx-auto w-full max-w-full bg-[url('../img/apply-form-bg.png')] bg-cover bg-center bg-no-repeat px-5 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:max-w-[90%] lg:px-10 lg:py-12 xl:max-w-[1140px] xl:px-12 xl:py-14 2xl:max-w-[1280px];
+    @apply relative mx-auto w-full max-w-full bg-[url('../img/apply-form-bg.png')] bg-cover bg-right-top bg-no-repeat px-5 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:max-w-[90%] lg:px-10 lg:py-12 xl:max-w-[1140px] xl:px-12 xl:py-14 2xl:max-w-[1280px];
   }
 
   /* Uses global `section .heading` + `.light` (white title on gradient) */
@@ -158,7 +158,23 @@
 
   /* 960px @ 1920px → 50vw ratio, max 960px, min 20rem on small screens */
   &__apply-form {
-    @apply mx-auto flex w-full max-w-[clamp(20rem,50vw,960px)] flex-col gap-10 lg:gap-12;
+    @apply mx-auto flex w-full max-w-[clamp(20rem,50vw,960px)] flex-col gap-6;
+
+    /* Location <select>: chevron + layout; specificity beats @tailwindcss/forms `select`. */
+    select.career-details__select {
+      @apply [color-scheme:light] w-full cursor-pointer appearance-none rounded-none border-0 border-b-2 border-b-[#99CDE4] border-t-0 border-l-0 border-r-0 bg-white/20 bg-[url('../img/chevron-down-white.svg')] bg-[length:1.25rem_1.25rem] bg-[right_0.65rem_center] bg-no-repeat px-3 py-2.5 pr-11 text-sm font-semibold uppercase tracking-wide text-white shadow-none transition-[border-color] duration-150;
+      @apply focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:border-b-[#99CDE4] focus:bg-[url('../img/chevron-down-white.svg')] focus:outline-none focus:ring-0 focus-visible:bg-[url('../img/chevron-down-white.svg')] focus-visible:outline-none;
+      @apply lg:py-3 lg:text-base;
+
+      option,
+      optgroup {
+        @apply bg-white font-medium text-black;
+      }
+    }
+  }
+
+  &__apply-form--cf7.hidden-fields-container {
+    @apply hidden;
   }
 
   &__apply-row {
@@ -207,19 +223,8 @@
   &__textarea {
     @apply min-h-[3rem] resize-y font-medium normal-case tracking-normal text-white placeholder:uppercase;
   }
-
-  select.career-details__select {
-    @apply [color-scheme:light] w-full cursor-pointer appearance-none rounded-none border-0 border-b-2 border-b-[#99CDE4] border-t-0 border-l-0 border-r-0 bg-white/20 bg-[url('../img/chevron-down-white.svg')] bg-[length:1.25rem_1.25rem] bg-[right_0.65rem_center] bg-no-repeat px-3 py-2.5 pr-11 text-sm font-semibold uppercase tracking-wide text-white shadow-none transition-[border-color] duration-150;
-    @apply focus:border-t-0 focus:border-l-0 focus:border-r-0 focus:border-b-[#99CDE4] focus:bg-[url('../img/chevron-down-white.svg')] focus:outline-none focus:ring-0 focus-visible:bg-[url('../img/chevron-down-white.svg')] focus-visible:outline-none;
-    @apply lg:py-3 lg:text-base;
-
-    option,
-    optgroup {
-      @apply bg-white font-medium text-black;
-    }
-  }
-
-  /* Autofill: white/20 field + white text */
+  
+  /* Autofill: white/20 field + white text (webkit + arbitrary properties) */
   &__input:-webkit-autofill,
   &__textarea:-webkit-autofill,
   &__select:-webkit-autofill {
@@ -232,14 +237,14 @@
 
   &__upload {
     @apply relative w-full;
+
+    &:focus-within .career-details__upload-label {
+      @apply ring-2 ring-white ring-offset-2 ring-offset-transparent;
+    }
   }
 
   &__upload-input {
     @apply sr-only;
-
-    &:focus + .career-details__upload-label {
-      @apply ring-2 ring-white ring-offset-2 ring-offset-transparent;
-    }
   }
 
   &__upload-label {
@@ -295,7 +300,8 @@
  * Contact Form 7: CF7 wraps fields in .wpcf7-form-control-wrap and may add <p> tags.
  * Normalize so the layout matches the static career-details apply form.
  */
-/* Wrapper only (form carries .career-details__apply-form in theme); match static layout */
+/* Wrapper only (form carries .career-details__apply-form in theme); match static layout — no extra max-width on wrapper */
+
 .career-details__apply-form--cf7 {
   @apply w-full;
 
@@ -305,13 +311,14 @@
 
   /* Vertical rhythm matches static form; width/clamp come from .career-details__apply-form on <form> */
   form.wpcf7-form {
-    @apply m-0 flex w-full flex-col gap-10 p-0 lg:gap-12;
+    @apply my-0 mx-auto flex w-full max-w-[clamp(20rem,50vw,960px)] flex-col gap-8 p-0; 
   }
 
   .wpcf7-form p {
     @apply m-0 w-full;
   }
 
+  /* Two-column rows: CF7 <p> uses display:contents so children participate in the grid */
   .career-details__apply-row--2 {
     @apply flex flex-col gap-y-5 lg:grid lg:grid-cols-2 lg:gap-x-12 lg:gap-y-6;
   }
@@ -325,18 +332,68 @@
     @apply contents w-auto max-w-none;
   }
 
+  /* Footer sits inside form (not .wpcf7-form inside .footer — previous selector matched nothing). */
   form.wpcf7-form .career-details__apply-footer > p,
   form.wpcf7-form .career-details__apply-footer p {
     @apply m-0 w-auto min-w-0 flex-shrink-0;
+  }
+
+  /*
+   * Consent error tip is moved after label.career-details__consent (JS): stack on small screens;
+   * on lg keep submit on the right with the tip full-width below the consent row.
+   */
+  form.wpcf7-form .career-details__apply-footer {
+    @apply flex flex-col gap-3;
+    @apply lg:flex-row lg:flex-wrap lg:items-start lg:justify-between lg:gap-x-12 lg:gap-y-2;
+  }
+
+  form.wpcf7-form .career-details__apply-footer > label.career-details__consent {
+    @apply lg:order-1 lg:min-w-0 lg:max-w-xl lg:flex-1;
+  }
+
+  form.wpcf7-form .career-details__apply-footer > button.wpcf7-submit {
+    @apply lg:order-2 lg:shrink-0;
+  }
+
+  form.wpcf7-form .career-details__apply-footer > .wpcf7-not-valid-tip[data-nsc-consent-tip] {
+    @apply lg:order-3 lg:basis-full lg:w-full;
   }
 
   .wpcf7-form-control-wrap {
     @apply block w-full min-w-0;
   }
 
-  /* Hoist file input next to label so input:focus + label works like static HTML */
+  /* Label first, then CF7 wrap (input + tips) — same vertical rhythm as other fields */
   .career-details__upload .wpcf7-form-control-wrap {
-    @apply contents;
+    @apply mt-2 block w-full min-w-0;
+  }
+
+  .career-details__apply-form--cf7 .career-details__upload {
+    @apply flex w-full flex-col gap-0;
+  }
+
+  .career-details__upload--has-staged .career-details__upload-label {
+    @apply hidden;
+  }
+
+  .career-details__cv-staged {
+    @apply w-full border-2 border-dashed border-emerald-400/80 bg-emerald-500/10 px-4 py-4;
+  }
+
+  .career-details__cv-staged-inner {
+    @apply flex items-center justify-between gap-3;
+  }
+
+  .career-details__cv-staged-name {
+    @apply min-w-0 flex-1 truncate text-sm font-semibold text-emerald-100 lg:text-base;
+  }
+
+  .career-details__cv-staged-remove {
+    @apply flex h-10 w-10 shrink-0 cursor-pointer items-center justify-center rounded border-0 bg-white/10 text-white transition-colors hover:bg-white/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-white;
+  }
+
+  .career-details__upload .wpcf7-not-valid-tip {
+    @apply w-full;
   }
 
   /* CF7 adds .wpcf7-not-valid on the control wrap when validation fails */
@@ -348,10 +405,49 @@
     }
   }
 
-  /* .screen-reader-response, .wpcf7-not-valid-tip, .nsc-cv-stage-msg: single-job.twig <style> + JS */
+  /* .screen-reader-response, .wpcf7-not-valid-tip: single-job.twig <style> + nsc-job-apply-position-lock.js inline */
 
+  /* CF7 CSS off on job singles; CF7 .wpcf7-spinner removed in JS — custom row below footer */
+  .wpcf7-spinner {
+    @apply hidden;
+  }
+
+  .career-details__apply-footer + .nsc-job-apply-loading {
+    @apply mt-2 hidden items-center;
+  }
+
+  form.wpcf7-form.submitting .career-details__apply-footer + .nsc-job-apply-loading {
+    @apply flex;
+  }
+
+  .nsc-job-apply-loading__icon {
+    @apply box-border h-5 w-5 shrink-0 rounded-full border-2 border-solid border-white/25 border-t-white animate-spin;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nsc-job-apply-loading__icon {
+      animation: nsc-job-apply-loading-pulse 1.2s ease-in-out infinite;
+    }
+  }
+
+  @keyframes nsc-job-apply-loading-pulse {
+    50% {
+      opacity: 0.35;
+    }
+  }
+
+  /* Same typography as inline validation / response errors: 1rem / 1.25 / semibold */
   .wpcf7-response-output {
-    @apply m-0 mt-4 w-full rounded-md border-2 px-4 py-3 text-sm font-medium;
+    @apply m-0 w-full border-0 p-0 text-base font-semibold leading-5;
+  }
+
+  .career-details__apply-footer + .wpcf7-response-output,
+  .career-details__apply-footer + .nsc-job-apply-loading + .wpcf7-response-output {
+    @apply mt-2;
+  }
+
+  form.wpcf7-form.resetting .wpcf7-response-output {
+    display: none !important;
   }
 
   /* CF7 toggles form state classes: sent | failed | aborted | spam | invalid | … */
@@ -362,22 +458,28 @@
   }
 
   form.wpcf7-form.sent .wpcf7-response-output {
-    @apply border-emerald-400 bg-emerald-500/20 text-emerald-100;
+    @apply border-0 bg-transparent;
+    /* !important beats a transient red inline during CF7 DOM updates */
+    color: #6ee7b9 !important;
+    transition: opacity 0.15s ease;
   }
 
   form.wpcf7-form.failed .wpcf7-response-output,
   form.wpcf7-form.aborted .wpcf7-response-output {
-    @apply border-red-500 bg-red-500/20 text-red-100;
+    @apply border-0 bg-transparent;
+    color: #ef4444 !important;
   }
 
   form.wpcf7-form.spam .wpcf7-response-output {
-    @apply border-orange-500 bg-orange-500/20 text-orange-100;
+    @apply border-0 bg-transparent;
+    color: #fb923c !important;
   }
 
   form.wpcf7-form.invalid .wpcf7-response-output,
   form.wpcf7-form.unaccepted .wpcf7-response-output,
   form.wpcf7-form.payment-required .wpcf7-response-output {
-    @apply border-red-500 bg-red-500/20 text-red-100;
+    @apply border-0 bg-transparent;
+    color: #ef4444 !important;
   }
 
   .career-details__consent .wpcf7-form-control-wrap {

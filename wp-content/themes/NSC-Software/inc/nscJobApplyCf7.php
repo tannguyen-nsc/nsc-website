@@ -8,6 +8,105 @@ declare(strict_types=1);
  * Form field name must be `job_position` (see create-nsc-cf7-form.php apply form).
  */
 
+/**
+ * Custom / overridden CF7 "Messages" strings for the job application form (editable in WP admin).
+ *
+ * @return array<string, string>
+ */
+function nsc_job_apply_cf7_message_overrides(): array
+{
+    return [
+        'upload_file_type_invalid' => __('Please upload a PDF, DOC, or DOCX file.', 'NscSoftware'),
+        'upload_file_too_large' => __('File is too large (max 5 MB).', 'NscSoftware'),
+        'upload_failed' => __('CV upload failed. You can still submit with LinkedIn or try again.', 'NscSoftware'),
+        'nsc_cv_uploading' => __('Uploading CV…', 'NscSoftware'),
+        'nsc_cv_uploaded' => __('CV uploaded: %s', 'NscSoftware'),
+        'nsc_cv_network_error' => __('Network error while uploading. Check your connection and try again.', 'NscSoftware'),
+        'nsc_cv_empty_file' => __('The file is empty. Please choose a valid CV.', 'NscSoftware'),
+        'nsc_cv_bad_mime' => __('Please upload a PDF, DOC, or DOCX file (type not accepted).', 'NscSoftware'),
+    ];
+}
+
+/** Register extra message keys so they appear in CF7 admin and survive wpcf7_sanitize_messages(). */
+add_filter('wpcf7_messages', static function (array $messages): array {
+    $custom = [
+        'nsc_cv_uploading' => [
+            'description' => __('Job apply: shown while the CV is uploading (staging).', 'NscSoftware'),
+        ],
+        'nsc_cv_uploaded' => [
+            'description' => __('Job apply: success line; use %s for the file name.', 'NscSoftware'),
+        ],
+        'nsc_cv_network_error' => [
+            'description' => __('Job apply: network error while staging CV.', 'NscSoftware'),
+        ],
+        'nsc_cv_empty_file' => [
+            'description' => __('Job apply: chosen file is empty.', 'NscSoftware'),
+        ],
+        'nsc_cv_bad_mime' => [
+            'description' => __('Job apply: file MIME type not accepted.', 'NscSoftware'),
+        ],
+    ];
+    $over = nsc_job_apply_cf7_message_overrides();
+    foreach ($custom as $key => $meta) {
+        if (!isset($over[$key])) {
+            continue;
+        }
+        $messages[$key] = [
+            'description' => $meta['description'],
+            'default' => $over[$key],
+        ];
+    }
+
+    return $messages;
+}, 15, 1);
+
+/**
+ * Fill missing job-apply message strings (e.g. old DB rows) from theme defaults.
+ *
+ * @param array<string, string> $messages
+ * @return array<string, string>
+ */
+add_filter('wpcf7_contact_form_property_messages', static function ($messages, $contact_form) {
+    if (!$contact_form instanceof \WPCF7_ContactForm || !function_exists('nsc_job_apply_cf7_form_id')) {
+        return $messages;
+    }
+    if (nsc_job_apply_cf7_form_id() <= 0 || (int) $contact_form->id() !== nsc_job_apply_cf7_form_id()) {
+        return $messages;
+    }
+    $messages = is_array($messages) ? $messages : [];
+    foreach (nsc_job_apply_cf7_message_overrides() as $key => $value) {
+        if (!isset($messages[$key]) || $messages[$key] === '' || $messages[$key] === null) {
+            $messages[$key] = $value;
+        }
+    }
+
+    return $messages;
+}, 10, 2);
+
+/**
+ * Job apply: validate privacy acceptance on submit (not by disabling the submit button).
+ * CF7 adds class wpcf7-acceptance-as-validation + runs wpcf7_validate_acceptance when this is on.
+ *
+ * @param string $settings
+ * @return string
+ */
+add_filter('wpcf7_contact_form_property_additional_settings', static function ($settings, $contact_form) {
+    if (!$contact_form instanceof \WPCF7_ContactForm || !function_exists('nsc_job_apply_cf7_form_id')) {
+        return $settings;
+    }
+    if (nsc_job_apply_cf7_form_id() <= 0 || (int) $contact_form->id() !== nsc_job_apply_cf7_form_id()) {
+        return $settings;
+    }
+    $settings = is_string($settings) ? $settings : '';
+    if (preg_match('/^acceptance_as_validation\s*:/m', $settings)) {
+        return $settings;
+    }
+    $settings = trim($settings);
+    $line = 'acceptance_as_validation: on';
+
+    return $settings === '' ? 'autop: off' . "\n" . $line : $settings . "\n" . $line;
+}, 10, 2);
+
 /** Avoid CF7 default styles conflicting with career-details apply layout on job singles. */
 add_filter('wpcf7_load_css', static function ($load) {
     if (function_exists('is_singular') && is_singular('job')) {
@@ -98,7 +197,8 @@ add_filter('wpcf7_contact_form_property_form', static function ($form, $contact_
     }
 
     // [submit] renders <input> (no inner HTML). Use <button> + chevron SVG like career-details.html.
-    $submitWithIcon = '<button type="submit" class="wpcf7-form-control wpcf7-submit has-spinner career-details__submit">Submit application <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>';
+    // No has-spinner: theme uses .nsc-job-apply-loading (see nsc-job-apply-position-lock.js + _career_details.scss).
+    $submitWithIcon = '<button type="submit" class="wpcf7-form-control wpcf7-submit career-details__submit">Submit application <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>';
     $legacySubmit = [
         '[submit class:career-details__submit "Submit application"]',
         "[submit class:career-details__submit 'Submit application']",
@@ -108,6 +208,16 @@ add_filter('wpcf7_contact_form_property_form', static function ($form, $contact_
             $form = str_replace($legacy, $submitWithIcon, $form);
         }
     }
+
+    // CV upload: label above .wpcf7-form-control-wrap (same pattern as other fields: label, then control).
+    $uploadOld = '<div class="career-details__upload">[file cv_file id:career-cv class:career-details__upload-input filetypes:doc|docx|pdf limit:5242880]<label for="career-cv" class="career-details__upload-label"><span class="career-details__upload-icon" aria-hidden="true"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 8v20M16 16l8-8 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 28v8a4 4 0 004 4h16a4 4 0 004-4v-8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="career-details__upload-text">Drop your CV here, or <strong>Browse</strong></span><span class="career-details__upload-hint">Support DOC, DOCX, PDF, max size: 5MB</span></label></div>';
+    $uploadNew = '<div class="career-details__upload"><label for="career-cv" class="career-details__upload-label"><span class="career-details__upload-icon" aria-hidden="true"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 8v20M16 16l8-8 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 28v8a4 4 0 004 4h16a4 4 0 004-4v-8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="career-details__upload-text">Drop your CV here, or <strong>Browse</strong></span><span class="career-details__upload-hint">Support DOC, DOCX, PDF, max size: 5MB</span></label>[file cv_file id:career-cv class:career-details__upload-input filetypes:doc|docx|pdf limit:5242880]</div>';
+    if (strpos($form, $uploadOld) !== false) {
+        $form = str_replace($uploadOld, $uploadNew, $form);
+    }
+
+    // Drop CF7 has-spinner (custom loading row replaces .wpcf7-spinner).
+    $form = preg_replace('/\s+has-spinner\b/', '', $form);
 
     return $form;
 }, 5, 2);
@@ -155,9 +265,6 @@ add_filter('wpcf7_form_elements', static function ($html) {
     if (!is_string($html) || $html === '') {
         return $html;
     }
-    if (!function_exists('is_singular') || !is_singular('job')) {
-        return $html;
-    }
     if (strpos($html, 'job_position') === false) {
         return $html;
     }
@@ -170,8 +277,11 @@ add_filter('wpcf7_form_elements', static function ($html) {
         }
     }
 
-    $jobId = (int) get_queried_object_id();
-    if ($jobId <= 0 || get_post_type($jobId) !== 'job' || get_post_status($jobId) !== 'publish') {
+    if (!function_exists('nsc_job_apply_current_job_post_id')) {
+        return $html;
+    }
+    $jobId = nsc_job_apply_current_job_post_id();
+    if ($jobId <= 0) {
         return $html;
     }
 

@@ -8,7 +8,7 @@ declare(strict_types=1);
  * Requires Contact Form 7. Form markup from create-nsc-cf7-form.php (apply_only=1):
  * - Optional LinkedIn [url linkedin_profile] (required if no CV).
  * - Optional file [file cv_file] OR staged upload via AJAX (hidden nsc_cv_staging_token).
- * - Hidden nsc_job_post_id for job URL in email.
+ * - Hidden nsc_job_title + nsc_job_url (prefilled on job singles; verified server-side, no posted ID).
  */
 
 const NSC_JOB_CV_MAX_BYTES = 5242880; // 5 MB
@@ -32,6 +32,170 @@ function nsc_job_apply_is_target_form(?object $contact_form): bool
     }
 
     return (int) $contact_form->id() === nsc_job_apply_cf7_form_id() && nsc_job_apply_cf7_form_id() > 0;
+}
+
+/**
+ * CF7 posted values for select / pipe fields are arrays; (string) yields "Array".
+ */
+function nsc_job_apply_submission_string(\WPCF7_Submission $submission, string $fieldName): string
+{
+    return $submission->get_posted_string($fieldName);
+}
+
+/**
+ * Single string from raw posted data (CF7 may use arrays for some field types).
+ *
+ * @param array<string, mixed> $posted
+ */
+function nsc_job_apply_posted_scalar(array $posted, string $key): string
+{
+    $v = $posted[$key] ?? '';
+    if (is_array($v)) {
+        $v = function_exists('wpcf7_array_flatten') ? wpcf7_array_flatten($v) : $v;
+        $v = is_array($v) ? (string) reset($v) : (string) $v;
+    }
+
+    return trim((string) $v);
+}
+
+/**
+ * Normalize job title for comparison (posted hidden vs get_the_title).
+ */
+function nsc_job_apply_normalize_title(string $title): string
+{
+    $title = wp_strip_all_tags($title);
+    $title = html_entity_decode($title, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $collapsed = preg_replace('/\s+/u', ' ', trim($title));
+
+    return is_string($collapsed) ? $collapsed : trim($title);
+}
+
+/**
+ * Resolve job post ID from posted canonical URL + title. Does not trust a bare numeric ID.
+ * Optional staged CV must have been created for the same job.
+ */
+function nsc_job_apply_verify_job_context_from_posted(array $posted): int
+{
+    $url = nsc_job_apply_posted_scalar($posted, 'nsc_job_url');
+    $title = nsc_job_apply_posted_scalar($posted, 'nsc_job_title');
+    if ($url === '' || $title === '') {
+        return 0;
+    }
+
+    $postId = url_to_postid($url);
+    if ($postId <= 0) {
+        $postId = url_to_postid(untrailingslashit($url));
+    }
+    if ($postId <= 0) {
+        $postId = url_to_postid(trailingslashit($url));
+    }
+    if ($postId <= 0 || get_post_type($postId) !== 'job' || get_post_status($postId) !== 'publish') {
+        return 0;
+    }
+
+    $expectedTitle = nsc_job_apply_normalize_title(get_the_title($postId));
+    $postedTitle = nsc_job_apply_normalize_title($title);
+    if ($expectedTitle === '' || $postedTitle === '' || $expectedTitle !== $postedTitle) {
+        return 0;
+    }
+
+    $token = isset($posted['nsc_cv_staging_token']) ? trim((string) $posted['nsc_cv_staging_token']) : '';
+    if ($token !== '' && strlen($token) >= 16) {
+        $row = get_transient(nsc_job_cv_staging_transient_key($token));
+        if (is_array($row) && isset($row['job_id']) && (int) $row['job_id'] !== $postId) {
+            return 0;
+        }
+    }
+
+    return $postId;
+}
+
+/**
+ * Current job post ID for prefilling the apply form (Timber / shortcode may not set is_singular()).
+ */
+function nsc_job_apply_current_job_post_id(): int
+{
+    $id = (int) get_queried_object_id();
+    if ($id > 0 && get_post_type($id) === 'job' && get_post_status($id) === 'publish') {
+        return $id;
+    }
+    global $post;
+    if ($post instanceof \WP_Post && $post->post_type === 'job' && $post->post_status === 'publish') {
+        return (int) $post->ID;
+    }
+    if (function_exists('get_the_ID')) {
+        $tid = (int) get_the_ID();
+        if ($tid > 0 && get_post_type($tid) === 'job' && get_post_status($tid) === 'publish') {
+            return $tid;
+        }
+    }
+
+    return 0;
+}
+
+/**
+ * Set value="" on a hidden input by name (CF7 may render before wpcf7_form_tag values apply reliably).
+ */
+function nsc_job_apply_set_hidden_input_value(string $html, string $fieldName, string $value): string
+{
+    $nameRe = preg_quote($fieldName, '/');
+    $out = preg_replace_callback(
+        '/<input\b[^>]*\bname=(["\'])' . $nameRe . '\1[^>]*>/i',
+        static function (array $m) use ($value): string {
+            $tag = $m[0];
+            if (preg_match('/\svalue\s*=\s*"[^"]*"/i', $tag)) {
+                return (string) preg_replace('/\svalue\s*=\s*"[^"]*"/i', ' value="' . $value . '"', $tag, 1);
+            }
+            if (preg_match("/\svalue\s*=\s*'[^']*'/i", $tag)) {
+                return (string) preg_replace("/\svalue\s*=\s*'[^']*'/i", ' value="' . $value . '"', $tag, 1);
+            }
+            if (preg_match('/\/>\s*$/', $tag)) {
+                return (string) preg_replace('/\/>\s*$/', ' value="' . $value . '" />', $tag, 1);
+            }
+            if (preg_match('/>\s*$/', $tag)) {
+                return (string) preg_replace('/>\s*$/', ' value="' . $value . '" />', $tag, 1);
+            }
+
+            return $tag;
+        },
+        $html,
+        1
+    );
+
+    return is_string($out) ? $out : $html;
+}
+
+/**
+ * Inject nsc_job_title / nsc_job_url hidden values into rendered CF7 HTML.
+ */
+function nsc_job_apply_inject_job_context_hidden_inputs(string $html): string
+{
+    if ($html === '' || strpos($html, 'nsc_job_title') === false) {
+        return $html;
+    }
+    $applyId = nsc_job_apply_cf7_form_id();
+    if ($applyId <= 0) {
+        return $html;
+    }
+    $cf = \WPCF7_ContactForm::get_current();
+    if (!$cf instanceof \WPCF7_ContactForm || (int) $cf->id() !== $applyId) {
+        return $html;
+    }
+    $jobId = nsc_job_apply_current_job_post_id();
+    if ($jobId <= 0) {
+        return $html;
+    }
+    $titleRaw = (string) get_the_title($jobId);
+    $urlRaw = (string) get_permalink($jobId);
+    if ($titleRaw === '' || $urlRaw === '') {
+        return $html;
+    }
+    $titleEsc = esc_attr($titleRaw);
+    $urlEsc = esc_attr($urlRaw);
+    $html = nsc_job_apply_set_hidden_input_value($html, 'nsc_job_title', $titleEsc);
+    $html = nsc_job_apply_set_hidden_input_value($html, 'nsc_job_url', $urlEsc);
+
+    return $html;
 }
 
 function nsc_job_cv_tmp_base_dir(): string
@@ -281,17 +445,31 @@ function nsc_job_cv_die_not_found(): void
 
 add_action('init', 'nsc_job_cv_maybe_download', 0);
 
-/** Prefill hidden job post ID on job singles. */
+/** Ensure job context hiddens have values in final HTML (Timber often breaks is_singular + tag values). */
+add_filter('wpcf7_form_elements', static function ($html) {
+    if (!is_string($html) || $html === '') {
+        return $html;
+    }
+
+    return nsc_job_apply_inject_job_context_hidden_inputs($html);
+}, 19, 1);
+
+/** Prefill hidden job title + canonical URL on job singles (no numeric ID in form). */
 add_filter('wpcf7_form_tag', static function ($tag, $unused = null) {
-    if (!function_exists('is_singular') || !is_singular('job')) {
-        return $tag;
-    }
     $isHidden = ($tag->basetype ?? '') === 'hidden' || ($tag->type ?? '') === 'hidden';
-    if (!is_object($tag) || !$isHidden || ($tag->name ?? '') !== 'nsc_job_post_id') {
+    if (!is_object($tag) || !$isHidden) {
         return $tag;
     }
-    $id = (string) get_queried_object_id();
-    $tag->values = [$id];
+    $name = (string) ($tag->name ?? '');
+    $jobId = nsc_job_apply_current_job_post_id();
+    if ($jobId <= 0) {
+        return $tag;
+    }
+    if ($name === 'nsc_job_title') {
+        $tag->values = [get_the_title($jobId)];
+    } elseif ($name === 'nsc_job_url') {
+        $tag->values = [get_permalink($jobId)];
+    }
 
     return $tag;
 }, 25, 2);
@@ -313,11 +491,20 @@ add_filter('wpcf7_contact_form_property_form', static function ($form, $contact_
         $form = str_replace('[url* linkedin_profile', '[url linkedin_profile', $form);
     }
     if (strpos($form, 'nsc_cv_staging_token') === false) {
-        $inject = "[hidden nsc_cv_staging_token]\n[hidden nsc_job_post_id]\n";
+        $inject = "[hidden nsc_cv_staging_token]\n[hidden nsc_job_title]\n[hidden nsc_job_url]\n";
         $pos = strpos($form, '<div class="career-details__apply-row career-details__apply-row--2">');
         if ($pos !== false) {
             $form = substr_replace($form, $inject, $pos, 0);
         }
+    }
+    // Legacy forms: replace job post ID hidden with title + URL.
+    if (strpos($form, '[hidden nsc_job_post_id]') !== false) {
+        $form = str_replace(
+            "[hidden nsc_cv_staging_token]\n[hidden nsc_job_post_id]\n",
+            "[hidden nsc_cv_staging_token]\n[hidden nsc_job_title]\n[hidden nsc_job_url]\n",
+            $form
+        );
+        $form = str_replace('[hidden nsc_job_post_id]', "[hidden nsc_job_title]\n[hidden nsc_job_url]", $form);
     }
 
     return $form;
@@ -344,10 +531,6 @@ add_filter('wpcf7_validate', static function ($result, $tags) {
             $result->invalidate('linkedin_profile', __('Please enter a valid URL for LinkedIn.', 'NscSoftware'));
         }
     }
-    $jobId = isset($posted['nsc_job_post_id']) ? (int) $posted['nsc_job_post_id'] : 0;
-    if ($jobId <= 0 || get_post_type($jobId) !== 'job' || get_post_status($jobId) !== 'publish') {
-        $result->invalidate('first_name', __('Invalid job context. Please reload the page and try again.', 'NscSoftware'));
-    }
     $token = isset($posted['nsc_cv_staging_token']) ? trim((string) $posted['nsc_cv_staging_token']) : '';
     $staging = $token !== '' ? nsc_job_cv_get_staging($token) : null;
     $hasStagedCv = $staging !== null;
@@ -365,6 +548,13 @@ add_filter('wpcf7_validate', static function ($result, $tags) {
     $phone = isset($posted['applicant_phone']) ? trim((string) $posted['applicant_phone']) : '';
     if ($phone !== '' && strlen(preg_replace('/\D/', '', $phone) ?? '') < 8) {
         $result->invalidate('applicant_phone', __('Please enter a valid phone number.', 'NscSoftware'));
+    }
+
+    if (nsc_job_apply_verify_job_context_from_posted($posted) <= 0) {
+        $result->invalidate(
+            'nsc_job_url',
+            __('Invalid job context. Please reload the page and try again.', 'NscSoftware')
+        );
     }
 
     return $result;
@@ -388,9 +578,9 @@ add_filter('wpcf7_mail_components', static function ($components, $contact_form,
         return $components;
     }
     $posted = $submission->get_posted_data();
-    $jobId = isset($posted['nsc_job_post_id']) ? (int) $posted['nsc_job_post_id'] : 0;
-    $jobUrl = ($jobId > 0) ? get_permalink($jobId) : '';
-    $jobTitle = ($jobId > 0) ? get_the_title($jobId) : '';
+    $jobId = nsc_job_apply_verify_job_context_from_posted($posted);
+    $jobUrl = ($jobId > 0) ? (string) get_permalink($jobId) : nsc_job_apply_submission_string($submission, 'nsc_job_url');
+    $jobTitle = ($jobId > 0) ? (string) get_the_title($jobId) : nsc_job_apply_submission_string($submission, 'nsc_job_title');
     $token = isset($posted['nsc_cv_staging_token']) ? trim((string) $posted['nsc_cv_staging_token']) : '';
     $staging = $token !== '' ? nsc_job_cv_get_staging($token) : null;
     $uploaded = $submission->uploaded_files();
@@ -434,15 +624,15 @@ add_filter('wpcf7_mail_components', static function ($components, $contact_form,
         }
     }
 
-    $firstName = isset($posted['first_name']) ? (string) $posted['first_name'] : '';
-    $lastName = isset($posted['last_name']) ? (string) $posted['last_name'] : '';
-    $email = isset($posted['applicant_email']) ? (string) $posted['applicant_email'] : '';
-    $phone = isset($posted['applicant_phone']) ? (string) $posted['applicant_phone'] : '';
-    $location = isset($posted['applicant_location']) ? (string) $posted['applicant_location'] : '';
-    $position = isset($posted['job_position']) ? (string) $posted['job_position'] : '';
-    $comment = isset($posted['applicant_comment']) ? (string) $posted['applicant_comment'] : '';
-    $linkedin = isset($posted['linkedin_profile']) ? (string) $posted['linkedin_profile'] : '';
-    $privacy = isset($posted['privacy_accept']) ? $posted['privacy_accept'] : '';
+    $firstName = nsc_job_apply_submission_string($submission, 'first_name');
+    $lastName = nsc_job_apply_submission_string($submission, 'last_name');
+    $email = nsc_job_apply_submission_string($submission, 'applicant_email');
+    $phone = nsc_job_apply_submission_string($submission, 'applicant_phone');
+    $location = nsc_job_apply_submission_string($submission, 'applicant_location');
+    $position = nsc_job_apply_submission_string($submission, 'job_position');
+    $comment = nsc_job_apply_submission_string($submission, 'applicant_comment');
+    $linkedin = nsc_job_apply_submission_string($submission, 'linkedin_profile');
+    $privacy = nsc_job_apply_submission_string($submission, 'privacy_accept');
 
     $lines = [
         '[NSC Careers] New job application',
@@ -556,20 +746,32 @@ add_action('wp_enqueue_scripts', static function () {
         true
     );
     $jobId = get_queried_object_id();
+    $form = class_exists('WPCF7_ContactForm')
+        ? \WPCF7_ContactForm::get_instance(nsc_job_apply_cf7_form_id())
+        : null;
+    $rawMsgs = ($form instanceof \WPCF7_ContactForm) ? $form->prop('messages') : null;
+    $rawMsgs = is_array($rawMsgs) ? $rawMsgs : [];
+    $cvMessageKeys = [
+        'upload_file_type_invalid',
+        'upload_file_too_large',
+        'upload_failed',
+        'nsc_cv_uploading',
+        'nsc_cv_uploaded',
+        'nsc_cv_network_error',
+        'nsc_cv_empty_file',
+        'nsc_cv_bad_mime',
+    ];
+    $messages = [];
+    foreach ($cvMessageKeys as $k) {
+        $messages[$k] = isset($rawMsgs[$k]) ? (string) $rawMsgs[$k] : '';
+    }
     wp_localize_script('nsc-job-apply-cv', 'nscJobApplyCv', [
         'ajaxUrl' => admin_url('admin-ajax.php'),
         'action' => 'nsc_job_stage_cv',
         'nonce' => wp_create_nonce('nsc_job_apply_cv_' . $jobId),
         'jobId' => $jobId,
         'maxBytes' => NSC_JOB_CV_MAX_BYTES,
-        'i18n' => [
-            'uploading' => __('Uploading CV…', 'NscSoftware'),
-            'failed' => __('CV upload failed. You can still submit with LinkedIn or try again.', 'NscSoftware'),
-            'tooLarge' => __('File is too large (max 5 MB).', 'NscSoftware'),
-            'badType' => __('Please upload a PDF, DOC, or DOCX file.', 'NscSoftware'),
-            'emptyFile' => __('The file is empty. Please choose a valid CV.', 'NscSoftware'),
-            'badMime' => __('Please upload a PDF, DOC, or DOCX file (type not accepted).', 'NscSoftware'),
-            'networkError' => __('Network error while uploading. Check your connection and try again.', 'NscSoftware'),
-        ],
+        'messages' => $messages,
+        'removeCvLabel' => __('Remove uploaded CV', 'NscSoftware'),
     ]);
 }, 30);

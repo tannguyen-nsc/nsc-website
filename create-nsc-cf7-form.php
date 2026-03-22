@@ -16,6 +16,9 @@ declare(strict_types=1);
  *
  * The theme includes `wpcf7_autop_or_not` so Additional Settings `autop: off` is respected (CF7
  * core does not apply it alone). Without that, the HTML formatter can break this template.
+ *
+ * Job apply forms also get `acceptance_as_validation: on`: submit stays enabled; privacy is still
+ * required and validated on submit (CF7 “unaccepted” / field error if unchecked).
  */
 
 $requiredToken = 'nsc-create-cf7-2026';
@@ -84,7 +87,8 @@ if ($applyOnly) {
      */
     $formMarkup = <<<'FORM'
 [hidden nsc_cv_staging_token]
-[hidden nsc_job_post_id]
+[hidden nsc_job_title]
+[hidden nsc_job_url]
 <div class="career-details__apply-row career-details__apply-row--2">
 <label class="career-details__field"><span class="career-details__label">First name *</span>[text* first_name autocomplete:given-name class:career-details__input placeholder "FIRST NAME *"]</label>
 <label class="career-details__field"><span class="career-details__label">Last name *</span>[text* last_name autocomplete:family-name class:career-details__input placeholder "LAST NAME *"]</label>
@@ -100,8 +104,8 @@ if ($applyOnly) {
 <div class="career-details__field career-details__field--full"><span class="career-details__label">Comment</span>[textarea applicant_comment 40x4 class:career-details__textarea placeholder "COMMENT"]</div>
 <div class="career-details__field career-details__field--full"><span class="career-details__label">LinkedIn (or upload CV)</span>[url linkedin_profile class:career-details__input placeholder "LINKEDIN URL"]</div>
 <p class="career-details__apply-or" aria-hidden="true">OR</p>
-<div class="career-details__upload">[file cv_file id:career-cv class:career-details__upload-input filetypes:doc|docx|pdf limit:5242880]<label for="career-cv" class="career-details__upload-label"><span class="career-details__upload-icon" aria-hidden="true"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 8v20M16 16l8-8 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 28v8a4 4 0 004 4h16a4 4 0 004-4v-8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="career-details__upload-text">Drop your CV here, or <strong>Browse</strong></span><span class="career-details__upload-hint">Support DOC, DOCX, PDF, max size: 5MB</span></label></div>
-<div class="career-details__apply-footer"><label class="career-details__consent">[acceptance privacy_accept] I am familiar with NSC Software's Privacy Policy *</label><button type="submit" class="wpcf7-form-control wpcf7-submit has-spinner career-details__submit">Submit application <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
+<div class="career-details__upload"><label for="career-cv" class="career-details__upload-label"><span class="career-details__upload-icon" aria-hidden="true"><svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 8v20M16 16l8-8 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 28v8a4 4 0 004 4h16a4 4 0 004-4v-8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span><span class="career-details__upload-text">Drop your CV here, or <strong>Browse</strong></span><span class="career-details__upload-hint">Support DOC, DOCX, PDF, max size: 5MB</span></label>[file cv_file id:career-cv class:career-details__upload-input filetypes:doc|docx|pdf limit:5242880]</div>
+<div class="career-details__apply-footer"><label class="career-details__consent">[acceptance privacy_accept] I am familiar with NSC Software's Privacy Policy *</label><button type="submit" class="wpcf7-form-control wpcf7-submit career-details__submit">Submit application <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div>
 FORM;
 
     $mail = [
@@ -111,7 +115,8 @@ FORM;
         'subject'            => '[NSC Careers] Application: [job_position] — [first_name] [last_name]',
         'body'               => "Job application (body replaced by NSC theme for admin mail — see nscJobApplySubmission.php)\n\n"
             . "Position: [job_position]\n"
-            . "Job ID: [nsc_job_post_id]\n"
+            . "Job title: [nsc_job_title]\n"
+            . "Job URL: [nsc_job_url]\n"
             . "Name: [first_name] [last_name]\n"
             . "Email: [applicant_email]\n"
             . "Phone: [applicant_phone]\n"
@@ -220,8 +225,22 @@ update_post_meta($formId, '_locale', get_locale());
 update_post_meta($formId, '_form', $formMarkup);
 update_post_meta($formId, '_mail', $mail);
 update_post_meta($formId, '_mail_2', $mail2);
-update_post_meta($formId, '_messages', []);
-update_post_meta($formId, '_additional_settings', 'autop: off');
+if ($applyOnly) {
+    $cfMessages = [];
+    foreach (wpcf7_messages() as $key => $arr) {
+        $cfMessages[$key] = is_array($arr) && isset($arr['default']) ? (string) $arr['default'] : '';
+    }
+    if (function_exists('nsc_job_apply_cf7_message_overrides')) {
+        $cfMessages = array_merge($cfMessages, nsc_job_apply_cf7_message_overrides());
+    }
+    update_post_meta($formId, '_messages', $cfMessages);
+} else {
+    update_post_meta($formId, '_messages', []);
+}
+$additionalSettings = $applyOnly
+    ? "autop: off\nacceptance_as_validation: on"
+    : 'autop: off';
+update_post_meta($formId, '_additional_settings', $additionalSettings);
 
 update_option($optionIdKey, $formId);
 update_option($optionTitleKey, $formTitle);

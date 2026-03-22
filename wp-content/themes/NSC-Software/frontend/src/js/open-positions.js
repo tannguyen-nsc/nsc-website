@@ -4,39 +4,109 @@
   var OPEN_POSITIONS_SELECTOR = '#open-positions-app';
   var PER_PAGE = 5;
 
-  var el = document.querySelector(OPEN_POSITIONS_SELECTOR);
-  if (!el || typeof Vue === 'undefined') return;
-
-  var tabs = [
+  var LEGACY_TABS = [
     { id: 'all', label: 'All Positions', fullLabel: 'All Positions', mobileLabel: 'All' },
     { id: 'management', label: 'Management', fullLabel: 'Management', mobileLabel: 'Management' },
     { id: 'engineering', label: 'Engineering', fullLabel: 'Engineering', mobileLabel: 'Engineering' },
     { id: 'business', label: 'Business', fullLabel: 'Business', mobileLabel: 'Business' }
   ];
 
-  var defaultJobs = [];
+  var DEFAULT_LABELS = {
+    loading: 'Loading positions...',
+    error: 'Could not load positions.',
+    empty: 'No positions found.',
+    previous: 'Previous',
+    next: 'Next',
+    applyNow: 'Apply Now'
+  };
 
-  function getJobsFromWindow() {
-    var data = window.jobVueData;
-    if (Array.isArray(data)) return data.slice();
-    if (data && Array.isArray(data.jobs)) return data.jobs.slice();
-    return defaultJobs.slice();
+  function cloneTabs(tabs) {
+    return tabs.map(function (t) {
+      return {
+        id: t.id,
+        label: t.label,
+        fullLabel: t.fullLabel || t.label,
+        mobileLabel: t.mobileLabel || t.label
+      };
+    });
   }
+
+  /**
+   * @returns {{ jobs: array, tabs: array|null, perPage: number, defaultTab: string, labels: object }}
+   */
+  function getPayload() {
+    var d = window.jobVueData;
+    if (Array.isArray(d)) {
+      return {
+        jobs: d.slice(),
+        tabs: null,
+        perPage: PER_PAGE,
+        defaultTab: 'engineering',
+        labels: {}
+      };
+    }
+    if (d && typeof d === 'object') {
+      var jobs = Array.isArray(d.jobs) ? d.jobs.slice() : [];
+      var tabs = Array.isArray(d.tabs) && d.tabs.length ? d.tabs : null;
+      var perPage = typeof d.perPage === 'number' && d.perPage > 0 ? d.perPage : PER_PAGE;
+      var defaultTab = typeof d.defaultTab === 'string' && d.defaultTab ? d.defaultTab : 'all';
+      var labels = d.labels && typeof d.labels === 'object' ? d.labels : {};
+      return {
+        jobs: jobs,
+        tabs: tabs,
+        perPage: perPage,
+        defaultTab: defaultTab,
+        labels: labels
+      };
+    }
+    return {
+      jobs: [],
+      tabs: null,
+      perPage: PER_PAGE,
+      defaultTab: 'all',
+      labels: {}
+    };
+  }
+
+  /**
+   * Plain object with every key; never null so {{ labels.applyNow }} never throws.
+   */
+  function mergeUiLabels(fromPayload) {
+    var out = {};
+    if (fromPayload == null || typeof fromPayload !== 'object' || Array.isArray(fromPayload)) {
+      fromPayload = {};
+    }
+    Object.keys(DEFAULT_LABELS).forEach(function (k) {
+      var v = fromPayload[k];
+      out[k] = typeof v === 'string' && v !== '' ? v : DEFAULT_LABELS[k];
+    });
+    return out;
+  }
+
+  var el = document.querySelector(OPEN_POSITIONS_SELECTOR);
+  if (!el || typeof Vue === 'undefined') return;
 
   var app = Vue.createApp({
     data: function () {
+      var payload = getPayload();
+      var tabSource = payload.tabs && payload.tabs.length ? cloneTabs(payload.tabs) : cloneTabs(LEGACY_TABS);
       return {
         jobs: [],
-        activeTab: 'engineering',
+        activeTab: payload.defaultTab,
         currentPage: 1,
-        perPage: PER_PAGE,
-        tabs: tabs,
+        perPage: payload.perPage,
+        tabs: tabSource,
         viewportWidth: window.innerWidth,
         loading: false,
-        loadError: null
+        loadError: null,
+        uiLabels: mergeUiLabels(payload.labels)
       };
     },
     computed: {
+      /** Always defined — use in template instead of uiLabels (avoids undefined during compile/hydrate). */
+      labels: function () {
+        return mergeUiLabels(this.uiLabels);
+      },
       filteredJobs: function () {
         var list = this.jobs;
         if (this.activeTab !== 'all') {
@@ -80,16 +150,16 @@
         }
 
         if (total <= 5) {
-          for (var i = 1; i <= total; i++) {
-            result.push({ num: i, isEllipsis: false });
+          for (var j = 1; j <= total; j++) {
+            result.push({ num: j, isEllipsis: false });
           }
 
           return result;
         }
 
         if (current <= 3) {
-          for (var i = 1; i <= 5; i++) {
-            result.push({ num: i, isEllipsis: false });
+          for (var k = 1; k <= 5; k++) {
+            result.push({ num: k, isEllipsis: false });
           }
 
           result.push({ num: null, isEllipsis: true });
@@ -97,14 +167,14 @@
         } else if (current >= total - 2) {
           result.push({ num: 1, isEllipsis: false });
           result.push({ num: null, isEllipsis: true });
-          for (var i = total - 4; i <= total; i++) {
-            result.push({ num: i, isEllipsis: false });
+          for (var m = total - 4; m <= total; m++) {
+            result.push({ num: m, isEllipsis: false });
           }
         } else {
           result.push({ num: 1, isEllipsis: false });
           result.push({ num: null, isEllipsis: true });
-          for (var i = current - 1; i <= current + 1; i++) {
-            result.push({ num: i, isEllipsis: false });
+          for (var p = current - 1; p <= current + 1; p++) {
+            result.push({ num: p, isEllipsis: false });
           }
 
           result.push({ num: null, isEllipsis: true });
@@ -130,15 +200,27 @@
       },
       loadJobs: function () {
         this.loadError = null;
-        this.jobs = getJobsFromWindow();
+        var payload = getPayload();
+        this.jobs = payload.jobs;
+        this.perPage = payload.perPage;
+        this.uiLabels = mergeUiLabels(payload.labels);
+        var tabSource = payload.tabs && payload.tabs.length ? cloneTabs(payload.tabs) : cloneTabs(LEGACY_TABS);
+        this.tabs = tabSource;
+        if (payload.defaultTab) {
+          var ids = this.tabs.map(function (t) { return t.id; });
+          if (ids.indexOf(payload.defaultTab) !== -1) {
+            this.activeTab = payload.defaultTab;
+          }
+        }
       }
     },
     mounted: function () {
       this.loadJobs();
 
+      var self = this;
       var updateTabLabels = function () {
         var isMobile = window.innerWidth < 768;
-        tabs.forEach(function (tab) {
+        self.tabs.forEach(function (tab) {
           tab.label = isMobile ? tab.mobileLabel : tab.fullLabel;
         });
       };
