@@ -442,13 +442,15 @@
     }
 
     init() {
-      if (typeof $ === 'undefined') {
+      // WordPress uses jQuery in noConflict mode: global `jQuery` exists, `$` often does not.
+      const $jq = typeof window !== 'undefined' ? window.jQuery : undefined;
+      if (typeof $jq === 'undefined') {
         console.warn('jQuery is required for number counter animations');
         return;
       }
 
-      const counterElements = $('.count');
-      
+      const counterElements = $jq('.count');
+
       if (counterElements.length === 0) {
         return;
       }
@@ -460,10 +462,10 @@
       this.hasRun = true;
 
       counterElements.each((index, element) => {
-        const $element = $(element);
+        const $element = $jq(element);
         const originalText = $element.text();
         const targetValue = originalText.replace(/[^0-9]/g, '');
-        
+
         this.elementStates.set(element, {
           originalText: originalText,
           targetValue: targetValue,
@@ -473,7 +475,7 @@
       counterElements.each((index, element) => {
         const state = this.elementStates.get(element);
         if (state) {
-          this.animateCounter($(element), state);
+          this.animateCounter($jq(element), state);
         }
       });
     }
@@ -490,31 +492,39 @@
 
       $element.text('0');
 
-      const animation = $element
-        .prop('Counter', 0)
-        .animate(
-          {
-            Counter: parseFloat(state.targetValue) || 0
-          },
-          {
-            duration: 4000,
-            easing: 'swing',
-            step: (now) => {
-              const formatted = Number(Math.ceil(now)).toLocaleString('en');
-              $element.text(formatted);
-            },
-            complete: () => {
-              $element.text(state.originalText);
-              state.isAnimating = false;
-              this.animationInstances.delete($element[0]);
-              debugLog('✨', 'COUNTER', 'Counter animation complete', {
-                finalValue: state.originalText
-              });
-            }
-          }
-        );
+      const target = parseFloat(state.targetValue) || 0;
+      if (target <= 0) {
+        $element.text(state.originalText);
+        state.isAnimating = false;
+        return;
+      }
 
-      this.animationInstances.set($element[0], animation);
+      // jQuery .animate() does not reliably tween non-CSS properties like Counter; use rAF (matches ~4s swing).
+      const duration = 4000;
+      const start = typeof performance !== 'undefined' ? performance.now() : Date.now();
+      const easeSwing = (t) => 0.5 - Math.cos(Math.PI * t) / 2;
+
+      const tick = (nowTs) => {
+        const elapsed = nowTs - start;
+        const t = Math.min(1, elapsed / duration);
+        const eased = easeSwing(t);
+        const current = Math.ceil(eased * target);
+        const displayNum = Number(Math.min(current, target));
+        $element.text(displayNum.toLocaleString('en'));
+        if (t < 1) {
+          const rafId = requestAnimationFrame(tick);
+          this.animationInstances.set($element[0], rafId);
+        } else {
+          $element.text(state.originalText);
+          state.isAnimating = false;
+          this.animationInstances.delete($element[0]);
+          debugLog('✨', 'COUNTER', 'Counter animation complete', {
+            finalValue: state.originalText
+          });
+        }
+      };
+
+      this.animationInstances.set($element[0], requestAnimationFrame(tick));
     }
   }
 
