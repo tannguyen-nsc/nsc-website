@@ -1,0 +1,37 @@
+// Wrapper: `relative` + full width below `lg`; from `lg` up matches `.stats .wrapper` (absolute, translate, max-widths).
+.case-study-detail-split {
+  @apply relative flex items-center justify-center bg-white py-0;
+
+  .wrapper {
+    @apply relative z-10 mx-auto flex w-full max-w-full min-h-[25vh] translate-y-0 items-center justify-center bg-white px-4 py-12 lg:py-0 lg:px-0;
+    @apply lg:absolute lg:top-0 lg:w-full lg:translate-y-[-50%] lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
+  }
+
+  .case-study-detail-split__grid {
+    @apply grid w-full grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-10 xl:gap-14 2xl:gap-16;
+  }
+
+  .case-study-detail-split__col {
+    @apply w-full min-w-0 lg:p-8;
+  }
+
+  .case-study-detail-split__heading {
+    @apply mb-4 flex items-center justify-start text-left;
+
+    img {
+      @apply mr-3 h-6 w-6 flex-shrink-0 object-contain lg:h-8 lg:w-8 lg:mr-4;
+    }
+
+    h2 {
+      @apply m-0 text-base font-bold uppercase leading-snug text-black lg:text-lg xl:text-xl;
+    }
+  }
+
+  .case-study-detail-split__body {
+    @apply text-left text-sm leading-relaxed text-black lg:text-base;
+
+    p {
+      @apply m-0;
+    }
+  }
+}

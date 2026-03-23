@@ -5,7 +5,7 @@
     @apply absolute top-0 left-0 w-full h-full object-cover object-bottom;
   }
 
-&.home {w
+  &.home {
   .headlines {
     h1 {
       @apply [text-shadow:0_0_3px_black];
@@ -128,7 +128,7 @@
       @apply xl:w-[55%] xl:mr-0 xl:pl-4 xl:pr-12 2xl:pr-20 text-black;
 
       .description {
-        @apply px-4 lg:px-0 text-justify;
+        @apply px-4 lg:px-0 text-left lg:text-justify;
       }
 
       .buttons {
@@ -157,5 +157,78 @@
         }
       }
     }
-  } 
+  }
+
+  &.case-study-detail {
+    @apply relative flex flex-col items-stretch justify-center text-left min-h-0 overflow-hidden py-10 md:py-14 xl:min-h-[52vw] xl:py-16;
+    @apply px-4 sm:px-6 lg:px-8;
+
+    .hero-case-study-detail__bg {
+      @apply absolute inset-0 z-0 pointer-events-none;
+      background-image: url("../img/hero-light.png");
+      background-size: cover;
+      background-position: center;
+    }
+
+    &::after {
+      content: "";
+      @apply absolute inset-0 z-[1] pointer-events-none;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.96) 0%,
+        rgba(255, 255, 255, 0.88) 38%,
+        rgba(255, 255, 255, 0.45) 62%,
+        rgba(255, 255, 255, 0.1) 100%
+      );
+    }
+
+    img {
+      @apply static mx-0 h-auto w-auto max-w-full object-contain;
+    }
+
+    .hero-case-study-detail__inner {
+      @apply relative z-[2] flex w-full max-w-[1280px] flex-col mx-auto;
+    }
+
+    .headlines {
+      @apply mx-0 max-w-4xl w-full text-left text-black;
+
+      h1 {
+        @apply uppercase font-bold text-black tracking-tight text-lg sm:text-xl md:text-2xl lg:text-[26px] xl:text-[28px] leading-snug;
+
+        sb {
+          @apply mb-0;
+        }
+      }
+
+      .description {
+        @apply my-5 justify-start px-0 text-left xl:my-6;
+
+        p {
+          @apply text-base font-normal text-gray-800 leading-relaxed;
+
+          span,
+          b {
+            @apply text-gray-800;
+          }
+        }
+      }
+    }
+
+    .case-study-customer {
+      @apply mt-2 xl:mt-4;
+
+      &__label {
+        @apply mb-2 block text-xs font-bold uppercase tracking-wide text-black;
+      }
+
+      &__logo {
+        @apply mb-2 block h-auto max-h-14 w-auto max-w-[220px] object-contain object-left;
+      }
+
+      &__tagline {
+        @apply text-sm font-normal text-gray-600;
+      }
+    }
+  }
 }
