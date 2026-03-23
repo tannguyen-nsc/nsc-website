@@ -176,3 +176,54 @@ function getACFLayout()
         ],
     ];
 }
+
+/**
+ * True when the hero CTA should use in-page JS scroll to `.stats` (href `#` + data attribute).
+ * Same hostname as this site and same path as the home URL (CMS often saves full home URL instead of `#`).
+ */
+function hero_button_is_explore_scroll_to_stats(string $url): bool
+{
+    $url = trim($url);
+    if ($url === '' || $url === '#' || $url === '#stats') {
+        return true;
+    }
+    if (strpos($url, '#') === 0) {
+        return in_array($url, ['#', '#stats'], true);
+    }
+
+    $abs = $url;
+    if (strpos($abs, 'http') !== 0 && strpos($abs, '//') !== 0) {
+        if ($abs === '' || $abs[0] === '/') {
+            $abs = home_url($abs === '' ? '/' : $abs);
+        } else {
+            return false;
+        }
+    }
+
+    $parts = wp_parse_url($abs);
+    $home = wp_parse_url(home_url('/'));
+    if ($parts === false || $home === false) {
+        return false;
+    }
+
+    $hostIn = isset($parts['host']) ? strtolower((string) preg_replace('/^www\./', '', $parts['host'])) : '';
+    $hostSite = isset($home['host']) ? strtolower((string) preg_replace('/^www\./', '', $home['host'])) : '';
+    if ($hostIn !== $hostSite) {
+        return false;
+    }
+
+    $normPath = static function ($path) {
+        if ($path === null || $path === '' || $path === '/') {
+            return '';
+        }
+
+        return trim((string) $path, '/');
+    };
+    if ($normPath($parts['path'] ?? '') !== $normPath($home['path'] ?? '')) {
+        return false;
+    }
+
+    $frag = isset($parts['fragment']) ? $parts['fragment'] : '';
+
+    return $frag === '' || $frag === 'stats';
+}

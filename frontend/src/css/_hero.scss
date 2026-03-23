@@ -62,7 +62,7 @@
     }
 
     .buttons {
-      @apply flex items-center justify-center mt-12;
+      @apply relative top-[80px] flex items-center justify-center mt-12;
   
       .btn-explore {
         @apply xl:text-2xl flex items-center justify-center gap-[1/2] xl:gap-1 text-white hover:text-black bg-none lg:bg-white lg:rounded-lg lg:border lg:border-primary lg:text-primary lg:px-4 lg:py-2 lg:hover:bg-primary lg:hover:text-white lg:hover:border-white;

@@ -706,7 +706,7 @@
           autoplaySpeed: 5000,
           speed: 800,
           arrows: false,
-          dots: false,
+          dots: true,
           infinite: true,
           adaptiveHeight: false,
           pauseOnHover: true,
@@ -1189,6 +1189,84 @@
 
     bindHandlers();
     window.addEventListener('resize', debounce(bindHandlers, CONFIG.RESIZE_DEBOUNCE));
+  }
+
+  // ============================================================================
+  // HOW WE WORK — EQUAL HEIGHT FOR ITEM PARAGRAPHS (DESKTOP ROW)
+  // ============================================================================
+
+  function initHowWeWorkParagraphEqualHeight() {
+    const sections = document.querySelectorAll('.how-we-work');
+    if (!sections.length) {
+      return;
+    }
+
+    const updateHeights = () => {
+      const isDesktop = window.innerWidth >= CONFIG.BREAKPOINTS.DESKTOP;
+
+      sections.forEach((section) => {
+        const contents = section.querySelectorAll('.items .item .content');
+        if (!contents.length) {
+          return;
+        }
+
+        const paragraphs = [];
+        contents.forEach((content) => {
+          const p = content.querySelector(':scope > p');
+          if (p) {
+            paragraphs.push(p);
+          }
+        });
+        if (!paragraphs.length) {
+          return;
+        }
+
+        paragraphs.forEach((p) => {
+          p.style.removeProperty('min-height');
+          p.style.removeProperty('height');
+        });
+
+        if (!isDesktop) {
+          return;
+        }
+
+        void section.offsetHeight;
+
+        let maxH = 0;
+        paragraphs.forEach((p) => {
+          const h = p.offsetHeight;
+          if (h > maxH) {
+            maxH = h;
+          }
+        });
+        if (!maxH) {
+          return;
+        }
+
+        paragraphs.forEach((p) => {
+          p.style.minHeight = `${maxH}px`;
+        });
+      });
+    };
+
+    const scheduleUpdate = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(updateHeights);
+      });
+    };
+
+    scheduleUpdate();
+    setTimeout(scheduleUpdate, 300);
+
+    window.addEventListener('load', scheduleUpdate, { once: true });
+
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(scheduleUpdate).catch(() => {
+        // no-op
+      });
+    }
+
+    window.addEventListener('resize', debounce(updateHeights, CONFIG.RESIZE_DEBOUNCE));
   }
 
   // ============================================================================
@@ -2312,6 +2390,85 @@
   }
 
   // ============================================================================
+  // HERO — EXPLORE BUTTON → STATS (scroll with top offset below fixed nav)
+  // ============================================================================
+
+  /** Extra space below the nav bar so content is not flush against it. */
+  const EXPLORE_STATS_GAP_PX = 20;
+
+  /** Additional offset subtracted from scroll `top` (more clearance below fixed nav). */
+  const EXPLORE_STATS_SCROLL_EXTRA_PX = 100;
+
+  /**
+   * Height of the WP admin bar when visible (front-end), else 0.
+   */
+  function getWpAdminBarHeight() {
+    const bar = document.getElementById('wpadminbar');
+    if (!bar) {
+      return 0;
+    }
+    const st = window.getComputedStyle(bar);
+    if (st.display === 'none' || st.visibility === 'hidden' || bar.getBoundingClientRect().height === 0) {
+      return 0;
+    }
+    return Math.ceil(bar.getBoundingClientRect().height);
+  }
+
+  /**
+   * Visible primary nav bar height (desktop or mobile), matching lg breakpoint.
+   */
+  function getFixedNavigationBarHeight() {
+    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+    const bar = isDesktop
+      ? document.querySelector('header.desktop-header')
+      : document.querySelector('header.mobile-header .mobile-header-wrapper');
+    if (!bar) {
+      return 88;
+    }
+    return Math.ceil(bar.getBoundingClientRect().height);
+  }
+
+  /**
+   * Pixels reserved at top of viewport (admin bar + fixed nav + gap) before stats content.
+   */
+  function getStatsScrollOffsetPx() {
+    return getWpAdminBarHeight() + getFixedNavigationBarHeight() + EXPLORE_STATS_GAP_PX;
+  }
+
+  /**
+   * Document scroll Y so the stats section starts below fixed chrome (nav + admin bar + gap).
+   * If the section is no taller than the remaining viewport height, the whole block stays visible.
+   */
+  function getScrollYToRevealStatsSection(statsEl) {
+    const offset = getStatsScrollOffsetPx();
+    const elemTop = statsEl.getBoundingClientRect().top + window.pageYOffset;
+    const docHeight = Math.max(
+      document.documentElement.scrollHeight,
+      document.body ? document.body.scrollHeight : 0
+    );
+    const vh = window.innerHeight;
+    const maxScroll = Math.max(0, docHeight - vh);
+    const y = elemTop - offset - EXPLORE_STATS_SCROLL_EXTRA_PX;
+    return Math.min(Math.max(0, y), maxScroll);
+  }
+
+  function initHeroExploreScroll() {
+    const onExploreClick = (e) => {
+      e.preventDefault();
+      const statsEl = document.querySelector('section.stats');
+      if (!statsEl) {
+        return;
+      }
+      const y = getScrollYToRevealStatsSection(statsEl);
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    };
+
+    document.querySelectorAll('a.btn-explore[data-nsc-scroll-to="stats"]').forEach((link) => {
+      link.addEventListener('click', onExploreClick);
+    });
+  }
+
+  // ============================================================================
   // INITIALIZATION
   // ============================================================================
 
@@ -2319,11 +2476,13 @@
   let whyUsSliderInstance = null;
 
   function init() {
+    initHeroExploreScroll();
     initMobileMenu();
     initHeaderScroll();
     initDropdownMenu();
     initOurServicesEqualHeight();
     initOurServicesHeaderTextSync();
+    initHowWeWorkParagraphEqualHeight();
 
     const scrollAnimations = new ScrollAnimationManager();
     scrollAnimations.init();

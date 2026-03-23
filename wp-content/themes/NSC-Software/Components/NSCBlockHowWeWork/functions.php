@@ -72,8 +72,10 @@ function getACFLayout()
                     [
                         'label' => __('Title', 'NscSoftware'),
                         'name' => 'title',
-                        'type' => 'text',
+                        'type' => 'textarea',
+                        'rows' => 2,
                         'required' => 1,
+                        'instructions' => __('Basic HTML allowed (e.g. &lt;br&gt; for a line break).', 'NscSoftware'),
                     ],
                     [
                         'label' => __('Description', 'NscSoftware'),

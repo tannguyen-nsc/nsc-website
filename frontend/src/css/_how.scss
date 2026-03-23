@@ -26,6 +26,13 @@
         @apply flex flex-col lg:flex-row items-stretch justify-center bg-primary bg-opacity-80 w-full max-w-full;
         .item {
           @apply flex flex-col border-t border-white/30 lg:border-r p-4 lg:flex-1;
+
+          &:hover {
+            @apply cursor-pointer;
+            .content {
+              @apply bg-white text-primary;
+            }
+          }
           
           .content {
             @apply flex flex-col items-center justify-center bg-primary border border-white p-4 text-white text-center lg:h-full lg:flex-1;

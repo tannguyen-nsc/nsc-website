@@ -30,7 +30,7 @@
         {% for item in items %}
           <div class="item">
             <div class="content animate__animated animate__flipInY">
-              <h3>{{ item.title|e }}</h3>
+              <h3>{{ item.title|raw }}</h3>
               {% if item.description %}<p>{{ item.description|e }}</p>{% endif %}
             </div>
           </div>
