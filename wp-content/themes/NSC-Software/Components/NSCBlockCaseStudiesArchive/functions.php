@@ -245,7 +245,7 @@ function getACFLayout(): array
                 'layout' => 'row',
                 'sub_fields' => [
                     FieldVariables\getCaseStudiesListPerPageField(),
-                    FieldVariables\getHidden(),
+                    FieldVariables\getHiddenCaseStudiesArchive(),
                 ],
             ],
         ],

@@ -1,4 +1,4 @@
-{% if not (options.hidden|default(0)) %}
+{% if not (options.hiddenJobsArchive|default(0)) %}
 <nsc-software-component name="NSCBlockJobsArchive">
   <script>
     window.jobVueData = {{ (job_vue_data_json|default('{}'))|raw }};

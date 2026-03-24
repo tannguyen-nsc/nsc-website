@@ -10,6 +10,7 @@ declare(strict_types=1);
  *
  * Usage:
  *   https://yoursite.test/create-nsc-job-posts.php?token=nsc-create-job-posts-2026
+ *   Optional seed_lang={slug}|all for Polylang-linked jobs. Omit seed_lang for default-language only; seed_lang=all for every non-default language. (lang) lowercase prefix without Google API key; legacy [LANG] stripped when re-seeding.
  */
 
 $requiredToken = 'nsc-create-job-posts-2026';
@@ -30,6 +31,14 @@ if (!file_exists($wpLoadPath)) {
 }
 
 require_once $wpLoadPath;
+
+$nscSeedPolylang = get_template_directory() . '/inc/nscSeedPolylang.php';
+if (is_readable($nscSeedPolylang)) {
+    require_once $nscSeedPolylang;
+}
+if (function_exists('nsc_seed_bootstrap_acf_polylang_default_language')) {
+    nsc_seed_bootstrap_acf_polylang_default_language();
+}
 
 /**
  * @return array{management: int, engineering: int, business: int}
@@ -225,13 +234,27 @@ $i = 0;
 foreach ($titles as $title) {
     $i++;
     $slug = sanitize_title($title) . '-' . $i;
-    $existing = get_posts([
+    $singleTarget = function_exists('nsc_seed_is_single_target_language_run') && nsc_seed_is_single_target_language_run();
+    $langArgs     = function_exists('nsc_seed_polylang_get_explicit_lang_query_args') ? nsc_seed_polylang_get_explicit_lang_query_args() : [];
+    $canonicalId  = 0;
+    if ($singleTarget && function_exists('nsc_seed_get_canonical_post_by_type_and_slug')) {
+        $cPost = nsc_seed_get_canonical_post_by_type_and_slug('job', $slug, true);
+        if ($cPost instanceof WP_Post) {
+            $canonicalId = (int) $cPost->ID;
+        }
+        if ($canonicalId <= 0) {
+            $results[] = ['slug' => $slug, 'status' => 'skipped', 'message' => 'No default-language job; run without seed_lang first.'];
+            continue;
+        }
+    }
+
+    $existing = get_posts(array_merge([
         'post_type' => 'job',
         'post_status' => 'any',
         'name' => $slug,
         'posts_per_page' => 1,
         'fields' => 'ids',
-    ]);
+    ], $langArgs));
     $postId = !empty($existing) ? (int) $existing[0] : 0;
 
     $catKey = $catKeys[($i - 1) % count($catKeys)];
@@ -280,28 +303,6 @@ foreach ($titles as $title) {
         'post_author' => get_current_user_id() ?: 1,
     ];
 
-    if ($postId > 0) {
-        $postarr['ID'] = $postId;
-        $r = wp_update_post($postarr, true);
-    } else {
-        $r = wp_insert_post($postarr, true);
-    }
-
-    if (is_wp_error($r)) {
-        $results[] = ['slug' => $slug, 'status' => 'error', 'message' => $r->get_error_message()];
-        continue;
-    }
-
-    $postId = (int) $r;
-
-    if ($catTermId > 0) {
-        wp_set_object_terms($postId, [$catTermId], 'job_category', false);
-    }
-    if ($empIds !== []) {
-        wp_set_object_terms($postId, $empIds, 'job_employment', false);
-    }
-    wp_set_post_tags($postId, nsc_job_seed_tags_for_index($i), false);
-
     $acfPayload = [
         'nsc_job_listing_date' => $listingDate,
         'nsc_job_required_skills' => nsc_job_seed_skills_for_index($i),
@@ -312,37 +313,87 @@ foreach ($titles as $title) {
         'nsc_job_key_technologies' => nsc_job_seed_tech_for_index($i),
     ];
 
-    if (function_exists('update_field')) {
-        foreach ($acfPayload as $fname => $val) {
-            update_field($fname, $val, $postId);
+    if (!$singleTarget) {
+        if ($postId > 0) {
+            $postarr['ID'] = $postId;
+            $r = wp_update_post($postarr, true);
+        } else {
+            $r = wp_insert_post($postarr, true);
+        }
+
+        if (is_wp_error($r)) {
+            $results[] = ['slug' => $slug, 'status' => 'error', 'message' => $r->get_error_message()];
+            continue;
+        }
+
+        $postId = (int) $r;
+
+        if ($catTermId > 0) {
+            wp_set_object_terms($postId, [$catTermId], 'job_category', false);
+        }
+        if ($empIds !== []) {
+            wp_set_object_terms($postId, $empIds, 'job_employment', false);
+        }
+        wp_set_post_tags($postId, nsc_job_seed_tags_for_index($i), false);
+
+        $acfNote = '';
+        if (function_exists('update_field')) {
+            foreach ($acfPayload as $fname => $val) {
+                update_field($fname, $val, $postId);
+            }
+        } else {
+            foreach ($acfPayload as $fname => $val) {
+                update_post_meta($postId, $fname, $val);
+            }
+            $acfNote = ' ACF update_field missing — saved as post_meta.';
         }
     } else {
-        foreach ($acfPayload as $fname => $val) {
-            update_post_meta($postId, $fname, $val);
-        }
-        $results[] = [
-            'slug' => $slug,
-            'status' => 'warning',
-            'message' => 'post_id=' . $postId . ' (ACF update_field missing — meta may be incomplete)',
-        ];
-        continue;
+        $acfNote = '';
     }
 
+    $syncSourceId = ($singleTarget && $canonicalId > 0) ? $canonicalId : $postId;
+    if (function_exists('nsc_seed_should_run_translation_sync') && nsc_seed_should_run_translation_sync() && function_exists('nsc_seed_polylang_sync_post_with_taxonomies')) {
+        nsc_seed_polylang_sync_post_with_taxonomies(
+            $syncSourceId,
+            'job',
+            $title,
+            $slug,
+            '',
+            $excerpt,
+            $acfPayload,
+            ['job_category', 'job_employment', 'post_tag']
+        );
+    }
+
+    $reportId = $postId;
+    if ($singleTarget && $canonicalId > 0 && function_exists('nsc_seed_polylang_sync_target_slugs_for_request')) {
+        $t0 = nsc_seed_polylang_sync_target_slugs_for_request()[0] ?? '';
+        if ($t0 !== '' && function_exists('pll_get_post')) {
+            $tp = (int) pll_get_post($canonicalId, $t0);
+            if ($tp > 0) {
+                $reportId = $tp;
+            }
+        }
+    }
+
+    $rowStatus = $singleTarget
+        ? 'translation-updated'
+        : ($postId && !empty($existing) ? 'updated' : 'created');
     $results[] = [
         'slug' => $slug,
-        'status' => $postId && !empty($existing) ? 'updated' : 'created',
-        'message' => 'post_id=' . $postId . ', category=' . $catKey . ', employment=' . count($empIds),
+        'status' => $rowStatus,
+        'message' => 'post_id=' . $reportId . ', category=' . $catKey . ', employment=' . count($empIds) . $acfNote,
     ];
 }
 
 header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Job Posts Seed</title>';
-echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:1100px}th,td{border:1px solid #ddd;padding:8px;font-size:13px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}.warn{color:#a65f00}</style>';
+echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:1100px}th,td{border:1px solid #ddd;padding:8px;font-size:13px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body><h1>NSC Job openings</h1>';
-echo '<p>Seeded or updated ' . count($results) . ' <code>job</code> posts. Fields: skills repeater, WYSIWYG blocks, customer, project, key tech, listing date. Taxonomies: job_category, job_employment, tags.</p>';
+echo '<p>Seeded or updated ' . count($results) . ' <code>job</code> posts. Fields: skills repeater, WYSIWYG blocks, customer, project, key tech, listing date. Taxonomies: job_category, job_employment, tags. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang copies (omit for default language only).</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
-    $cls = $row['status'] === 'error' ? 'error' : ($row['status'] === 'warning' ? 'warn' : 'ok');
+    $cls = $row['status'] === 'error' ? 'error' : 'ok';
     echo '<tr><td>' . esc_html($row['slug']) . '</td><td class="' . esc_attr($cls) . '">' . esc_html($row['status']) . '</td><td>' . esc_html($row['message']) . '</td></tr>';
 }
 echo '</tbody></table></body></html>';

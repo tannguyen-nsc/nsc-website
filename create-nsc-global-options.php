@@ -6,6 +6,7 @@ declare(strict_types=1);
  *
  * Usage:
  *   http://localhost/nsc/create-nsc-global-options.php?token=nsc-global-options-2026
+ *   Optional seed_lang={slug}|all syncs Footer/Header strings for one or all non-default Polylang languages. Omit seed_lang to only refresh default-language options. Without NSC_SEED_GOOGLE_TRANSLATE_API_KEY, values get a (lang) prefix (lowercase); with the key, Google Translation API v2 is used.
  *
  * This script does not load the theme (to avoid double-loading plugins). It
  * redirects to your site with the same token so the theme can run the setup
@@ -38,10 +39,14 @@ if (!file_exists($wpLoadPath)) {
 
 require_once $wpLoadPath;
 
-$url = home_url('/?' . http_build_query([
+$query = [
     'nsc_run_global_options' => '1',
     'token' => $requiredToken,
-]));
+];
+if (!empty($_GET['seed_lang'])) {
+    $query['seed_lang'] = sanitize_key((string) $_GET['seed_lang']);
+}
+$url = home_url('/?' . http_build_query($query));
 
 header('Location: ' . $url, true, 302);
 exit;

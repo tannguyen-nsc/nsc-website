@@ -23,6 +23,42 @@ function getHidden()
     ];
 }
 
+/**
+ * Feature-gated layouts use a dedicated field name so acf/load_value/name=… hooks can target them
+ * (ACFComposer does not allow a custom field `key` in config).
+ *
+ * @return array<string, mixed>
+ */
+function getHiddenBlogHome(): array
+{
+    $f = getHidden();
+    $f['name'] = 'hiddenBlogHome';
+
+    return $f;
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function getHiddenJobsArchive(): array
+{
+    $f = getHidden();
+    $f['name'] = 'hiddenJobsArchive';
+
+    return $f;
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function getHiddenCaseStudiesArchive(): array
+{
+    $f = getHidden();
+    $f['name'] = 'hiddenCaseStudiesArchive';
+
+    return $f;
+}
+
 
 function getSize($default = 'medium')
 {

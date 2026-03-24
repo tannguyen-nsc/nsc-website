@@ -431,6 +431,13 @@ class Options
      */
     public static function getDefaultAcfLanguage()
     {
+        if (\function_exists('pll_default_language')) {
+            $slug = \pll_default_language('slug');
+            if (\is_string($slug) && $slug !== '') {
+                return $slug;
+            }
+        }
+
         return acf_get_setting('default_language');
     }
 }

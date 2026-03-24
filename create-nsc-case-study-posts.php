@@ -8,6 +8,7 @@ declare(strict_types=1);
  *
  * Usage:
  *   http://localhost/nsc/create-nsc-case-study-posts.php?token=nsc-create-case-studies-2026
+ *   Optional seed_lang={slug}|all for Polylang-linked case studies. Omit seed_lang for default-language only; seed_lang=all for every non-default language. (lang) lowercase prefix without Google API key; legacy [LANG] stripped when re-seeding.
  */
 
 $requiredToken = 'nsc-create-case-studies-2026';
@@ -32,6 +33,14 @@ require_once $wpLoadPath;
 require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
+
+$nscSeedPolylang = get_template_directory() . '/inc/nscSeedPolylang.php';
+if (is_readable($nscSeedPolylang)) {
+    require_once $nscSeedPolylang;
+}
+if (function_exists('nsc_seed_bootstrap_acf_polylang_default_language')) {
+    nsc_seed_bootstrap_acf_polylang_default_language();
+}
 
 /**
  * @return array<string, int> filename => attachment ID
@@ -445,13 +454,27 @@ foreach ($caseStudies as $study) {
     $title = $study['title'];
     $slug  = sanitize_title($title);
 
-    $existing = get_posts([
+    $singleTarget = function_exists('nsc_seed_is_single_target_language_run') && nsc_seed_is_single_target_language_run();
+    $langArgs     = function_exists('nsc_seed_polylang_get_explicit_lang_query_args') ? nsc_seed_polylang_get_explicit_lang_query_args() : [];
+    $canonicalId  = 0;
+    if ($singleTarget && function_exists('nsc_seed_get_canonical_post_by_type_and_slug')) {
+        $cPost = nsc_seed_get_canonical_post_by_type_and_slug('case_study', $slug, true);
+        if ($cPost instanceof WP_Post) {
+            $canonicalId = (int) $cPost->ID;
+        }
+        if ($canonicalId <= 0) {
+            $results[] = ['slug' => $slug, 'status' => 'skipped', 'message' => 'No default-language case study; run without seed_lang first.'];
+            continue;
+        }
+    }
+
+    $existing = get_posts(array_merge([
         'post_type'      => 'case_study',
         'post_status'    => 'any',
         'name'           => $slug,
         'posts_per_page' => 1,
         'fields'         => 'ids',
-    ]);
+    ], $langArgs));
     $postId = !empty($existing) ? (int) $existing[0] : 0;
 
     $components = nsc_case_study_seed_component_rows($i, $study, $imageMap);
@@ -466,94 +489,131 @@ foreach ($caseStudies as $study) {
         'post_author'  => get_current_user_id() ?: 1,
     ];
 
-    if ($postId > 0) {
-        $postarr['ID'] = $postId;
-        $r = wp_update_post($postarr, true);
-    } else {
-        $r = wp_insert_post($postarr, true);
-    }
+    if (!$singleTarget) {
+        if ($postId > 0) {
+            $postarr['ID'] = $postId;
+            $r = wp_update_post($postarr, true);
+        } else {
+            $r = wp_insert_post($postarr, true);
+        }
 
-    if (is_wp_error($r)) {
-        $results[] = ['slug' => $slug, 'status' => 'error', 'message' => $r->get_error_message()];
-        continue;
-    }
+        if (is_wp_error($r)) {
+            $results[] = ['slug' => $slug, 'status' => 'error', 'message' => $r->get_error_message()];
+            continue;
+        }
 
-    $postId = (int) $r;
+        $postId = (int) $r;
 
-    if (function_exists('update_field')) {
-        update_field('caseStudyComponents', $components, $postId);
-    } else {
-        update_post_meta($postId, 'caseStudyComponents', $components);
-    }
+        if (function_exists('update_field')) {
+            update_field('caseStudyComponents', $components, $postId);
+        } else {
+            update_post_meta($postId, 'caseStudyComponents', $components);
+        }
 
-    $imgIdx  = ($i * 5 + 2) % count($blogFiles);
-    $imgFile = $blogFiles[$imgIdx];
-    $thumbId = $imageMap[$imgFile] ?? 0;
-    if ($thumbId > 0) {
-        set_post_thumbnail($postId, $thumbId);
-    }
+        $imgIdx  = ($i * 5 + 2) % count($blogFiles);
+        $imgFile = $blogFiles[$imgIdx];
+        $thumbId = $imageMap[$imgFile] ?? 0;
+        if ($thumbId > 0) {
+            set_post_thumbnail($postId, $thumbId);
+        }
 
-    $catId = nsc_case_study_seed_category_id($study['category']);
-    if ($catId > 0) {
-        wp_set_object_terms($postId, [$catId], 'case_study_category', false);
-    }
+        $catId = nsc_case_study_seed_category_id($study['category']);
+        if ($catId > 0) {
+            wp_set_object_terms($postId, [$catId], 'case_study_category', false);
+        }
 
-    $seed = nsc_case_study_seed_hash_u($title);
+        $seed = nsc_case_study_seed_hash_u($title);
 
-    $industryIds = [];
-    for ($k = 0; $k < 2; $k++) {
-        $name = $poolIndustry[($seed + $k * 7) % count($poolIndustry)];
-        $tid  = nsc_case_study_seed_ensure_term('case_study_industry', $name);
-        if ($tid > 0) {
-            $industryIds[] = $tid;
+        $industryIds = [];
+        for ($k = 0; $k < 2; $k++) {
+            $name = $poolIndustry[($seed + $k * 7) % count($poolIndustry)];
+            $tid  = nsc_case_study_seed_ensure_term('case_study_industry', $name);
+            if ($tid > 0) {
+                $industryIds[] = $tid;
+            }
+        }
+        $countryId = nsc_case_study_seed_ensure_term('case_study_country', $poolCountry[$seed % count($poolCountry)]);
+        if ($countryId === 0) {
+            $countryId = nsc_case_study_seed_ensure_term('case_study_country', 'USA');
+        }
+        $solIds = [];
+        for ($k = 0; $k < 3; $k++) {
+            $tid = nsc_case_study_seed_ensure_term('case_study_solution', $poolSolution[($seed + $k) % count($poolSolution)]);
+            if ($tid > 0) {
+                $solIds[] = $tid;
+            }
+        }
+        $svcIds = [];
+        for ($k = 0; $k < 3; $k++) {
+            $tid = nsc_case_study_seed_ensure_term('case_study_service', $poolService[($seed + $k * 2) % count($poolService)]);
+            if ($tid > 0) {
+                $svcIds[] = $tid;
+            }
+        }
+        $techIds = [];
+        for ($k = 0; $k < 8; $k++) {
+            $tid = nsc_case_study_seed_ensure_term('case_study_technology', $poolTech[($seed + $k * 3) % count($poolTech)]);
+            if ($tid > 0) {
+                $techIds[] = $tid;
+            }
+        }
+
+        if (!empty($industryIds)) {
+            wp_set_object_terms($postId, array_values(array_unique($industryIds)), 'case_study_industry', false);
+        }
+        if ($countryId > 0) {
+            wp_set_object_terms($postId, [$countryId], 'case_study_country', false);
+        }
+        if (!empty($solIds)) {
+            wp_set_object_terms($postId, array_values(array_unique($solIds)), 'case_study_solution', false);
+        }
+        if (!empty($svcIds)) {
+            wp_set_object_terms($postId, array_values(array_unique($svcIds)), 'case_study_service', false);
+        }
+        if (!empty($techIds)) {
+            wp_set_object_terms($postId, array_values(array_unique($techIds)), 'case_study_technology', false);
         }
     }
-    $countryId = nsc_case_study_seed_ensure_term('case_study_country', $poolCountry[$seed % count($poolCountry)]);
-    if ($countryId === 0) {
-        $countryId = nsc_case_study_seed_ensure_term('case_study_country', 'USA');
+
+    $syncSourceId = ($singleTarget && $canonicalId > 0) ? $canonicalId : $postId;
+    if (function_exists('nsc_seed_should_run_translation_sync') && nsc_seed_should_run_translation_sync() && function_exists('nsc_seed_polylang_sync_post_with_taxonomies')) {
+        nsc_seed_polylang_sync_post_with_taxonomies(
+            $syncSourceId,
+            'case_study',
+            $title,
+            $slug,
+            '',
+            $study['description'],
+            ['caseStudyComponents' => $components],
+            [
+                'case_study_category',
+                'case_study_industry',
+                'case_study_country',
+                'case_study_solution',
+                'case_study_service',
+                'case_study_technology',
+            ]
+        );
     }
-    $solIds = [];
-    for ($k = 0; $k < 3; $k++) {
-        $tid = nsc_case_study_seed_ensure_term('case_study_solution', $poolSolution[($seed + $k) % count($poolSolution)]);
-        if ($tid > 0) {
-            $solIds[] = $tid;
-        }
-    }
-    $svcIds = [];
-    for ($k = 0; $k < 3; $k++) {
-        $tid = nsc_case_study_seed_ensure_term('case_study_service', $poolService[($seed + $k * 2) % count($poolService)]);
-        if ($tid > 0) {
-            $svcIds[] = $tid;
-        }
-    }
-    $techIds = [];
-    for ($k = 0; $k < 8; $k++) {
-        $tid = nsc_case_study_seed_ensure_term('case_study_technology', $poolTech[($seed + $k * 3) % count($poolTech)]);
-        if ($tid > 0) {
-            $techIds[] = $tid;
+
+    $reportId = $postId;
+    if ($singleTarget && $canonicalId > 0 && function_exists('nsc_seed_polylang_sync_target_slugs_for_request')) {
+        $t0 = nsc_seed_polylang_sync_target_slugs_for_request()[0] ?? '';
+        if ($t0 !== '' && function_exists('pll_get_post')) {
+            $tp = (int) pll_get_post($canonicalId, $t0);
+            if ($tp > 0) {
+                $reportId = $tp;
+            }
         }
     }
 
-    if (!empty($industryIds)) {
-        wp_set_object_terms($postId, array_values(array_unique($industryIds)), 'case_study_industry', false);
-    }
-    if ($countryId > 0) {
-        wp_set_object_terms($postId, [$countryId], 'case_study_country', false);
-    }
-    if (!empty($solIds)) {
-        wp_set_object_terms($postId, array_values(array_unique($solIds)), 'case_study_solution', false);
-    }
-    if (!empty($svcIds)) {
-        wp_set_object_terms($postId, array_values(array_unique($svcIds)), 'case_study_service', false);
-    }
-    if (!empty($techIds)) {
-        wp_set_object_terms($postId, array_values(array_unique($techIds)), 'case_study_technology', false);
-    }
-
+    $rowStatus = $singleTarget
+        ? 'translation-updated'
+        : ($postId && !empty($existing) ? 'updated' : 'created');
     $results[] = [
         'slug'    => $slug,
-        'status'  => $postId && !empty($existing) ? 'updated' : 'created',
-        'message' => 'post_id=' . $postId . ', components=4, cat=' . $study['category'],
+        'status'  => $rowStatus,
+        'message' => 'post_id=' . $reportId . ', components=4, cat=' . $study['category'],
     ];
 }
 
@@ -561,7 +621,7 @@ header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Case Studies Seed</title>';
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:1100px}th,td{border:1px solid #ddd;padding:8px;font-size:13px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body><h1>Case studies (case_study)</h1>';
-echo '<p>Seeded or updated ' . count($results) . ' posts. ACF flexible field <code>caseStudyComponents</code> (Hero, Instruction, Quote, Main). Taxonomies + featured image. Re-save in WP if ACF field keys need sync.</p>';
+echo '<p>Seeded or updated ' . count($results) . ' posts. ACF flexible field <code>caseStudyComponents</code> (Hero, Instruction, Quote, Main). Taxonomies + featured image. Re-save in WP if ACF field keys need sync. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang copies (omit for default language only).</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $cls = $row['status'] === 'error' ? 'error' : 'ok';

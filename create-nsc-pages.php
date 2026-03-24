@@ -11,6 +11,8 @@ declare(strict_types=1);
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&career_only=1
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&policies_only=1
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&case_studies_only=1
+ *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&page_scope=home
+ *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&page_scope=policies
  *
  * Notes:
  * - Runs idempotently (creates missing pages, updates existing by slug).
@@ -23,7 +25,7 @@ declare(strict_types=1);
  *   Home / About / AI / Our Services / Technology Capabilities) + NSC Block: Blogs (Archive) with Vue list fed from WP posts.
  * - For the About page: seeds pageComponents to match frontend/build/about.html
  *   (Hero left-text → Company Snapshot → Our Story → Our Leaders → Why Us →
- *   Our Capabilities → Global Presence → Contact). About uses the default page template.
+ *   Technology Capabilities → Global Presence → Contact). About uses the default page template.
  * - URL fields in the seed use home_url('/') so saved data passes ACF URL validation.
  * - Add home_only=1 to only create/update the Home page and set it as front page.
  * - Add blogs_only=1 to only create/update the Blogs page (default template + Hero + Blogs Archive components).
@@ -31,11 +33,14 @@ declare(strict_types=1);
  * - Add policies_only=1 to only create/update Privacy Policy, Cookies Policy, and Terms of Use pages.
  * - Add case_studies_only=1 to only create/update the Case Studies page (default template + Hero + Case studies archive / Vue from CPT case_study).
  * - Add content_test=1 to prepend "[test] " to text (policy page titles only; policy HTML body preserved) so you can verify in the CMS.
+ * - Optional seed_lang={slug}|all for Polylang-linked pages. Omit seed_lang for default-language only; seed_lang=all for every non-default language; seed_lang={non-default} updates that locale only from canonical content—seeder ignores admin-bar/cookie language so page IDs match the intended locale. (lang) lowercase prefix without Google API key; legacy [LANG] stripped when re-seeding.
  * - Privacy Policy, Cookies Policy, Terms of Use use default template and one NSC Block: Policy Page; content from policy-content/*.html.
  * - Footer policy links (Privacy Policy, Cookies Policy, Terms of Use) are set in runGlobalOptions.php (legalLinks).
  * - Blog seed (30 posts, categories, ACF sidebar): use create-nsc-blog-posts.php with token nsc-create-blog-posts-2026.
  * - Case studies seed (30 case_study posts, taxonomies, ACF gallery + size/duration): use create-nsc-case-study-posts.php with token nsc-create-case-studies-2026.
  * - Case Studies page uses default template + pageComponents (Case studies hero + Case studies archive); Vue list reads published case_study posts (run case_studies_only=1 after CPT seed).
+ * - Nav menus (header + footer sitemap): use create-nsc-menus.php?token=nsc-create-menus-2026 (same seed_lang / rebuild options as here). Or runGlobalOptions also calls the shared menu seeder.
+ * - page_scope={slug}|policies: update only that page (or all policy pages when "policies"). Omit or page_scope=all for full run (legacy home_only / blogs_only / … still work when page_scope is omitted).
  */
 
 $requiredToken = 'nsc-create-pages-2026';
@@ -70,6 +75,14 @@ require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
 
+$nscSeedPolylang = get_template_directory() . '/inc/nscSeedPolylang.php';
+if (is_readable($nscSeedPolylang)) {
+    require_once $nscSeedPolylang;
+}
+if (function_exists('nsc_seed_bootstrap_acf_polylang_default_language')) {
+    nsc_seed_bootstrap_acf_polylang_default_language();
+}
+
 $pages = [
     ['title' => 'Home', 'slug' => 'home', 'template' => ''], // default = page.twig + pageComponents
     ['title' => 'About', 'slug' => 'about', 'template' => ''], // default = page.twig + pageComponents (About Us sections)
@@ -78,7 +91,7 @@ $pages = [
     ['title' => 'Career', 'slug' => 'career', 'template' => ''], // default + pageComponents (frontend/src/career.html sections)
     ['title' => 'Case Studies', 'slug' => 'case-studies', 'template' => ''],
     ['title' => 'Contact', 'slug' => 'contact', 'template' => ''], // default = page.twig + pageComponents (Contact + Global Presence)
-    ['title' => 'Our Capabilites', 'slug' => 'our-capabilites', 'template' => ''], // default = page.twig + pageComponents (Hero + Technology Capability)
+    ['title' => 'Technology Capabilities', 'slug' => 'technology-apabilities', 'template' => ''], // default = page.twig + pageComponents (Hero + Technology Capability)
     ['title' => 'Our Services', 'slug' => 'our-services', 'template' => ''], // default = page.twig + pageComponents (Hero + Services Details)
     ['title' => 'Privacy Policy', 'slug' => 'privacy-policy', 'template' => ''],
     ['title' => 'Cookies Policy', 'slug' => 'cookies-policy', 'template' => ''],
@@ -205,7 +218,7 @@ function getHomePageComponents(): array
                 ['number' => '200', 'suffix' => '+', 'title' => 'Senior Experts', 'subtitle' => '(100% Senior-Level)'],
                 ['number' => '100', 'suffix' => '%', 'title' => 'English-Proficient Team', 'subtitle' => ''],
                 ['number' => '100', 'suffix' => '+', 'title' => 'Successful Projects', 'subtitle' => ''],
-                ['number' => '50', 'suffix' => '+', 'title' => "Global \n Clients", 'subtitle' => ''],
+                ['number' => '60', 'suffix' => '+', 'title' => "Global \n Clients", 'subtitle' => ''],
             ],
             'options'       => ['theme' => ''],
         ],
@@ -394,7 +407,7 @@ function getAboutPageComponents(): array
             'stats'          => [
                 ['number' => '2021', 'suffix' => '', 'title' => "Founded \n Year", 'subtitle' => ''],
                 ['number' => '200', 'suffix' => '+', 'title' => 'Senior Expert', 'subtitle' => '(100% Senior-Level)'],
-                ['number' => '50', 'suffix' => '+', 'title' => "Global \n Clients", 'subtitle' => ''],
+                ['number' => '60', 'suffix' => '+', 'title' => "Global \n Clients", 'subtitle' => ''],
                 ['number' => '100', 'suffix' => '+', 'title' => "Successful \n Projects", 'subtitle' => ''],
                 ['number' => '100', 'suffix' => '%', 'title' => "English-Proficient \n Team", 'subtitle' => ''],
             ],
@@ -442,13 +455,13 @@ function getAboutPageComponents(): array
             ],
             'options'      => ['theme' => ''],
         ],
-        // 6. Our Capabilities (section.our-capabilities)
+        // 6. Technology Capabilities block (section.our-capabilities)
         [
             'acf_fc_layout' => 'nscBlockOurCapabilities',
-            'title'        => 'OUR CAPABILITIES',
+            'title'        => 'Technology Capabilities',
             'titleLine1'    => "Full-Stack \n Engineering.",
             'titleLine2'    => 'Enterprise Delivery.',
-            'button'        => ['label' => 'Explore Full Technology Capabilities', 'url' => $baseUrl . 'our-capabilites/', 'openInNewTab' => 0],
+            'button'        => ['label' => 'Explore Full Technology Capabilities', 'url' => $baseUrl . 'technology-apabilities/', 'openInNewTab' => 0],
             'paragraphs'    => '<p>NSC Software delivers end-to-end technology capabilities - from software development, system architecture, and managed services to data, AI, blockchain, and enterprise platforms.</p><p>Backed by Vietnam\'s <b class="text-primary">Top 7%</b> senior engineers and AI-enabled delivery, we help global organizations modernize legacy systems, build innovative products, and scale operations with confidence and precision.</p>',
             'options'       => ['theme' => ''],
         ],
@@ -740,7 +753,7 @@ function getOurServicesPageComponents(): array
 }
 
 /**
- * Our Capabilities (Technology Capability) page components matching frontend/build/our-capabilites.html (Hero + Technology Capability).
+ * Technology Capabilities page components matching frontend/build/technology-apabilities.html (Hero + Technology Capability).
  * Live content by default; use content_test=1 to prepend "[test] " to text. Row images are empty; add in CMS.
  *
  * @return array<int, array<string, mixed>>
@@ -770,8 +783,8 @@ function getOurCapabilitiesPageComponents(): array
                     'rightColClass' => '',
                     'imageGroups'   => [
                         ['label' => 'Android: ', 'images' => []],
-                        ['label' => 'iOS:: ', 'images' => []],
-                        ['label' => 'Cross-platform:: ', 'images' => []],
+                        ['label' => 'iOS: ', 'images' => []],
+                        ['label' => 'Cross-platform: ', 'images' => []],
                     ],
                 ],
                 ['title' => 'Database', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
@@ -781,7 +794,7 @@ function getOurCapabilitiesPageComponents(): array
                     'imageGroups'   => [
                         ['label' => 'Cloud & Infrastructure: ', 'images' => []],
                         ['label' => '', 'images' => []],
-                        ['label' => 'Containers & Automation:: ', 'images' => []],
+                        ['label' => 'Containers & Automation: ', 'images' => []],
                         ['label' => '', 'images' => []],
                         ['label' => 'Monitoring & Logging: ', 'images' => []],
                         ['label' => '', 'images' => []],
@@ -829,7 +842,7 @@ function getBlogsPageComponents(): array
         . '<a href="' . esc_url($baseUrl . 'about/') . '">About</a>, '
         . '<a href="' . esc_url($baseUrl . 'ai/') . '">AI</a>, '
         . '<a href="' . esc_url($baseUrl . 'our-services/') . '">Our Services</a>, '
-        . 'and <a href="' . esc_url($baseUrl . 'our-capabilites/') . '">Technology Capabilities</a> pages.</p>';
+        . 'and <a href="' . esc_url($baseUrl . 'technology-apabilities/') . '">Technology Capabilities</a> pages.</p>';
 
     return [
         [
@@ -1070,13 +1083,45 @@ function applyContentTest(array $components): array
     return $out;
 }
 
+/**
+ * Persist flexible pageComponents (same pattern as blog/job/case study seeders: direct ACF/meta write).
+ */
+function nsc_seed_pages_persist_page_components(int $pageId, array $components): void
+{
+    if ($pageId <= 0) {
+        return;
+    }
+    if (function_exists('update_field')) {
+        update_field('pageComponents', [], $pageId);
+        update_field('pageComponents', $components, $pageId);
+    } else {
+        delete_post_meta($pageId, 'pageComponents');
+        update_post_meta($pageId, 'pageComponents', $components);
+    }
+}
+
+$pageScopeRaw = isset($_GET['page_scope']) ? sanitize_key((string) $_GET['page_scope']) : '';
+$pageScopeActive = ($pageScopeRaw !== '' && $pageScopeRaw !== 'all');
+
 $homeOnly         = isset($_GET['home_only']) && $_GET['home_only'] === '1';
 $blogsOnly        = isset($_GET['blogs_only']) && $_GET['blogs_only'] === '1';
 $careerOnly       = isset($_GET['career_only']) && $_GET['career_only'] === '1';
 $policiesOnly     = isset($_GET['policies_only']) && $_GET['policies_only'] === '1';
 $caseStudiesOnly  = isset($_GET['case_studies_only']) && $_GET['case_studies_only'] === '1';
 $contentTest   = isset($_GET['content_test']) && $_GET['content_test'] === '1';
-if ($homeOnly) {
+
+if ($pageScopeActive) {
+    if ($pageScopeRaw === 'policies') {
+        $policySlugs = ['privacy-policy', 'cookies-policy', 'terms-of-use'];
+        $pages = array_filter($pages, static function (array $p) use ($policySlugs) {
+            return in_array($p['slug'], $policySlugs, true);
+        });
+    } else {
+        $pages = array_filter($pages, static function (array $p) use ($pageScopeRaw) {
+            return $p['slug'] === $pageScopeRaw;
+        });
+    }
+} elseif ($homeOnly) {
     $pages = array_filter($pages, static function (array $p) {
         return $p['slug'] === 'home';
     });
@@ -1099,46 +1144,97 @@ if ($homeOnly) {
     });
 }
 
+$skipHomeFrontPageSetup = $policiesOnly
+    || ($pageScopeActive && (
+        $pageScopeRaw === 'policies'
+        || in_array($pageScopeRaw, ['privacy-policy', 'cookies-policy', 'terms-of-use'], true)
+    ));
+
 $results = [];
 
 foreach ($pages as $page) {
     $slug     = $page['slug'];
     $title    = $page['title'];
     $template = $page['template'];
+    $seededPageComponents = null;
 
-    $existing = get_page_by_path($slug, OBJECT, 'page');
+    $singleTarget = function_exists('nsc_seed_is_single_target_language_run') && nsc_seed_is_single_target_language_run();
+    $canonicalId  = 0;
+    if (function_exists('nsc_seed_get_canonical_post_by_type_and_slug')) {
+        $canonicalPost = nsc_seed_get_canonical_post_by_type_and_slug('page', $slug, true);
+        if ($canonicalPost instanceof WP_Post) {
+            $canonicalId = (int) $canonicalPost->ID;
+        }
+    }
 
-    if ($existing instanceof WP_Post) {
-        $pageId  = (int) $existing->ID;
-        wp_update_post([
-            'ID'          => $pageId,
-            'post_title'  => $title,
-            'post_status' => 'publish',
-        ]);
-        $action = 'updated';
-    } else {
-        $pageId = wp_insert_post([
-            'post_type'   => 'page',
-            'post_status' => 'publish',
-            'post_title'  => $title,
-            'post_name'   => $slug,
-            'post_content' => '',
-            'post_author'  => get_current_user_id() ?: 1,
-        ], true);
-
-        if (is_wp_error($pageId)) {
+    if ($singleTarget) {
+        if ($canonicalId <= 0) {
             $results[] = [
                 'slug'    => $slug,
-                'status'  => 'error',
-                'message' => $pageId->get_error_message(),
+                'status'  => 'skipped',
+                'message' => 'No default-language page for this slug; run without seed_lang first.',
             ];
             continue;
         }
+        $pageId = $canonicalId;
+        $action = 'translation-updated';
+    } else {
+        $langArgs = function_exists('nsc_seed_polylang_get_explicit_lang_query_args')
+            ? nsc_seed_polylang_get_explicit_lang_query_args()
+            : [];
+        $existing = get_posts(array_merge([
+            'post_type'      => 'page',
+            'post_status'    => 'any',
+            'name'           => $slug,
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+        ], $langArgs));
+        $pageId = !empty($existing) ? (int) $existing[0] : 0;
 
-        $action = 'created';
+        if ($pageId > 0) {
+            $u = wp_update_post([
+                'ID'          => $pageId,
+                'post_title'  => $title,
+                'post_status' => 'publish',
+            ], true);
+            if (is_wp_error($u)) {
+                $results[] = [
+                    'slug'    => $slug,
+                    'status'  => 'error',
+                    'message' => $u->get_error_message(),
+                ];
+                continue;
+            }
+            $action = 'updated';
+        } else {
+            $ins = wp_insert_post([
+                'post_type'    => 'page',
+                'post_status' => 'publish',
+                'post_title'   => $title,
+                'post_name'    => $slug,
+                'post_content' => '',
+                'post_author'  => get_current_user_id() ?: 1,
+            ], true);
+
+            if (is_wp_error($ins)) {
+                $results[] = [
+                    'slug'    => $slug,
+                    'status'  => 'error',
+                    'message' => $ins->get_error_message(),
+                ];
+                continue;
+            }
+
+            $pageId = (int) $ins;
+            $action = 'created';
+        }
+
+        update_post_meta((int) $pageId, '_wp_page_template', $template);
+
+        if (\function_exists('nsc_seed_polylang_set_default_language_on_post')) {
+            nsc_seed_polylang_set_default_language_on_post((int) $pageId);
+        }
     }
-
-    update_post_meta((int) $pageId, '_wp_page_template', $template);
 
     // Home page: clear previous components and seed via ACF so layout order and sub fields are stored correctly.
     if ($slug === 'home') {
@@ -1146,12 +1242,9 @@ foreach ($pages as $page) {
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Hero→…→Contact Us)';
         if ($contentTest) {
@@ -1163,17 +1256,14 @@ foreach ($pages as $page) {
             'message' => $msg,
         ];
     } elseif ($slug === 'about') {
-        // About page: seed components matching frontend/build/about.html (Hero→Company Snapshot→Our Story→Leaders→Why Us→Capabilities→Global Presence→Contact).
+        // About page: seed components matching frontend/build/about.html (Hero→Company Snapshot→Our Story→Leaders→Why Us→Technology Capabilities→Global Presence→Contact).
         $components = getAboutPageComponents();
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (About sections)';
         if ($contentTest) {
@@ -1190,12 +1280,9 @@ foreach ($pages as $page) {
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (AI sections)';
         if ($contentTest) {
@@ -1212,12 +1299,9 @@ foreach ($pages as $page) {
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Our Services: Hero + Services Details)';
         if ($contentTest) {
@@ -1228,20 +1312,17 @@ foreach ($pages as $page) {
             'status'  => $action,
             'message' => $msg,
         ];
-    } elseif ($slug === 'our-capabilites') {
-        // Our Capabilities page: seed components matching frontend/build/our-capabilites.html (Hero + Technology Capability).
+    } elseif ($slug === 'technology-apabilities') {
+        // Technology Capabilities page: seed components matching frontend/build/technology-apabilities.html (Hero + Technology Capability).
         $components = getOurCapabilitiesPageComponents();
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
-        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Our Capabilities: Hero + Technology Capability)';
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Technology Capabilities: Hero + Technology Capability)';
         if ($contentTest) {
             $msg .= ', content_test=1 (all text set to "[test]")';
         }
@@ -1256,12 +1337,9 @@ foreach ($pages as $page) {
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Contact: Contact Page + Global Presence)';
         if ($contentTest) {
@@ -1278,12 +1356,9 @@ foreach ($pages as $page) {
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Blogs: Hero + Archive / Vue)';
         if ($contentTest) {
@@ -1300,12 +1375,9 @@ foreach ($pages as $page) {
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Career: Hero + We are NSC + Core values + Jobs archive / Vue)';
         if ($contentTest) {
@@ -1321,12 +1393,9 @@ foreach ($pages as $page) {
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Case Studies: Hero + Archive / Vue from case_study CPT)';
         if ($contentTest) {
@@ -1349,12 +1418,9 @@ foreach ($pages as $page) {
         if ($contentTest) {
             $components = applyContentTest($components);
         }
-        if (function_exists('update_field')) {
-            update_field('pageComponents', [], (int) $pageId);
-            update_field('pageComponents', $components, (int) $pageId);
-        } else {
-            delete_post_meta((int) $pageId, 'pageComponents');
-            update_post_meta((int) $pageId, 'pageComponents', $components);
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents set (Policy: ' . $policyTitles[ $slug ] . ')';
         if ($contentTest) {
@@ -1366,20 +1432,50 @@ foreach ($pages as $page) {
             'message' => $msg,
         ];
     } else {
+        $msgElse = 'page_id=' . $pageId . ', template=' . $template;
         $results[] = [
             'slug'    => $slug,
             'status'  => $action,
-            'message' => 'page_id=' . $pageId . ', template=' . $template,
+            'message' => $msgElse,
         ];
+    }
+
+    if (function_exists('nsc_seed_should_run_translation_sync') && nsc_seed_should_run_translation_sync() && function_exists('nsc_seed_polylang_sync_page_translations')) {
+        $syncBase = ($singleTarget && $canonicalId > 0) ? $canonicalId : $pageId;
+        nsc_seed_polylang_sync_page_translations((int) $syncBase, $slug, $title, $template, $seededPageComponents);
+    }
+
+    $logPageId = $pageId;
+    if ($singleTarget && $canonicalId > 0 && function_exists('nsc_seed_polylang_sync_target_slugs_for_request')) {
+        $tlangs = nsc_seed_polylang_sync_target_slugs_for_request();
+        $t0 = $tlangs[0] ?? '';
+        if ($t0 !== '' && function_exists('pll_get_post')) {
+            $tp = (int) pll_get_post($canonicalId, $t0);
+            if ($tp > 0) {
+                $logPageId = $tp;
+            }
+        }
+    }
+    $ri = count($results) - 1;
+    if ($ri >= 0 && isset($results[$ri]['slug'], $results[$ri]['message']) && $results[$ri]['slug'] === $slug && is_string($results[$ri]['message'])) {
+        $results[$ri]['message'] = (string) preg_replace('/\bpage_id=\d+/', 'page_id=' . $logPageId, $results[$ri]['message'], 1);
     }
 }
 
-// Set Home as front page when Home was processed (full run or home_only); skip when policies_only=1.
-if (!$policiesOnly) {
-    $homePage = get_page_by_path('home', OBJECT, 'page');
-    if ($homePage instanceof WP_Post) {
+// Set Home as front page when not a policies-only style run (URL or page_scope). Always use
+// default-language home ID; skip when seed_lang targets one translation only.
+if (!$skipHomeFrontPageSetup && !(function_exists('nsc_seed_is_single_target_language_run') && nsc_seed_is_single_target_language_run())) {
+    $homeLang = function_exists('nsc_seed_polylang_default_lang_query_args') ? nsc_seed_polylang_default_lang_query_args() : [];
+    $homeIds  = get_posts(array_merge([
+        'post_type'      => 'page',
+        'post_status'    => 'any',
+        'name'           => 'home',
+        'posts_per_page' => 1,
+        'fields'         => 'ids',
+    ], $homeLang));
+    if (!empty($homeIds)) {
         update_option('show_on_front', 'page');
-        update_option('page_on_front', (int) $homePage->ID);
+        update_option('page_on_front', (int) $homeIds[0]);
     }
 }
 
@@ -1388,7 +1484,7 @@ echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Page Setup</ti
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body>';
 echo '<h1>NSC Pages Setup</h1>';
-echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>blogs_only=1</code> to update only the Blogs page (Hero + Archive). Add <code>career_only=1</code> to update only the Career page (Hero + We are NSC + Core values + Jobs archive / Vue). Add <code>case_studies_only=1</code> to update only the Case Studies page (Hero + Case studies archive / Vue from CPT). Add <code>policies_only=1</code> to update only Privacy Policy, Cookies Policy, and Terms of Use. Add <code>content_test=1</code> to prepend "[test] " to text so you can verify the CMS loads editable data. Job listings: <code>create-nsc-job-posts.php?token=nsc-create-job-posts-2026</code>. Case study posts: <code>create-nsc-case-study-posts.php?token=nsc-create-case-studies-2026</code>.</p>';
+echo '<p>Done. Use <code>page_scope</code> (with a slug or <code>policies</code>) or legacy <code>home_only=1</code>, <code>blogs_only=1</code>, etc. Add <code>content_test=1</code> for test prefixes. <code>seed_lang</code> / Polylang: same as before. Jobs: <code>create-nsc-job-posts.php?token=nsc-create-job-posts-2026</code>. Case studies: <code>create-nsc-case-study-posts.php?token=nsc-create-case-studies-2026</code>. Menus: <code>create-nsc-menus.php?token=nsc-create-menus-2026</code>.</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $statusClass = $row['status'] === 'error' ? 'error' : 'ok';

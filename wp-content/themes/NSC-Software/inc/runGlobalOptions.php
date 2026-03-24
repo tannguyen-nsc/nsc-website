@@ -15,87 +15,12 @@ add_action('template_redirect', function () use ($requiredToken) {
         return;
     }
 
+    if (function_exists('nsc_seed_bootstrap_acf_polylang_default_language')) {
+        nsc_seed_bootstrap_acf_polylang_default_language();
+    }
+
     $baseUrl = home_url('/');
     $results = [];
-
-    $getPageIdBySlug = function (string $slug): int {
-        $page = get_page_by_path($slug, OBJECT, 'page');
-        return $page instanceof \WP_Post ? (int) $page->ID : 0;
-    };
-
-    $ensureNavMenu = function (string $location, string $menuName) use (&$results): int {
-        $locations = get_nav_menu_locations();
-        $menuId = (int) ($locations[$location] ?? 0);
-        if ($menuId > 0) {
-            $menu = wp_get_nav_menu_object($menuId);
-            if ($menu instanceof \WP_Term) {
-                return $menuId;
-            }
-        }
-        $menus = wp_get_nav_menus();
-        foreach ($menus as $menu) {
-            if ($menu->name === $menuName) {
-                $locations[$location] = $menu->term_id;
-                set_theme_mod('nav_menu_locations', $locations);
-                return (int) $menu->term_id;
-            }
-        }
-        $id = wp_create_nav_menu($menuName);
-        if (is_wp_error($id)) {
-            return 0;
-        }
-        $locations[$location] = $id;
-        set_theme_mod('nav_menu_locations', $locations);
-        return (int) $id;
-    };
-
-    $addNavMenuItem = function (int $menuId, int $pageId, string $label, int $position = 0): int {
-        if ($pageId <= 0) {
-            return 0;
-        }
-        $item = [
-            'menu-item-object-id' => $pageId,
-            'menu-item-object'   => 'page',
-            'menu-item-type'     => 'post_type',
-            'menu-item-title'    => $label,
-            'menu-item-status'   => 'publish',
-            'menu-item-position' => $position,
-        ];
-        $id = wp_update_nav_menu_item($menuId, 0, $item);
-        return is_wp_error($id) ? 0 : (int) $id;
-    };
-
-    $populateMenuFromPages = function (int $menuId, array $pages) use ($getPageIdBySlug, $addNavMenuItem): int {
-        $existing = wp_get_nav_menu_items($menuId);
-        $existingUrls = [];
-        if (is_array($existing)) {
-            foreach ($existing as $item) {
-                if (isset($item->url)) {
-                    $existingUrls[$item->url] = true;
-                }
-            }
-        }
-        $position = 0;
-        $added = 0;
-        foreach ($pages as $slug => $label) {
-            $pageId = $getPageIdBySlug($slug);
-            if ($pageId <= 0) {
-                continue;
-            }
-            $url = get_permalink($pageId);
-            if (isset($existingUrls[$url])) {
-                $position++;
-                continue;
-            }
-            $itemId = $addNavMenuItem($menuId, $pageId, $label, $position);
-            if ($itemId > 0) {
-                $added++;
-                $existingUrls[$url] = true;
-            }
-            $position++;
-        }
-        return $added;
-    };
 
     $optionPrefixFooter = 'translatable_NSCFooter_';
     $optionPrefixHeader = 'translatable_NSCHeader_';
@@ -105,41 +30,17 @@ add_action('template_redirect', function () use ($requiredToken) {
         return function_exists('update_field') ? (bool) update_field($key, $value, 'option') : (bool) update_option('options_' . $key, $value);
     };
 
-    // Main navigation
-    $mainNavPages = [
-        'home'             => 'Home',
-        'about'            => 'About Us',
-        'our-services'     => 'Our Services',
-        'our-capabilites'  => 'Technology Capabilities',
-        'career'           => 'Careers',
-        'blogs'            => 'Blog',
-        'case-studies'     => 'Case Studies',
-        'contact'          => 'Contact',
-    ];
-    $mainMenuId = $ensureNavMenu('navigation_main', 'Main Navigation');
-    if ($mainMenuId > 0) {
-        $added = $populateMenuFromPages($mainMenuId, $mainNavPages);
-        $results[] = ['scope' => 'Menu', 'field' => 'Main navigation (navigation_main)', 'status' => 'ok', 'message' => "menu_id={$mainMenuId}, added {$added} items"];
+    if (function_exists('nsc_seed_menus_run')) {
+        foreach (nsc_seed_menus_run(['rebuild' => false]) as $menuRow) {
+            $results[] = $menuRow;
+        }
     } else {
-        $results[] = ['scope' => 'Menu', 'field' => 'Main navigation', 'status' => 'error', 'message' => 'Could not create or get menu'];
-    }
-
-    // Footer sitemap
-    $sitemapPages = [
-        'home'             => 'Home',
-        'about'            => 'About Us',
-        'our-services'     => 'Our Services',
-        'our-capabilites'  => 'Technology Capabilities',
-        'career'           => 'Careers',
-        'blogs'            => 'Blog',
-        'case-studies'     => 'Case Studies',
-    ];
-    $sitemapMenuId = $ensureNavMenu('sitemap_footer', 'Footer Sitemap');
-    if ($sitemapMenuId > 0) {
-        $added = $populateMenuFromPages($sitemapMenuId, $sitemapPages);
-        $results[] = ['scope' => 'Menu', 'field' => 'Footer sitemap (sitemap_footer)', 'status' => 'ok', 'message' => "menu_id={$sitemapMenuId}, added {$added} items"];
-    } else {
-        $results[] = ['scope' => 'Menu', 'field' => 'Footer sitemap', 'status' => 'error', 'message' => 'Could not create or get menu'];
+        $results[] = [
+            'scope' => 'Menu',
+            'field' => 'nsc_seed_menus_run',
+            'status' => 'error',
+            'message' => 'Missing inc/nscSeedMenus.php — reload theme or deploy theme files.',
+        ];
     }
 
     // NSCFooter options
@@ -242,6 +143,37 @@ add_action('template_redirect', function () use ($requiredToken) {
     $results[] = ['scope' => 'NSCBlogSingle', 'field' => 'About the author', 'status' => 'ok', 'message' => 'content (blog-details-style) + LinkedIn link (avatar empty — Theme Options → Blog)'];
     $results[] = ['scope' => 'NSCBlogSingle', 'field' => 'Related articles', 'status' => 'ok', 'message' => 'heading + relatedPostsLimit=3 (sidebar links use each post’s Related links field)'];
     $results[] = ['scope' => 'NSCBlogSingle', 'field' => 'Connect box', 'status' => 'ok', 'message' => 'CTA title, button, URL (optional background in Theme Options → Blog)'];
+
+    if (function_exists('nsc_seed_should_run_translation_sync') && nsc_seed_should_run_translation_sync() && function_exists('nsc_seed_polylang_translate_global_options')) {
+        $syncTargets = nsc_seed_polylang_sync_target_slugs_for_request();
+        $translatedLangCount = nsc_seed_polylang_translate_global_options();
+        if ($translatedLangCount > 0) {
+            $results[] = [
+                'scope' => 'Polylang',
+                'field' => 'Theme options (per-language strings)',
+                'status' => 'ok',
+                'message' => sprintf(
+                    'Updated option strings for %d language(s) (%s). Without NSC_SEED_GOOGLE_TRANSLATE_API_KEY, strings get a (slug) prefix (lowercase) before the source text.',
+                    $translatedLangCount,
+                    implode(', ', $syncTargets)
+                ),
+            ];
+        } elseif (function_exists('nsc_seed_polylang_active') && !nsc_seed_polylang_active()) {
+            $results[] = [
+                'scope' => 'Polylang',
+                'field' => 'Theme options (per-language strings)',
+                'status' => 'error',
+                'message' => 'Polylang inactive or ACF missing — could not run per-language option sync.',
+            ];
+        } else {
+            $results[] = [
+                'scope' => 'Polylang',
+                'field' => 'Theme options (per-language strings)',
+                'status' => 'error',
+                'message' => 'seed_lang was set but no option rows were updated (check Polylang + ACF + valid slug).',
+            ];
+        }
+    }
 
     header('Content-Type: text/html; charset=utf-8');
     echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Global Options</title>';

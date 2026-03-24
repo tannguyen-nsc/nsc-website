@@ -1,3 +1,20 @@
+{% macro render_sitemap_nav_item(item) %}
+  {% set _item_class = (item.classes|default([])|join(' '))|trim %}
+  {% if item.children|default([])|length %}
+    <li>
+      <a href="{{ item.link|e('esc_url') }}" class="{{ _item_class }}">{{ item.title|e }}</a>
+      <ul>
+        {% for child in item.children %}
+          {% set _c_class = (child.classes|default([])|join(' '))|trim %}
+          <li><a href="{{ child.link|e('esc_url') }}" class="{{ _c_class }}" {{ child.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ child.title|e }}</a></li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% else %}
+    <li><a href="{{ item.link|e('esc_url') }}" class="{{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
+  {% endif %}
+{% endmacro %}
+
 <nsc-software-component name="NSCFooter">
   <footer>
     <div class="wrapper">
@@ -113,13 +130,12 @@
             </svg>
           </button>
           <h4 class="section-heading hidden lg:block">{{ __('Site Map', 'NscSoftware')|e }}</h4>
-          <div class="sitemap-links" id="sitemap-content">
+          <div class="sitemap-links{% if sitemapUseTwoColumns|default(false) %} sitemap-links--two-cols{% endif %}" id="sitemap-content">
             {% if sitemapCol1|length %}
               <div class="sitemap-col">
                 <ul>
                   {% for item in sitemapCol1 %}
-                    {% set _item_class = (item.classes|default([])|join(' '))|trim %}
-                    <li><a href="{{ item.link|e('esc_url') }}" class="{{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
+                    {{ _self.render_sitemap_nav_item(item) }}
                   {% endfor %}
                 </ul>
               </div>
@@ -128,8 +144,7 @@
               <div class="sitemap-col">
                 <ul>
                   {% for item in sitemapCol2 %}
-                    {% set _item_class = (item.classes|default([])|join(' '))|trim %}
-                    <li><a href="{{ item.link|e('esc_url') }}" class="{{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
+                    {{ _self.render_sitemap_nav_item(item) }}
                   {% endfor %}
                 </ul>
               </div>
@@ -150,13 +165,12 @@
     </div>
     <div class="sitemap hidden lg:block">
       <h4 class="section-heading hidden lg:block">{{ __('Site Map', 'NscSoftware')|e }}</h4>
-      <div class="sitemap-links" id="sitemap-content-lg">
+      <div class="sitemap-links{% if sitemapUseTwoColumns|default(false) %} sitemap-links--two-cols{% endif %}" id="sitemap-content-lg">
         {% if sitemapCol1|length %}
           <div class="sitemap-col">
             <ul>
               {% for item in sitemapCol1 %}
-                {% set _item_class = (item.classes|default([])|join(' '))|trim %}
-                <li><a href="{{ item.link|e('esc_url') }}" class="{{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
+                {{ _self.render_sitemap_nav_item(item) }}
               {% endfor %}
             </ul>
           </div>
@@ -165,8 +179,7 @@
           <div class="sitemap-col">
             <ul>
               {% for item in sitemapCol2 %}
-                {% set _item_class = (item.classes|default([])|join(' '))|trim %}
-                <li><a href="{{ item.link|e('esc_url') }}" class="{{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
+                {{ _self.render_sitemap_nav_item(item) }}
               {% endfor %}
             </ul>
           </div>
@@ -175,8 +188,7 @@
           <div class="sitemap-col">
             <ul>
               {% for item in sitemapCol3 %}
-                {% set _item_class = (item.classes|default([])|join(' '))|trim %}
-                <li><a href="{{ item.link|e('esc_url') }}" class="{{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
+                {{ _self.render_sitemap_nav_item(item) }}
               {% endfor %}
             </ul>
           </div>

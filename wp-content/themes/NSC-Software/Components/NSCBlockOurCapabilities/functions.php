@@ -8,7 +8,7 @@ function getACFLayout()
 {
     return [
         'name' => 'nscBlockOurCapabilities',
-        'label' => __('NSC Block: Our Capabilities (About)', 'NscSoftware'),
+        'label' => __('NSC Block: Technology Capabilities (About)', 'NscSoftware'),
         'sub_fields' => [
             [
                 'label' => __('Content', 'NscSoftware'),
@@ -28,7 +28,7 @@ function getACFLayout()
                 'label' => __('Heading title', 'NscSoftware'),
                 'name' => 'title',
                 'type' => 'text',
-                'default_value' => 'OUR CAPABILITIES',
+                'default_value' => 'Technology Capabilities',
             ],
             [
                 'label' => __('Left: title line 1', 'NscSoftware'),

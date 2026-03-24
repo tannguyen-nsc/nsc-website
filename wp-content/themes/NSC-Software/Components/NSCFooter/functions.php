@@ -30,19 +30,38 @@ function getDefaultOffices(): array
 }
 
 add_filter('NscSoftware/addComponentData?name=NSCFooter', function ($data) {
-    $data['menu'] = Timber::get_menu('navigation_footer') ?? Timber::get_pages_menu();
+    $data['menu'] = \function_exists('nsc_timber_get_menu_for_location')
+        ? nsc_timber_get_menu_for_location('navigation_footer')
+        : (Timber::get_menu('navigation_footer') ?? Timber::get_pages_menu());
     Menu\ensure_menu_item_classes($data['menu']);
-    $sitemapMenu = Timber::get_menu('sitemap_footer');
+    if (\function_exists('nsc_features_filter_timber_menu')) {
+        $data['menu'] = \nsc_features_filter_timber_menu($data['menu']);
+    }
+    $sitemapMenu = \function_exists('nsc_timber_get_menu_for_location')
+        ? nsc_timber_get_menu_for_location('sitemap_footer', false)
+        : Timber::get_menu('sitemap_footer');
     Menu\ensure_menu_item_classes($sitemapMenu);
+    if (\function_exists('nsc_features_filter_timber_menu')) {
+        $sitemapMenu = \nsc_features_filter_timber_menu($sitemapMenu);
+    }
     $data['sitemapMenu'] = $sitemapMenu;
     $rawItems = $sitemapMenu && !empty($sitemapMenu->items) ? $sitemapMenu->items : ($data['menu'] && !empty($data['menu']->items) ? $data['menu']->items : []);
     $sitemapItems = is_array($rawItems) ? $rawItems : (is_countable($rawItems) ? iterator_to_array($rawItems, false) : []);
     $data['sitemapItems'] = $sitemapItems;
     $n = count($sitemapItems);
-    // First column: 2 items. Last column: 2 items. Middle column: the rest (no overlap).
-    $data['sitemapCol1'] = array_slice($sitemapItems, 0, 2);
-    $data['sitemapCol3'] = $n >= 4 ? array_slice($sitemapItems, -2) : ($n === 3 ? array_slice($sitemapItems, 2, 1) : []);
-    $data['sitemapCol2'] = $n > 4 ? array_slice($sitemapItems, 2, $n - 4) : [];
+    if ($n < 6) {
+        // Few links: two columns only — first 2 items, remainder in second; third column empty (hidden in Twig).
+        $data['sitemapCol1'] = array_slice($sitemapItems, 0, 2);
+        $data['sitemapCol2'] = array_slice($sitemapItems, 2);
+        $data['sitemapCol3'] = [];
+        $data['sitemapUseTwoColumns'] = $n > 0;
+    } else {
+        // First column: 2. Last column: 2. Middle: the rest.
+        $data['sitemapCol1'] = array_slice($sitemapItems, 0, 2);
+        $data['sitemapCol3'] = array_slice($sitemapItems, -2);
+        $data['sitemapCol2'] = array_slice($sitemapItems, 2, max(0, $n - 4));
+        $data['sitemapUseTwoColumns'] = false;
+    }
     $options = Options::getTranslatable('NSCFooter');
     $data['companyName'] = $options['companyName'] ?? get_bloginfo('name');
     $data['companyDescription'] = $options['companyDescription'] ?? '';

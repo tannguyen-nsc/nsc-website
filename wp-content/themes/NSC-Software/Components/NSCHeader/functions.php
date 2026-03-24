@@ -23,7 +23,9 @@ add_action('init', function () {
 add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     $themeBuildUri = trailingslashit(get_template_directory_uri()) . 'frontend/build';
     $data['buildUri'] = $themeBuildUri;
-    $data['menu'] = Timber::get_menu('navigation_main') ?? Timber::get_pages_menu();
+    $data['menu'] = \function_exists('nsc_timber_get_menu_for_location')
+        ? nsc_timber_get_menu_for_location('navigation_main')
+        : (Timber::get_menu('navigation_main') ?? Timber::get_pages_menu());
     Menu\ensure_menu_item_classes($data['menu']);
     Menu\set_current_ancestor_on_parents($data['menu']);
     Menu\mark_blog_archive_menu_active($data['menu']);
@@ -32,6 +34,9 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     }
     if (function_exists('NscSoftware\\Menu\\mark_case_study_archive_menu_active')) {
         Menu\mark_case_study_archive_menu_active($data['menu']);
+    }
+    if (\function_exists('nsc_features_filter_timber_menu')) {
+        $data['menu'] = \nsc_features_filter_timber_menu($data['menu']);
     }
     Menu\set_current_ancestor_on_parents($data['menu']);
     $blogName = get_bloginfo('name');
@@ -132,24 +137,58 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
 
     // Labels from options (no mobile title field — derived: Blog section → "Blog", singular → title, else Home).
     $data['labels'] = (isset($options['labels']) && is_array($options['labels'])) ? $options['labels'] : [];
+    if (empty($data['labels']['languageLabel'])) {
+        $data['labels']['languageLabel'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Language: English') : __('Language: English', 'NscSoftware');
+    }
+    if (empty($data['labels']['ariaLabel'])) {
+        $data['labels']['ariaLabel'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Main navigation') : __('Main navigation', 'NscSoftware');
+    }
+    $data['labels']['closeMenu'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Close menu') : __('Close menu', 'NscSoftware');
     if (Menu\is_blog_navigation_context()) {
-        $data['labels']['mobileHomeText'] = __('Blog', 'NscSoftware');
+        $data['labels']['mobileHomeText'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Blog') : __('Blog', 'NscSoftware');
     } elseif (is_page('case-studies')) {
-        $data['labels']['mobileHomeText'] = __('Case Studies', 'NscSoftware');
+        $data['labels']['mobileHomeText'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Case Studies') : __('Case Studies', 'NscSoftware');
     } elseif (is_singular('job')) {
-        $data['labels']['mobileHomeText'] = __('Careers', 'NscSoftware');
+        $data['labels']['mobileHomeText'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Careers') : __('Careers', 'NscSoftware');
     } elseif (is_singular('case_study')) {
-        $data['labels']['mobileHomeText'] = __('Case Studies', 'NscSoftware');
+        $data['labels']['mobileHomeText'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Case Studies') : __('Case Studies', 'NscSoftware');
     } elseif ($postId && is_singular()) {
         $data['labels']['mobileHomeText'] = get_the_title($postId);
     } elseif (is_front_page() && $postId) {
         $data['labels']['mobileHomeText'] = get_the_title($postId);
     } else {
-        $data['labels']['mobileHomeText'] = __('Home', 'NscSoftware');
+        $data['labels']['mobileHomeText'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Home') : __('Home', 'NscSoftware');
     }
 
     // When on the contact page, do not add active class to the Contact Us menu item (contact-btn).
     $data['isContactPage'] = is_page('contact');
+
+    $data['languageSwitcher'] = '';
+    $data['languageSwitcherAria'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Languages') : __('Languages', 'NscSoftware');
+    $data['languageSwitcherLanguages'] = [];
+    $data['languageSwitcherDesktopCode'] = '';
+    $data['mobileNavMenuLabel'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Menu') : __('Menu', 'NscSoftware');
+    if (!is_admin()
+        && \function_exists('pll_the_languages')
+        && \function_exists('nsc_should_show_language_switcher_ui')
+        && \nsc_should_show_language_switcher_ui()) {
+        $raw = \pll_the_languages([
+            'raw' => 1,
+            'echo' => 0,
+            'hide_if_empty' => 0,
+            'hide_if_no_translation' => 0,
+        ]);
+        if (\is_array($raw)) {
+            $data['languageSwitcherLanguages'] = \array_values($raw);
+            foreach ($data['languageSwitcherLanguages'] as $row) {
+                if (\is_array($row) && !empty($row['current_lang'])) {
+                    $slug = isset($row['slug']) ? (string) $row['slug'] : '';
+                    $data['languageSwitcherDesktopCode'] = $slug !== '' ? \strtoupper($slug) : '';
+                    break;
+                }
+            }
+        }
+    }
 
     return $data;
 });

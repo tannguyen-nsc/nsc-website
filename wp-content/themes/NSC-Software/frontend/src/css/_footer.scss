@@ -149,6 +149,10 @@ footer {
     
     .sitemap-links {
       @apply grid grid-cols-1 gap-4 lg:gap-8 max-h-0 overflow-hidden transition-[max-height] duration-300 ease-out lg:grid-cols-3 lg:max-h-none lg:pl-12;
+
+      &.sitemap-links--two-cols {
+        @apply lg:grid-cols-2;
+      }
       
       &.expanded {
         @apply max-h-[500px] transition-[max-height] duration-500 ease-in lg:max-h-none;

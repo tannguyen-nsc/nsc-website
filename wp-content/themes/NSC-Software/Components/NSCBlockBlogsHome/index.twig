@@ -24,7 +24,7 @@
 {% endmacro %}
 {% import _self as blogs_home %}
 
-{% if not (options.hidden|default(0)) %}
+{% if not (options.hiddenBlogHome|default(0)) %}
 <nsc-software-component name="NSCBlockBlogsHome">
   <section class="blogs no-padding-top">
   <div class="heading">

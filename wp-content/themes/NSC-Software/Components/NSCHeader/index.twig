@@ -20,8 +20,8 @@
       </button>
     </div>
     <div class="mobile-nav" id="mobileNav">
-      <span>Menu</span>
-      <button class="mobile-nav-close" id="mobileNavClose" aria-label="{{ __('Close menu', 'NscSoftware')|e }}">
+      <span>{{ mobileNavMenuLabel|default('Menu')|e }}</span>
+      <button class="mobile-nav-close" id="mobileNavClose" aria-label="{{ labels.closeMenu|default('Close menu')|e }}">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -65,6 +65,26 @@
             </li>
           {% endif %}
         {% endfor %}
+        {% if languageSwitcherLanguages|default([])|length > 0 %}
+          <li class="mobile-dropdown-parent mobile-language" role="none">
+            <a href="#language" class="mobile-nav-link mobile-dropdown-toggle">
+              {{ labels.languageLabel|default('')|e }}
+              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <ul class="mobile-dropdown">
+              {% for lang in languageSwitcherLanguages %}
+                <li>
+                  <a href="{{ lang.url|e('esc_url') }}" class="mobile-nav-link" hreflang="{{ lang.slug|e('html_attr') }}" lang="{{ lang.slug|e('html_attr') }}">
+                    {% if lang.current_lang %}<span class="lang-check" aria-hidden="true">✓</span>{% endif %}
+                    {{ lang.name|e }}
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </li>
+        {% endif %}
       </ul>
       {% endif %}
     </div>
@@ -103,6 +123,16 @@
               <li><a href="{{ item.link|e('esc_url') }}" class="{{ _show_active ? 'active' : '' }} {{ item.title == 'Contact Us' ? 'contact-btn' }} {{ _item_class }}" {{ item.is_target_blank ? ' target="_blank" rel="noopener noreferrer"' }}>{{ item.title|e }}</a></li>
             {% endif %}
           {% endfor %}
+          {% if languageSwitcherLanguages|default([])|length > 0 %}
+            <li class="lang-switcher" role="none">
+              <a href="#language" class="no-link-cursor">{{ languageSwitcherDesktopCode|default('')|e }} <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+              <ul class="dropdown" role="menu" aria-label="{{ languageSwitcherAria|default('Languages')|e }}">
+                {% for lang in languageSwitcherLanguages %}
+                  <li role="none"><a role="menuitem" href="{{ lang.url|e('esc_url') }}" hreflang="{{ lang.slug|e('html_attr') }}" lang="{{ lang.slug|e('html_attr') }}" class="{{ lang.current_lang ? 'active' : '' }}">{{ lang.name|e }}</a></li>
+                {% endfor %}
+              </ul>
+            </li>
+          {% endif %}
         </ul>
       </nav>
       {% endif %}

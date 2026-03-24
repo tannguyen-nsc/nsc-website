@@ -10,6 +10,7 @@ declare(strict_types=1);
  *
  * Usage:
  *   http://localhost/nsc/create-nsc-blog-posts.php?token=nsc-create-blog-posts-2026
+ *   Optional seed_lang={slug}|all for Polylang-linked posts. Omit seed_lang for default-language only; seed_lang=all for every non-default language. (lang) lowercase prefix without Google API key; legacy [LANG] stripped when re-seeding.
  */
 
 $requiredToken = 'nsc-create-blog-posts-2026';
@@ -34,6 +35,14 @@ require_once $wpLoadPath;
 require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
+
+$nscSeedPolylang = get_template_directory() . '/inc/nscSeedPolylang.php';
+if (is_readable($nscSeedPolylang)) {
+    require_once $nscSeedPolylang;
+}
+if (function_exists('nsc_seed_bootstrap_acf_polylang_default_language')) {
+    nsc_seed_bootstrap_acf_polylang_default_language();
+}
 
 $baseUrl = home_url('/');
 
@@ -108,7 +117,7 @@ function nscBlogSeedRelatedPool(string $baseUrl): array
         ['linkLabel' => 'NSC Home', 'linkUrl' => $baseUrl, 'openInNewTab' => 0],
         ['linkLabel' => 'About Us', 'linkUrl' => $baseUrl . 'about/', 'openInNewTab' => 0],
         ['linkLabel' => 'Our Services', 'linkUrl' => $baseUrl . 'our-services/', 'openInNewTab' => 0],
-        ['linkLabel' => 'Technology Capabilities', 'linkUrl' => $baseUrl . 'our-capabilites/', 'openInNewTab' => 0],
+        ['linkLabel' => 'Technology Capabilities', 'linkUrl' => $baseUrl . 'technology-apabilities/', 'openInNewTab' => 0],
         ['linkLabel' => 'Contact', 'linkUrl' => $baseUrl . 'contact/', 'openInNewTab' => 0],
         ['linkLabel' => 'Careers', 'linkUrl' => $baseUrl . 'career/', 'openInNewTab' => 0],
         ['linkLabel' => 'Blog archive', 'linkUrl' => $baseUrl . 'blogs/', 'openInNewTab' => 0],
@@ -609,13 +618,27 @@ $i       = 0;
 foreach ($titles as $title) {
     $i++;
     $slug = sanitize_title($title);
-    $existing = get_posts([
+    $singleTarget = function_exists('nsc_seed_is_single_target_language_run') && nsc_seed_is_single_target_language_run();
+    $langArgs     = function_exists('nsc_seed_polylang_get_explicit_lang_query_args') ? nsc_seed_polylang_get_explicit_lang_query_args() : [];
+    $canonicalId  = 0;
+    if ($singleTarget && function_exists('nsc_seed_get_canonical_post_by_type_and_slug')) {
+        $cPost = nsc_seed_get_canonical_post_by_type_and_slug('post', $slug, true);
+        if ($cPost instanceof WP_Post) {
+            $canonicalId = (int) $cPost->ID;
+        }
+        if ($canonicalId <= 0) {
+            $results[] = ['slug' => $slug, 'status' => 'skipped', 'message' => 'No default-language post; run without seed_lang first.'];
+            continue;
+        }
+    }
+
+    $existing = get_posts(array_merge([
         'post_type'      => 'post',
         'post_status'    => 'any',
         'name'           => $slug,
         'posts_per_page' => 1,
         'fields'         => 'ids',
-    ]);
+    ], $langArgs));
     $postId = !empty($existing) ? (int) $existing[0] : 0;
 
     $imgIdx1 = ($i * 5 + 2) % count($blogFiles);
@@ -677,55 +700,97 @@ foreach ($titles as $title) {
         'post_author'  => get_current_user_id() ?: 1,
     ];
 
-    if ($postId > 0) {
-        $postarr['ID'] = $postId;
-        $r = wp_update_post($postarr, true);
+    if (!$singleTarget) {
+        if ($postId > 0) {
+            $postarr['ID'] = $postId;
+            $r = wp_update_post($postarr, true);
+        } else {
+            $r = wp_insert_post($postarr, true);
+        }
+
+        if (is_wp_error($r)) {
+            $results[] = ['slug' => $slug, 'status' => 'error', 'message' => $r->get_error_message()];
+            continue;
+        }
+
+        $postId = (int) $r;
+
+        $catKey = ($i % 2 === 0) ? 'cultures' : 'technology';
+        $termId = $categories[$catKey] ?? 0;
+        if ($termId > 0) {
+            wp_set_post_categories($postId, [$termId], false);
+        }
+
+        $thumbId = $imageMap[$imgFile] ?? 0;
+        if ($thumbId > 0) {
+            set_post_thumbnail($postId, $thumbId);
+        }
+
+        wp_set_post_tags($postId, nsc_blog_seed_tags_for_post($i), false);
+
+        $featured = ($i % 4 === 1) ? 1 : 0;
+
+        $start   = ($i * 3) % count($relatedPool);
+        $related = [];
+        for ($k = 0; $k < 3; $k++) {
+            $related[] = $relatedPool[($start + $k) % count($relatedPool)];
+        }
+
+        if (function_exists('update_field')) {
+            update_field('nsc_featured_article', $featured, $postId);
+            update_field('nsc_related_heading', 'Related content', $postId);
+            update_field('nsc_related_links', $related, $postId);
+        } else {
+            update_post_meta($postId, 'nsc_featured_article', $featured);
+            update_post_meta($postId, 'nsc_related_heading', 'Related content');
+            update_post_meta($postId, 'nsc_related_links', $related);
+        }
     } else {
-        $r = wp_insert_post($postarr, true);
+        $catKey   = ($i % 2 === 0) ? 'cultures' : 'technology';
+        $featured = ($i % 4 === 1) ? 1 : 0;
+        $start    = ($i * 3) % count($relatedPool);
+        $related  = [];
+        for ($k = 0; $k < 3; $k++) {
+            $related[] = $relatedPool[($start + $k) % count($relatedPool)];
+        }
     }
 
-    if (is_wp_error($r)) {
-        $results[] = ['slug' => $slug, 'status' => 'error', 'message' => $r->get_error_message()];
-        continue;
+    $syncSourceId = ($singleTarget && $canonicalId > 0) ? $canonicalId : $postId;
+    if (function_exists('nsc_seed_should_run_translation_sync') && nsc_seed_should_run_translation_sync() && function_exists('nsc_seed_polylang_sync_post_with_taxonomies')) {
+        nsc_seed_polylang_sync_post_with_taxonomies(
+            $syncSourceId,
+            'post',
+            $title,
+            $slug,
+            $content,
+            $excerpt,
+            [
+                'nsc_featured_article' => $featured,
+                'nsc_related_heading' => 'Related content',
+                'nsc_related_links' => $related,
+            ],
+            ['category', 'post_tag']
+        );
     }
 
-    $postId = (int) $r;
-
-    $catKey = ($i % 2 === 0) ? 'cultures' : 'technology';
-    $termId = $categories[$catKey] ?? 0;
-    if ($termId > 0) {
-        wp_set_post_categories($postId, [$termId], false);
+    $reportId = $postId;
+    if ($singleTarget && $canonicalId > 0 && function_exists('nsc_seed_polylang_sync_target_slugs_for_request')) {
+        $t0 = nsc_seed_polylang_sync_target_slugs_for_request()[0] ?? '';
+        if ($t0 !== '' && function_exists('pll_get_post')) {
+            $tp = (int) pll_get_post($canonicalId, $t0);
+            if ($tp > 0) {
+                $reportId = $tp;
+            }
+        }
     }
 
-    $thumbId = $imageMap[$imgFile] ?? 0;
-    if ($thumbId > 0) {
-        set_post_thumbnail($postId, $thumbId);
-    }
-
-    wp_set_post_tags($postId, nsc_blog_seed_tags_for_post($i), false);
-
-    $featured = ($i % 4 === 1) ? 1 : 0;
-
-    $start    = ($i * 3) % count($relatedPool);
-    $related  = [];
-    for ($k = 0; $k < 3; $k++) {
-        $related[] = $relatedPool[($start + $k) % count($relatedPool)];
-    }
-
-    if (function_exists('update_field')) {
-        update_field('nsc_featured_article', $featured, $postId);
-        update_field('nsc_related_heading', 'Related content', $postId);
-        update_field('nsc_related_links', $related, $postId);
-    } else {
-        update_post_meta($postId, 'nsc_featured_article', $featured);
-        update_post_meta($postId, 'nsc_related_heading', 'Related content');
-        update_post_meta($postId, 'nsc_related_links', $related);
-    }
-
+    $rowStatus = $singleTarget
+        ? 'translation-updated'
+        : ($postId && !empty($existing) ? 'updated' : 'created');
     $results[] = [
         'slug'   => $slug,
-        'status' => $postId && !empty($existing) ? 'updated' : 'created',
-        'message' => 'post_id=' . $postId . ', cat=' . $catKey . ', featured=' . $featured . ', related=' . count($related),
+        'status' => $rowStatus,
+        'message' => 'post_id=' . $reportId . ', cat=' . $catKey . ', featured=' . $featured . ', related=' . count($related),
     ];
 }
 
@@ -733,7 +798,7 @@ header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Blog Posts Seed</title>';
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:1100px}th,td{border:1px solid #ddd;padding:8px;font-size:13px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body><h1>NSC Blog Posts</h1>';
-echo '<p>Seeded or updated ' . count($results) . ' posts. Categories: Technology, Cultures. Rich HTML body (blog-details-style), tags, ACF featured + related links. Thumbnails from build images when sideload works.</p>';
+echo '<p>Seeded or updated ' . count($results) . ' posts. Categories: Technology, Cultures. Rich HTML body (blog-details-style), tags, ACF featured + related links. Thumbnails from build images when sideload works. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang duplicates (omit for default language only).</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $cls = $row['status'] === 'error' ? 'error' : 'ok';

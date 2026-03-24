@@ -224,7 +224,7 @@ function getACFLayout()
                 'layout' => 'row',
                 'sub_fields' => [
                     FieldVariables\getBlogHomePostsLimitField(),
-                    FieldVariables\getHidden(),
+                    FieldVariables\getHiddenBlogHome(),
                 ],
             ],
         ],

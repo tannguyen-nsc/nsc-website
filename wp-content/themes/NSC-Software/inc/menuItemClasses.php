@@ -47,7 +47,7 @@ function set_item_classes(array $items, array $classes_by_id)
 
 /**
  * Set current_ancestor on parent menu items when any descendant is the current page.
- * Used so "What We Do" gets active class when on Our Services or Our Capabilities.
+ * Used so "What We Do" gets active class when on Our Services or Technology Capabilities.
  *
  * @param object|null $menu Timber\Menu or object with ->items.
  * @return void

@@ -382,7 +382,7 @@ function getACFLayout(): array
                         ],
                         'default_value' => 'all',
                     ],
-                    \NscSoftware\FieldVariables\getHidden(),
+                    \NscSoftware\FieldVariables\getHiddenJobsArchive(),
                 ],
             ],
         ],
