@@ -160,7 +160,7 @@
   }
 
   &.case-study-detail {
-    @apply relative flex flex-col items-stretch justify-center text-left min-h-0 overflow-hidden py-10 md:py-14 xl:min-h-[52vw] xl:py-16;
+    @apply relative flex flex-col items-stretch justify-center text-left min-h-[180vw] md:min-h-[130vw] xl:min-h-[52vw] 2xl:min-h-[50vw] overflow-hidden py-10 md:py-14 xl:py-16;
     @apply px-4 sm:px-6 lg:px-8;
 
     // Full-bleed hero backgrounds (same layout as quote section assets, but scoped here — quote BEM lives under .case-study-detail-quote only).

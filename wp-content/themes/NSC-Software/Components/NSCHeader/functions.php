@@ -139,7 +139,7 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     } elseif (is_singular('job')) {
         $data['labels']['mobileHomeText'] = __('Careers', 'NscSoftware');
     } elseif (is_singular('case_study')) {
-        $data['labels']['mobileHomeText'] = __('Case study', 'NscSoftware');
+        $data['labels']['mobileHomeText'] = __('Case Studies', 'NscSoftware');
     } elseif ($postId && is_singular()) {
         $data['labels']['mobileHomeText'] = get_the_title($postId);
     } elseif (is_front_page() && $postId) {
