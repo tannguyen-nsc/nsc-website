@@ -163,11 +163,9 @@
     @apply relative flex flex-col items-stretch justify-center text-left min-h-0 overflow-hidden py-10 md:py-14 xl:min-h-[52vw] xl:py-16;
     @apply px-4 sm:px-6 lg:px-8;
 
+    // Full-bleed hero backgrounds (same layout as quote section assets, but scoped here — quote BEM lives under .case-study-detail-quote only).
     .hero-case-study-detail__bg {
-      @apply absolute inset-0 z-0 pointer-events-none;
-      background-image: url("../img/hero-light.png");
-      background-size: cover;
-      background-position: center;
+      @apply pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center;
     }
 
     &::after {
@@ -182,7 +180,7 @@
       );
     }
 
-    img {
+    img:not(.hero-case-study-detail__bg) {
       @apply static mx-0 h-auto w-auto max-w-full object-contain;
     }
 

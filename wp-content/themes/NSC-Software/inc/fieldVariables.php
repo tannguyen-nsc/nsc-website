@@ -150,3 +150,19 @@ function getArchiveBlogListPerPageField()
         'instructions' => __('Used by the searchable blog list (Vue pagination).', 'NscSoftware'),
     ];
 }
+
+/**
+ * @return array<string, mixed>
+ */
+function getCaseStudiesListPerPageField()
+{
+    return [
+        'label' => __('Case studies: items per page', 'NscSoftware'),
+        'name' => 'caseStudiesPerPage',
+        'type' => 'number',
+        'default_value' => 6,
+        'min' => 1,
+        'max' => 48,
+        'instructions' => __('Vue grid pagination (matches static case-studies.html).', 'NscSoftware'),
+    ];
+}

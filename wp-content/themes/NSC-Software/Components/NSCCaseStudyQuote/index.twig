@@ -1,0 +1,45 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCCaseStudyQuote">
+  <section class="case-study-detail-quote" aria-label="{{ __('Client testimonial', 'NscSoftware')|e }}">
+    {% if theme.buildUri|default('') %}
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/mob-case-study-testimonials.png" alt="" class="case-study-detail-quote__bg case-study-detail-quote__bg--mob lg:hidden" loading="lazy" decoding="async" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/case-study-testimonials.png" alt="" class="case-study-detail-quote__bg case-study-detail-quote__bg--desk hidden lg:block" loading="lazy" decoding="async" />
+    {% endif %}
+    <div class="wrapper">
+      <div class="case-study-detail-quote__inner">
+        <div class="case-study-detail-quote__row">
+          {% if theme.buildUri|default('') %}
+            <img src="{{ theme.buildUri|e('esc_url') }}/img/quote-left.png" alt="" class="case-study-detail-quote__mark case-study-detail-quote__mark--left case-study-detail-quote__mark--side hidden lg:block" width="64" height="64" loading="lazy" decoding="async" />
+          {% endif %}
+          <div class="case-study-detail-quote__body">
+            <div class="case-study-detail-quote__quote-wrap">
+              {% if theme.buildUri|default('') %}
+                <img src="{{ theme.buildUri|e('esc_url') }}/img/quote-left.png" alt="" class="case-study-detail-quote__mark case-study-detail-quote__mark--left case-study-detail-quote__mark--corner lg:hidden" width="64" height="64" loading="lazy" decoding="async" />
+              {% endif %}
+              <blockquote class="case-study-detail-quote__blockquote">
+                <p class="case-study-detail-quote__text">{{ quoteText|default('')|e }}</p>
+              </blockquote>
+              {% if theme.buildUri|default('') %}
+                <img src="{{ theme.buildUri|e('esc_url') }}/img/quote-right.png" alt="" class="case-study-detail-quote__mark case-study-detail-quote__mark--right case-study-detail-quote__mark--corner lg:hidden" width="64" height="64" loading="lazy" decoding="async" />
+              {% endif %}
+            </div>
+            {% if citeName|default('') or citeRole|default('') %}
+              <footer class="case-study-detail-quote__cite">
+                {% if citeName|default('') %}
+                  <cite class="case-study-detail-quote__name">{{ citeName|e }}</cite>
+                {% endif %}
+                {% if citeRole|default('') %}
+                  <p class="case-study-detail-quote__role">{{ citeRole|e }}</p>
+                {% endif %}
+              </footer>
+            {% endif %}
+          </div>
+          {% if theme.buildUri|default('') %}
+            <img src="{{ theme.buildUri|e('esc_url') }}/img/quote-right.png" alt="" class="case-study-detail-quote__mark case-study-detail-quote__mark--right case-study-detail-quote__mark--side hidden lg:block" width="64" height="64" loading="lazy" decoding="async" />
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

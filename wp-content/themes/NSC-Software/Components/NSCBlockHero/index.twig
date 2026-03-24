@@ -3,10 +3,11 @@
   - home: section.hero.home (wave animation), one image, iso-logos, CTA button
   - left_text: section.hero.left-text (About us), desktop + mobile images, no iso-logos
   - dark: section.hero.dark (AI / Our Services), one or two images, no iso-logos
+  - case_studies: section.hero (case-studies.html), single image, no CTA in default seed
 #}
 {% if not (options.hidden|default(0)) %}
 {% set style = heroStyle|default('home') %}
-{% set sectionClass = 'hero ' ~ (style == 'left_text' ? 'left-text' : style) %}
+{% set sectionClass = style == 'left_text' ? 'hero left-text' : (style == 'case_studies' ? 'hero' : ('hero ' ~ style)) %}
 <nsc-software-component name="NSCBlockHero">
   <section class="{{ sectionClass }}">
   {% if style == 'home' %}
@@ -70,8 +71,27 @@
         </div>
       {% endif %}
     </div>
+  {% elseif style == 'case_studies' %}
+    {# Case studies archive (frontend/src/case-studies.html) #}
+    {% if image.url or image.src %}
+      <img src="{{ (image.url|default(image.src))|e('esc_url') }}" alt="{{ (image.alt|default(''))|e }}" loading="lazy" />
+    {% elseif theme.buildUri %}
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/hero-cs.png" alt="" loading="lazy" />
+    {% endif %}
+    <div class="headlines animate__animated animate__zoomIn">
+      <h1>{{ headline|raw }}</h1>
+      <br>
+      <div class="description">
+        {% if description %}{{ description|raw }}{% endif %}
+      </div>
+      {% if button.label and button.url %}
+        <div class="buttons">
+          <a href="{{ button.url|e('esc_url') }}" class="btn-explore"{{ button.openInNewTab ? ' target="_blank" rel="noopener noreferrer"' }}>{{ button.label|e }}</a>
+        </div>
+      {% endif %}
+    </div>
   {% else %}
-    {# dark (AI / Our Services): one image or desktop + mobile #}
+    {# dark (AI / Our Services): desktop + mobile (or single image); Background/hero image field hidden in CMS for this style only #}
     {% if imageDesktop.url or imageDesktop.src or imageMobile.url or imageMobile.src %}
       {% if imageDesktop.url or imageDesktop.src %}
         <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="xl:block hidden" loading="lazy" />

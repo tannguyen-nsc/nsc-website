@@ -1,0 +1,135 @@
+{% if not (options.hidden|default(0)) %}
+{% set industries = post.terms('case_study_industry') %}
+{% set countries = post.terms('case_study_country') %}
+{% set solutions = post.terms('case_study_solution') %}
+{% set services = post.terms('case_study_service') %}
+{% set technologies = post.terms('case_study_technology') %}
+<nsc-software-component name="NSCCaseStudyMain">
+  <div class="case-study-detail-page">
+    <div class="case-study-detail-overview" role="region" aria-labelledby="case-study-detail-overview-heading">
+      <div class="wrapper">
+        <div class="case-study-detail-overview__header">
+          {% if theme.buildUri|default('') %}
+            <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" width="36" height="36" loading="lazy" decoding="async" />
+          {% endif %}
+          <h2 id="case-study-detail-overview-heading">{{ (collaborationHeading|default('Collaboration overview'))|e }}</h2>
+        </div>
+        <div class="case-study-detail-overview__grid">
+          <div class="case-study-detail-overview__main">
+            {% for block in overviewBlocks|default([]) %}
+              {% set bt = block.blockTitle|default(block.block_title|default('')) %}
+              {% set bl = block.blockLines|default(block.block_lines|default('')) %}
+              {% if bt %}
+                <div class="case-study-detail-overview__block">
+                  <h3>{{ bt|e }}</h3>
+                  <ul>
+                    {% set raw = bl|replace({'\r':''})|split('\n') %}
+                    {% for line in raw %}
+                      {% set t = line|trim %}
+                      {% if t %}
+                        <li>{{ t|e }}</li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+            {% endfor %}
+            {# Valid slides only; duplicate when ≤3 so Slick (slidesToShow: 3) has slideCount > slidesToShow (dots/arrows). #}
+            {% set gallerySlides = [] %}
+            {% for img in gallery|default([]) %}
+              {% set src = img.url|default(img.sizes.large|default('')) %}
+              {% if src %}
+                {% set gallerySlides = gallerySlides|merge([img]) %}
+              {% endif %}
+            {% endfor %}
+            {% if gallerySlides|length > 0 and gallerySlides|length <= 3 %}
+              {% set n = gallerySlides|length %}
+              {% set repeatCount = (4 / n)|round(0, 'ceil') %}
+              {% set expanded = [] %}
+              {% for i in 1..repeatCount %}
+                {% set expanded = expanded|merge(gallerySlides) %}
+              {% endfor %}
+              {% set gallerySlides = expanded %}
+            {% endif %}
+            {% if gallerySlides|length %}
+              <div class="case-study-detail-gallery" aria-labelledby="case-study-detail-gallery-heading">
+                <h2 id="case-study-detail-gallery-heading" class="case-study-detail-gallery__title">{{ __('Gallery', 'NscSoftware')|e }}</h2>
+                <div class="case-study-detail-gallery__slider js-case-study-detail-gallery">
+                  {% for img in gallerySlides %}
+                    {% set src = img.url|default(img.sizes.large|default('')) %}
+                    {% if src %}
+                      <div class="case-study-detail-gallery__slide">
+                        <div class="case-study-detail-gallery__frame">
+                          <img src="{{ src|e('esc_url') }}" alt="{{ (img.alt|default(''))|e }}" width="800" height="480" loading="lazy" decoding="async" />
+                        </div>
+                      </div>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+          <aside class="case-study-detail-overview__meta">
+            {% if sizeDuration|default('') %}
+              <div class="case-study-detail-overview__meta-row">
+                <span class="case-study-detail-overview__meta-label">{{ __('Size & duration', 'NscSoftware')|e }}</span>
+                <p class="case-study-detail-overview__meta-text">{{ sizeDuration|e }}</p>
+              </div>
+            {% endif %}
+            {% if industries|length %}
+              <div class="case-study-detail-overview__meta-row">
+                <span class="case-study-detail-overview__meta-label">{{ __('Industry', 'NscSoftware')|e }}</span>
+                <div class="case-study-detail-overview__tags">
+                  {% for t in industries %}
+                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            {% if countries|length %}
+              <div class="case-study-detail-overview__meta-row">
+                <span class="case-study-detail-overview__meta-label">{{ __('Country', 'NscSoftware')|e }}</span>
+                <div class="case-study-detail-overview__tags">
+                  {% for t in countries %}
+                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            {% if solutions|length %}
+              <div class="case-study-detail-overview__meta-row">
+                <span class="case-study-detail-overview__meta-label">{{ __('Solutions', 'NscSoftware')|e }}</span>
+                <div class="case-study-detail-overview__tags">
+                  {% for t in solutions %}
+                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            {% if services|length %}
+              <div class="case-study-detail-overview__meta-row">
+                <span class="case-study-detail-overview__meta-label">{{ __('Services', 'NscSoftware')|e }}</span>
+                <div class="case-study-detail-overview__tags">
+                  {% for t in services %}
+                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+            {% if technologies|length %}
+              <div class="case-study-detail-overview__meta-row">
+                <span class="case-study-detail-overview__meta-label">{{ __('Technologies & frameworks', 'NscSoftware')|e }}</span>
+                <div class="case-study-detail-overview__tags case-study-detail-overview__tags--dense">
+                  {% for t in technologies %}
+                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+</nsc-software-component>
+{% endif %}

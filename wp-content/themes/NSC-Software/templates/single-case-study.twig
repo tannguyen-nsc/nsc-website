@@ -1,0 +1,58 @@
+{% extends 'templates/_document.twig' %}
+
+{% block content %}
+  {% set components = case_study_components|length ? case_study_components : post.meta('caseStudyComponents')|default([]) %}
+  {% if components %}
+    {% for component in components %}
+      {{ renderComponent(component) }}
+    {% endfor %}
+  {% endif %}
+
+  {% if related_case_studies|length %}
+    <div class="case-study-detail-page">
+      <section class="case-studies case-study-detail-related" role="region" aria-labelledby="case-study-detail-related-heading">
+        <div class="wrapper">
+          <h2 id="case-study-detail-related-heading" class="case-study-detail-related__heading">{{ related_heading|default(__('Other case studies', 'NscSoftware'))|e }}</h2>
+          <div class="case-studies-grid">
+            {% for study in related_case_studies %}
+              {% set terms = study.terms('case_study_category') %}
+              {% set cat = terms|first %}
+              {% set feat = function('get_post_thumbnail_id', study.id) %}
+              {% set img_url = feat ? function('wp_get_attachment_image_url', feat, 'large') : '' %}
+              <article class="case-study-card">
+                <div class="card-image">
+                  {% if img_url %}
+                    <img src="{{ img_url|e('esc_url') }}" alt="{{ study.title|e }}" loading="lazy" decoding="async" />
+                  {% elseif theme.buildUri|default('') %}
+                    <img src="{{ theme.buildUri|e('esc_url') }}/img/blog1.png" alt="" loading="lazy" decoding="async" />
+                  {% endif %}
+                </div>
+                <div class="card-content">
+                  {% if cat %}
+                    <span class="card-category">{{ cat.name|e }}</span>
+                  {% endif %}
+                  <h3>{{ study.title|e }}</h3>
+                  <p class="card-description">{{ study.excerpt|default('')|striptags|e }}</p>
+                  <a href="{{ study.link|e('esc_url') }}" class="card-read-more">{{ __('Read More', 'NscSoftware')|e }}
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </a>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+          {% if case_studies_archive_url|default('') %}
+            <p class="case-study-detail-related__cta-wrap">
+              <a href="{{ case_studies_archive_url|e('esc_url') }}" class="case-study-detail-related__cta">{{ related_cta_label|default(__('View other case studies', 'NscSoftware'))|e }}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </a>
+            </p>
+          {% endif %}
+        </div>
+      </section>
+    </div>
+  {% endif %}
+{% endblock %}

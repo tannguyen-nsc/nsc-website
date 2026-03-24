@@ -24,6 +24,7 @@ add_action('NscSoftware/afterRegisterComponents', function () {
                     Components\NSCBlockAiTimeline\getACFLayout(),
                     Components\NSCBlockBlogsArchive\getACFLayout(),
                     Components\NSCBlockBlogsHome\getACFLayout(),
+                    Components\NSCBlockCaseStudiesArchive\getACFLayout(),
                     Components\NSCBlockCareerCoreValues\getACFLayout(),
                     Components\NSCBlockCareerWeAreNsc\getACFLayout(),
                     Components\NSCBlockCompanySnapshot\getACFLayout(),

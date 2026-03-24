@@ -1,0 +1,69 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockCaseStudiesArchive">
+  <section class="case-studies" id="case-studies-app" v-cloak>
+    <div class="wrapper">
+      <div class="heading">
+        {% if headingIcon.url or headingIcon.src %}
+          <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
+        {% elseif theme.buildUri|default('') %}
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" loading="lazy" />
+        {% endif %}
+        <h2>{{ (title|default('Case Studies'))|e }}</h2>
+      </div>
+      <script>
+        window.caseStudiesVueData = {{ (case_studies_vue_data_json|default('{}'))|raw }};
+      </script>
+      {% verbatim %}
+      <div class="case-studies-filters">
+        <button type="button" class="filter-btn" :class="{ 'filter-active': activeFilter === filter.id }" v-for="filter in filters" :key="filter.id" @click="setFilter(filter.id)">
+          <svg v-if="activeFilter === filter.id" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M13.3333 4L6 11.3333L2.66667 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {{ filter.label }}
+        </button>
+      </div>
+      <div class="case-studies-grid">
+        <template v-if="paginatedStudies.length">
+          <article class="case-study-card" v-for="study in paginatedStudies" :key="study.id">
+            <div class="card-image">
+              <img :src="study.image" :alt="study.title" loading="lazy" />
+            </div>
+            <div class="card-content">
+              <span class="card-category">{{ study.category }}</span>
+              <h3>{{ study.title }}</h3>
+              <p class="card-description">{{ study.description }}</p>
+              <a :href="study.link" class="card-read-more">{{ readMoreLabel }} <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg></a>
+            </div>
+          </article>
+        </template>
+        <div v-else class="case-studies-empty">
+          <p>{{ emptyListLabel }}</p>
+        </div>
+      </div>
+      <div class="pagination case-studies-pagination" v-if="totalPages > 1">
+        <button type="button" class="pagination-prev" :disabled="currentPage <= 1" @click="setPage(currentPage - 1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {{ prevLabel }}
+        </button>
+        <div class="pagination-numbers">
+          <template v-for="page in displayPages" :key="page.num || 'ellipsis'">
+            <button v-if="!page.isEllipsis" type="button" class="pagination-num" :class="{ 'pagination-num-active': currentPage === page.num }" @click="setPage(page.num)">{{ page.num }}</button>
+            <span v-else class="pagination-ellipsis">...</span>
+          </template>
+        </div>
+        <button type="button" class="pagination-next" :disabled="currentPage >= totalPages" @click="setPage(currentPage + 1)">
+          {{ nextLabel }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+      {% endverbatim %}
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

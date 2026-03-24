@@ -24,6 +24,10 @@
     RESIZE_DEBOUNCE: 250
   };
 
+  // WordPress loads jQuery in noConflict mode, so global `$` is undefined. Static HTML
+  // (e.g. case-study-details.html) uses CDN jQuery which sets `$`. Alias for Slick sliders.
+  const $ = typeof window !== 'undefined' ? (window.jQuery || window.$) : undefined;
+
   // ============================================================================
   // UTILITIES
   // ============================================================================

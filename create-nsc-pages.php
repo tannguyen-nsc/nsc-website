@@ -10,6 +10,7 @@ declare(strict_types=1);
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&blogs_only=1
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&career_only=1
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&policies_only=1
+ *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&case_studies_only=1
  *
  * Notes:
  * - Runs idempotently (creates missing pages, updates existing by slug).
@@ -28,10 +29,13 @@ declare(strict_types=1);
  * - Add blogs_only=1 to only create/update the Blogs page (default template + Hero + Blogs Archive components).
  * - Add career_only=1 to only create/update the Career page (default template + Hero + We are NSC + Core values + Jobs archive / Vue).
  * - Add policies_only=1 to only create/update Privacy Policy, Cookies Policy, and Terms of Use pages.
+ * - Add case_studies_only=1 to only create/update the Case Studies page (default template + Hero + Case studies archive / Vue from CPT case_study).
  * - Add content_test=1 to prepend "[test] " to text (policy page titles only; policy HTML body preserved) so you can verify in the CMS.
  * - Privacy Policy, Cookies Policy, Terms of Use use default template and one NSC Block: Policy Page; content from policy-content/*.html.
  * - Footer policy links (Privacy Policy, Cookies Policy, Terms of Use) are set in runGlobalOptions.php (legalLinks).
  * - Blog seed (30 posts, categories, ACF sidebar): use create-nsc-blog-posts.php with token nsc-create-blog-posts-2026.
+ * - Case studies seed (30 case_study posts, taxonomies, ACF gallery + size/duration): use create-nsc-case-study-posts.php with token nsc-create-case-studies-2026.
+ * - Case Studies page uses default template + pageComponents (Case studies hero + Case studies archive); Vue list reads published case_study posts (run case_studies_only=1 after CPT seed).
  */
 
 $requiredToken = 'nsc-create-pages-2026';
@@ -72,7 +76,7 @@ $pages = [
     ['title' => 'AI', 'slug' => 'ai', 'template' => ''], // default = page.twig + pageComponents (AI sections)
     ['title' => 'Blogs', 'slug' => 'blogs', 'template' => ''], // default + Hero + Blogs (Archive), Vue uses WP posts
     ['title' => 'Career', 'slug' => 'career', 'template' => ''], // default + pageComponents (frontend/src/career.html sections)
-    ['title' => 'Case Studies', 'slug' => 'case-studies', 'template' => 'template-case-studies.php'],
+    ['title' => 'Case Studies', 'slug' => 'case-studies', 'template' => ''],
     ['title' => 'Contact', 'slug' => 'contact', 'template' => ''], // default = page.twig + pageComponents (Contact + Global Presence)
     ['title' => 'Our Capabilites', 'slug' => 'our-capabilites', 'template' => ''], // default = page.twig + pageComponents (Hero + Technology Capability)
     ['title' => 'Our Services', 'slug' => 'our-services', 'template' => ''], // default = page.twig + pageComponents (Hero + Services Details)
@@ -858,6 +862,47 @@ function getBlogsPageComponents(): array
 }
 
 /**
+ * Case Studies listing page: Hero (case_studies) + archive (Vue + CPT case_study), matching frontend/src/case-studies.html.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getCaseStudiesPageComponents(): array
+{
+    $heroImgId = nscSideloadBuildImageByFilename('hero-cs.png');
+
+    $hero = [
+        'acf_fc_layout' => 'nscBlockHero',
+        'heroStyle' => 'case_studies',
+        'headline' => 'Real Projects, Real Impact',
+        'description' => '<p>See how NSC Software turns ideas into results. Our <br class="hidden xl:block">case studies showcase <b>innovative solutions, <br class="hidden xl:block"> international projects, and measurable impact, <br class="hidden xl:block"></b> giving you a front-row seat to how our team delivers <br class="hidden xl:block"> value to clients worldwide.</p>',
+        'button' => ['label' => '', 'url' => '', 'openInNewTab' => 0],
+        'options' => ['theme' => ''],
+    ];
+    if ($heroImgId > 0) {
+        $hero['image'] = $heroImgId;
+    }
+
+    return [
+        $hero,
+        [
+            'acf_fc_layout' => 'nscBlockCaseStudiesArchive',
+            'title' => 'Case Studies',
+            'listLabels' => [
+                'allCategoriesLabel' => 'All Categories',
+                'readMore' => 'Read More',
+                'previous' => 'Previous',
+                'next' => 'Next',
+                'emptyList' => 'No case studies found in this category.',
+            ],
+            'options' => [
+                'caseStudiesPerPage' => 6,
+                'hidden' => 0,
+            ],
+        ],
+    ];
+}
+
+/**
  * Career page: Hero (dark, career copy) + We are NSC + Core values + Open positions (Vue + CPT job / job_category).
  *
  * @return array<int, array<string, mixed>>
@@ -1025,10 +1070,11 @@ function applyContentTest(array $components): array
     return $out;
 }
 
-$homeOnly      = isset($_GET['home_only']) && $_GET['home_only'] === '1';
-$blogsOnly     = isset($_GET['blogs_only']) && $_GET['blogs_only'] === '1';
-$careerOnly    = isset($_GET['career_only']) && $_GET['career_only'] === '1';
-$policiesOnly  = isset($_GET['policies_only']) && $_GET['policies_only'] === '1';
+$homeOnly         = isset($_GET['home_only']) && $_GET['home_only'] === '1';
+$blogsOnly        = isset($_GET['blogs_only']) && $_GET['blogs_only'] === '1';
+$careerOnly       = isset($_GET['career_only']) && $_GET['career_only'] === '1';
+$policiesOnly     = isset($_GET['policies_only']) && $_GET['policies_only'] === '1';
+$caseStudiesOnly  = isset($_GET['case_studies_only']) && $_GET['case_studies_only'] === '1';
 $contentTest   = isset($_GET['content_test']) && $_GET['content_test'] === '1';
 if ($homeOnly) {
     $pages = array_filter($pages, static function (array $p) {
@@ -1041,6 +1087,10 @@ if ($homeOnly) {
 } elseif ($careerOnly) {
     $pages = array_filter($pages, static function (array $p) {
         return $p['slug'] === 'career';
+    });
+} elseif ($caseStudiesOnly) {
+    $pages = array_filter($pages, static function (array $p) {
+        return $p['slug'] === 'case-studies';
     });
 } elseif ($policiesOnly) {
     $policySlugs = ['privacy-policy', 'cookies-policy', 'terms-of-use'];
@@ -1266,6 +1316,27 @@ foreach ($pages as $page) {
             'status'  => $action,
             'message' => $msg,
         ];
+    } elseif ($slug === 'case-studies') {
+        $components = getCaseStudiesPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+        if (function_exists('update_field')) {
+            update_field('pageComponents', [], (int) $pageId);
+            update_field('pageComponents', $components, (int) $pageId);
+        } else {
+            delete_post_meta((int) $pageId, 'pageComponents');
+            update_post_meta((int) $pageId, 'pageComponents', $components);
+        }
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Case Studies: Hero + Archive / Vue from case_study CPT)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
     } elseif ($slug === 'privacy-policy' || $slug === 'cookies-policy' || $slug === 'terms-of-use') {
         $policyTitles = [
             'privacy-policy'  => 'Privacy Policy for NSC Software',
@@ -1317,7 +1388,7 @@ echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Page Setup</ti
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body>';
 echo '<h1>NSC Pages Setup</h1>';
-echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>blogs_only=1</code> to update only the Blogs page (Hero + Archive). Add <code>career_only=1</code> to update only the Career page (Hero + We are NSC + Core values + Jobs archive / Vue). Add <code>policies_only=1</code> to update only Privacy Policy, Cookies Policy, and Terms of Use. Add <code>content_test=1</code> to prepend "[test] " to text so you can verify the CMS loads editable data. Job listings: <code>create-nsc-job-posts.php?token=nsc-create-job-posts-2026</code>.</p>';
+echo '<p>Done. Home and About use default template and pageComponents (Home: <code>frontend/src/index.html</code>, About: <code>frontend/build/about.html</code>). URL fields use your site base URL. Re-run to refresh components. Add <code>home_only=1</code> to update only the Home page. Add <code>blogs_only=1</code> to update only the Blogs page (Hero + Archive). Add <code>career_only=1</code> to update only the Career page (Hero + We are NSC + Core values + Jobs archive / Vue). Add <code>case_studies_only=1</code> to update only the Case Studies page (Hero + Case studies archive / Vue from CPT). Add <code>policies_only=1</code> to update only Privacy Policy, Cookies Policy, and Terms of Use. Add <code>content_test=1</code> to prepend "[test] " to text so you can verify the CMS loads editable data. Job listings: <code>create-nsc-job-posts.php?token=nsc-create-job-posts-2026</code>. Case study posts: <code>create-nsc-case-study-posts.php?token=nsc-create-case-studies-2026</code>.</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $statusClass = $row['status'] === 'error' ? 'error' : 'ok';

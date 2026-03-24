@@ -212,3 +212,57 @@ function mark_menu_items_matching_career_path(array $items, string $careerPath):
 
     return $matched;
 }
+
+/**
+ * Mark the menu item that points at the Case Studies page as current on single case study posts.
+ *
+ * @param object|null $menu Timber\Menu or object with ->items.
+ */
+function mark_case_study_archive_menu_active($menu): void
+{
+    if (!is_singular('case_study') || !$menu || !isset($menu->items) || !is_array($menu->items)) {
+        return;
+    }
+
+    $casePage = get_page_by_path('case-studies', OBJECT, 'page');
+    if (!$casePage instanceof \WP_Post) {
+        return;
+    }
+
+    $url = get_permalink($casePage);
+    $path = nsc_menu_item_path((string) $url);
+    if ($path === '') {
+        return;
+    }
+
+    mark_menu_items_matching_case_studies_path($menu->items, $path);
+}
+
+/**
+ * @param array $items Menu items (may have ->children, ->link).
+ */
+function mark_menu_items_matching_case_studies_path(array $items, string $caseStudiesPath): bool
+{
+    $matched = false;
+    foreach ($items as $item) {
+        $link = '';
+        if (isset($item->link) && is_string($item->link)) {
+            $link = $item->link;
+        } elseif (isset($item->url) && is_string($item->url)) {
+            $link = $item->url;
+        }
+        $p = nsc_menu_item_path($link);
+        if ($p !== '' && $p === $caseStudiesPath) {
+            $item->current = true;
+            $matched = true;
+        }
+        if (!empty($item->children) && is_array($item->children)) {
+            if (mark_menu_items_matching_case_studies_path($item->children, $caseStudiesPath)) {
+                $item->current_ancestor = true;
+                $matched = true;
+            }
+        }
+    }
+
+    return $matched;
+}

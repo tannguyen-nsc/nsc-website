@@ -25,6 +25,7 @@ function getACFLayout()
                     'home' => __('Home (wave banner)', 'NscSoftware'),
                     'left_text' => __('About us (left-text banner)', 'NscSoftware'),
                     'dark' => __('AI / Our Services (dark banner)', 'NscSoftware'),
+                    'case_studies' => __('Case studies listing (hero-cs banner)', 'NscSoftware'),
                 ],
                 'default_value' => 'home',
             ],
@@ -34,7 +35,7 @@ function getACFLayout()
                 'type' => 'image',
                 'preview_size' => 'medium',
                 'return_format' => 'array',
-                'instructions' => __('Used for Home and Dark (single image).', 'NscSoftware'),
+                'instructions' => __('Used for Home and Case studies listing (single image). For Dark style, use Image (desktop) and Image (mobile) instead — this field is hidden when Dark is selected.', 'NscSoftware'),
                 'conditional_logic' => [
                     [
                         [
@@ -47,7 +48,7 @@ function getACFLayout()
                         [
                             'fieldPath' => 'heroStyle',
                             'operator' => '==',
-                            'value' => 'dark',
+                            'value' => 'case_studies',
                         ],
                     ],
                 ],
@@ -123,6 +124,16 @@ function getACFLayout()
                 'min' => 0,
                 'max' => 4,
                 'layout' => 'table',
+                'instructions' => __('Shown only on the Home (wave banner) hero. Leave empty to use default ISO assets from the theme build.', 'NscSoftware'),
+                'conditional_logic' => [
+                    [
+                        [
+                            'fieldPath' => 'heroStyle',
+                            'operator' => '==',
+                            'value' => 'home',
+                        ],
+                    ],
+                ],
                 'sub_fields' => [
                     [
                         'label' => __('Image', 'NscSoftware'),

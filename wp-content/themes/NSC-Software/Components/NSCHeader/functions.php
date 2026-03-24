@@ -30,6 +30,9 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     if (function_exists('NscSoftware\\Menu\\mark_career_menu_active_for_job_single')) {
         Menu\mark_career_menu_active_for_job_single($data['menu']);
     }
+    if (function_exists('NscSoftware\\Menu\\mark_case_study_archive_menu_active')) {
+        Menu\mark_case_study_archive_menu_active($data['menu']);
+    }
     Menu\set_current_ancestor_on_parents($data['menu']);
     $blogName = get_bloginfo('name');
 
@@ -121,8 +124,8 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
         $data['headerClass'] = '';
     }
 
-    // Blog / job single: match blog-details & career-details layout (transparent bar + white logos).
-    if (is_singular('post') || is_singular('job')) {
+    // Blog / job / case study single: match blog-details, career-details, case-study-details (transparent bar + white logos).
+    if (is_singular('post') || is_singular('job') || is_singular('case_study')) {
         $data['headerType'] = 'transparent_floating';
         $data['headerClass'] = 'transparent-floating';
     }
@@ -131,8 +134,12 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     $data['labels'] = (isset($options['labels']) && is_array($options['labels'])) ? $options['labels'] : [];
     if (Menu\is_blog_navigation_context()) {
         $data['labels']['mobileHomeText'] = __('Blog', 'NscSoftware');
+    } elseif (is_page('case-studies')) {
+        $data['labels']['mobileHomeText'] = __('Case Studies', 'NscSoftware');
     } elseif (is_singular('job')) {
         $data['labels']['mobileHomeText'] = __('Careers', 'NscSoftware');
+    } elseif (is_singular('case_study')) {
+        $data['labels']['mobileHomeText'] = __('Case study', 'NscSoftware');
     } elseif ($postId && is_singular()) {
         $data['labels']['mobileHomeText'] = get_the_title($postId);
     } elseif (is_front_page() && $postId) {

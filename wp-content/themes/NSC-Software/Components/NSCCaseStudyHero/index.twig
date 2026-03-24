@@ -1,0 +1,40 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCCaseStudyHero">
+  <section class="hero case-study-detail" aria-label="{{ __('Case study hero', 'NscSoftware')|e }}">
+    {% if heroBackgroundMobileUrl|default('') %}
+      <img src="{{ heroBackgroundMobileUrl|e('esc_url') }}" alt="" class="hero-case-study-detail__bg hero-case-study-detail__bg--mob lg:hidden" width="1920" height="1080" loading="eager" decoding="async" aria-hidden="true" />
+    {% endif %}
+    {% if heroBackgroundDesktopUrl|default('') %}
+      <img src="{{ heroBackgroundDesktopUrl|e('esc_url') }}" alt="" class="hero-case-study-detail__bg hero-case-study-detail__bg--desk hidden lg:block" width="1920" height="1080" loading="eager" decoding="async" aria-hidden="true" />
+    {% endif %}
+    <div class="hero-case-study-detail__inner">
+      <div class="headlines animate__animated animate__fadeInUp">
+        <h1>{{ post.title|e }}</h1>
+        <div class="description">
+          {% set introHtml = intro|default('')|trim %}
+          {% if introHtml %}
+            {{ intro|raw }}
+          {% elseif post.excerpt %}
+            <p>{{ post.excerpt|e }}</p>
+          {% endif %}
+        </div>
+        {% if customerLabel|default('') or customerLogo.url|default(customerLogo.src)|default('') or customerTagline|default('') %}
+          <div class="case-study-customer">
+            {% if customerLabel|default('') %}
+              <span class="case-study-customer__label">{{ customerLabel|e }}</span>
+            {% endif %}
+            {% if customerLogo.url|default(customerLogo.src) %}
+              <img src="{{ (customerLogo.url|default(customerLogo.src))|e('esc_url') }}" alt="{{ (customerLogo.alt|default(''))|e }}" class="case-study-customer__logo" width="220" height="48" loading="eager" />
+            {% elseif theme.buildUri|default('') %}
+              <img src="{{ theme.buildUri|e('esc_url') }}/img/logo-black.png" alt="" class="case-study-customer__logo" width="220" height="48" loading="eager" />
+            {% endif %}
+            {% if customerTagline|default('') %}
+              <p class="case-study-customer__tagline">{{ customerTagline|e }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

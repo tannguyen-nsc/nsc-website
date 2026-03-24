@@ -1,0 +1,32 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCCaseStudyInstruction">
+  <section class="case-study-detail-split" aria-label="{{ __('Business requirement and result', 'NscSoftware')|e }}">
+    <div class="wrapper">
+      <div class="case-study-detail-split__grid">
+        <div class="case-study-detail-split__col">
+          <div class="case-study-detail-split__heading">
+            {% if theme.buildUri|default('') %}
+              <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" width="32" height="32" loading="lazy" />
+            {% endif %}
+            <h2>{{ (requirementHeading|default('Business Requirement:'))|e }}</h2>
+          </div>
+          <div class="case-study-detail-split__body">
+            {{ requirementBody|default('')|raw }}
+          </div>
+        </div>
+        <div class="case-study-detail-split__col">
+          <div class="case-study-detail-split__heading">
+            {% if theme.buildUri|default('') %}
+              <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" width="32" height="32" loading="lazy" />
+            {% endif %}
+            <h2>{{ (resultHeading|default('Result:'))|e }}</h2>
+          </div>
+          <div class="case-study-detail-split__body">
+            {{ resultBody|default('')|raw }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

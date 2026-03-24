@@ -15,6 +15,14 @@ add_action('after_setup_theme', function () {
 
 add_filter('big_image_size_threshold', '__return_false');
 
+add_filter('body_class', function (array $classes): array {
+    if (is_singular('case_study')) {
+        $classes[] = 'page-case-study-details';
+    }
+
+    return $classes;
+});
+
 add_filter('timber/context', function ($context) {
     // Site-wide labels (formerly Theme translatable options).
     $context['theme']->labels = [
