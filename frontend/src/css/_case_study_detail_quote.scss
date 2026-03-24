@@ -1,12 +1,12 @@
 .case-study-detail-quote {
-  @apply min-h-[180vw] lg:min-h-0 flex items-center justify-center relative overflow-hidden pb-16;
+  @apply min-h-[150vw] lg:min-h-0 flex items-center justify-center relative overflow-hidden pb-16;
 
   .case-study-detail-quote__bg {
     @apply pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center;
   }
 
   .wrapper {
-    @apply relative z-10 mx-auto w-full max-w-full px-4 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] lg:pt-44;
+    @apply relative z-10 mx-auto w-full max-w-full px-4 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] lg:pt-60 xl:pt-52;
   }
 
   .case-study-detail-quote__inner {
@@ -48,7 +48,7 @@
   }
 
   .case-study-detail-quote__text {
-    @apply text-base font-medium leading-relaxed text-white lg:text-lg xl:text-xl;
+    @apply text-xl lg:text-4xl font-bold leading-relaxed text-white lg:text-lg xl:text-xl;
   }
 
   // Reset global `footer { bg-white border-t }` (_footer.scss) so attribution is not a white strip.
@@ -57,10 +57,10 @@
   }
 
   .case-study-detail-quote__name {
-    @apply block font-bold not-italic text-white lg:text-lg;
+    @apply block font-semibold not-italic text-[#F9F9FB] text-2xl;
   }
 
   .case-study-detail-quote__role {
-    @apply mt-1 text-sm font-normal text-white/90 lg:text-base;
+    @apply mt-1 text-2xl font-normal text-white/60;
   }
 }

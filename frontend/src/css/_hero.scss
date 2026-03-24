@@ -24,7 +24,7 @@
 .headlines {
     @apply relative z-10 max-w-5xl mx-auto;
     h1 {
-      @apply text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl  font-semibold xl:leading-tight;
+      @apply text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl font-semibold xl:leading-tight;
 
       sb {
         @apply inline-block font-semibold mb-2;
@@ -154,7 +154,7 @@
   }
 
   &.case-study-detail {
-    @apply relative flex flex-col items-stretch justify-center text-left min-h-[180vw] md:min-h-[130vw] xl:min-h-[52vw] 2xl:min-h-[50vw] overflow-hidden py-10 md:py-14 xl:py-16;
+    @apply relative flex flex-col items-stretch justify-center text-left min-h-[180vw] md:min-h-[130vw] xl:min-h-[60vw] 2xl:min-h-[50vw]  overflow-hidden py-10 md:py-14 xl:py-16;
     @apply px-4 sm:px-6 lg:px-8;
 
     // Full-bleed hero backgrounds (same layout as quote section assets, but scoped here — quote BEM lives under .case-study-detail-quote only).
@@ -179,14 +179,14 @@
     }
 
     .hero-case-study-detail__inner {
-      @apply relative z-[2] flex w-full max-w-[1280px] flex-col mx-auto;
+      @apply relative z-[2] flex w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] flex-col mx-auto;
     }
 
     .headlines {
-      @apply mx-0 max-w-4xl w-full text-left text-black;
+      @apply mx-0 w-full lg:w-1/2 text-left text-black;
 
       h1 {
-        @apply uppercase font-bold text-black tracking-tight text-lg sm:text-xl md:text-2xl lg:text-[26px] xl:text-[28px] leading-snug;
+        @apply uppercase font-bold text-black text-2xl lg:text-4xl font-bold;
 
         sb {
           @apply mb-0;
@@ -194,10 +194,10 @@
       }
 
       .description {
-        @apply my-5 justify-start px-0 text-left xl:my-6;
+        @apply my-8 justify-start px-0 text-left xl:my-6;
 
         p {
-          @apply text-base font-normal text-gray-800 leading-relaxed;
+          @apply text-sm font-normal lg:text-lg lg:font-medium text-[#0A0A0A] leading-relaxed;
 
           span,
           b {
@@ -211,15 +211,15 @@
       @apply mt-2 xl:mt-4;
 
       &__label {
-        @apply mb-2 block text-xs font-bold uppercase tracking-wide text-black;
+        @apply mb-2 block text-sm font-bold lg:text-lg lg:font-semibold uppercase text-black;
       }
 
       &__logo {
-        @apply mb-2 block h-auto max-h-14 w-auto max-w-[220px] object-contain object-left;
+        @apply my-4 block max-h-[48px] lg:max-h-[76px] object-contain object-left;
       }
 
       &__tagline {
-        @apply text-sm font-normal text-gray-600;
+        @apply text-sm font-medium lg:text-lg text-gray-600;
       }
     }
   }

@@ -6,11 +6,11 @@
 {% set technologies = post.terms('case_study_technology') %}
 <nsc-software-component name="NSCCaseStudyMain">
   <div class="case-study-detail-page">
-    <div class="case-study-detail-overview" role="region" aria-labelledby="case-study-detail-overview-heading">
+    <section class="case-study-detail-overview" role="region" aria-labelledby="case-study-detail-overview-heading">
       <div class="wrapper">
-        <div class="case-study-detail-overview__header">
+        <div class="case-study-detail-overview__header heading">
           {% if theme.buildUri|default('') %}
-            <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" width="36" height="36" loading="lazy" decoding="async" />
+            <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" loading="lazy" decoding="async" />
           {% endif %}
           <h2 id="case-study-detail-overview-heading">{{ (collaborationHeading|default('Collaboration overview'))|e }}</h2>
         </div>
@@ -119,7 +119,7 @@
             {% if technologies|length %}
               <div class="case-study-detail-overview__meta-row">
                 <span class="case-study-detail-overview__meta-label">{{ __('Technologies & frameworks', 'NscSoftware')|e }}</span>
-                <div class="case-study-detail-overview__tags case-study-detail-overview__tags--dense">
+                <div class="case-study-detail-overview__tags">
                   {% for t in technologies %}
                     <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
                   {% endfor %}
@@ -129,7 +129,7 @@
           </aside>
         </div>
       </div>
-    </div>
+    </section>
   </div>
 </nsc-software-component>
 {% endif %}

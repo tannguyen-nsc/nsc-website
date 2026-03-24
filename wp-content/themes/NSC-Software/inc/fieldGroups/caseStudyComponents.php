@@ -1,8 +1,8 @@
 <?php
 
 /**
- * Case study single: flexible components (Hero, Instruction, Quote, Main content).
- * Renders via templates/single-case-study.twig (same structure as case-study-details.html).
+ * Case study single: flexible components (Hero, Instruction, Quote, Contact, Main content).
+ * Renders via templates/single-case-study.twig (matches case study detail + contact strip before overview).
  */
 
 use ACFComposer\ACFComposer;
@@ -19,11 +19,12 @@ add_action('NscSoftware/afterRegisterComponents', static function (): void {
                 'label' => __('Case study components', 'NscSoftware'),
                 'type' => 'flexible_content',
                 'button_label' => __('Add component', 'NscSoftware'),
-                'instructions' => __('Add Hero, Instruction, Quote, and Main content (overview + gallery + sidebar). Order matches the public case study detail page.', 'NscSoftware'),
+                'instructions' => __('Add Hero, Instruction, Quote, Contact, and Main content (overview + gallery + sidebar). Order matches the public case study detail page.', 'NscSoftware'),
                 'layouts' => [
                     Components\NSCCaseStudyHero\getACFLayout(),
                     Components\NSCCaseStudyInstruction\getACFLayout(),
                     Components\NSCCaseStudyQuote\getACFLayout(),
+                    Components\NSCCaseStudyContact\getACFLayout(),
                     Components\NSCCaseStudyMain\getACFLayout(),
                 ],
             ],

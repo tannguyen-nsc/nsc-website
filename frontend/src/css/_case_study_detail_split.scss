@@ -23,12 +23,12 @@
     }
 
     h2 {
-      @apply m-0 text-base font-bold uppercase leading-snug text-black lg:text-lg xl:text-xl;
+      @apply m-0 text-2xl lg:text-3xl font-bold uppercase leading-snug text-black;
     }
   }
 
   .case-study-detail-split__body {
-    @apply text-left text-sm leading-relaxed text-black lg:text-base;
+    @apply text-left text-lg font-medium leading-relaxed text-black;
 
     p {
       @apply m-0;

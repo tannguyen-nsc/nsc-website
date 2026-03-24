@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 /**
  * Seed up to 30 case_study posts with ACF flexible field `caseStudyComponents`
- * (Hero, Instruction, Quote, Main content). Matches theme single-case_study + case-study-details layout.
+ * (Hero, Instruction, Quote, Contact, Main content). Matches theme single-case_study layout.
  * Idempotent by post slug (updates if exists).
  *
  * Usage:
@@ -94,6 +94,32 @@ function nscCaseStudySeedGetImageIds(): array
 function nsc_case_study_seed_hash_u(string $s): int
 {
     return (int) sprintf('%u', crc32($s));
+}
+
+/**
+ * CF7 shortcode for seeded contact blocks (option from create-nsc-cf7-form.php, else first published form).
+ */
+function nsc_case_study_seed_cf7_shortcode(): string
+{
+    $id = (int) get_option('nsc_cf7_primary_form_id', 0);
+    if ($id <= 0 && post_type_exists('wpcf7_contact_form')) {
+        $forms = get_posts([
+            'post_type'      => 'wpcf7_contact_form',
+            'post_status'    => 'publish',
+            'posts_per_page' => 1,
+            'orderby'        => 'ID',
+            'order'          => 'ASC',
+            'fields'         => 'ids',
+        ]);
+        if (!empty($forms[0])) {
+            $id = (int) $forms[0];
+        }
+    }
+    if ($id <= 0) {
+        return '';
+    }
+
+    return sprintf('[contact-form-7 id="%d"]', $id);
 }
 
 function nsc_case_study_seed_ensure_term(string $taxonomy, string $name): int
@@ -393,6 +419,14 @@ function nsc_case_study_seed_component_rows(int $index, array $study, array $ima
         'citeRole'      => $qi[2],
     ];
 
+    $contact = [
+        'acf_fc_layout' => 'nscCaseStudyContact',
+        'title'         => 'CONTACT',
+        'contentLines'  => "Ready to start a similar project?\nTell us about your goals and we'll get back to you.",
+        'showForm'      => 1,
+        'cf7Shortcode'  => nsc_case_study_seed_cf7_shortcode(),
+    ];
+
     $main = [
         'acf_fc_layout'         => 'nscCaseStudyMain',
         'collaborationHeading'  => 'Collaboration overview',
@@ -401,7 +435,7 @@ function nsc_case_study_seed_component_rows(int $index, array $study, array $ima
         'gallery'               => $galleryIds,
     ];
 
-    return [$hero, $instruction, $quote, $main];
+    return [$hero, $instruction, $quote, $contact, $main];
 }
 
 $caseStudies = [
@@ -613,7 +647,7 @@ foreach ($caseStudies as $study) {
     $results[] = [
         'slug'    => $slug,
         'status'  => $rowStatus,
-        'message' => 'post_id=' . $reportId . ', components=4, cat=' . $study['category'],
+        'message' => 'post_id=' . $reportId . ', components=5, cat=' . $study['category'],
     ];
 }
 
@@ -621,7 +655,7 @@ header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Case Studies Seed</title>';
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:1100px}th,td{border:1px solid #ddd;padding:8px;font-size:13px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body><h1>Case studies (case_study)</h1>';
-echo '<p>Seeded or updated ' . count($results) . ' posts. ACF flexible field <code>caseStudyComponents</code> (Hero, Instruction, Quote, Main). Taxonomies + featured image. Re-save in WP if ACF field keys need sync. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang copies (omit for default language only).</p>';
+echo '<p>Seeded or updated ' . count($results) . ' posts. ACF flexible field <code>caseStudyComponents</code> (Hero, Instruction, Quote, Contact, Main). Taxonomies + featured image. Re-save in WP if ACF field keys need sync. Run <code>create-nsc-cf7-form.php</code> for a primary form ID in the Contact block. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang copies (omit for default language only).</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $cls = $row['status'] === 'error' ? 'error' : 'ok';
