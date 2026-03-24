@@ -74,7 +74,7 @@ function getACFLayout()
                         'label' => __('Address / details', 'NscSoftware'),
                         'name' => 'address',
                         'type' => 'textarea',
-                        'instructions' => __('Include Tel: with number. For clickable tel use phoneLink below.', 'NscSoftware'),
+                        'instructions' => __('Address only; do not add Tel here. The template outputs Tel: from Phone link below.', 'NscSoftware'),
                     ],
                     [
                         'label' => __('Phone link (text only)', 'NscSoftware'),
