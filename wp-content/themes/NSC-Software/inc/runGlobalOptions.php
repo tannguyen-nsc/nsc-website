@@ -48,7 +48,12 @@ add_action('template_redirect', function () use ($requiredToken) {
     $updateOption('companyDescription', "Vietnam's Premier Software Development & Consulting Company", $optionPrefixFooter);
     $updateOption('businessNumber', '0110524817', $optionPrefixFooter);
     $updateOption('email', 'contact@nscsoftware.com', $optionPrefixFooter);
-    $results[] = ['scope' => 'NSCFooter', 'field' => 'Company', 'status' => 'ok', 'message' => 'companyName, companyDescription, businessNumber, email'];
+    $updateOption('businessNumberLabel', 'Business Number:', $optionPrefixFooter);
+    $updateOption('emailLabel', 'Email:', $optionPrefixFooter);
+    $updateOption('contactHeading', 'Contact', $optionPrefixFooter);
+    $updateOption('siteMapHeading', 'Site Map', $optionPrefixFooter);
+    $updateOption('telLabel', 'Tel:', $optionPrefixFooter);
+    $results[] = ['scope' => 'NSCFooter', 'field' => 'Company', 'status' => 'ok', 'message' => 'company + footer labels (business number, email, contact, site map, tel)'];
 
     $offices = [
         ['title' => 'NSC Software Headquarters:', 'address' => "Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam", 'phone' => '(+84) 866 639 497', 'phoneLink' => 'tel:+84866639497'],

@@ -884,7 +884,18 @@ function nsc_seed_polylang_translate_global_options(): int
     add_filter('acf/settings/current_language', $readDef, 99999);
 
     $footerPrefix = 'translatable_NSCFooter_';
-    $flatFooter = ['companyName', 'companyDescription', 'businessNumber', 'email', 'copyright'];
+    $flatFooter = [
+        'companyName',
+        'companyDescription',
+        'businessNumber',
+        'email',
+        'copyright',
+        'businessNumberLabel',
+        'emailLabel',
+        'contactHeading',
+        'siteMapHeading',
+        'telLabel',
+    ];
     $footerValues = [];
     foreach ($flatFooter as $name) {
         $footerValues[$name] = get_field($footerPrefix . $name, 'option');

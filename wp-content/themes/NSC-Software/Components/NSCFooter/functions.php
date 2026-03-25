@@ -75,6 +75,23 @@ add_filter('NscSoftware/addComponentData?name=NSCFooter', function ($data) {
     $data['logoMobile'] = $options['logoMobile'] ?? null;
     $data['certifications'] = $options['certifications'] ?? [];
     $data['buildUri'] = trailingslashit(get_template_directory_uri()) . 'frontend/build';
+
+    $data['businessNumberLabel'] = !empty($options['businessNumberLabel'])
+        ? $options['businessNumberLabel']
+        : __('Business Number:', 'NscSoftware');
+    $data['emailLabel'] = !empty($options['emailLabel'])
+        ? $options['emailLabel']
+        : __('Email:', 'NscSoftware');
+    $data['contactHeading'] = !empty($options['contactHeading'])
+        ? $options['contactHeading']
+        : __('Contact', 'NscSoftware');
+    $data['siteMapHeading'] = !empty($options['siteMapHeading'])
+        ? $options['siteMapHeading']
+        : __('Site Map', 'NscSoftware');
+    $data['telLabel'] = !empty($options['telLabel'])
+        ? $options['telLabel']
+        : __('Tel:', 'NscSoftware');
+
     return $data;
 });
 
@@ -109,6 +126,48 @@ Options::addTranslatable('NSCFooter', [
         'name' => 'email',
         'type' => 'email',
         'default_value' => 'contact@nscsoftware.com',
+    ],
+    [
+        'label' => __('Footer labels', 'NscSoftware'),
+        'name' => 'footerLabelsTab',
+        'type' => 'tab',
+        'placement' => 'top',
+        'endpoint' => 0,
+    ],
+    [
+        'label' => __('Business number label', 'NscSoftware'),
+        'name' => 'businessNumberLabel',
+        'type' => 'text',
+        'default_value' => 'Business Number:',
+        'instructions' => __('Shown before the registered business number.', 'NscSoftware'),
+    ],
+    [
+        'label' => __('Email label', 'NscSoftware'),
+        'name' => 'emailLabel',
+        'type' => 'text',
+        'default_value' => 'Email:',
+        'instructions' => __('Shown before the email address.', 'NscSoftware'),
+    ],
+    [
+        'label' => __('Contact column heading', 'NscSoftware'),
+        'name' => 'contactHeading',
+        'type' => 'text',
+        'default_value' => 'Contact',
+        'instructions' => __('Heading above office locations (all breakpoints).', 'NscSoftware'),
+    ],
+    [
+        'label' => __('Site map heading', 'NscSoftware'),
+        'name' => 'siteMapHeading',
+        'type' => 'text',
+        'default_value' => 'Site Map',
+        'instructions' => __('Heading above footer sitemap links.', 'NscSoftware'),
+    ],
+    [
+        'label' => __('Phone line label', 'NscSoftware'),
+        'name' => 'telLabel',
+        'type' => 'text',
+        'default_value' => 'Tel:',
+        'instructions' => __('Prefix before each office phone number.', 'NscSoftware'),
     ],
     [
         'label' => __('Logo (desktop footer)', 'NscSoftware'),

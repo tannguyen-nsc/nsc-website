@@ -72,7 +72,7 @@
     { lat: 23.00, lng: 125.50, camLat: 6.00, camLng: 91.50, label: "Time-Zone Aligned Collaboration" },
     { lat: 15.00, lng: 99.50, camLat: 14.00, camLng: 123.50, label: "Vietnam's Top 7% IT Talents" },
     { lat: 14.00, lng: 122.00, camLat: 20.00, camLng: 86.00, label: "100% English-Proficient Team" },
-    { lat: 7.50, lng: 100.00, camLat: 26.50, camLng: 128.50, label: "100% Senior-Level Engineers" },
+    { lat: 7.50, lng: 100.00, camLat: 26.50, camLng: 128.50, label: "90% Senior-Level Engineers" },
     { lat: 5.50, lng: 122.50, camLat: 30.50, camLng: 93.00, label: "High-Quality, Cost-Efficient Delivery" },
     { lat: 1.35, lng: 100.50, camLat: 28.50, camLng: 120.00, label: "6+ Years Minimum Experience" }
   ];

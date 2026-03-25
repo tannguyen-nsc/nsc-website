@@ -215,7 +215,7 @@ function getHomePageComponents(): array
         [
             'acf_fc_layout' => 'nscBlockStats',
             'stats'         => [
-                ['number' => '200', 'suffix' => '+', 'title' => 'Senior Experts', 'subtitle' => '(100% Senior-Level)'],
+                ['number' => '200', 'suffix' => '+', 'title' => 'Senior Experts', 'subtitle' => '(90% Senior-Level)'],
                 ['number' => '100', 'suffix' => '%', 'title' => 'English-Proficient Team', 'subtitle' => ''],
                 ['number' => '100', 'suffix' => '+', 'title' => 'Successful Projects', 'subtitle' => ''],
                 ['number' => '60', 'suffix' => '+', 'title' => "Global \n Clients", 'subtitle' => ''],
@@ -249,7 +249,7 @@ function getHomePageComponents(): array
                 ['title' => 'Time-Zone Aligned Collaboration', 'description' => 'Teams operate in overlapping hours with Europe, Australia and the US for real-time coordination.'],
                 ['title' => 'Vietnam\'s Top 7% IT Talents', 'description' => 'Top 7% Vietnamese engineers, rigorously selected for technical excellence and problem-solving capability.'],
                 ['title' => '100% English-Proficient Team', 'description' => 'Seamless communication and collaboration with clients across global regions.'],
-                ['title' => '100% Senior-Level Engineers', 'description' => 'All engineers are senior professionals with a minimum of 6 years of experience.'],
+                ['title' => '90% Senior-Level Engineers', 'description' => 'All engineers are senior professionals with a minimum of 6 years of experience.'],
                 ['title' => 'High-Quality, Cost-Efficient Delivery', 'description' => 'Projects are guided by senior engineers and enhanced by AI for higher efficiency and quality.'],
                 ['title' => '6+ Years Minimum Experience', 'description' => 'Depth of technical expertise and delivery maturity across complex enterprise systems.'],
             ],
@@ -406,7 +406,7 @@ function getAboutPageComponents(): array
             'title'          => 'Company Snapshot',
             'stats'          => [
                 ['number' => '2021', 'suffix' => '', 'title' => "Founded \n Year", 'subtitle' => ''],
-                ['number' => '200', 'suffix' => '+', 'title' => 'Senior Expert', 'subtitle' => '(100% Senior-Level)'],
+                ['number' => '200', 'suffix' => '+', 'title' => 'Senior Expert', 'subtitle' => '(90% Senior-Level)'],
                 ['number' => '60', 'suffix' => '+', 'title' => "Global \n Clients", 'subtitle' => ''],
                 ['number' => '100', 'suffix' => '+', 'title' => "Successful \n Projects", 'subtitle' => ''],
                 ['number' => '100', 'suffix' => '%', 'title' => "English-Proficient \n Team", 'subtitle' => ''],
@@ -449,7 +449,7 @@ function getAboutPageComponents(): array
                 ['title' => 'Time-Zone Aligned Collaboration', 'description' => 'Teams operate in overlapping hours with Europe, Australia and the US for real-time coordination.'],
                 ['title' => "Vietnam's Top 7% IT Talents", 'description' => 'Top 7% Vietnamese engineers, rigorously selected for technical excellence and problem-solving capability.'],
                 ['title' => '100% English-Proficient Team', 'description' => 'Seamless communication and collaboration with clients across global regions.'],
-                ['title' => '100% Senior-Level Engineers', 'description' => 'All engineers are senior professionals with a minimum of 6 years of experience.'],
+                ['title' => '90% Senior-Level Engineers', 'description' => 'All engineers are senior professionals with a minimum of 6 years of experience.'],
                 ['title' => '6+ Years Minimum Experience', 'description' => 'Depth of technical expertise and delivery maturity across complex enterprise systems.'],
                 ['title' => 'High-Quality, Cost-Efficient Delivery', 'description' => 'Projects are guided by senior engineers and enhanced by AI for higher efficiency and quality.'],
             ],

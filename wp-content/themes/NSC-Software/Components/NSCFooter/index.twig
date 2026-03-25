@@ -38,7 +38,7 @@
           <p class="company-description">{{ companyDescription|e }}</p>
         {% endif %}
         {% if businessNumber %}
-          <p class="business-number">{{ __('Business Number:', 'NscSoftware')|e }} <br> {{ businessNumber|e }}</p>
+          <p class="business-number">{{ businessNumberLabel|e }} <br> {{ businessNumber|e }}</p>
         {% endif %}
         {% if certifications|length %}
           <div class="certifications">
@@ -61,18 +61,18 @@
           </div>
         {% endif %}
         {% if email %}
-          <p class="email">{{ __('Email:', 'NscSoftware')|e }} <br><a href="mailto:{{ email|e('html_attr') }}">{{ email|e }}</a></p>
+          <p class="email">{{ emailLabel|e }} <br><a href="mailto:{{ email|e('html_attr') }}">{{ email|e }}</a></p>
         {% endif %}
       </div>
       <div class="col right-column">
         <div class="contact-info">
           <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="contact-content">
-            <h4 class="section-heading">{{ __('Contact', 'NscSoftware')|e }}</h4>
+            <h4 class="section-heading">{{ contactHeading|e }}</h4>
             <svg xmlns="http://www.w3.org/2000/svg" class="accordion-icon" viewBox="0 0 24 24" fill="none">
               <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
             </svg>
           </button>
-          <h4 class="section-heading hidden lg:block">{{ __('Contact', 'NscSoftware')|e }}</h4>
+          <h4 class="section-heading hidden lg:block">{{ contactHeading|e }}</h4>
           <div class="offices-wrapper lg-hidden" id="contact-content">
             <div class="offices">
               {% for office in offices %}
@@ -80,7 +80,7 @@
                   {% if office.title %}<h5>{{ office.title|e }}</h5>{% endif %}
                   {% if office.address %}<p>{{ office.address|nl2br }}</p>{% endif %}
                   {% if office.phone or office.phoneLink %}
-                    <p>{{ __('Tel:', 'NscSoftware')|e }} {% if office.phoneLink %}{% set _tel = office.phoneLink %}{% set _href = (_tel|slice(0, 4) == 'tel:') ? _tel : 'tel:' ~ _tel|replace({' ': '', '-': '', '(': '', ')': ''}) %}<a href="{{ _href|e('esc_url') }}">{{ office.phone|default(office.phoneLink)|e }}</a>{% else %}{{ office.phone|e }}{% endif %}</p>
+                    <p>{{ telLabel|e }} {% if office.phoneLink %}{% set _tel = office.phoneLink %}{% set _href = (_tel|slice(0, 4) == 'tel:') ? _tel : 'tel:' ~ _tel|replace({' ': '', '-': '', '(': '', ')': ''}) %}<a href="{{ _href|e('esc_url') }}">{{ office.phone|default(office.phoneLink)|e }}</a>{% else %}{{ office.phone|e }}{% endif %}</p>
                   {% endif %}
                 </div>
               {% endfor %}
@@ -93,7 +93,7 @@
                   {% if office.title %}<h5>{{ office.title|e }}</h5>{% endif %}
                   {% if office.address %}<p>{{ office.address|nl2br }}</p>{% endif %}
                   {% if office.phone or office.phoneLink %}
-                    <p>{{ __('Tel:', 'NscSoftware')|e }} {% if office.phoneLink %}{% set _tel = office.phoneLink %}{% set _href = (_tel|slice(0, 4) == 'tel:') ? _tel : 'tel:' ~ _tel|replace({' ': '', '-': '', '(': '', ')': ''}) %}<a href="{{ _href|e('esc_url') }}">{{ office.phone|default(office.phoneLink)|e }}</a>{% else %}{{ office.phone|e }}{% endif %}</p>
+                    <p>{{ telLabel|e }} {% if office.phoneLink %}{% set _tel = office.phoneLink %}{% set _href = (_tel|slice(0, 4) == 'tel:') ? _tel : 'tel:' ~ _tel|replace({' ': '', '-': '', '(': '', ')': ''}) %}<a href="{{ _href|e('esc_url') }}">{{ office.phone|default(office.phoneLink)|e }}</a>{% else %}{{ office.phone|e }}{% endif %}</p>
                   {% endif %}
                 </div>
               {% endfor %}
@@ -104,7 +104,7 @@
                   {% if office.title %}<h5>{{ office.title|e }}</h5>{% endif %}
                   {% if office.address %}<p>{{ office.address|nl2br }}</p>{% endif %}
                   {% if office.phone or office.phoneLink %}
-                    <p>{{ __('Tel:', 'NscSoftware')|e }} {% if office.phoneLink %}{% set _tel = office.phoneLink %}{% set _href = (_tel|slice(0, 4) == 'tel:') ? _tel : 'tel:' ~ _tel|replace({' ': '', '-': '', '(': '', ')': ''}) %}<a href="{{ _href|e('esc_url') }}">{{ office.phone|default(office.phoneLink)|e }}</a>{% else %}{{ office.phone|e }}{% endif %}</p>
+                    <p>{{ telLabel|e }} {% if office.phoneLink %}{% set _tel = office.phoneLink %}{% set _href = (_tel|slice(0, 4) == 'tel:') ? _tel : 'tel:' ~ _tel|replace({' ': '', '-': '', '(': '', ')': ''}) %}<a href="{{ _href|e('esc_url') }}">{{ office.phone|default(office.phoneLink)|e }}</a>{% else %}{{ office.phone|e }}{% endif %}</p>
                   {% endif %}
                 </div>
               {% endfor %}
@@ -115,7 +115,7 @@
                   {% if office.title %}<h5>{{ office.title|e }}</h5>{% endif %}
                   {% if office.address %}<p>{{ office.address|nl2br }}</p>{% endif %}
                   {% if office.phone or office.phoneLink %}
-                    <p>{{ __('Tel:', 'NscSoftware')|e }} {% if office.phoneLink %}{% set _tel = office.phoneLink %}{% set _href = (_tel|slice(0, 4) == 'tel:') ? _tel : 'tel:' ~ _tel|replace({' ': '', '-': '', '(': '', ')': ''}) %}<a href="{{ _href|e('esc_url') }}">{{ office.phone|default(office.phoneLink)|e }}</a>{% else %}{{ office.phone|e }}{% endif %}</p>
+                    <p>{{ telLabel|e }} {% if office.phoneLink %}{% set _tel = office.phoneLink %}{% set _href = (_tel|slice(0, 4) == 'tel:') ? _tel : 'tel:' ~ _tel|replace({' ': '', '-': '', '(': '', ')': ''}) %}<a href="{{ _href|e('esc_url') }}">{{ office.phone|default(office.phoneLink)|e }}</a>{% else %}{{ office.phone|e }}{% endif %}</p>
                   {% endif %}
                 </div>
               {% endfor %}
@@ -124,12 +124,12 @@
         </div>
         <div class="sitemap lg:hidden">
           <button class="accordion-toggle xl:hidden" aria-expanded="false" aria-controls="sitemap-content">
-            <h4 class="section-heading">{{ __('Site Map', 'NscSoftware')|e }}</h4>
+            <h4 class="section-heading">{{ siteMapHeading|e }}</h4>
             <svg xmlns="http://www.w3.org/2000/svg" class="accordion-icon" viewBox="0 0 24 24" fill="none">
               <path d="M11.293 4.29289C11.6835 3.90237 12.3165 3.90237 12.707 4.29289L19.707 11.2929C20.0976 11.6834 20.0976 12.3164 19.707 12.707L12.707 19.707C12.3165 20.0975 11.6835 20.0975 11.293 19.707C10.9024 19.3164 10.9024 18.6834 11.293 18.2929L16.5859 12.9999H5C4.44772 12.9999 4 12.5522 4 11.9999C4 11.4476 4.44772 10.9999 5 10.9999H16.5859L11.293 5.70696C10.9024 5.31643 10.9024 4.68342 11.293 4.29289Z" fill="#36C3DC"/>
             </svg>
           </button>
-          <h4 class="section-heading hidden lg:block">{{ __('Site Map', 'NscSoftware')|e }}</h4>
+          <h4 class="section-heading hidden lg:block">{{ siteMapHeading|e }}</h4>
           <div class="sitemap-links{% if sitemapUseTwoColumns|default(false) %} sitemap-links--two-cols{% endif %}" id="sitemap-content">
             {% if sitemapCol1|length %}
               <div class="sitemap-col">
@@ -164,7 +164,7 @@
       </div>
     </div>
     <div class="sitemap hidden lg:block">
-      <h4 class="section-heading hidden lg:block">{{ __('Site Map', 'NscSoftware')|e }}</h4>
+      <h4 class="section-heading hidden lg:block">{{ siteMapHeading|e }}</h4>
       <div class="sitemap-links{% if sitemapUseTwoColumns|default(false) %} sitemap-links--two-cols{% endif %}" id="sitemap-content-lg">
         {% if sitemapCol1|length %}
           <div class="sitemap-col">
