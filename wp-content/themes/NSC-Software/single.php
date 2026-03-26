@@ -20,10 +20,14 @@ $context['post']         = $post;
 $context['blog_single']  = BlogSingle\merge_blog_single_defaults(Options::getTranslatable('NSCBlogSingle') ?: []);
 $context['home_url']     = home_url('/');
 
-$pageForPosts = (int) get_option('page_for_posts');
-$context['blog_archive_url'] = $pageForPosts > 0
-    ? get_permalink($pageForPosts)
-    : home_url('/blogs/');
+if (function_exists('nsc_resolve_page_permalink')) {
+    $context['blog_archive_url'] = nsc_resolve_page_permalink('blogs');
+} else {
+    $pageForPosts = (int) get_option('page_for_posts');
+    $context['blog_archive_url'] = $pageForPosts > 0
+        ? get_permalink($pageForPosts)
+        : home_url('/blogs/');
+}
 
 $postId = (int) ($post->ID ?? $post->id ?? 0);
 

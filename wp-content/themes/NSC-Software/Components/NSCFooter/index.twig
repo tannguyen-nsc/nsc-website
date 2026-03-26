@@ -199,12 +199,12 @@
       <div class="wrapper">
         <div class="copyright">
           <p>{{ copyright|e }}</p>
-          {% if legalLinks|length %}
-            <div class="legal-links">
-              {% for link in legalLinks %}
-                <a href="{{ link.url|e('esc_url') }}" {{ link.openInNewTab ? ' target="_blank" rel="noopener noreferrer"' }}>{{ link.label|e }}</a>
+          {% if policyMenu and policyMenu.items|length %}
+            <nav class="legal-links" aria-label="{{ __('Legal', 'NscSoftware')|e }}">
+              {% for item in policyMenu.items %}
+                <a href="{{ item.link|e('esc_url') }}"{% if item.target %} target="{{ item.target|e('html_attr') }}" rel="noopener noreferrer"{% endif %}>{{ item.title|e }}</a>
               {% endfor %}
-            </div>
+            </nav>
           {% endif %}
         </div>
         {% if socialLinks|length %}

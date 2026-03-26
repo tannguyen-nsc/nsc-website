@@ -16,13 +16,12 @@ declare(strict_types=1);
  *   blogs, career, case-studies, contact). Run create-nsc-pages.php first so pages exist.
  * - Main nav matches desktop header: Home, About Us, AI, What We Do ▾ (Our Services, Technology Capabilities),
  *   Blog, Careers, Case Studies, Contact Us (CSS classes: highlight, no-link-cursor, contact-btn).
- * - Footer sitemap menu order: Home, About, What We Do ▾ (children), Careers, Blog, Case Studies — same
- *   top-level order as the static HTML footer columns.
- * - Default run (no seed_lang): builds “Main Navigation” + “Footer Sitemap” for the Polylang default language,
- *   assigns theme locations (Main → navigation_main; Footer sitemap menu → sitemap_footer + navigation_footer),
- *   syncs those IDs into Polylang nav_menus for every language (same term; Polylang rewrites page links).
- * - seed_lang / seed_lang=all: builds per-language menus (e.g. “Main Navigation (de)”) with translated titles
- *   and page IDs; sets Polylang locations per locale: navigation_main, sitemap_footer, and navigation_footer.
+ * - Footer sitemap menu order: Home, About, AI page ▾ (Our Services, Technology Capabilities), Careers, Blog, Case Studies — AI uses each locale’s page title and permalink.
+ * - Default run (no seed_lang): builds “Main Navigation”, “Footer Policy Links”, and “Footer Sitemap” for the
+ *   default language; assigns navigation_main, footer_policy, sitemap_footer + navigation_footer; syncs Polylang
+ *   nav_menus for every language (same terms; Polylang rewrites page links per locale).
+ * - seed_lang / seed_lang=all: per-language menu terms + Polylang slots: navigation_main, footer_policy,
+ *   sitemap_footer, navigation_footer.
  * - rebuild=1: removes all items in the target menu(s) before seeding. Without it, only items marked by a
  *   previous seed (_nsc_seeded) are removed and replaced.
  */
@@ -83,7 +82,7 @@ echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Menus Setup</t
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body>';
 echo '<h1>NSC Menus Setup</h1>';
-echo '<p>Seeded <strong>navigation_main</strong> (header) and the footer sitemap tree as <strong>sitemap_footer</strong> + <strong>navigation_footer</strong> (same menu term for both — NSC footer column + sitemap) from page slugs in <code>create-nsc-pages.php</code>.';
+echo '<p>Seeded <strong>navigation_main</strong> (header), <strong>footer_policy</strong> (Privacy / Cookies / Terms pages per language), and the footer sitemap as <strong>sitemap_footer</strong> + <strong>navigation_footer</strong> (same term for column + sitemap) from <code>create-nsc-pages.php</code> slugs.';
 echo ' With Polylang, assignments follow each language (e.g. Navigation Main English / Deutsch, Footer Sitemap + Navigation Footer per locale).';
 echo ' Optional <code>rebuild=1</code> clears target menu items first. Optional <code>seed_lang</code> / <code>seed_lang=all</code> mirrors the page seeder.</p>';
 echo '<table><thead><tr><th>Scope</th><th>Field</th><th>Status</th><th>Details</th></tr></thead><tbody>';

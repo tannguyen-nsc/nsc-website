@@ -20,10 +20,14 @@ $context['post']       = $post;
 $context['home_url']   = home_url('/');
 $context['job_single'] = nsc_job_single_merge_why_us_items(Options::getTranslatable('NSCJobSingle') ?: []);
 
-$careerPage = get_page_by_path('career', OBJECT, 'page');
-$context['career_archive_url'] = $careerPage instanceof WP_Post
-    ? get_permalink($careerPage)
-    : home_url('/career/');
+if (function_exists('nsc_resolve_page_permalink')) {
+    $context['career_archive_url'] = nsc_resolve_page_permalink('career');
+} else {
+    $careerPage = get_page_by_path('career', OBJECT, 'page');
+    $context['career_archive_url'] = $careerPage instanceof WP_Post
+        ? get_permalink($careerPage)
+        : home_url('/career/');
+}
 
 $context['job_tags'] = get_the_tags($postId) ?: [];
 
@@ -77,6 +81,9 @@ $opts = $context['job_single'];
 $shortcode = isset($opts['jobApplyCf7Shortcode']) ? trim((string) $opts['jobApplyCf7Shortcode']) : '';
 if ($shortcode === '' && function_exists('do_shortcode')) {
     $applyId = (int) get_option('nsc_cf7_job_apply_form_id', 0);
+    if ($applyId > 0 && function_exists('nsc_cf7_form_id_for_current_language')) {
+        $applyId = nsc_cf7_form_id_for_current_language($applyId);
+    }
     if ($applyId > 0) {
         $cf7Post = get_post($applyId);
         if ($cf7Post instanceof WP_Post

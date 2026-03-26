@@ -283,7 +283,7 @@ add_filter('wp_nav_menu_objects', static function (array $items, $args): array {
     } elseif (\is_array($args) && isset($args['theme_location'])) {
         $loc = (string) $args['theme_location'];
     }
-    if (!\in_array($loc, ['navigation_main', 'sitemap_footer', 'navigation_footer'], true)) {
+    if (!\in_array($loc, ['navigation_main', 'sitemap_footer', 'navigation_footer', 'footer_policy'], true)) {
         return $items;
     }
 

@@ -37,7 +37,7 @@ function get_registered_string_groups(): array
             'nsc_opts_certifications' => 'Certification badges',
             'nsc_opts_footer_sitemap' => 'Footer sitemap',
             'nsc_opts_social' => 'Social links',
-            'nsc_opts_legal' => 'Legal links',
+            'nsc_opts_footer_policy_menu' => 'Footer policy links (menu location)',
             'nsc_opts_copyright' => 'Copyright line',
             'nsc_opts_offices' => 'Offices',
             // Page / flexible content builder (ACF in admin)
@@ -308,4 +308,15 @@ namespace {
             return \NscSoftware\PolylangNsc\pll_theme($string);
         }
     }
+
+    \add_filter(
+        'pll_get_post_types',
+        static function (array $types, bool $is_settings): array {
+            $types['wpcf7_contact_form'] = 'wpcf7_contact_form';
+
+            return $types;
+        },
+        5,
+        2
+    );
 }

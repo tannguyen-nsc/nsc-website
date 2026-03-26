@@ -14,8 +14,8 @@ declare(strict_types=1);
  * by the theme when you visit that URL.
  *
  * - Main navigation menu (navigation_main)
- * - Footer sitemap menu (sitemap_footer)
- * - Contact offices, legal links, social links, company info, header labels
+ * - Footer sitemap (sitemap_footer) and footer policy links (footer_policy)
+ * - Contact offices, social links, company info, header labels
  */
 
 $requiredToken = 'nsc-global-options-2026';

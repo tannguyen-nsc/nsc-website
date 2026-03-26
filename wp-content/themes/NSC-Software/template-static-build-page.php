@@ -105,6 +105,9 @@ $html = preg_replace_callback(
 
 // Replace static HTML forms with Contact Form 7 embed (if configured).
 $cf7FormId = (int) get_option('nsc_cf7_primary_form_id', 0);
+if ($cf7FormId > 0 && function_exists('nsc_cf7_form_id_for_current_language')) {
+    $cf7FormId = nsc_cf7_form_id_for_current_language($cf7FormId);
+}
 if ($cf7FormId > 0) {
     if (!did_action('wp_enqueue_scripts')) {
         do_action('wp_enqueue_scripts');

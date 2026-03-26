@@ -142,16 +142,7 @@ function nsc_case_study_seed_ensure_term(string $taxonomy, string $name): int
 
 function nsc_case_study_seed_category_id(string $label): int
 {
-    $term = get_term_by('name', $label, 'case_study_category');
-    if ($term instanceof WP_Term) {
-        return (int) $term->term_id;
-    }
-    $term = get_term_by('slug', sanitize_title($label), 'case_study_category');
-    if ($term instanceof WP_Term) {
-        return (int) $term->term_id;
-    }
-
-    return 0;
+    return nsc_case_study_seed_ensure_term('case_study_category', $label);
 }
 
 /**

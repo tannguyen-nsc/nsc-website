@@ -66,13 +66,7 @@ add_action('template_redirect', function () use ($requiredToken) {
     $results[] = ['scope' => 'NSCFooter', 'field' => 'Offices', 'status' => 'ok', 'message' => count($offices) . ' offices'];
 
     $updateOption('copyright', 'NSC@2026 All copyrights reserved', $optionPrefixFooter);
-    $legalLinks = [
-        ['label' => 'Privacy Policy', 'url' => $baseUrl . 'privacy-policy/', 'openInNewTab' => 0],
-        ['label' => 'Cookies Policy', 'url' => $baseUrl . 'cookies-policy/', 'openInNewTab' => 0],
-        ['label' => 'Terms of Use', 'url' => $baseUrl . 'terms-of-use/', 'openInNewTab' => 0],
-    ];
-    $updateOption('legalLinks', $legalLinks, $optionPrefixFooter);
-    $results[] = ['scope' => 'NSCFooter', 'field' => 'Copyright & legal links', 'status' => 'ok', 'message' => 'copyright + ' . count($legalLinks) . ' legal links'];
+    $results[] = ['scope' => 'NSCFooter', 'field' => 'Copyright', 'status' => 'ok', 'message' => 'copyright line (policy links: Appearance → Menus → Footer Policy Links)'];
 
     $socialLinks = [
         ['platform' => 'linkedin', 'url' => 'https://www.linkedin.com/company/nscsoftware/', 'ariaLabel' => 'LinkedIn'],

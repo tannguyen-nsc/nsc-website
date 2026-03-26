@@ -78,7 +78,7 @@ function nsc_polylang_sync_nav_menu_for_default_language(string $location, int $
 
 /**
  * Assign one nav menu term to a theme location for a single Polylang language.
- * Location slugs match register_nav_menus: navigation_main, navigation_footer, sitemap_footer.
+ * Location slugs match register_nav_menus: navigation_main, navigation_footer, sitemap_footer, footer_policy.
  * Does not modify other language slots (use this after seed_lang-specific menu builds).
  */
 function nsc_polylang_assign_nav_menu_for_language(string $location, string $langSlug, int $menuTermId): void

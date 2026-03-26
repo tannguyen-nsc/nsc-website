@@ -26,7 +26,10 @@ declare(strict_types=1);
  * - For the About page: seeds pageComponents to match frontend/build/about.html
  *   (Hero left-text → Company Snapshot → Our Story → Our Leaders → Why Us →
  *   Technology Capabilities → Global Presence → Contact). About uses the default page template.
- * - URL fields in the seed use home_url('/') so saved data passes ACF URL validation.
+ * - AI and Technology Capabilities pages: hero + gallery images use the same filenames as frontend/build/ai.html
+ *   and technology-apabilities.html; attachments are resolved by nsc_build_asset meta or sideloaded from
+ *   theme or site-root frontend/build/img (see nscSideloadBuildImageByFilename).
+ * - Internal page links in components use resolved default-language permalinks (Polylang-aware); Polylang sync remaps url/buttonUrl per locale.
  * - Add home_only=1 to only create/update the Home page and set it as front page.
  * - Add blogs_only=1 to only create/update the Blogs page (default template + Hero + Blogs Archive components).
  * - Add career_only=1 to only create/update the Career page (default template + Hero + We are NSC + Core values + Jobs archive / Vue).
@@ -35,7 +38,7 @@ declare(strict_types=1);
  * - Add content_test=1 to prepend "[test] " to text (policy page titles only; policy HTML body preserved) so you can verify in the CMS.
  * - Optional seed_lang={slug}|all for Polylang-linked pages. Omit seed_lang for default-language only; seed_lang=all for every non-default language; seed_lang={non-default} updates that locale only from canonical content—seeder ignores admin-bar/cookie language so page IDs match the intended locale. (lang) lowercase prefix without Google API key; legacy [LANG] stripped when re-seeding.
  * - Privacy Policy, Cookies Policy, Terms of Use use default template and one NSC Block: Policy Page; content from policy-content/*.html. Each section intro uses one paragraph: <p>Heading text <br> body text</p> (legacy pairs of <p><strong>Heading</strong></p><p>body</p> are normalized when loading for live + Polylang translation sync).
- * - Footer policy links (Privacy Policy, Cookies Policy, Terms of Use) are set in runGlobalOptions.php (legalLinks).
+ * - Footer policy links use the theme location <code>footer_policy</code> (menus seeder + Appearance → Menus).
  * - Blog seed (30 posts, categories, ACF sidebar): use create-nsc-blog-posts.php with token nsc-create-blog-posts-2026.
  * - Case studies seed (30 case_study posts, taxonomies, ACF gallery + size/duration): use create-nsc-case-study-posts.php with token nsc-create-case-studies-2026.
  * - Case Studies page uses default template + pageComponents (Case studies hero + Case studies archive); Vue list reads published case_study posts (run case_studies_only=1 after CPT seed).
@@ -79,8 +82,27 @@ $nscSeedPolylang = get_template_directory() . '/inc/nscSeedPolylang.php';
 if (is_readable($nscSeedPolylang)) {
     require_once $nscSeedPolylang;
 }
+$nscSeedCf7Pl = get_template_directory() . '/inc/nscSeedCf7Polylang.php';
+if (is_readable($nscSeedCf7Pl)) {
+    require_once $nscSeedCf7Pl;
+}
 if (function_exists('nsc_seed_bootstrap_acf_polylang_default_language')) {
     nsc_seed_bootstrap_acf_polylang_default_language();
+}
+
+/**
+ * Contact block shortcode: uses nsc_cf7_primary_form_id when the CF7 seeder has run.
+ */
+function nsc_create_pages_primary_cf7_shortcode(): string
+{
+    $id = (int) get_option('nsc_cf7_primary_form_id', 0);
+    if ($id > 0) {
+        return function_exists('nsc_seed_cf7_shortcode_for_form')
+            ? nsc_seed_cf7_shortcode_for_form($id)
+            : sprintf('[contact-form-7 id="%d"]', $id);
+    }
+
+    return '[contact-form-7 id="" title="NSC Main Contact Form"]';
 }
 
 $pages = [
@@ -155,7 +177,9 @@ function nscGetTestimonialBuildImageIds(): array
 }
 
 /**
- * Sideload one asset from theme frontend/build/img into the media library. Returns attachment ID or 0.
+ * Sideload one asset from frontend/build/img into the media library. Returns attachment ID or 0.
+ * Resolves existing attachments by nsc_build_asset meta; otherwise copies from theme build, site-root
+ * frontend/build (same folder as this script), or downloads from the theme build URI.
  */
 function nscSideloadBuildImageByFilename(string $filename): int
 {
@@ -169,11 +193,35 @@ function nscSideloadBuildImageByFilename(string $filename): int
     if (!empty($existing)) {
         return (int) $existing[0]->ID;
     }
-    $url = $buildUri . '/img/' . rawurlencode($filename);
-    $tmp = download_url($url);
-    if (is_wp_error($tmp)) {
-        return 0;
+
+    $tmp = null;
+    $localCandidates = [
+        get_template_directory() . '/frontend/build/img/' . $filename,
+        __DIR__ . '/frontend/build/img/' . $filename,
+    ];
+    foreach ($localCandidates as $localPath) {
+        if (!is_readable($localPath)) {
+            continue;
+        }
+        $tmp = wp_tempnam($filename);
+        if ($tmp && @copy($localPath, $tmp)) {
+            break;
+        }
+        if ($tmp && is_file($tmp)) {
+            @unlink($tmp);
+        }
+        $tmp = null;
     }
+
+    if ($tmp === null) {
+        $url = $buildUri . '/img/' . rawurlencode($filename);
+        $downloaded = download_url($url);
+        if (is_wp_error($downloaded)) {
+            return 0;
+        }
+        $tmp = $downloaded;
+    }
+
     $file = ['name' => $filename, 'tmp_name' => $tmp];
     $id   = media_handle_sideload($file, 0, $filename);
     if (is_file($tmp)) {
@@ -188,14 +236,51 @@ function nscSideloadBuildImageByFilename(string $filename): int
 }
 
 /**
+ * Map build/img filenames to attachment IDs (idempotent via nsc_build_asset meta + sideload).
+ *
+ * @param array<int, string> $filenames
+ * @return array<int>
+ */
+function nsc_seed_pages_gallery_ids_from_filenames(array $filenames): array
+{
+    $ids = [];
+    foreach ($filenames as $filename) {
+        $id = nscSideloadBuildImageByFilename($filename);
+        if ($id > 0) {
+            $ids[] = $id;
+        }
+    }
+
+    return $ids;
+}
+
+/**
+ * @return array<int, string>
+ */
+function nsc_seed_pages_png_range(string $prefix, int $from, int $to): array
+{
+    $filenames = [];
+    for ($i = $from; $i <= $to; $i++) {
+        $filenames[] = $prefix . $i . '.png';
+    }
+
+    return $filenames;
+}
+
+/**
  * Home page components matching frontend/build/index.html section order and content.
- * URL fields use home_url('/') so saved data passes ACF URL validation.
+ * Internal page buttons use nsc_seed_default_lang_page_permalink() when Polylang helpers are loaded.
  *
  * @return array<int, array<string, mixed>>
  */
 function getHomePageComponents(): array
 {
     $baseUrl = home_url('/');
+    $pageUrl = static function (string $slug): string {
+        return function_exists('nsc_seed_default_lang_page_permalink')
+            ? nsc_seed_default_lang_page_permalink($slug)
+            : home_url('/' . sanitize_title($slug) . '/');
+    };
     $buildImages = nscGetTestimonialBuildImageIds();
     $logoIds = $buildImages['logo_ids'];
     $avatarIds = $buildImages['testimonial_avatar_ids'];
@@ -227,7 +312,7 @@ function getHomePageComponents(): array
             'acf_fc_layout'   => 'nscBlockOurServices',
             'title'           => 'Our Services',
             'introDescription' => 'NSC Software delivers AI-driven, end-to-end technology solutions that help businesses build modern digital products, optimize operations, & accelerate growth with a senior, high-quality engineering team.',
-            'introButton'     => ['label' => 'Explore our services', 'url' => $baseUrl, 'openInNewTab' => 0],
+            'introButton'     => ['label' => 'Explore our services', 'url' => $pageUrl('our-services'), 'openInNewTab' => 0],
             'services'        => [
                 ['number' => '01', 'title' => 'Software Development & Digital Solutions', 'description' => 'Delivering full-cycle software development services - from product ideation and MVP to  enterprise-scale platforms - with a focus on scalability, performance, and long-term business value.'],
                 ['number' => '02', 'title' => 'Technology Consulting & Architecture', 'description' => 'Providing strategic technology advisory and solution architecture design to help enterprises modernize systems, adopt emerging technologies, and align IT strategies with business objectives.'],
@@ -262,10 +347,10 @@ function getHomePageComponents(): array
             'subheading'    => 'Flexible engagement models designed for:',
             'subtitle'      => 'Long-term partnership - Efficiency - Transparency',
             'items'         => [
-                ['title' => "Fixed-Scope \n Projects", 'description' => 'Clear goals, fixed requirements, and defined timelines, ideal for well-scoped initiatives.'],
-                ['title' => "Dedicated \n Team", 'description' => 'Build a long-term, fully managed engineering team aligned with your business objectives.'],
-                ['title' => "Staff \n Augmentation", 'description' => 'Extend your in-house capacity with senior engineers working directly under your management.'],
-                ['title' => "Managed \n Services", 'description' => 'Delegate selected operations to NSC under SLA-driven, KPI-measured management.'],
+                ['title' => 'Fixed-Scope <br> Projects', 'description' => 'Clear goals, fixed requirements, and defined timelines, ideal for well-scoped initiatives.'],
+                ['title' => 'Dedicated <br> Team', 'description' => 'Build a long-term, fully managed engineering team aligned with your business objectives.'],
+                ['title' => 'Staff <br> Augmentation', 'description' => 'Extend your in-house capacity with senior engineers working directly under your management.'],
+                ['title' => 'Managed <br> Services', 'description' => 'Delegate selected operations to NSC under SLA-driven, KPI-measured management.'],
             ],
             'options'       => ['theme' => ''],
         ],
@@ -275,7 +360,7 @@ function getHomePageComponents(): array
             'headline1'     => '<span>AI-Driven</span> <br> Software <br> Development',
             'headline2'     => 'Power by <br> <span>Senior <br class="hidden lg:block"> Engineers</span>',
             'description'   => '<p>NSC integrates AI across the entire delivery lifecycle to enhance productivity, consistency, and decision-making.</p><p>We combine leading AI frameworks with proprietary, privacy-controlled models to ensure secure, compliant, and efficient delivery for every client engagement.</p>',
-            'button'        => ['label' => 'Learn How We Leverage AI', 'url' => $baseUrl, 'openInNewTab' => 0],
+            'button'        => ['label' => 'Learn How We Leverage AI', 'url' => $pageUrl('ai'), 'openInNewTab' => 0],
             'options'       => ['theme' => ''],
         ],
         // 7. Testimonials (section.testimonials) – logos and avatars from build images in media library
@@ -283,7 +368,7 @@ function getHomePageComponents(): array
             'acf_fc_layout'   => 'nscBlockTestimonials',
             'title'           => 'Beyond A Partner',
             'introDescription' => 'Empowering global enterprises with AI-driven engineering and senior-led delivery, built on trust, transparency, and long-term collaboration.',
-            'introButton'     => ['label' => 'Explore Our Case Studies', 'url' => $baseUrl, 'openInNewTab' => 0],
+            'introButton'     => ['label' => 'Explore Our Case Studies', 'url' => $pageUrl('case-studies'), 'openInNewTab' => 0],
             'logos'           => array_map(static fn ($id) => ['image' => $id], $logoIds),
             'testimonials'    => [
                 [
@@ -355,7 +440,7 @@ function getHomePageComponents(): array
                 'title'       => 'Join Conversation',
                 'paragraph'   => 'Follow our journey of growth, innovation, and collaboration, where every insight leads to a smarter tomorrow.',
                 'buttonLabel' => 'Explore all articles on the NSC Blog',
-                'buttonUrl'   => $baseUrl,
+                'buttonUrl'   => $pageUrl('blogs'),
                 'openInNewTab' => 0,
             ],
             'labels'               => [
@@ -373,7 +458,7 @@ function getHomePageComponents(): array
             'title'          => 'CONTACT',
             'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
             'showForm'       => 1,
-            'cf7Shortcode'   => '[contact-form-7 id="" title="NSC Main Contact Form"]',
+            'cf7Shortcode'   => nsc_create_pages_primary_cf7_shortcode(),
             'formAction'     => $baseUrl,
             'options'        => ['theme' => ''],
         ],
@@ -389,6 +474,11 @@ function getHomePageComponents(): array
 function getAboutPageComponents(): array
 {
     $baseUrl = home_url('/');
+    $pageUrl = static function (string $slug): string {
+        return function_exists('nsc_seed_default_lang_page_permalink')
+            ? nsc_seed_default_lang_page_permalink($slug)
+            : home_url('/' . sanitize_title($slug) . '/');
+    };
 
     return [
         // 1. Hero (section.hero.left-text)
@@ -461,7 +551,7 @@ function getAboutPageComponents(): array
             'title'        => 'Technology Capabilities',
             'titleLine1'    => "Full-Stack \n Engineering.",
             'titleLine2'    => 'Enterprise Delivery.',
-            'button'        => ['label' => 'Explore Full Technology Capabilities', 'url' => $baseUrl . 'technology-apabilities/', 'openInNewTab' => 0],
+            'button'        => ['label' => 'Explore Full Technology Capabilities', 'url' => $pageUrl('technology-apabilities'), 'openInNewTab' => 0],
             'paragraphs'    => '<p>NSC Software delivers end-to-end technology capabilities - from software development, system architecture, and managed services to data, AI, blockchain, and enterprise platforms.</p><p>Backed by Vietnam\'s <b class="text-primary">Top 7%</b> senior engineers and AI-enabled delivery, we help global organizations modernize legacy systems, build innovative products, and scale operations with confidence and precision.</p>',
             'options'       => ['theme' => ''],
         ],
@@ -484,7 +574,7 @@ function getAboutPageComponents(): array
             'title'          => 'CONTACT',
             'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
             'showForm'       => 1,
-            'cf7Shortcode'   => '[contact-form-7 id="" title="NSC Main Contact Form"]',
+            'cf7Shortcode'   => nsc_create_pages_primary_cf7_shortcode(),
             'formAction'     => $baseUrl,
             'options'        => ['theme' => ''],
         ],
@@ -493,6 +583,7 @@ function getAboutPageComponents(): array
 
 /**
  * AI page components matching frontend/build/ai.html section order and content.
+ * Hero + ecosystem galleries use theme frontend/build/img assets (same filenames as static HTML) via sideload so re-seeding restores media.
  * Live content by default; use content_test=1 to prepend "[test] " to text.
  *
  * @return array<int, array<string, mixed>>
@@ -501,16 +592,73 @@ function getAiPageComponents(): array
 {
     $baseUrl = home_url('/');
 
-    return [
-        // 1. Hero (section.hero.dark)
+    $aiHeroDesktopId = nscSideloadBuildImageByFilename('ai-hero.png');
+    $aiHeroMobileId  = nscSideloadBuildImageByFilename('mob-ai-hero.png');
+    $ecoHeadingIconId = nscSideloadBuildImageByFilename('heading-icon.png');
+
+    $hero = [
+        'acf_fc_layout'   => 'nscBlockHero',
+        'heroStyle'       => 'dark',
+        'headline'        => 'Engineering the Future with <br> <span class="text-primary">AI-Augmented Intelligence</span>',
+        'description'     => '<p>We don\'t replace engineers with AI. We equip them with superpowers. Experience software delivery that is <b>faster</b>, <b>smarter</b>, and <b>cost-optimized</b> for the enterprise era.</p>',
+        'button'          => ['label' => '', 'url' => '', 'openInNewTab' => 0],
+        'options'         => ['theme' => ''],
+    ];
+    if ($aiHeroDesktopId > 0) {
+        $hero['imageDesktop'] = $aiHeroDesktopId;
+    }
+    if ($aiHeroMobileId > 0) {
+        $hero['imageMobile'] = $aiHeroMobileId;
+    }
+
+    $ecoRows = [
         [
-            'acf_fc_layout'   => 'nscBlockHero',
-            'heroStyle'       => 'dark',
-            'headline'        => 'Engineering the Future with <br> <span class="text-primary">AI-Augmented Intelligence</span>',
-            'description'     => '<p>We don\'t replace engineers with AI. We equip them with superpowers. Experience software delivery that is <b>faster</b>, <b>smarter</b>, and <b>cost-optimized</b> for the enterprise era.</p>',
-            'button'          => ['label' => '', 'url' => '', 'openInNewTab' => 0],
-            'options'         => ['theme' => ''],
+            'title' => 'Foundation Models (LLMs)',
+            'badge' => '',
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['llms-1.png', 'llms-2.png', 'llms-3.png', 'llms-4.png']),
         ],
+        [
+            'title' => 'Efficient & Edge AI (SLMs)',
+            'badge' => '💰 Cost Optimized',
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['slms-1.png', 'slms-2.png', 'slms-3.png', 'slms-4.png']),
+        ],
+        [
+            'title' => 'Development Frameworks',
+            'badge' => '',
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['df-1.png', 'df-2.png', 'df-3.png', 'df-4.png']),
+        ],
+        [
+            'title' => 'Vector Databases <br> (AI Memory)',
+            'badge' => '',
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['vd-1.png', 'vd-2.png', 'vd-3.png', 'vd-4.png']),
+        ],
+        [
+            'title' => 'Cloud & MLOps <br> Infrastructure',
+            'badge' => '',
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['cmi-1.png', 'cmi-2.png', 'cmi-3.png', 'cmi-4.png', 'cmi-5.png']),
+        ],
+        [
+            'title' => 'AI Coding Tools (Internal)',
+            'badge' => '',
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['aict-1.png', 'aict-2.png', 'aict-3.png']),
+        ],
+    ];
+
+    $ecoBlock = [
+        'acf_fc_layout' => 'nscBlockAiCapabilitiesDetails',
+        'title'         => 'ORCHESTRATING A BEST-IN-CLASS ECOSYSTEM',
+        'description'   => '<p>We partner with the world\'s leading platforms to build scalable, secure, and sovereign AI solutions.</p>',
+        'rows'          => $ecoRows,
+        'quote'         => '<p>We are platform-agnostic. We choose the right model and infrastructure for your specific constraints and budget.</p>',
+        'options'       => ['theme' => ''],
+    ];
+    if ($ecoHeadingIconId > 0) {
+        $ecoBlock['headingIcon'] = $ecoHeadingIconId;
+    }
+
+    return [
+        // 1. Hero (section.hero.dark) — ai-hero.png / mob-ai-hero.png (frontend/build/ai.html)
+        $hero,
         // 2. AI Banner (section.ai-banner)
         [
             'acf_fc_layout' => 'nscBlockAiBanner',
@@ -554,22 +702,8 @@ function getAiPageComponents(): array
             ],
             'options'        => ['theme' => ''],
         ],
-        // 6. Capabilities Details (section.our-capabilities-details)
-        [
-            'acf_fc_layout' => 'nscBlockAiCapabilitiesDetails',
-            'title'         => 'ORCHESTRATING A BEST-IN-CLASS ECOSYSTEM',
-            'description'   => '<p>We partner with the world\'s leading platforms to build scalable, secure, and sovereign AI solutions.</p>',
-            'rows'          => [
-                ['title' => 'Foundation Models (LLMs)', 'badge' => '', 'images' => []],
-                ['title' => 'Efficient & Edge AI (SLMs)', 'badge' => '💰 Cost Optimized', 'images' => []],
-                ['title' => 'Development Frameworks', 'badge' => '', 'images' => []],
-                ['title' => 'Vector Databases <br> (AI Memory)', 'badge' => '', 'images' => []],
-                ['title' => 'Cloud & MLOps <br> Infrastructure', 'badge' => '', 'images' => []],
-                ['title' => 'AI Coding Tools (Internal)', 'badge' => '', 'images' => []],
-            ],
-            'quote'          => '<p>We are platform-agnostic. We choose the right model and infrastructure for your specific constraints and budget.</p>',
-            'options'        => ['theme' => ''],
-        ],
+        // 6. Capabilities Details (section.our-capabilities-details) — galleries from frontend/build/ai.html
+        $ecoBlock,
         // 7. AI Security (section.ai-security)
         [
             'acf_fc_layout' => 'nscBlockAiSecurity',
@@ -588,7 +722,7 @@ function getAiPageComponents(): array
             'title'          => 'CONTACT',
             'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
             'showForm'       => 1,
-            'cf7Shortcode'   => '[contact-form-7 id="" title="NSC Main Contact Form"]',
+            'cf7Shortcode'   => nsc_create_pages_primary_cf7_shortcode(),
             'formAction'     => $baseUrl,
             'options'        => ['theme' => ''],
         ],
@@ -604,6 +738,11 @@ function getAiPageComponents(): array
 function getOurServicesPageComponents(): array
 {
     $baseUrl = home_url('/');
+    $pageUrl = static function (string $slug): string {
+        return function_exists('nsc_seed_default_lang_page_permalink')
+            ? nsc_seed_default_lang_page_permalink($slug)
+            : home_url('/' . sanitize_title($slug) . '/');
+    };
 
     return [
         // 1. Hero (section.hero.dark)
@@ -743,7 +882,7 @@ function getOurServicesPageComponents(): array
                 'description' => '<p>Work with <b>Vietnam\'s Top 7%</b> senior <br class="lg:hidden"> engineers <br> to accelerate your technology  <br class="lg:hidden"> initiatives.</p>',
                 'button'      => [
                     'label'        => 'Speak With Our Team',
-                    'url'          => $baseUrl . 'contact/',
+                    'url'          => $pageUrl('contact'),
                     'openInNewTab' => 0,
                 ],
             ],
@@ -754,60 +893,127 @@ function getOurServicesPageComponents(): array
 
 /**
  * Technology Capabilities page components matching frontend/build/technology-apabilities.html (Hero + Technology Capability).
- * Live content by default; use content_test=1 to prepend "[test] " to text. Row images are empty; add in CMS.
+ * Hero + row galleries use theme frontend/build/img assets (same filenames as static HTML) via sideload.
+ * Live content by default; use content_test=1 to prepend "[test] " to text.
  *
  * @return array<int, array<string, mixed>>
  */
 function getOurCapabilitiesPageComponents(): array
 {
-    return [
-        // 1. Hero (section.hero.dark)
-        [
-            'acf_fc_layout' => 'nscBlockHero',
-            'heroStyle'     => 'dark',
-            'headline'      => '<span class="highlight primary">End-to-End</span> <br class="lg:hidden"> <sb>Technology Services</sb> <br> <sb>for</sb> <span class="highlight primary">Modern Enterprice</span>',
-            'description'   => '<p>Powered by Vietnam\'s <b>Top 7% senior engineers</b> and <b>AI-enabled delivery</b>, NSC Software provides a comprehensive suite of technology services that help organizations innovate, modernize, and scale with confidence.</p>',
-            'button'        => ['label' => '', 'url' => '', 'openInNewTab' => 0],
-            'options'       => ['theme' => ''],
-        ],
-        // 2. Technology Capability (section.our-capabilities-details)
-        [
-            'acf_fc_layout' => 'nscBlockTechnologyCapability',
-            'title'         => 'TECHNOLOGY <br class="lg:hidden"> CAPABILITY',
-            'description'   => '<p class="center">Our expertise spans the full technology stack, from enterprise systems to emerging technologies, ensuring scalable and future-ready solutions.</p>',
-            'rows'          => [
-                ['title' => 'Backend Development', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
-                ['title' => 'Frontend Development', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
-                [
-                    'title'         => 'Mobile Development',
-                    'rightColClass' => '',
-                    'imageGroups'   => [
-                        ['label' => 'Android: ', 'images' => []],
-                        ['label' => 'iOS: ', 'images' => []],
-                        ['label' => 'Cross-platform: ', 'images' => []],
-                    ],
+    $techHeroId = nscSideloadBuildImageByFilename('hero-dark.png');
+    $techHeadingIconId = nscSideloadBuildImageByFilename('heading-icon.png');
+
+    $hero = [
+        'acf_fc_layout' => 'nscBlockHero',
+        'heroStyle'     => 'dark',
+        'headline'      => '<span class="highlight primary">End-to-End</span> <br class="lg:hidden"> <sb>Technology Services</sb> <br> <sb>for</sb> <span class="highlight primary">Modern Enterprice</span>',
+        'description'   => '<p>Powered by Vietnam\'s <b>Top 7% senior engineers</b> and <b>AI-enabled delivery</b>, NSC Software provides a comprehensive suite of technology services that help organizations innovate, modernize, and scale with confidence.</p>',
+        'button'        => ['label' => '', 'url' => '', 'openInNewTab' => 0],
+        'options'       => ['theme' => ''],
+    ];
+    if ($techHeroId > 0) {
+        $hero['imageDesktop'] = $techHeroId;
+        $hero['imageMobile']  = $techHeroId;
+    }
+
+    $techBlock = [
+        'acf_fc_layout' => 'nscBlockTechnologyCapability',
+        'title'         => 'TECHNOLOGY <br class="lg:hidden"> CAPABILITY',
+        'description'   => '<p class="center">Our expertise spans the full technology stack, from enterprise systems to emerging technologies, ensuring scalable and future-ready solutions.</p>',
+        'rows'          => [
+            [
+                'title' => 'Backend Development',
+                'rightColClass' => '',
+                'imageGroups' => [
+                    ['label' => '', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('backend-', 1, 10))],
                 ],
-                ['title' => 'Database', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
-                [
-                    'title'         => 'Cloud & DevOps',
-                    'rightColClass' => '',
-                    'imageGroups'   => [
-                        ['label' => 'Cloud & Infrastructure: ', 'images' => []],
-                        ['label' => '', 'images' => []],
-                        ['label' => 'Containers & Automation: ', 'images' => []],
-                        ['label' => '', 'images' => []],
-                        ['label' => 'Monitoring & Logging: ', 'images' => []],
-                        ['label' => '', 'images' => []],
-                    ],
-                ],
-                ['title' => 'Data Engineering', 'rightColClass' => '!gap-2', 'imageGroups' => [['label' => '', 'images' => []]]],
-                ['title' => 'AI & Machine Learning', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
-                ['title' => 'Blockchain', 'rightColClass' => '!gap-2', 'imageGroups' => [['label' => '', 'images' => []]]],
-                ['title' => 'Automation Quality Assurance', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
-                ['title' => 'Enterprise/Ecommerce Platforms', 'rightColClass' => '', 'imageGroups' => [['label' => '', 'images' => []]]],
             ],
-            'options'       => ['theme' => ''],
+            [
+                'title' => 'Frontend Development',
+                'rightColClass' => '',
+                'imageGroups' => [
+                    ['label' => '', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('frontend-', 1, 4))],
+                ],
+            ],
+            [
+                'title'         => 'Mobile Development',
+                'rightColClass' => '',
+                'imageGroups'   => [
+                    ['label' => 'Android: ', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('mobile-', 1, 2))],
+                    ['label' => 'iOS: ', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('mobile-', 3, 4))],
+                    ['label' => 'Cross-platform: ', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('mobile-', 5, 6))],
+                ],
+            ],
+            [
+                'title' => 'Database',
+                'rightColClass' => '',
+                'imageGroups' => [
+                    ['label' => '', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('database-', 1, 8))],
+                ],
+            ],
+            [
+                'title'         => 'Cloud & DevOps',
+                'rightColClass' => '',
+                'imageGroups'   => [
+                    [
+                        'label' => 'Cloud & Infrastructure: ',
+                        'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('devops-', 1, 5)),
+                    ],
+                    [
+                        'label' => 'Containers & Automation: ',
+                        'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('devops-', 6, 11)),
+                    ],
+                    [
+                        'label' => 'Monitoring & Logging: ',
+                        'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('devops-', 12, 14)),
+                    ],
+                ],
+            ],
+            [
+                'title' => 'Data Engineering',
+                'rightColClass' => '!gap-2',
+                'imageGroups' => [
+                    ['label' => '', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('engineer-', 1, 8))],
+                ],
+            ],
+            [
+                'title' => 'AI & Machine Learning',
+                'rightColClass' => '',
+                'imageGroups' => [
+                    ['label' => '', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('ai-', 1, 4))],
+                ],
+            ],
+            [
+                'title' => 'Blockchain',
+                'rightColClass' => '!gap-2',
+                'imageGroups' => [
+                    ['label' => '', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('blockchain-', 1, 9))],
+                ],
+            ],
+            [
+                'title' => 'Automation Quality Assurance',
+                'rightColClass' => '',
+                'imageGroups' => [
+                    ['label' => '', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('qa-', 1, 6))],
+                ],
+            ],
+            [
+                'title' => 'Enterprise/Ecommerce Platforms',
+                'rightColClass' => '',
+                'imageGroups' => [
+                    ['label' => '', 'images' => nsc_seed_pages_gallery_ids_from_filenames(nsc_seed_pages_png_range('enterprise-', 1, 4))],
+                ],
+            ],
         ],
+        'options'       => ['theme' => ''],
+    ];
+    if ($techHeadingIconId > 0) {
+        $techBlock['headingIcon'] = $techHeadingIconId;
+    }
+
+    return [
+        $hero,
+        $techBlock,
     ];
 }
 
@@ -856,12 +1062,17 @@ function getPolicyPageComponents(string $title, string $contentHtml): array
 function getBlogsPageComponents(): array
 {
     $baseUrl = home_url('/');
+    $pageUrl = static function (string $slug): string {
+        return function_exists('nsc_seed_default_lang_page_permalink')
+            ? nsc_seed_default_lang_page_permalink($slug)
+            : home_url('/' . sanitize_title($slug) . '/');
+    };
     $description = '<p>At NSC Software, technology is only as powerful as the people building it. From engineering insights to culture and teamwork, our blog shows how NSC builds software — and how it connects to the wider story on our '
-        . '<a href="' . esc_url($baseUrl) . '">Home</a>, '
-        . '<a href="' . esc_url($baseUrl . 'about/') . '">About</a>, '
-        . '<a href="' . esc_url($baseUrl . 'ai/') . '">AI</a>, '
-        . '<a href="' . esc_url($baseUrl . 'our-services/') . '">Our Services</a>, '
-        . 'and <a href="' . esc_url($baseUrl . 'technology-apabilities/') . '">Technology Capabilities</a> pages.</p>';
+        . '<a href="' . esc_url($pageUrl('home')) . '">Home</a>, '
+        . '<a href="' . esc_url($pageUrl('about')) . '">About</a>, '
+        . '<a href="' . esc_url($pageUrl('ai')) . '">AI</a>, '
+        . '<a href="' . esc_url($pageUrl('our-services')) . '">Our Services</a>, '
+        . 'and <a href="' . esc_url($pageUrl('technology-apabilities')) . '">Technology Capabilities</a> pages.</p>';
 
     return [
         [
@@ -1021,7 +1232,7 @@ function getContactPageComponents(): array
             'contentLines'   => "Ideas that inspire.\nStories that shape the future.",
             'showForm'       => 1,
             'formAction'     => $baseUrl,
-            'cf7Shortcode'   => '[contact-form-7 id="" title="NSC Main Contact Form"]',
+            'cf7Shortcode'   => nsc_create_pages_primary_cf7_shortcode(),
             'officesTitle'   => 'OUR OFFICES',
             'offices'        => [
                 [
@@ -1408,6 +1619,9 @@ foreach ($pages as $page) {
             'message' => $msg,
         ];
     } elseif ($slug === 'case-studies') {
+        if (function_exists('NscSoftware\\CustomTaxonomies\\ensure_case_study_category_defaults')) {
+            \NscSoftware\CustomTaxonomies\ensure_case_study_category_defaults();
+        }
         $components = getCaseStudiesPageComponents();
         if ($contentTest) {
             $components = applyContentTest($components);

@@ -94,17 +94,11 @@ add_action('init', static function (): void {
 }, 0);
 
 /**
- * Seed default listing categories to match the static case studies filter labels (Technology, Fintech, …).
- * Runs once when the taxonomy has no terms.
+ * Default case study listing categories (filter tabs on Case Studies page). Idempotent: inserts any missing terms.
  */
-add_action('init', static function (): void {
-    $existing = get_terms([
-        'taxonomy' => 'case_study_category',
-        'hide_empty' => false,
-        'number' => 1,
-        'fields' => 'ids',
-    ]);
-    if (is_wp_error($existing) || !empty($existing)) {
+function ensure_case_study_category_defaults(): void
+{
+    if (! taxonomy_exists('case_study_category')) {
         return;
     }
 
@@ -123,4 +117,11 @@ add_action('init', static function (): void {
             wp_insert_term($name, 'case_study_category');
         }
     }
+}
+
+/**
+ * Ensure listing categories exist on every request (fixes partial DBs; cheap term_exists checks).
+ */
+add_action('init', static function (): void {
+    ensure_case_study_category_defaults();
 }, 20);

@@ -17,7 +17,7 @@ declare(strict_types=1);
  *   define( 'NSC_SEEDER_HTTP_BASIC_PASSWORD', 'same-as-htpasswd' );
  * Override: add_filter('nsc_seeder_wp_remote_headers', fn ($h, $url) => $h, 10, 2);
  *
- * Token values must stay in sync with create-nsc-*.php in the site root.
+ * Token values must stay in sync with create-nsc-*.php in the site root (including create-nsc-cf7-form.php).
  */
 
 namespace NscSoftware\SeedersAdmin;
@@ -33,6 +33,7 @@ function seeder_script_urls(): array
 
     return [
         'options' => $root . 'create-nsc-global-options.php',
+        'cf7' => $root . 'create-nsc-cf7-form.php',
         'pages' => $root . 'create-nsc-pages.php',
         'menus' => $root . 'create-nsc-menus.php',
         'blogs' => $root . 'create-nsc-blog-posts.php',
@@ -46,6 +47,7 @@ function seeder_tokens(): array
 {
     return [
         'options' => 'nsc-global-options-2026',
+        'cf7' => 'nsc-create-cf7-2026',
         'pages' => 'nsc-create-pages-2026',
         'menus' => 'nsc-create-menus-2026',
         'blogs' => 'nsc-create-blog-posts-2026',
@@ -155,6 +157,7 @@ function get_run_all_seeder_groups(): array
 {
     return [
         ['key' => 'options', 'title' => \__('Global options', 'NscSoftware')],
+        ['key' => 'cf7', 'title' => \__('Contact Form 7', 'NscSoftware')],
         ['key' => 'pages', 'title' => \__('Pages', 'NscSoftware')],
         ['key' => 'menus', 'title' => \__('Menus', 'NscSoftware')],
         ['key' => 'blogs', 'title' => \__('Blog posts', 'NscSoftware')],
@@ -164,7 +167,7 @@ function get_run_all_seeder_groups(): array
 }
 
 /**
- * For each language (default first, then each locale): options → pages → menus → posts → careers → case studies.
+ * For each language (default first, then each locale): options → Contact Form 7 (main + job apply) → pages → menus → blogs → careers → case studies.
  *
  * @param list<array{slug: string, label: string}> $passes
  * @param list<array{key: string, title: string}> $groups
@@ -989,7 +992,7 @@ function render_page(): void
 
         <h2 class="title" style="margin-top:1.5em;"><?php echo \esc_html(\__('Run all (queue)', 'NscSoftware')); ?></h2>
         <p class="description" style="max-width:960px;">
-            <?php echo \esc_html(\__('Ignores the pages/menus form fields. Per pass, order is: global options → pages (full list) → menus (rebuild on) → blog posts → careers → case studies. Translation language: “Default only (slug)” — one pass, default locale only (6 steps). “All others” — one pass per secondary Polylang language (6 steps × count). A single language — that locale only (6 steps). No Google API key: placeholders are (lang) in lowercase; legacy [LANG] is stripped before re-prefixing.', 'NscSoftware')); ?>
+            <?php echo \esc_html(\__('Ignores the pages/menus form fields. Per pass, order is: global options → Contact Form 7 (seeds main contact + job application forms) → pages (full list) → menus (rebuild on) → blog posts → careers → case studies. Translation language: “Default only (slug)” — one pass, default locale only (7 steps). “All others” — one pass per secondary Polylang language (7 steps × count). A single language — that locale only (7 steps). Optional: create-nsc-cf7-form.php?apply_only=1 seeds only the job form. No Google API key: placeholders are (lang) in lowercase; legacy [LANG] is stripped before re-prefixing.', 'NscSoftware')); ?>
         </p>
         <p>
             <button type="button" class="button button-primary button-large" id="nsc-run-all-seeders" style="margin:4px 8px 12px 0;">
@@ -1022,6 +1025,9 @@ function render_page(): void
         <p>
             <button type="button" class="button button-primary nsc-run-seeder" data-seeder="options" style="margin:4px 8px 4px 0;">
                 <?php echo \esc_html(\__('Global options', 'NscSoftware')); ?>
+            </button>
+            <button type="button" class="button button-primary nsc-run-seeder" data-seeder="cf7" style="margin:4px 8px 4px 0;">
+                <?php echo \esc_html(\__('Contact Form 7', 'NscSoftware')); ?>
             </button>
             <button type="button" class="button button-primary nsc-run-seeder" data-seeder="pages" style="margin:4px 8px 4px 0;">
                 <?php echo \esc_html(\__('Pages', 'NscSoftware')); ?>

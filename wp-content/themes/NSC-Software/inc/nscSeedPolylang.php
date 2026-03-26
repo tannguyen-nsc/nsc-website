@@ -335,6 +335,138 @@ function nsc_seed_get_canonical_page_by_slug(string $slug): ?\WP_Post
 }
 
 /**
+ * Permalink for a canonical page slug in a given Polylang language.
+ * When $polylangSlug is null, uses the current language if set, otherwise the default language.
+ */
+function nsc_resolve_page_permalink(string $slug, ?string $polylangSlug = null): string
+{
+    $slug = \sanitize_title($slug);
+    if ($slug === '') {
+        return \home_url('/');
+    }
+    $canonical = nsc_seed_get_canonical_page_by_slug($slug);
+    if (!$canonical instanceof \WP_Post) {
+        return \home_url('/' . $slug . '/');
+    }
+    $baseId = (int) $canonical->ID;
+    $targetLang = $polylangSlug;
+    if ($targetLang === null || $targetLang === '') {
+        if (\function_exists('pll_current_language')) {
+            $cl = \pll_current_language('slug');
+            if (\is_string($cl) && $cl !== '') {
+                $targetLang = $cl;
+            }
+        }
+    }
+    if ($targetLang === '' && \function_exists('pll_default_language')) {
+        $dl = \pll_default_language('slug');
+        $targetLang = \is_string($dl) ? $dl : '';
+    }
+    if ($targetLang !== '' && \function_exists('pll_get_post')) {
+        $tr = \pll_get_post($baseId, $targetLang);
+        if ($tr) {
+            return \get_permalink((int) $tr);
+        }
+    }
+
+    return \get_permalink($baseId);
+}
+
+/**
+ * Permalink for the default (canonical) Polylang language — used by HTTP page seeders.
+ */
+function nsc_seed_default_lang_page_permalink(string $slug): string
+{
+    if (\function_exists('pll_default_language')) {
+        $d = \pll_default_language('slug');
+        if (\is_string($d) && $d !== '') {
+            return nsc_resolve_page_permalink($slug, $d);
+        }
+    }
+
+    return nsc_resolve_page_permalink($slug, null);
+}
+
+function nsc_seed_urls_same_path(string $a, string $b): bool
+{
+    $pa = \wp_parse_url($a, \PHP_URL_PATH);
+    $pb = \wp_parse_url($b, \PHP_URL_PATH);
+    $pa = \is_string($pa) ? $pa : '';
+    $pb = \is_string($pb) ? $pb : '';
+
+    return \untrailingslashit($pa) === \untrailingslashit($pb);
+}
+
+function nsc_seed_polylang_rewrite_internal_url(string $url, string $sourceLang, string $targetLang): string
+{
+    $url = \trim($url);
+    if ($url === '' || $sourceLang === '' || $targetLang === '' || $sourceLang === $targetLang) {
+        return $url;
+    }
+    static $knownSlugs = null;
+    if ($knownSlugs === null) {
+        $knownSlugs = [
+            'our-services',
+            'ai',
+            'blogs',
+            'technology-apabilities',
+            'contact',
+            'career',
+            'case-studies',
+            'about',
+            'home',
+        ];
+    }
+    foreach ($knownSlugs as $pageSlug) {
+        $srcPerm = nsc_resolve_page_permalink($pageSlug, $sourceLang);
+        if (nsc_seed_urls_same_path($url, $srcPerm)) {
+            return nsc_resolve_page_permalink($pageSlug, $targetLang);
+        }
+    }
+
+    return $url;
+}
+
+/**
+ * @param array<string, mixed> $node
+ * @return array<string, mixed>
+ */
+function nsc_seed_polylang_localize_url_fields_recursive(array $node, string $sourceLang, string $targetLang): array
+{
+    $out = [];
+    foreach ($node as $k => $v) {
+        if (($k === 'url' || $k === 'buttonUrl') && \is_string($v)) {
+            $out[$k] = nsc_seed_polylang_rewrite_internal_url($v, $sourceLang, $targetLang);
+        } elseif (\is_array($v)) {
+            $out[$k] = nsc_seed_polylang_localize_url_fields_recursive($v, $sourceLang, $targetLang);
+        } else {
+            $out[$k] = $v;
+        }
+    }
+
+    return $out;
+}
+
+/**
+ * @param array<int, array<string, mixed>>|null $components
+ * @return array<int, array<string, mixed>>|null
+ */
+function nsc_seed_polylang_localize_flexible_component_urls(?array $components, string $sourceLang, string $targetLang): ?array
+{
+    if ($components === null || $sourceLang === '' || $targetLang === '' || $sourceLang === $targetLang) {
+        return $components;
+    }
+    $out = [];
+    foreach ($components as $i => $block) {
+        $out[$i] = \is_array($block)
+            ? nsc_seed_polylang_localize_url_fields_recursive($block, $sourceLang, $targetLang)
+            : $block;
+    }
+
+    return $out;
+}
+
+/**
  * Whether this seed request should run Polylang linked-copy / per-locale option sync.
  */
 function nsc_seed_should_run_translation_sync(): bool
@@ -823,6 +955,10 @@ function nsc_seed_polylang_sync_page_translations(int $pageId, string $slug, str
         $translatedComponents = $components !== null
             ? nsc_seed_polylang_map_string_fields($components, $translate, nsc_seed_polylang_acf_skip_keys())
             : null;
+        $translatedComponents = nsc_seed_polylang_localize_flexible_component_urls($translatedComponents, $sourceLang, $lang);
+        if (\function_exists('nsc_seed_polylang_localize_cf7_shortcodes_in_flexible')) {
+            $translatedComponents = nsc_seed_polylang_localize_cf7_shortcodes_in_flexible($translatedComponents, $lang);
+        }
 
         nsc_seed_polylang_upsert_linked_post(
             $pageId,
@@ -975,10 +1111,6 @@ function nsc_seed_polylang_translate_global_options(): int
     if (!is_array($offices)) {
         $offices = [];
     }
-    $legalLinks = get_field($footerPrefix . 'legalLinks', 'option');
-    if (!is_array($legalLinks)) {
-        $legalLinks = [];
-    }
     $socialLinks = get_field($footerPrefix . 'socialLinks', 'option');
     if (!is_array($socialLinks)) {
         $socialLinks = [];
@@ -1008,11 +1140,6 @@ function nsc_seed_polylang_translate_global_options(): int
         if ($offices !== []) {
             $tOff = nsc_seed_polylang_map_string_fields($offices, $translate, ['phoneLink']);
             update_field($footerPrefix . 'offices', $tOff, 'option');
-        }
-
-        if ($legalLinks !== []) {
-            $tLeg = nsc_seed_polylang_map_string_fields($legalLinks, $translate, ['url', 'openInNewTab']);
-            update_field($footerPrefix . 'legalLinks', $tLeg, 'option');
         }
 
         if ($socialLinks !== []) {

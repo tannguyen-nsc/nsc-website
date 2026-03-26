@@ -10,6 +10,7 @@ add_action('init', function () {
     register_nav_menus([
         'navigation_footer' => __('Navigation Footer', 'NscSoftware'),
         'sitemap_footer' => __('Footer Sitemap', 'NscSoftware'),
+        'footer_policy' => __('Footer Policy Links', 'NscSoftware'),
     ]);
 });
 
@@ -47,6 +48,17 @@ add_filter('NscSoftware/addComponentData?name=NSCFooter', function ($data) {
     $data['sitemapMenu'] = $sitemapMenu;
     $rawItems = $sitemapMenu && !empty($sitemapMenu->items) ? $sitemapMenu->items : ($data['menu'] && !empty($data['menu']->items) ? $data['menu']->items : []);
     $sitemapItems = is_array($rawItems) ? $rawItems : (is_countable($rawItems) ? iterator_to_array($rawItems, false) : []);
+    $policyMenu = \function_exists('nsc_timber_get_menu_for_location')
+        ? nsc_timber_get_menu_for_location('footer_policy', false)
+        : Timber::get_menu('footer_policy');
+    if ($policyMenu) {
+        Menu\ensure_menu_item_classes($policyMenu);
+    }
+    if ($policyMenu && \function_exists('nsc_features_filter_timber_menu')) {
+        $policyMenu = \nsc_features_filter_timber_menu($policyMenu);
+    }
+    $data['policyMenu'] = $policyMenu;
+
     $data['sitemapItems'] = $sitemapItems;
     $n = count($sitemapItems);
     if ($n < 6) {
@@ -69,7 +81,6 @@ add_filter('NscSoftware/addComponentData?name=NSCFooter', function ($data) {
     $data['email'] = $options['email'] ?? '';
     $data['offices'] = !empty($options['offices']) ? $options['offices'] : getDefaultOffices();
     $data['copyright'] = $options['copyright'] ?? '© ' . date_i18n('Y') . ' ' . get_bloginfo('name');
-    $data['legalLinks'] = $options['legalLinks'] ?? [];
     $data['socialLinks'] = $options['socialLinks'] ?? [];
     $data['logo'] = $options['logo'] ?? null;
     $data['logoMobile'] = $options['logoMobile'] ?? null;
@@ -258,32 +269,6 @@ Options::addTranslatable('NSCFooter', [
         'name' => 'copyright',
         'type' => 'text',
         'default_value' => 'NSC@2026 All copyrights reserved',
-    ],
-    [
-        'label' => __('Legal links', 'NscSoftware'),
-        'name' => 'legalLinks',
-        'type' => 'repeater',
-        'min' => 0,
-        'layout' => 'table',
-        'sub_fields' => [
-            [
-                'label' => __('Label', 'NscSoftware'),
-                'name' => 'label',
-                'type' => 'text',
-            ],
-            [
-                'label' => __('URL', 'NscSoftware'),
-                'name' => 'url',
-                'type' => 'url',
-                'default_value' => home_url('/'),
-            ],
-            [
-                'label' => __('Open in new tab', 'NscSoftware'),
-                'name' => 'openInNewTab',
-                'type' => 'true_false',
-                'default_value' => 0,
-            ],
-        ],
     ],
     [
         'label' => __('Social links', 'NscSoftware'),

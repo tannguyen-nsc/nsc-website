@@ -7,8 +7,8 @@ declare(strict_types=1);
  *
  * Default run: menus for the default Polylang language (or a single menu if Polylang is off),
  * assigns theme locations, mirrors the same menu term to every language in Polylang.
- * Footer sitemap tree is stored in one menu and assigned to both sitemap_footer and navigation_footer
- * (NSCFooter: column links + sitemap columns) for each locale.
+ * Footer sitemap tree is stored in one menu (Home, About, AI + children, Careers, Blog, Case Studies) and assigned to both sitemap_footer and navigation_footer
+ * (NSCFooter: column links + sitemap columns) for each locale. Policy pages use <code>footer_policy</code>.
  *
  * seed_lang={slug}|all: builds menus for those languages only (translated labels + translated page IDs),
  * assigns each locale in Polylang via nsc_polylang_assign_nav_menu_for_language().
@@ -54,6 +54,10 @@ function nsc_seed_menus_run(array $options = []): array
             $locations['navigation_footer'] = $menuIds['sitemap_footer'];
             $locationsDirty = true;
         }
+        if (!empty($menuIds['footer_policy']) && $menuIds['footer_policy'] > 0) {
+            $locations['footer_policy'] = $menuIds['footer_policy'];
+            $locationsDirty = true;
+        }
         if ($locationsDirty) {
             set_theme_mod('nav_menu_locations', $locations);
         }
@@ -65,6 +69,9 @@ function nsc_seed_menus_run(array $options = []): array
             if ($menuIds['sitemap_footer'] > 0) {
                 nsc_polylang_sync_nav_menu_for_default_language('sitemap_footer', $menuIds['sitemap_footer']);
                 nsc_polylang_sync_nav_menu_for_default_language('navigation_footer', $menuIds['sitemap_footer']);
+            }
+            if (!empty($menuIds['footer_policy']) && $menuIds['footer_policy'] > 0) {
+                nsc_polylang_sync_nav_menu_for_default_language('footer_policy', $menuIds['footer_policy']);
             }
         }
 
@@ -81,17 +88,18 @@ function nsc_seed_menus_run(array $options = []): array
 /**
  * @param list<string> $langs Polylang slug or '_none' when Polylang off
  * @param list<array{scope: string, field: string, status: string, message: string}> $results
- * @return array{navigation_main: int, sitemap_footer: int}
+ * @return array{navigation_main: int, sitemap_footer: int, footer_policy: int}
  */
 function nsc_seed_menus_build_for_languages(array $langs, bool $rebuild, array &$results): array
 {
-    $out = ['navigation_main' => 0, 'sitemap_footer' => 0];
+    $out = ['navigation_main' => 0, 'sitemap_footer' => 0, 'footer_policy' => 0];
 
     foreach ($langs as $lang) {
         $workLang = $lang === '_none' ? '' : $lang;
 
         $mainId = nsc_seed_menus_ensure_menu_term('navigation_main', $workLang, $results);
         $siteId = nsc_seed_menus_ensure_menu_term('sitemap_footer', $workLang, $results);
+        $policyId = nsc_seed_menus_ensure_menu_term('footer_policy', $workLang, $results);
 
         if ($mainId > 0) {
             if ($rebuild) {
@@ -132,6 +140,22 @@ function nsc_seed_menus_build_for_languages(array $langs, bool $rebuild, array &
             ];
         }
 
+        if ($policyId > 0) {
+            if ($rebuild) {
+                nsc_seed_nav_menu_delete_all_items($policyId);
+            } else {
+                nsc_seed_nav_menu_delete_marked_items($policyId);
+            }
+            nsc_seed_menus_populate_footer_policy($policyId, $workLang);
+            $out['footer_policy'] = $policyId;
+            $results[] = [
+                'scope' => 'Menu',
+                'field' => 'Footer policy links (' . ($workLang !== '' ? $workLang : 'site') . ')',
+                'status' => 'ok',
+                'message' => 'menu_id=' . $policyId . '; location footer_policy (Privacy, Cookies, Terms pages)',
+            ];
+        }
+
         if ($workLang !== '' && function_exists('nsc_seed_polylang_sync_target_slugs_for_request')
             && nsc_seed_polylang_sync_target_slugs_for_request() !== []
             && function_exists('nsc_polylang_assign_nav_menu_for_language')) {
@@ -141,6 +165,9 @@ function nsc_seed_menus_build_for_languages(array $langs, bool $rebuild, array &
             if ($siteId > 0) {
                 nsc_polylang_assign_nav_menu_for_language('sitemap_footer', $workLang, $siteId);
                 nsc_polylang_assign_nav_menu_for_language('navigation_footer', $workLang, $siteId);
+            }
+            if ($policyId > 0) {
+                nsc_polylang_assign_nav_menu_for_language('footer_policy', $workLang, $policyId);
             }
         }
     }
@@ -263,7 +290,13 @@ function nsc_seed_menus_ensure_menu_term(string $locationKey, string $lang, arra
 
 function nsc_seed_menus_menu_name_for_language(string $locationKey, string $lang): string
 {
-    $baseName = $locationKey === 'navigation_main' ? 'Main Navigation' : 'Footer Sitemap';
+    if ($locationKey === 'navigation_main') {
+        $baseName = 'Main Navigation';
+    } elseif ($locationKey === 'footer_policy') {
+        $baseName = 'Footer Policy Links';
+    } else {
+        $baseName = 'Footer Sitemap';
+    }
     if ($lang === '') {
         return $baseName;
     }
@@ -412,7 +445,7 @@ function nsc_seed_menus_populate_main(int $menuId, string $lang): void
 }
 
 /**
- * Top-level order: Home, About, What We Do (+ children), Careers, Blog, Case Studies — matches static footer column split.
+ * Top-level order: Home, About, AI page (+ Our Services, Technology Capabilities as children), Careers, Blog, Case Studies.
  */
 function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
 {
@@ -439,17 +472,17 @@ function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
     $addPage('home', 'Home');
     $addPage('about', 'About Us');
 
-    $wwdId = nsc_seed_menus_add_item($menuId, [
-        'menu-item-title' => $t('What We Do'),
-        'menu-item-type' => 'custom',
-        'menu-item-object' => '',
-        'menu-item-object-id' => 0,
-        'menu-item-url' => '#',
-        'menu-item-position' => $position,
-        'menu-item-classes' => 'no-link-cursor',
-    ]);
-    nsc_seed_menus_mark_item($wwdId);
-    ++$position;
+    $aiPid = nsc_seed_menus_page_id('ai', $lang);
+    $parentId = 0;
+    if ($aiPid > 0) {
+        $parentId = nsc_seed_menus_add_item($menuId, [
+            'menu-item-title' => get_the_title($aiPid),
+            'menu-item-object-id' => $aiPid,
+            'menu-item-position' => $position,
+        ]);
+        nsc_seed_menus_mark_item($parentId);
+        ++$position;
+    }
 
     $childPos = 1;
     foreach (['our-services' => 'Our Services', 'technology-apabilities' => 'Technology Capabilities'] as $slug => $label) {
@@ -461,7 +494,7 @@ function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
             'menu-item-title' => $t($label),
             'menu-item-object-id' => $pid,
             'menu-item-position' => $childPos,
-            'menu-item-parent-id' => $wwdId,
+            'menu-item-parent-id' => $parentId,
         ]);
         nsc_seed_menus_mark_item($cid);
         ++$childPos;
@@ -470,4 +503,28 @@ function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
     $addPage('career', 'Careers');
     $addPage('blogs', 'Blog');
     $addPage('case-studies', 'Case Studies');
+}
+
+/**
+ * Footer copyright row: Privacy, Cookies, Terms — page title + permalink per locale.
+ */
+function nsc_seed_menus_populate_footer_policy(int $menuId, string $lang): void
+{
+    if ($menuId <= 0) {
+        return;
+    }
+    $position = 1;
+    foreach (['privacy-policy', 'cookies-policy', 'terms-of-use'] as $slug) {
+        $pid = nsc_seed_menus_page_id($slug, $lang);
+        if ($pid <= 0) {
+            continue;
+        }
+        $id = nsc_seed_menus_add_item($menuId, [
+            'menu-item-title' => get_the_title($pid),
+            'menu-item-object-id' => $pid,
+            'menu-item-position' => $position,
+        ]);
+        nsc_seed_menus_mark_item($id);
+        ++$position;
+    }
 }

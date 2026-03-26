@@ -24,10 +24,14 @@ $context['case_study_components'] = $components;
 $context['post'] = $post;
 $context['home_url'] = home_url('/');
 
-$caseStudiesPage = get_page_by_path('case-studies', OBJECT, 'page');
-$context['case_studies_archive_url'] = $caseStudiesPage instanceof WP_Post
-    ? get_permalink($caseStudiesPage)
-    : home_url('/case-studies/');
+if (function_exists('nsc_resolve_page_permalink')) {
+    $context['case_studies_archive_url'] = nsc_resolve_page_permalink('case-studies');
+} else {
+    $caseStudiesPage = get_page_by_path('case-studies', OBJECT, 'page');
+    $context['case_studies_archive_url'] = $caseStudiesPage instanceof WP_Post
+        ? get_permalink($caseStudiesPage)
+        : home_url('/case-studies/');
+}
 
 $context['related_heading'] = function_exists('nsc_pll_theme') ? nsc_pll_theme('Other case studies') : __('Other case studies', 'NscSoftware');
 $context['related_cta_label'] = function_exists('nsc_pll_theme') ? nsc_pll_theme('View other case studies') : __('View other case studies', 'NscSoftware');
