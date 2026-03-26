@@ -107,7 +107,19 @@
     }
   }
 
+  // Match blog list pagination (see _blog_list.scss .blogs-pagination)
   .case-studies-pagination {
-    @apply hidden pagination mt-8 lg:mt-10 lg:bg-[#F9F9FB] lg:rounded-lg border-t border-[#E5E5E5] lg:border-t-0;
+    @apply pagination bg-[#F9F9FB] mt-8 lg:mt-10 border-t-0;
+
+    .pagination-prev,
+    .pagination-next {
+      @apply text-[0px] text-black lg:text-primary lg:text-base border border-[#E5E5E5] shadow-sm lg:border-0 lg:shadow-none w-[32px] h-[32px] lg:w-fit lg:h-auto p-0 lg:px-5 lg:py-5 flex items-center justify-center;
+    }
+
+    .pagination-numbers {
+      .pagination-num-active {
+        @apply text-black;
+      }
+    }
   }
 }
