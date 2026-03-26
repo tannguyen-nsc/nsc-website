@@ -71,7 +71,7 @@ define( 'NONCE_SALT',       '7[.W?8mAP=4XnjuT]dKbEhd^Np9n|Kf<eH5Pj+Hbz4l(>17<z7{
  *
  * @link https://developer.wordpress.org/advanced-administration/wordpress/wp-config/#table-prefix
  */
-$table_prefix = 'nsc_';
+$table_prefix = 'nsc_prod_';
 
 /**
  * For developers: WordPress debugging mode.
@@ -88,6 +88,10 @@ $table_prefix = 'nsc_';
 define( 'WP_DEBUG', false );
 
 /* Add any custom values between this line and the "stop editing" line. */
+
+/** Match HTTP Basic Auth on the web root (Tools → NSC seeders uses wp_remote_get). */
+define( 'NSC_SEEDER_HTTP_BASIC_USER', 'nscdev' );
+define( 'NSC_SEEDER_HTTP_BASIC_PASSWORD', 'p@55w0rd' );
 
 /* That's all, stop editing! Happy publishing. */
 

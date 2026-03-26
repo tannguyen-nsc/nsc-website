@@ -34,7 +34,7 @@ declare(strict_types=1);
  * - Add case_studies_only=1 to only create/update the Case Studies page (default template + Hero + Case studies archive / Vue from CPT case_study).
  * - Add content_test=1 to prepend "[test] " to text (policy page titles only; policy HTML body preserved) so you can verify in the CMS.
  * - Optional seed_lang={slug}|all for Polylang-linked pages. Omit seed_lang for default-language only; seed_lang=all for every non-default language; seed_lang={non-default} updates that locale only from canonical content—seeder ignores admin-bar/cookie language so page IDs match the intended locale. (lang) lowercase prefix without Google API key; legacy [LANG] stripped when re-seeding.
- * - Privacy Policy, Cookies Policy, Terms of Use use default template and one NSC Block: Policy Page; content from policy-content/*.html.
+ * - Privacy Policy, Cookies Policy, Terms of Use use default template and one NSC Block: Policy Page; content from policy-content/*.html. Each section intro uses one paragraph: <p>Heading text <br> body text</p> (legacy pairs of <p><strong>Heading</strong></p><p>body</p> are normalized when loading for live + Polylang translation sync).
  * - Footer policy links (Privacy Policy, Cookies Policy, Terms of Use) are set in runGlobalOptions.php (legalLinks).
  * - Blog seed (30 posts, categories, ACF sidebar): use create-nsc-blog-posts.php with token nsc-create-blog-posts-2026.
  * - Case studies seed (30 case_study posts, taxonomies, ACF gallery + size/duration): use create-nsc-case-study-posts.php with token nsc-create-case-studies-2026.
@@ -812,6 +812,25 @@ function getOurCapabilitiesPageComponents(): array
 }
 
 /**
+ * Merge legacy policy subsection markup into a single paragraph (live + translation source).
+ * Pattern: <p><strong>Label</strong></p> + <p>body</p> → <p>Label <br> body</p>. Skips when the next
+ * paragraph starts with <strong>. Runs until stable so a section title can merge after its
+ * subsection’s strong+body pair has been merged (e.g. “The Cookies We Set” + first bullet).
+ */
+function nsc_seed_policy_normalize_paragraph_pairs(string $html): string
+{
+    $pattern = '#<p><strong>([^<]+)</strong></p>\s*<p>(?!\s*<strong>)(.*?)</p>#s';
+    $prev = null;
+    while ($html !== $prev) {
+        $prev = $html;
+        $merged = preg_replace($pattern, '<p>$1 <br> $2</p>', $html);
+        $html = is_string($merged) ? $merged : $html;
+    }
+
+    return $html;
+}
+
+/**
  * Policy page (single block: heading + WYSIWYG content). Used for Privacy Policy, Cookies Policy, Terms of Use.
  * Content is loaded from policy-content/*.html. Use content_test=1 to prepend "[test] " to title only (content preserved).
  *
@@ -1414,6 +1433,7 @@ foreach ($pages as $page) {
         ];
         $contentPath = __DIR__ . '/policy-content/' . $slug . '.html';
         $contentHtml = is_file($contentPath) ? file_get_contents($contentPath) : '<p>Content not found. Add ' . $slug . '.html to policy-content/.</p>';
+        $contentHtml = nsc_seed_policy_normalize_paragraph_pairs($contentHtml);
         $components = getPolicyPageComponents($policyTitles[ $slug ], $contentHtml);
         if ($contentTest) {
             $components = applyContentTest($components);

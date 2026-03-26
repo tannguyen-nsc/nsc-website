@@ -1,2 +1,5 @@
 # Zip archives (removed from tracking; keep local copies if needed)
 *.zip
+
+# Local HTTP Basic Auth for /dev (see dev/README.md)
+/dev/.htpasswd

@@ -2,7 +2,10 @@ const config = {
   tailwindjs: "./tailwind.config.js",
   port: 9050,
   purgecss: {
-    content: ["src/**/*.{html,js,php}"],
+    content: [
+      "src/**/*.{html,js,php,scss}",
+      "../Components/**/*.twig",
+    ],
     safelist: {
       standard: [
         /^pre/,

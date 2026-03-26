@@ -21,6 +21,10 @@ section {
 
     h2 {
       @apply text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl  font-bold xl:leading-tight uppercase;
+
+      &.capitalize {
+        text-transform: capitalize;
+      }
     }
 
     &.light {

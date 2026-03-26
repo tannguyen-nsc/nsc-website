@@ -45,7 +45,65 @@ function nsc_seed_polylang_default_slug(): string
 }
 
 /**
+ * Ensure a valid PLL_Language for Polylang 3.8+ term hooks during HTTP seed requests.
+ *
+ * On the frontend, {@see PLL_Frontend} may set `PLL()->curlang` to `false` when no language is resolved.
+ * `Create\Term::get_language()` treats `empty( false )` like “no curlang”, skips that branch, and can
+ * fall through to `return $default_language` where `get_default_language()` is also `false` → TypeError.
+ * Re-running this on `create_term` (priority 1, before Polylang’s 900/999 handlers) covers nested
+ * `wp_insert_term` calls when Polylang translates terms for a post.
+ */
+function nsc_seed_polylang_ensure_term_language_context(): void
+{
+    if (!\function_exists('PLL')) {
+        return;
+    }
+    $pll = \PLL();
+    if (\property_exists($pll, 'curlang') && $pll->curlang === false) {
+        $pll->curlang = null;
+    }
+    if (\property_exists($pll, 'pref_lang') && $pll->pref_lang === false) {
+        $pll->pref_lang = null;
+    }
+
+    $langObj = null;
+    if (\function_exists('pll_default_language')) {
+        $obj = pll_default_language(\OBJECT);
+        if ($obj instanceof \PLL_Language) {
+            $langObj = $obj;
+        }
+    }
+    if (!$langObj instanceof \PLL_Language && isset($pll->model) && \is_object($pll->model) && \method_exists($pll->model, 'get_language') && \function_exists('pll_languages_list')) {
+        $list = pll_languages_list(['fields' => 'slug']);
+        if (\is_array($list)) {
+            foreach ($list as $s) {
+                if (!\is_string($s) || $s === '') {
+                    continue;
+                }
+                $o = $pll->model->get_language($s);
+                if ($o instanceof \PLL_Language) {
+                    $langObj = $o;
+                    break;
+                }
+            }
+        }
+    }
+
+    if ($langObj instanceof \PLL_Language) {
+        $pll->curlang = $langObj;
+        if (empty($_GET['new_lang'])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+            $_GET['new_lang'] = $langObj->slug; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+        }
+    }
+}
+
+/**
  * Force ACF to read/write post/option fields under Polylang’s default language for this request.
+ *
+ * Also sets Polylang’s current language for the request. HTTP seed scripts are not wp-admin and do
+ * not send term_lang_choice / new_lang; Polylang 3.8+ Term::get_language() must return PLL_Language,
+ * but PLL()->curlang is often unset and model->get_default_language() can be false — causing a
+ * TypeError when assigning taxonomies (wp_set_object_terms → create_term).
  *
  * Seed scripts run as a single HTTP request. If the visitor has pll_current_language = ja (cookie
  * or /ja/ URL), ACF would save the canonical Home page (slug "home") into the Japanese field bucket.
@@ -58,15 +116,28 @@ function nsc_seed_polylang_default_slug(): string
 function nsc_seed_bootstrap_acf_polylang_default_language(): void
 {
     static $registered = false;
-    if ($registered || !function_exists('pll_default_language')) {
-        return;
-    }
-    $slug = pll_default_language('slug');
-    if (!is_string($slug) || $slug === '') {
+    if ($registered || !\function_exists('pll_default_language')) {
         return;
     }
     $registered = true;
-    add_filter(
+
+    nsc_seed_polylang_ensure_term_language_context();
+
+    \add_action(
+        'create_term',
+        static function (): void {
+            nsc_seed_polylang_ensure_term_language_context();
+        },
+        1,
+        3
+    );
+
+    $slug = pll_default_language('slug');
+    if (!\is_string($slug) || $slug === '') {
+        return;
+    }
+
+    \add_filter(
         'acf/settings/current_language',
         static function () use ($slug) {
             return $slug;
