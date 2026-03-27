@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 /**
- * Tools → NSC WPScan: run site-root run-nsc-wpscan.php via HTTP, cache HTML, rescan with progress UI.
+ * Tools → NSC WPScan: run site-root run-nsc-wpscan.php in-process (no HTTP loopback — avoids 403 from WAF/Cloudflare).
  *
- * Token must match run-nsc-wpscan.php ($requiredToken).
+ * Direct URL access still uses ?token= in run-nsc-wpscan.php.
  */
 
 namespace NscSoftware\WpscanAdmin;
@@ -14,24 +14,6 @@ const CAPABILITY = 'manage_options';
 const OPTION_KEY = 'nsc_wpscan_last_result';
 const AJAX_ACTION = 'nsc_wpscan_run';
 const NONCE_ACTION = 'nsc_wpscan_run';
-
-/**
- * Must stay in sync with run-nsc-wpscan.php ($requiredToken).
- */
-function wpscan_token(): string
-{
-    return 'nsc-wpscan-2026';
-}
-
-function build_wpscan_request_url(): string
-{
-    $base = \home_url('/run-nsc-wpscan.php');
-
-    return $base . '?' . \http_build_query([
-        'token' => wpscan_token(),
-        'format' => 'json',
-    ]);
-}
 
 /**
  * @return array{html: string, http_code: int, completed_at: int, target_url: string}
@@ -89,6 +71,8 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
     \wp_localize_script('nsc-wpscan-admin', 'nscWpscanAdmin', [
         'ajaxUrl' => \admin_url('admin-ajax.php'),
         'nonce' => \wp_create_nonce(NONCE_ACTION),
+        'restUrl' => \rest_url('nsc/v1/wpscan-scan'),
+        'restNonce' => \wp_create_nonce('wp_rest'),
         'i18n' => [
             'scanning' => \__('WPScan is running…', 'NscSoftware'),
             'scanningHint' => \__('This can take several minutes. Keep this tab open.', 'NscSoftware'),
@@ -145,50 +129,125 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
       nscWpscanAdmin.i18n.scanning + " " + nscWpscanAdmin.i18n.scanningHint
     );
 
-    $.ajax({
-      url: nscWpscanAdmin.ajaxUrl,
-      type: "POST",
-      dataType: "json",
-      timeout: 0,
-      data: {
-        action: "nsc_wpscan_run",
-        nonce: nscWpscanAdmin.nonce
+    function handleScanPayload(payload, fromRest) {
+      if (!payload) {
+        notice("error", nscWpscanAdmin.i18n.badResponse);
+        return;
       }
-    })
-      .done(function (res) {
-        if (!res || res.success !== true) {
-          var msg =
-            res && res.data && res.data.message
-              ? res.data.message
-              : nscWpscanAdmin.i18n.badResponse;
-          notice("error", msg);
-          if (res && res.data && res.data.html) {
-            setFrameHtml(res.data.html);
-          }
-          if (res && res.data && res.data.statusLine) {
-            $("#nsc-wpscan-status-last").text(res.data.statusLine);
-          }
-          return;
-        }
+      if (fromRest) {
         notice("success", nscWpscanAdmin.i18n.done);
-        if (res.data && res.data.html) {
+        if (payload.html) {
+          setFrameHtml(payload.html);
+        }
+        if (payload.statusLine) {
+          $("#nsc-wpscan-status-last").text(payload.statusLine);
+        }
+        return;
+      }
+      var res = payload;
+      if (!res || res.success !== true) {
+        var msg =
+          res && res.data && res.data.message
+            ? res.data.message
+            : nscWpscanAdmin.i18n.badResponse;
+        notice("error", msg);
+        if (res && res.data && res.data.html) {
           setFrameHtml(res.data.html);
         }
-        if (res.data && res.data.statusLine) {
+        if (res && res.data && res.data.statusLine) {
           $("#nsc-wpscan-status-last").text(res.data.statusLine);
         }
-      })
-      .fail(function (xhr) {
-        var msg = nscWpscanAdmin.i18n.error;
-        if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
-          msg = xhr.responseJSON.data.message;
+        return;
+      }
+      notice("success", nscWpscanAdmin.i18n.done);
+      if (res.data && res.data.html) {
+        setFrameHtml(res.data.html);
+      }
+      if (res.data && res.data.statusLine) {
+        $("#nsc-wpscan-status-last").text(res.data.statusLine);
+      }
+    }
+
+    function finish() {
+      showProgress(false);
+      setBusy(false);
+    }
+
+    function runAjaxFallback() {
+      return $.ajax({
+        url: nscWpscanAdmin.ajaxUrl,
+        type: "POST",
+        dataType: "json",
+        timeout: 0,
+        data: {
+          action: "nsc_wpscan_run",
+          nonce: nscWpscanAdmin.nonce
         }
-        notice("error", msg);
-      })
-      .always(function () {
-        showProgress(false);
-        setBusy(false);
+      }).done(function (res) {
+        handleScanPayload(res, false);
       });
+    }
+
+    function ajaxFailMessage(xhr) {
+      var msg = nscWpscanAdmin.i18n.error;
+      if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+        return xhr.responseJSON.data.message;
+      }
+      if (xhr.responseJSON && xhr.responseJSON.message) {
+        return xhr.responseJSON.message;
+      }
+      return msg;
+    }
+
+    function restFailMessage(xhr) {
+      var msg = nscWpscanAdmin.i18n.error;
+      if (xhr.responseJSON && xhr.responseJSON.message) {
+        return xhr.responseJSON.message;
+      }
+      if (xhr.responseJSON && xhr.responseJSON.code) {
+        return String(xhr.responseJSON.code);
+      }
+      return msg;
+    }
+
+    var restUrl = nscWpscanAdmin.restUrl || "";
+    var restNonce = nscWpscanAdmin.restNonce || "";
+
+    if (restUrl && restNonce) {
+      $.ajax({
+        url: restUrl,
+        type: "POST",
+        dataType: "json",
+        timeout: 0,
+        contentType: "application/json",
+        data: JSON.stringify({}),
+        beforeSend: function (xhr) {
+          xhr.setRequestHeader("X-WP-Nonce", restNonce);
+        }
+      })
+        .done(function (res) {
+          handleScanPayload(res, true);
+          finish();
+        })
+        .fail(function (xhr) {
+          if (xhr.status === 403 || xhr.status === 404 || xhr.status === 0) {
+            runAjaxFallback()
+              .fail(function (xhr2) {
+                notice("error", ajaxFailMessage(xhr2));
+              })
+              .always(finish);
+            return;
+          }
+          notice("error", restFailMessage(xhr));
+          finish();
+        });
+    } else {
+      runAjaxFallback()
+        .fail(function (xhr) {
+          notice("error", ajaxFailMessage(xhr));
+        })
+        .always(finish);
+    }
   });
 })(jQuery);
 JS;
@@ -196,61 +255,49 @@ JS;
     \wp_add_inline_script('nsc-wpscan-admin', $js);
 });
 
-add_action('wp_ajax_' . AJAX_ACTION, static function (): void {
-    if (!\current_user_can(CAPABILITY)) {
-        \wp_send_json_error(['message' => \__('You do not have permission to run WPScan.', 'NscSoftware')], 403);
+/**
+ * Shared scan + option storage (used by REST and admin-ajax).
+ *
+ * @return array{html: string, httpStatus: int, statusLine: string}|\WP_Error
+ */
+function execute_wpscan_scan()
+{
+    $runner = \trailingslashit(\ABSPATH) . 'run-nsc-wpscan.php';
+    if (!\is_readable($runner)) {
+        return new \WP_Error(
+            'nsc_wpscan_missing_runner',
+            \sprintf(
+                /* translators: %s: file name */
+                \__('WPScan runner not found (%s). Deploy run-nsc-wpscan.php to the site root.', 'NscSoftware'),
+                'run-nsc-wpscan.php'
+            ),
+            ['status' => 500]
+        );
     }
 
-    \check_ajax_referer(NONCE_ACTION, 'nonce');
-
-    $url = build_wpscan_request_url();
-    $headers = \NscSoftware\SeedersAdmin\seeder_http_request_headers($url);
-    $sslVerify = \NscSoftware\SeedersAdmin\ssl_verify_for_seeder_request($url);
-
-    $response = \wp_remote_get(
-        $url,
-        [
-            'timeout' => 600,
-            'redirection' => 12,
-            'headers' => $headers,
-            'sslverify' => $sslVerify,
-        ]
-    );
-
-    if (\is_wp_error($response)) {
-        \wp_send_json_error([
-            'message' => $response->get_error_message(),
-        ]);
+    if (!\defined('NSC_WPSCAN_EMBEDDED')) {
+        \define('NSC_WPSCAN_EMBEDDED', true);
     }
 
-    $code = (int) \wp_remote_retrieve_response_code($response);
-    $body = (string) \wp_remote_retrieve_body($response);
+    require_once $runner;
+
+    if (!\function_exists('nsc_wpscan_run_scan')) {
+        return new \WP_Error(
+            'nsc_wpscan_outdated',
+            \__('WPScan runner is outdated (missing nsc_wpscan_run_scan). Update run-nsc-wpscan.php on the server.', 'NscSoftware'),
+            ['status' => 500]
+        );
+    }
 
     $target = \home_url('/');
-    if ($code < 200 || $code >= 400) {
-        \update_option(
-            OPTION_KEY,
-            [
-                'html' => $body,
-                'http_code' => $code,
-                'completed_at' => \time(),
-                'target_url' => $target,
-            ],
-            false
-        );
-
-        $statusLine = format_status_line($code, \time(), $target);
-
-        \wp_send_json_error([
-            'message' => \sprintf(
-                /* translators: %d HTTP status */
-                \__('WPScan request returned HTTP %d.', 'NscSoftware'),
-                $code
-            ),
-            'html' => $body,
-            'statusLine' => $statusLine,
-        ]);
+    try {
+        $out = \nsc_wpscan_run_scan($target, 'json');
+    } catch (\Throwable $e) {
+        return new \WP_Error('nsc_wpscan_exception', $e->getMessage(), ['status' => 500]);
     }
+
+    $body = $out['html'];
+    $code = 200;
 
     \update_option(
         OPTION_KEY,
@@ -265,11 +312,50 @@ add_action('wp_ajax_' . AJAX_ACTION, static function (): void {
 
     $statusLine = format_status_line($code, \time(), $target);
 
-    \wp_send_json_success([
+    return [
         'html' => $body,
         'httpStatus' => $code,
         'statusLine' => $statusLine,
+    ];
+}
+
+/**
+ * POST /wp-json/nsc/v1/wpscan-scan — preferred on hosts that block admin-ajax.php (e.g. some AWS WAF rules).
+ */
+function rest_wpscan_scan(\WP_REST_Request $request)
+{
+    unset($request);
+
+    return \rest_ensure_response(execute_wpscan_scan());
+}
+
+\add_action('rest_api_init', static function (): void {
+    \register_rest_route('nsc/v1', '/wpscan-scan', [
+        'methods' => \WP_REST_Server::CREATABLE,
+        'callback' => __NAMESPACE__ . '\\rest_wpscan_scan',
+        'permission_callback' => static function (): bool {
+            return \current_user_can(CAPABILITY);
+        },
     ]);
+});
+
+add_action('wp_ajax_' . AJAX_ACTION, static function (): void {
+    if (!\current_user_can(CAPABILITY)) {
+        \wp_send_json_error(['message' => \__('You do not have permission to run WPScan.', 'NscSoftware')], 403);
+    }
+
+    \check_ajax_referer(NONCE_ACTION, 'nonce');
+
+    $result = execute_wpscan_scan();
+    if (\is_wp_error($result)) {
+        $status = (int) ($result->get_error_data()['status'] ?? 500);
+        \wp_send_json_error(
+            ['message' => $result->get_error_message()],
+            $status >= 400 && $status < 600 ? $status : 500
+        );
+    }
+
+    \wp_send_json_success($result);
 });
 
 function format_status_line(int $httpCode, int $completedAt, string $targetUrl): string

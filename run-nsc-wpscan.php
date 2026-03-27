@@ -16,17 +16,28 @@ declare(strict_types=1);
  *
  * Optional wp-config.php:
  *   define( 'NSC_WPSCAN_API_TOKEN', 'your-wpscan-com-token' );
+ * If the site is behind HTTP Basic Auth (same as Tools → NSC seeders), also set:
+ *   define( 'NSC_SEEDER_HTTP_BASIC_USER', '...' );
+ *   define( 'NSC_SEEDER_HTTP_BASIC_PASSWORD', '...' );
+ * WPScan receives them as --http-auth (do not put secrets in the URL query string).
+ *
+ * wp-admin Tools → NSC WPScan loads this file with define('NSC_WPSCAN_EMBEDDED', true) and calls
+ * nsc_wpscan_run_scan() so the scan runs in-process (no HTTP request to the same site).
  */
 
-$requiredToken = 'nsc-wpscan-2026';
-$providedToken = isset($_GET['token']) ? (string) $_GET['token'] : '';
+$wpscan_embedded = \defined('NSC_WPSCAN_EMBEDDED') && \constant('NSC_WPSCAN_EMBEDDED') === true;
 
-if ($providedToken !== $requiredToken) {
-    http_response_code(403);
-    header('Content-Type: text/plain; charset=utf-8');
-    echo "Forbidden.\n";
-    echo "Use: ?token={$requiredToken}\n";
-    exit;
+if (!$wpscan_embedded) {
+    $requiredToken = 'nsc-wpscan-2026';
+    $providedToken = isset($_GET['token']) ? (string) $_GET['token'] : '';
+
+    if ($providedToken !== $requiredToken) {
+        http_response_code(403);
+        header('Content-Type: text/plain; charset=utf-8');
+        echo "Forbidden.\n";
+        echo "Use: ?token={$requiredToken}\n";
+        exit;
+    }
 }
 
 $wpLoadPath = __DIR__ . '/wp-load.php';
@@ -51,109 +62,6 @@ if (function_exists('ini_set')) {
     @ini_set('max_execution_time', '600');
 }
 
-$targetUrl = isset($_GET['url']) ? esc_url_raw((string) $_GET['url']) : home_url('/');
-if ($targetUrl === '') {
-    $targetUrl = home_url('/');
-}
-
-$outFormat = isset($_GET['format']) ? strtolower((string) $_GET['format']) : 'json';
-if ($outFormat !== 'text' && $outFormat !== 'json') {
-    $outFormat = 'json';
-}
-
-$args = [
-    '--url=' . $targetUrl,
-    '--no-banner',
-    '--plugins-detection', 'passive',
-    '--themes-detection', 'passive',
-];
-
-if ($outFormat === 'json') {
-    $args[] = '--format';
-    $args[] = 'json';
-} else {
-    $args[] = '--format';
-    $args[] = 'cli-no-colour';
-}
-
-if (defined('NSC_WPSCAN_API_TOKEN')) {
-    $apiTok = constant('NSC_WPSCAN_API_TOKEN');
-    if (is_string($apiTok) && trim($apiTok) !== '') {
-        $args[] = '--api-token';
-        $args[] = trim($apiTok);
-    }
-}
-
-$host = wp_parse_url($targetUrl, PHP_URL_HOST);
-if (is_string($host) && $host !== '') {
-    $h = strtolower($host);
-    if ($h === 'localhost' || $h === '127.0.0.1' || str_ends_with($h, '.test') || str_ends_with($h, '.local')) {
-        $args[] = '--disable-tls-checks';
-    }
-}
-
-$result = nsc_run_wpscan_cli($args);
-
-$stdout = $result['stdout'];
-$stderr = $result['stderr'];
-$code = $result['code'];
-
-header('Content-Type: text/html; charset=utf-8');
-$n = static function (string $s): string {
-    return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-};
-
-$decoded = null;
-if ($outFormat === 'json' && $stdout !== '') {
-    $decoded = json_decode($stdout, true);
-    if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
-        $decoded = null;
-    }
-}
-
-echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
-echo '<title>NSC WPScan</title>';
-echo '<style>';
-echo 'body{font-family:Arial,sans-serif;padding:24px;max-width:1100px;margin:0 auto;background:#f6f7f7;color:#1d2327;}';
-echo 'h1{font-size:1.35em;margin:0 0 .5em;color:#1d2327;}';
-echo 'h2{font-size:1.1em;margin:1.25em 0 .5em;color:#1d2327;}';
-echo '.nsc-wpscan-meta{font-size:14px;color:#50575e;margin:0 0 1em;line-height:1.5;}';
-echo '.nsc-wpscan-summary{display:flex;flex-wrap:wrap;gap:12px;margin:1em 0 1.25em;}';
-echo '.nsc-wpscan-summary div{background:#fff;border:1px solid #c3c4c7;border-radius:4px;padding:12px 16px;min-width:120px;}';
-echo '.nsc-wpscan-summary strong{display:block;font-size:1.35em;color:#1d2327;}';
-echo '.nsc-wpscan-summary span{font-size:12px;color:#50575e;}';
-echo '.nsc-wpscan-summary .warn strong{color:#b32d2e;}';
-echo 'table{border-collapse:collapse;width:100%;max-width:1100px;background:#fff;margin:0 0 1em;}';
-echo 'th,td{border:1px solid #ddd;padding:8px 10px;text-align:left;vertical-align:top;font-size:13px;}';
-echo 'th{background:#f7f7f7;}';
-echo '.ok{color:#0a7f2e;}';
-echo '.warn{color:#b32d2e;}';
-echo 'pre.nsc-wpscan-out{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid #c3c4c7;padding:14px 16px;margin:0 0 1em;overflow:auto;max-height:50vh;font-size:12px;line-height:1.45;}';
-echo 'details{margin:1em 0;}summary{cursor:pointer;font-weight:600;margin-bottom:8px;}';
-echo '</style></head><body>';
-echo '<h1>NSC WPScan</h1>';
-echo '<p class="nsc-wpscan-meta"><strong>Target:</strong> ' . $n($targetUrl) . '<br>';
-echo '<strong>Exit code:</strong> ' . (int) $code . ' &nbsp;|&nbsp; <strong>Format:</strong> ' . $n($outFormat) . '</p>';
-
-if ($stderr !== '') {
-    echo '<p class="nsc-wpscan-meta warn"><strong>stderr:</strong> ' . $n($stderr) . '</p>';
-}
-
-if ($outFormat === 'json' && is_array($decoded)) {
-    $report = nsc_wpscan_build_report_tables($decoded);
-    echo $report['summary_html'];
-    echo $report['tables_html'];
-    $pretty = (string) wp_json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
-    echo '<details><summary>Raw JSON</summary><pre class="nsc-wpscan-out">' . $n($pretty) . '</pre></details>';
-} elseif ($outFormat === 'json' && $stdout !== '') {
-    echo '<p class="warn"><strong>Could not parse JSON.</strong> Showing raw output.</p>';
-    echo '<pre class="nsc-wpscan-out">' . $n(trim($stdout . "\n" . $stderr)) . '</pre>';
-} else {
-    echo '<pre class="nsc-wpscan-out">' . $n(trim($stdout . ($stderr !== '' ? "\n\n--- stderr ---\n" . $stderr : '')) ?: '(no output)') . '</pre>';
-}
-
-echo '</body></html>';
-
 /**
  * @param array<string, mixed> $data Decoded WPScan JSON
  *
@@ -167,11 +75,13 @@ function nsc_wpscan_build_report_tables(array $data): array
             if (!is_array($v)) {
                 continue;
             }
+
             $title = isset($v['title']) && is_string($v['title']) ? $v['title'] : '';
             $fixed = '';
             if (isset($v['fixed_in'])) {
                 $fixed = is_string($v['fixed_in']) || is_numeric($v['fixed_in']) ? (string) $v['fixed_in'] : '';
             }
+
             $vulnRows[] = [
                 'component' => $component,
                 'slug' => $slug,
@@ -195,6 +105,7 @@ function nsc_wpscan_build_report_tables(array $data): array
             if (!is_array($plugin) || empty($plugin['vulnerabilities']) || !is_array($plugin['vulnerabilities'])) {
                 continue;
             }
+
             $slugStr = is_string($slug) ? $slug : '';
             $appendV($plugin['vulnerabilities'], 'Plugin', $slugStr);
         }
@@ -205,6 +116,7 @@ function nsc_wpscan_build_report_tables(array $data): array
             if (!is_array($theme) || empty($theme['vulnerabilities']) || !is_array($theme['vulnerabilities'])) {
                 continue;
             }
+
             $slugStr = is_string($slug) ? $slug : '';
             $appendV($theme['vulnerabilities'], 'Theme', $slugStr);
         }
@@ -216,11 +128,13 @@ function nsc_wpscan_build_report_tables(array $data): array
             if (!is_array($f)) {
                 continue;
             }
+
             $type = isset($f['type']) && is_string($f['type']) ? $f['type'] : '';
             $conf = 0;
             if (isset($f['confidence'])) {
                 $conf = is_numeric($f['confidence']) ? (int) round((float) $f['confidence']) : 0;
             }
+
             $entries = '';
             $entryList = null;
             if (!empty($f['interesting_entries']) && is_array($f['interesting_entries'])) {
@@ -228,9 +142,11 @@ function nsc_wpscan_build_report_tables(array $data): array
             } elseif (!empty($f['entries']) && is_array($f['entries'])) {
                 $entryList = $f['entries'];
             }
+
             if ($entryList !== null) {
                 $entries = implode("\n", array_map('strval', $entryList));
             }
+
             $findings[] = ['type' => $type, 'confidence' => $conf, 'entries' => $entries];
         }
     }
@@ -250,6 +166,7 @@ function nsc_wpscan_build_report_tables(array $data): array
         if (isset($t['slug']) && is_string($t['slug'])) {
             $themeName = $t['slug'];
         }
+
         if (!empty($t['version']) && is_array($t['version']) && isset($t['version']['number'])
             && (is_string($t['version']['number']) || is_numeric($t['version']['number']))) {
             $themeVer = (string) $t['version']['number'];
@@ -310,6 +227,7 @@ function nsc_wpscan_build_report_tables(array $data): array
             echo '<td>' . $n($row['fixed_in']) . '</td>';
             echo '</tr>';
         }
+
         echo '</tbody></table>';
     } else {
         echo '<h2>Vulnerabilities</h2>';
@@ -326,6 +244,7 @@ function nsc_wpscan_build_report_tables(array $data): array
             echo '<td>' . nl2br($n($f['entries'])) . '</td>';
             echo '</tr>';
         }
+
         echo '</tbody></table>';
     }
 
@@ -335,16 +254,19 @@ function nsc_wpscan_build_report_tables(array $data): array
             if (!is_array($plugin)) {
                 continue;
             }
+
             $slugStr = is_string($slug) ? $slug : '';
             $ver = '';
             if (!empty($plugin['version']) && is_array($plugin['version']) && isset($plugin['version']['number'])
                 && (is_string($plugin['version']['number']) || is_numeric($plugin['version']['number']))) {
                 $ver = (string) $plugin['version']['number'];
             }
+
             $pvc = 0;
             if (!empty($plugin['vulnerabilities']) && is_array($plugin['vulnerabilities'])) {
                 $pvc = count($plugin['vulnerabilities']);
             }
+
             $pluginRows[] = ['slug' => $slugStr, 'version' => $ver, 'vulns' => $pvc];
         }
     }
@@ -359,6 +281,7 @@ function nsc_wpscan_build_report_tables(array $data): array
             echo '<td>' . ($pr['vulns'] > 0 ? '<span class="warn">' . (int) $pr['vulns'] . '</span>' : '0') . '</td>';
             echo '</tr>';
         }
+
         echo '</tbody></table>';
     }
 
@@ -385,16 +308,19 @@ function nsc_run_wpscan_cli(array $args): array
                 'stderr' => 'Missing tools/wpscan.cmd. Install WPScan (gem) and ensure tools/wpscan.cmd + tools/wpscan-curl-bin exist.',
             ];
         }
+
         // Windows: single cmd /c argument via escapeshellarg($inner) so --url stays on the same command as the .cmd.
         $bat = str_replace('/', '\\', $bat);
         $comspec = getenv('ComSpec');
         if (!is_string($comspec) || $comspec === '') {
             $comspec = 'C:\\Windows\\System32\\cmd.exe';
         }
+
         $argLine = '';
         foreach ($args as $a) {
             $argLine .= ($argLine === '' ? '' : ' ') . escapeshellarg($a);
         }
+
         $inner = 'call ' . escapeshellarg($bat) . ($argLine !== '' ? ' ' . $argLine : '');
         $cmdline = escapeshellarg($comspec) . ' /c ' . escapeshellarg($inner);
         $cwd = dirname($bat);
@@ -406,6 +332,7 @@ function nsc_run_wpscan_cli(array $args): array
         if (!is_executable($bin)) {
             $bin = '/usr/bin/wpscan';
         }
+
         if (!is_executable($bin)) {
             return [
                 'code' => -1,
@@ -413,10 +340,12 @@ function nsc_run_wpscan_cli(array $args): array
                 'stderr' => 'wpscan not found. Install: gem install wpscan',
             ];
         }
+
         $inner = [];
         foreach (array_merge([$bin], $args) as $p) {
             $inner[] = escapeshellarg($p);
         }
+
         $cmdline = implode(' ', $inner);
         $desc = [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
         $proc = @proc_open($cmdline, $desc, $pipes, null, null);
@@ -436,4 +365,147 @@ function nsc_run_wpscan_cli(array $args): array
     $exit = (int) proc_close($proc);
 
     return ['code' => $exit, 'stdout' => $stdout, 'stderr' => $stderr];
+}
+
+/**
+ * Run WPScan and build the same HTML report as the public script (used by wp-admin to avoid HTTP loopback 403/WAF issues).
+ *
+ * @param string|null $targetUrlOverride If set (e.g. home_url('/')), ignores $_GET['url'].
+ * @param string|null $outFormatOverride If set, ignores $_GET['format'].
+ *
+ * @return array{html: string, exit_code: int}
+ */
+function nsc_wpscan_run_scan(?string $targetUrlOverride = null, ?string $outFormatOverride = null): array
+{
+    if ($targetUrlOverride !== null && $targetUrlOverride !== '') {
+        $targetUrl = esc_url_raw($targetUrlOverride);
+    } else {
+        $targetUrl = isset($_GET['url']) ? esc_url_raw((string) $_GET['url']) : home_url('/');
+    }
+
+    if ($targetUrl === '') {
+        $targetUrl = home_url('/');
+    }
+
+    if ($outFormatOverride !== null && $outFormatOverride !== '') {
+        $outFormat = strtolower($outFormatOverride);
+    } else {
+        $outFormat = isset($_GET['format']) ? strtolower((string) $_GET['format']) : 'json';
+    }
+
+    if ($outFormat !== 'text' && $outFormat !== 'json') {
+        $outFormat = 'json';
+    }
+
+    $args = [
+        '--url=' . $targetUrl,
+        '--no-banner',
+        '--plugins-detection', 'passive',
+        '--themes-detection', 'passive',
+    ];
+
+    if ($outFormat === 'json') {
+        $args[] = '--format';
+        $args[] = 'json';
+    } else {
+        $args[] = '--format';
+        $args[] = 'cli-no-colour';
+    }
+
+    if (defined('NSC_WPSCAN_API_TOKEN')) {
+        $apiTok = constant('NSC_WPSCAN_API_TOKEN');
+        if (is_string($apiTok) && trim($apiTok) !== '') {
+            $args[] = '--api-token';
+            $args[] = trim($apiTok);
+        }
+    }
+
+    if (defined('NSC_SEEDER_HTTP_BASIC_USER') && defined('NSC_SEEDER_HTTP_BASIC_PASSWORD')) {
+        $httpUser = trim((string) constant('NSC_SEEDER_HTTP_BASIC_USER'));
+        $httpPass = (string) constant('NSC_SEEDER_HTTP_BASIC_PASSWORD');
+        if ($httpUser !== '') {
+            $args[] = '--http-auth';
+            $args[] = $httpUser . ':' . $httpPass;
+        }
+    }
+
+    $host = wp_parse_url($targetUrl, PHP_URL_HOST);
+    if (is_string($host) && $host !== '') {
+        $h = strtolower($host);
+        if ($h === 'localhost' || $h === '127.0.0.1' || str_ends_with($h, '.test') || str_ends_with($h, '.local')) {
+            $args[] = '--disable-tls-checks';
+        }
+    }
+
+    $result = nsc_run_wpscan_cli($args);
+
+    $stdout = $result['stdout'];
+    $stderr = $result['stderr'];
+    $code = $result['code'];
+
+    $n = static function (string $s): string {
+        return htmlspecialchars($s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    };
+
+    $decoded = null;
+    if ($outFormat === 'json' && $stdout !== '') {
+        $decoded = json_decode($stdout, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+            $decoded = null;
+        }
+    }
+
+    ob_start();
+    echo '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">';
+    echo '<title>NSC WPScan</title>';
+    echo '<style>';
+    echo 'body{font-family:Arial,sans-serif;padding:24px;max-width:1100px;margin:0 auto;background:#f6f7f7;color:#1d2327;}';
+    echo 'h1{font-size:1.35em;margin:0 0 .5em;color:#1d2327;}';
+    echo 'h2{font-size:1.1em;margin:1.25em 0 .5em;color:#1d2327;}';
+    echo '.nsc-wpscan-meta{font-size:14px;color:#50575e;margin:0 0 1em;line-height:1.5;}';
+    echo '.nsc-wpscan-summary{display:flex;flex-wrap:wrap;gap:12px;margin:1em 0 1.25em;}';
+    echo '.nsc-wpscan-summary div{background:#fff;border:1px solid #c3c4c7;border-radius:4px;padding:12px 16px;min-width:120px;}';
+    echo '.nsc-wpscan-summary strong{display:block;font-size:1.35em;color:#1d2327;}';
+    echo '.nsc-wpscan-summary span{font-size:12px;color:#50575e;}';
+    echo '.nsc-wpscan-summary .warn strong{color:#b32d2e;}';
+    echo 'table{border-collapse:collapse;width:100%;max-width:1100px;background:#fff;margin:0 0 1em;}';
+    echo 'th,td{border:1px solid #ddd;padding:8px 10px;text-align:left;vertical-align:top;font-size:13px;}';
+    echo 'th{background:#f7f7f7;}';
+    echo '.ok{color:#0a7f2e;}';
+    echo '.warn{color:#b32d2e;}';
+    echo 'pre.nsc-wpscan-out{white-space:pre-wrap;word-break:break-word;background:#fff;border:1px solid #c3c4c7;padding:14px 16px;margin:0 0 1em;overflow:auto;max-height:50vh;font-size:12px;line-height:1.45;}';
+    echo 'details{margin:1em 0;}summary{cursor:pointer;font-weight:600;margin-bottom:8px;}';
+    echo '</style></head><body>';
+    echo '<h1>NSC WPScan</h1>';
+    echo '<p class="nsc-wpscan-meta"><strong>Target:</strong> ' . $n($targetUrl) . '<br>';
+    echo '<strong>Exit code:</strong> ' . (int) $code . ' &nbsp;|&nbsp; <strong>Format:</strong> ' . $n($outFormat) . '</p>';
+
+    if ($stderr !== '') {
+        echo '<p class="nsc-wpscan-meta warn"><strong>stderr:</strong> ' . $n($stderr) . '</p>';
+    }
+
+    if ($outFormat === 'json' && is_array($decoded)) {
+        $report = nsc_wpscan_build_report_tables($decoded);
+        echo $report['summary_html'];
+        echo $report['tables_html'];
+        $pretty = (string) wp_json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+        echo '<details><summary>Raw JSON</summary><pre class="nsc-wpscan-out">' . $n($pretty) . '</pre></details>';
+    } elseif ($outFormat === 'json' && $stdout !== '') {
+        echo '<p class="warn"><strong>Could not parse JSON.</strong> Showing raw output.</p>';
+        echo '<pre class="nsc-wpscan-out">' . $n(trim($stdout . "\n" . $stderr)) . '</pre>';
+    } else {
+        echo '<pre class="nsc-wpscan-out">' . $n(trim($stdout . ($stderr !== '' ? "\n\n--- stderr ---\n" . $stderr : '')) ?: '(no output)') . '</pre>';
+    }
+
+    echo '</body></html>';
+
+    $html = (string) ob_get_clean();
+
+    return ['html' => $html, 'exit_code' => $code];
+}
+
+if (!\defined('NSC_WPSCAN_EMBEDDED') || !\constant('NSC_WPSCAN_EMBEDDED')) {
+    $r = nsc_wpscan_run_scan();
+    header('Content-Type: text/html; charset=utf-8');
+    echo $r['html'];
 }

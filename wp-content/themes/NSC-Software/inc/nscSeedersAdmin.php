@@ -134,10 +134,12 @@ function get_run_all_language_passes(): array
                 if (!\is_array($row) || empty($row['slug'])) {
                     continue;
                 }
+
                 $slug = (string) $row['slug'];
                 if ($slug === $def) {
                     continue;
                 }
+
                 $name = isset($row['name']) ? (string) $row['name'] : $slug;
                 $passes[] = [
                     'slug' => $slug,
@@ -255,6 +257,7 @@ function ssl_verify_for_seeder_request(string $url): bool
         if ($h === 'localhost' || $h === '127.0.0.1' || \str_ends_with($h, '.localhost')) {
             $verify = false;
         }
+
         foreach (['.test', '.local', '.invalid'] as $suffix) {
             if (\str_ends_with($h, $suffix)) {
                 $verify = false;
@@ -297,7 +300,7 @@ add_action('admin_menu', static function (): void {
 
     \add_management_page(
         \__('NSC HTTP seeders', 'NscSoftware'),
-        \__('NSC seeders', 'NscSoftware'),
+        \__('NSC Seeders', 'NscSoftware'),
         CAPABILITY,
         'nsc-http-seeders',
         __NAMESPACE__ . '\\render_page',
@@ -421,11 +424,13 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
       });
       return defOnly.length ? defOnly : [{ slug: "", label: "Default language" }];
     }
+
     if (langVal === "all-others") {
       return full.filter(function (p) {
         return p.slug !== "";
       });
     }
+
     var wantSlug = langVal === defSlug ? "" : langVal;
     var hit = full.filter(function (p) {
       return p.slug === wantSlug;
@@ -433,6 +438,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
     if (hit.length) {
       return hit;
     }
+
     return [{ slug: wantSlug, label: langVal }];
   }
 
@@ -450,6 +456,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
         });
       }
     }
+
     return steps;
   }
 
@@ -501,8 +508,10 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
           if (res && res.data && res.data.html) {
             $("#nsc-seeder-frame").attr("srcdoc", res.data.html);
           }
+
           return;
         }
+
         notice("success", nscSeedersAdmin.i18n.done);
         if (res.data && res.data.html) {
           $("#nsc-seeder-frame").attr("srcdoc", res.data.html);
@@ -513,6 +522,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
         if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
           msg = xhr.responseJSON.data.message;
         }
+
         notice("error", msg);
       })
       .always(function () {
@@ -601,6 +611,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
         finishSuccess();
         return;
       }
+
       var step = steps[idx];
       setRunAllProgress(idx / steps.length, runAllProgressMeta(idx, steps.length, step.label));
       docParts.push(
@@ -628,6 +639,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
             );
             return;
           }
+
           docParts.push(res.data && res.data.html ? res.data.html : "<p>—</p>");
           docParts.push("</section>");
           idx += 1;
@@ -638,6 +650,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
           if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
             msg = xhr.responseJSON.data.message;
           }
+
           fail(msg, "");
         });
     }
@@ -668,6 +681,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
       notice("error", nscSeedersAdmin.i18n.prefixInvalid);
       return;
     }
+
     setBusy(true);
     notice("success", nscSeedersAdmin.i18n.prefixWorking);
     $.ajax({
@@ -689,6 +703,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
           notice("error", msg);
           return;
         }
+
         notice("success", res.data && res.data.message ? res.data.message : nscSeedersAdmin.i18n.prefixDone);
         if (res.data && res.data.redirect) {
           window.setTimeout(function () {
@@ -701,6 +716,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
         if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
           msg = xhr.responseJSON.data.message;
         }
+
         notice("error", msg);
       })
       .always(function () {
@@ -731,6 +747,7 @@ add_action('wp_ajax_nsc_run_seeder', static function (): void {
     if ($seedLang === 'all-others') {
         $seedLang = 'all';
     }
+
     $isRunAll = isset($_POST['nsc_run_all']) && (string) $_POST['nsc_run_all'] === '1';
 
     $extraQuery = [];
@@ -740,6 +757,7 @@ add_action('wp_ajax_nsc_run_seeder', static function (): void {
             $extraQuery['page_scope'] = $scope;
         }
     }
+
     if ($key === 'menus' && ($isRunAll || (isset($_POST['menu_rebuild']) && (string) $_POST['menu_rebuild'] === '1'))) {
         $extraQuery['rebuild'] = '1';
     }
@@ -851,6 +869,7 @@ function render_page(): void
                 if (!\is_array($row) || empty($row['slug'])) {
                     continue;
                 }
+
                 $slug = (string) $row['slug'];
                 $langLabelsBySlugNorm[\strtolower($slug)] = isset($row['name']) ? (string) $row['name'] : $slug;
             }
@@ -866,9 +885,11 @@ function render_page(): void
                 if (!\is_string($slug) || $slug === '') {
                     continue;
                 }
+
                 if ($defaultLangSlugNorm !== '' && \strtolower($slug) === $defaultLangSlugNorm) {
                     continue;
                 }
+
                 $label = $langLabelsBySlugNorm[\strtolower($slug)] ?? $slug;
                 $langsSecondary[$slug] = $label;
             }
@@ -952,6 +973,7 @@ function render_page(): void
                             } else {
                                 echo \esc_html(\__('Default only (no translation sync)', 'NscSoftware'));
                             }
+
                             ?>
                         </option>
                         <?php foreach ($langsSecondary as $slug => $name) { ?>
