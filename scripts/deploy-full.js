@@ -4,7 +4,7 @@
  *
  * Step 1 — Prepare: `npm run build:sync` in /frontend (build + sync to theme frontend/build).
  * Step 2 — Frontend: `frontend/build` → remote webroot (excludes index.html, test.html).
- * Step 3 — Seeders/tools: `policy-content/`, `tools/`, root `create-nsc-*.php` → remote webroot.
+ * Step 3 — Seeders/tools: `policy-content/`, `tools/`, root `create-nsc-*.php`, `run-nsc-wpscan.php` → remote webroot.
  * Step 4 — Theme: `wp-content/themes/NSC-Software` → remote `.../wp-content/themes/NSC-Software`.
  * Step 5 — Dev: repeat steps 2–4 for `DEPLOY_REMOTE_DEV_ROOT` (default `/var/www/html/dev`).
  *
@@ -41,6 +41,9 @@ const skipDev = process.env.DEPLOY_SKIP_DEV === "1" || process.env.DEPLOY_SKIP_D
 
 /** Root-level PHP seed scripts (HTTP token scripts + global options). */
 const SEEDER_PHP_GLOB = /^create-nsc-.*\.php$/;
+
+/** Root-level scripts not matching create-nsc-*.php (must still land in web root). */
+const ROOT_EXTRA_PHP = ["run-nsc-wpscan.php"];
 
 function hasRsync() {
   try {
@@ -170,6 +173,15 @@ function stepSeeders(remoteBase) {
       console.log(`  scp ${f} → ${remoteBase}/`);
       deployFile(full, remoteBase);
     }
+  }
+  for (const f of ROOT_EXTRA_PHP) {
+    const full = path.join(repoRoot, f);
+    if (!fs.existsSync(full)) {
+      console.warn(`Warning: ${f} not found at repo root, skip.`);
+      continue;
+    }
+    console.log(`  scp ${f} → ${remoteBase}/`);
+    deployFile(full, remoteBase);
   }
 }
 
