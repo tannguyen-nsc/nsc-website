@@ -17,7 +17,7 @@ declare(strict_types=1);
  *   define( 'NSC_SEEDER_HTTP_BASIC_PASSWORD', 'same-as-htpasswd' );
  * Override: add_filter('nsc_seeder_wp_remote_headers', fn ($h, $url) => $h, 10, 2);
  *
- * Token values must stay in sync with create-nsc-*.php in the site root (including create-nsc-cf7-form.php).
+ * Token values must stay in sync with create-nsc-*.php scripts in the site root (including create-nsc-cf7-form.php). WPScan uses Tools → NSC WPScan.
  */
 
 namespace NscSoftware\SeedersAdmin;
@@ -300,7 +300,8 @@ add_action('admin_menu', static function (): void {
         \__('NSC seeders', 'NscSoftware'),
         CAPABILITY,
         'nsc-http-seeders',
-        __NAMESPACE__ . '\\render_page'
+        __NAMESPACE__ . '\\render_page',
+        100
     );
 });
 

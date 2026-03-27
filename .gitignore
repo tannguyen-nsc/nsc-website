@@ -1,3 +1,6 @@
+# WPScan Windows: copy MSYS2 UCRT64 *.dll from RubyInstaller (see tools/wpscan.cmd)
+/tools/wpscan-curl-bin/
+
 # Zip archives (removed from tracking; keep local copies if needed)
 *.zip
 
