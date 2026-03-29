@@ -40,6 +40,7 @@ $nscSeedPolylang = get_template_directory() . '/inc/nscSeedPolylang.php';
 if (is_readable($nscSeedPolylang)) {
     require_once $nscSeedPolylang;
 }
+
 if (function_exists('nsc_seed_bootstrap_acf_polylang_default_language')) {
     nsc_seed_bootstrap_acf_polylang_default_language();
 }
@@ -65,19 +66,23 @@ function nscBlogSeedGetImageIds(): array
         if (!empty($existing)) {
             return (int) $existing[0]->ID;
         }
+
         $url = $buildUri . '/img/' . $filename;
         $tmp = download_url($url);
         if (is_wp_error($tmp)) {
             return 0;
         }
+
         $file = ['name' => $filename, 'tmp_name' => $tmp];
         $id   = media_handle_sideload($file, 0, $filename);
         if (is_file($tmp)) {
             @unlink($tmp);
         }
+
         if (is_wp_error($id)) {
             return 0;
         }
+
         update_post_meta((int) $id, 'nsc_build_asset', $filename);
 
         return (int) $id;
@@ -102,6 +107,7 @@ function nscBlogSeedEnsureCategories(): array
             $out[$slug] = (int) $term->term_id;
             continue;
         }
+
         $r = wp_insert_term($name, 'category', ['slug' => $slug]);
         if (!is_wp_error($r)) {
             $out[$slug] = (int) $r['term_id'];
@@ -117,7 +123,7 @@ function nscBlogSeedRelatedPool(string $baseUrl): array
         ['linkLabel' => 'NSC Home', 'linkUrl' => $baseUrl, 'openInNewTab' => 0],
         ['linkLabel' => 'About Us', 'linkUrl' => $baseUrl . 'about/', 'openInNewTab' => 0],
         ['linkLabel' => 'Our Services', 'linkUrl' => $baseUrl . 'our-services/', 'openInNewTab' => 0],
-        ['linkLabel' => 'Technology Capabilities', 'linkUrl' => $baseUrl . 'technology-apabilities/', 'openInNewTab' => 0],
+        ['linkLabel' => 'Technology Capabilities', 'linkUrl' => $baseUrl . 'technology-capabilities/', 'openInNewTab' => 0],
         ['linkLabel' => 'Contact', 'linkUrl' => $baseUrl . 'contact/', 'openInNewTab' => 0],
         ['linkLabel' => 'Careers', 'linkUrl' => $baseUrl . 'career/', 'openInNewTab' => 0],
         ['linkLabel' => 'Blog archive', 'linkUrl' => $baseUrl . 'blogs/', 'openInNewTab' => 0],
@@ -556,42 +562,55 @@ function nsc_blog_seed_rich_html(
     if ($pick('inc_lead', 62)) {
         $include[] = 'lead';
     }
+
     if ($pick('inc_p2', 78)) {
         $include[] = 'p2';
     }
+
     if ($pick('inc_p3', 58)) {
         $include[] = 'p3';
     }
+
     if ($pick('inc_fig1', 64)) {
         $include[] = 'fig1';
     }
+
     if ($pick('inc_fig2', 42)) {
         $include[] = 'fig2';
     }
+
     if ($pick('inc_quote', 58)) {
         $include[] = 'quote';
     }
+
     if ($pick('inc_quote2', 28)) {
         $include[] = 'quote2';
     }
+
     if ($pick('inc_h2mid', 68)) {
         $include[] = 'h2mid';
     }
+
     if ($pick('inc_h3', 48)) {
         $include[] = 'h3';
     }
+
     if ($pick('inc_ul', 60)) {
         $include[] = 'ul';
     }
+
     if ($pick('inc_ol', 38)) {
         $include[] = 'ol';
     }
+
     if ($pick('inc_h2close', 55)) {
         $include[] = 'h2close';
     }
+
     if ($pick('inc_pwrap', 58)) {
         $include[] = 'p_wrap';
     }
+
     if ($pick('inc_hr', 32)) {
         $include[] = 'hr';
     }
@@ -626,6 +645,7 @@ foreach ($titles as $title) {
         if ($cPost instanceof WP_Post) {
             $canonicalId = (int) $cPost->ID;
         }
+
         if ($canonicalId <= 0) {
             $results[] = ['slug' => $slug, 'status' => 'skipped', 'message' => 'No default-language post; run without seed_lang first.'];
             continue;
@@ -804,4 +824,5 @@ foreach ($results as $row) {
     $cls = $row['status'] === 'error' ? 'error' : 'ok';
     echo '<tr><td>' . esc_html($row['slug']) . '</td><td class="' . esc_attr($cls) . '">' . esc_html($row['status']) . '</td><td>' . esc_html($row['message']) . '</td></tr>';
 }
+
 echo '</tbody></table></body></html>';

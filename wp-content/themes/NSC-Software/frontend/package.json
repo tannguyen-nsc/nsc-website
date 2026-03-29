@@ -36,8 +36,8 @@
     "sync": "node scripts/sync-build-to-theme.js",
     "sync:theme-dir": "node scripts/sync-frontend-dir-to-theme.js",
     "build:sync": "npm run build && node scripts/sync-build-to-theme.js",
-    "deploy": "node ../../../../scripts/deploy-full.js",
-    "deploy:minimal": "node ../../../../scripts/deploy-minimal.js"
+    "deploy": "node ../scripts/deploy-full.js",
+    "deploy:minimal": "node ../scripts/deploy-minimal.js"
   },
   "repository": {
     "type": "git",

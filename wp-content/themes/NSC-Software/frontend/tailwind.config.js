@@ -17,8 +17,8 @@ const plugins = Object.keys(allPlugins)
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./src/**/*.{html,js,php}",
-    "../Components/**/*.twig",
+    "./src/**/*.{html,js,php,scss}",
+    "../wp-content/themes/NSC-Software/Components/**/*.twig",
   ],
   darkMode: "class",
   theme: {

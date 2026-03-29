@@ -1,0 +1,278 @@
+.case-study-detail-page {
+  @apply overflow-x-hidden bg-white;
+
+  .wrapper {
+    @apply relative z-10 mx-auto w-full max-w-full px-4 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
+  }
+}
+
+.case-study-detail-overview {
+  @apply py-12 lg:py-16;
+
+  // Gallery breakout needs a visible overflow chain on lg+ (see __main > .case-study-detail-gallery).
+  > .wrapper {
+    @apply lg:overflow-x-visible;
+  }
+
+  // Title uses global `section .heading` (see _global.scss); keep only spacing here.
+  .case-study-detail-overview__header.heading {
+    @apply mb-10 lg:mb-12;
+  }
+
+  .case-study-detail-overview__grid {
+    @apply grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16 lg:overflow-visible;
+  }
+
+  .case-study-detail-overview__main {
+    @apply flex flex-col gap-8 lg:col-span-8 lg:overflow-hidden;
+
+    // Widen slider to full 12-col row width on large screens (was ~⅓ of main column per slide without this).
+    > .case-study-detail-gallery {
+      @media (min-width: 1024px) {
+        width: 150%;
+        max-width: none;
+        margin-left: -25%;
+      }
+    }
+  }
+
+  .case-study-detail-overview__block {
+    h3 {
+      @apply mb-3 text-xl lg:text-2xl font-bold text-[#0A0A0A] lg:text-lg;
+    }
+
+    ul {
+      @apply m-0 list-disc space-y-2 pl-5 text-sm leading-relaxed text-[#0A0A0A] lg:text-base font-medium;
+    }
+  }
+
+  .case-study-detail-overview__meta {
+    @apply min-w-0 lg:col-span-4;
+  }
+
+  .case-study-detail-overview__meta-row {
+    @apply mb-8 last:mb-0;
+  }
+
+  .case-study-detail-overview__meta-label {
+    @apply mb-2 block text-base font-bold uppercase tracking-wider text-[#0A0A0A];
+  }
+
+  .case-study-detail-overview__meta-text {
+    @apply m-0 text-base font-medium text-[#0A0A0A];
+  }
+
+  // flex-shrink defaults to 1 — many tags in the sidebar were compressing pills; shrink-0 + wrap keeps natural width.
+  .case-study-detail-overview__tags {
+    @apply flex min-w-0 flex-wrap items-start gap-2;
+  }
+
+  .case-study-detail-overview__tag {
+    @apply box-border inline-flex max-w-full min-w-0 min-h-[2rem] shrink-0 items-center justify-center break-words rounded border border-primary bg-white px-2.5 py-1 text-center text-sm font-medium leading-tight text-primary;
+  }
+
+  .case-study-detail-gallery {
+    @apply w-full border-t border-[#E5E5E5] pt-8 pb-14 lg:pt-10 lg:pb-16;
+
+    .case-study-detail-gallery__title {
+      @apply mb-6 text-center text-2xl font-bold text-[#0A0A0A] lg:mb-8;
+    }
+
+    .case-study-detail-gallery__slider {
+      @apply mx-auto max-w-full;
+    }
+
+    // Hidden list clips correctly for drag; center slide overlaps via scale + z-index on frames
+    .slick-list {
+      @apply overflow-hidden;
+    }
+
+    .slick-slide {
+      padding: 0 !important; // override slick-theme gutters
+    }
+
+    .case-study-detail-gallery__slide {
+      @apply flex h-full min-h-0 items-stretch justify-center overflow-visible p-0 outline-none;
+    }
+
+    // One shared row height so center + sides match the mockup (no uneven image bands).
+    .case-study-detail-gallery__frame {
+      @apply relative overflow-hidden rounded-lg transition-transform duration-300 ease-out;
+      height: clamp(200px, 42vw, 440px);
+      width: 100%;
+
+      img {
+        @apply block h-full w-full object-cover;
+      }
+    }
+
+    // Active (center): full size, sits on top, soft shadows on left/right edges.
+    .slick-slide.slick-center .case-study-detail-gallery__frame {
+      @apply z-[3] rounded-none;
+      transform: scale(1);
+      transform-origin: center center;
+      width: calc(100% + 18%);
+      margin-left: -9%;
+      margin-right: -9%;
+      box-shadow:
+        16px 0 28px -12px rgba(0, 0, 0, 0.2),
+        -16px 0 28px -12px rgba(0, 0, 0, 0.2),
+        0 16px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    // Inactive sides: ~75–80% feel, pulled inward so photos meet without white gutters; slightly darker.
+    .slick-slide:not(.slick-center) .case-study-detail-gallery__frame {
+      @apply z-[1];
+      transform: scale(0.78);
+      transform-origin: center center;
+      width: calc(100% + 44%);
+      margin-left: -22%;
+      margin-right: -22%;
+      box-shadow: none;
+
+      img {
+        @apply brightness-[0.9] contrast-[0.98];
+      }
+    }
+
+    .slick-prev,
+    .slick-next {
+      @apply z-[4] flex h-10 w-14 items-center justify-center border-0 bg-primary text-white shadow-md transition hover:opacity-90;
+
+      &::before {
+        content: none !important;
+      }
+
+      svg {
+        @apply h-5 w-5;
+
+        path {
+          fill: currentColor;
+        }
+      }
+    }
+
+    // Mobile: arrows at edges. md+: 3-up center mode — sit beside the active (center) image.
+    .slick-prev {
+      @apply left-[max(0.5rem,4%)];
+
+      @media (min-width: 768px) {
+        left: 27%;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    .slick-next {
+      @apply right-[max(0.5rem,4%)];
+
+      @media (min-width: 768px) {
+        right: 27%;
+        transform: translate(50%, -50%);
+      }
+    }
+
+    // Dash dots — match `.career-details__skill-bar-segment` / `.skill--none`
+    .slick-dots {
+      @apply bottom-[-2.75rem] flex flex-wrap items-center justify-center gap-1 lg:bottom-[-3rem] lg:gap-1.5;
+
+      li {
+        @apply m-0 h-auto w-auto p-0;
+
+        button {
+          @apply w-7 shrink-0 rounded-lg p-0 lg:w-8;
+          width: 1.75rem !important;
+          height: 2px;
+          min-height: 2px;
+          font-size: 0 !important;
+          line-height: 0 !important;
+          border: none !important;
+          opacity: 1 !important;
+          background-color: #cecece !important; // career-details skill--none
+
+          @media (min-width: 1024px) {
+            height: 3px;
+            min-height: 3px;
+          }
+
+          &::before {
+            display: none !important;
+            content: none !important;
+          }
+        }
+
+        &.slick-active button {
+          background-color: var(--color-primary, #36c3dc) !important;
+        }
+      }
+    }
+  }
+}
+
+// Gallery images: plain CSS on `.js-case-study-detail-gallery` so layout wins over slick-theme / load order.
+// (Arrows/dots stay in the nested block above.)
+.js-case-study-detail-gallery.slick-slider {
+  .case-study-detail-gallery__frame {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    height: clamp(200px, 42vw, 440px) !important;
+    width: 100%;
+  }
+
+  .case-study-detail-gallery__frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .slick-slide.slick-center .case-study-detail-gallery__frame {
+    z-index: 3;
+    border-radius: 0;
+    transform: scale(1) !important;
+    transform-origin: center center;
+    width: calc(100% + 18%);
+    margin-left: -9%;
+    margin-right: -9%;
+    box-shadow:
+      16px 0 28px -12px rgba(0, 0, 0, 0.2),
+      -16px 0 28px -12px rgba(0, 0, 0, 0.2),
+      0 16px 40px rgba(0, 0, 0, 0.12);
+  }
+
+  .slick-slide:not(.slick-center) .case-study-detail-gallery__frame {
+    z-index: 1;
+    transform: scale(0.78) !important;
+    transform-origin: center center;
+    width: calc(100% + 44%);
+    margin-left: -22%;
+    margin-right: -22%;
+    box-shadow: none;
+  }
+
+  .slick-slide:not(.slick-center) .case-study-detail-gallery__frame img {
+    filter: brightness(0.88) contrast(0.98);
+  }
+}
+
+// Matches main case studies listing: `.case-studies` + `.case-studies-grid` + `.case-study-card` (see _case_studies.scss).
+.case-studies.case-study-detail-related {
+  @apply border-t border-[#E5E5E5];
+
+  // Align with `.blog-details__related-heading` (Related Articles)
+  .case-study-detail-related__heading {
+    @apply m-0 mb-8 text-center text-3xl font-bold text-black lg:mb-10;
+  }
+
+  .case-study-detail-related__cta-wrap {
+    @apply mt-10 text-center lg:mt-12;
+  }
+
+  .case-study-detail-related__cta {
+    @apply inline-flex items-center gap-1 text-base font-bold text-primary no-underline transition hover:opacity-80;
+
+    svg {
+      @apply h-4 w-4 flex-shrink-0;
+    }
+  }
+}

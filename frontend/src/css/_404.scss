@@ -1,0 +1,31 @@
+/* 404 — matches default policy/static pages: bg + white card (see 404.html, templates/404.twig) */
+.error-404 {
+  @apply relative min-h-[70vh] md:min-h-[50vh] xl:min-h-[45vw] py-16 lg:py-24 bg-[400%] lg:bg-cover bg-right-top bg-no-repeat overflow-hidden mt-4 flex flex-col items-center justify-center px-4;
+
+  .wrapper {
+    @apply z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+  }
+
+  .error-404__inner {
+    @apply py-12 lg:py-16 px-6 lg:px-12 text-center flex flex-col items-center;
+    img {
+      @apply w-full lg:w-[70%] mx-auto;
+    }
+  }
+
+  .error-404__code {
+    @apply text-7xl md:text-8xl xl:text-9xl font-bold text-primary leading-none mb-4 select-none;
+  }
+
+  .error-404__title {
+    @apply text-2xl xl:text-3xl 2xl:text-4xl font-semibold text-primary mb-4;
+  }
+
+  .error-404__lead {
+    @apply text-base text-[#737373] font-semibold max-w-xl mb-8;
+  }
+
+  .error-404__btn {
+    @apply inline-flex items-center justify-center px-8 py-3 rounded-md bg-primary text-white font-semibold text-sm uppercase tracking-wide hover:opacity-90 transition-opacity mt-4;
+  }
+}

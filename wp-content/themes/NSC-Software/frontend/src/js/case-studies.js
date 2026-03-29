@@ -9,7 +9,7 @@
   var el = document.querySelector(CASE_STUDIES_SELECTOR);
   if (!el || typeof Vue === 'undefined') return;
 
-  var filters = [
+  var defaultFilters = [
     { id: 'all', label: 'All Categories' },
     { id: 'Technology', label: 'Technology' },
     { id: 'Fintech', label: 'Fintech' },
@@ -22,12 +22,35 @@
 
   var defaultStudies = [];
 
-  function getStudiesFromWindow() {
+  /**
+   * Static HTML: window.caseStudiesVueData is an array of studies.
+   * WordPress: payload object { studies, filters, perPage, labels } from NSCBlockCaseStudiesArchive.
+   */
+  function getPayloadFromWindow() {
     var data = window.caseStudiesVueData;
-    if (Array.isArray(data)) return data.slice();
-    if (data && Array.isArray(data.studies)) return data.studies.slice();
-    if (data && Array.isArray(data.caseStudies)) return data.caseStudies.slice();
-    return defaultStudies.slice();
+    if (Array.isArray(data)) {
+      return {
+        studies: data.slice(),
+        filters: null,
+        perPage: null,
+        labels: null
+      };
+    }
+    if (data && typeof data === 'object') {
+      var studies = [];
+      if (Array.isArray(data.studies)) {
+        studies = data.studies.slice();
+      } else if (Array.isArray(data.caseStudies)) {
+        studies = data.caseStudies.slice();
+      }
+      return {
+        studies: studies,
+        filters: Array.isArray(data.filters) && data.filters.length ? data.filters : null,
+        perPage: typeof data.perPage === 'number' && data.perPage > 0 ? data.perPage : null,
+        labels: data.labels && typeof data.labels === 'object' ? data.labels : null
+      };
+    }
+    return { studies: defaultStudies.slice(), filters: null, perPage: null, labels: null };
   }
 
   var app = Vue.createApp({
@@ -37,7 +60,11 @@
         activeFilter: 'all',
         currentPage: 1,
         perPage: PER_PAGE,
-        filters: filters,
+        filters: defaultFilters.slice(),
+        readMoreLabel: 'Read More',
+        emptyListLabel: 'No case studies found in this category.',
+        prevLabel: 'Previous',
+        nextLabel: 'Next',
         viewportWidth: window.innerWidth,
         loading: false,
         loadError: null
@@ -204,7 +231,28 @@
       },
       loadStudies: function () {
         this.loadError = null;
-        this.studies = getStudiesFromWindow();
+        var payload = getPayloadFromWindow();
+        this.studies = payload.studies;
+        if (payload.filters && payload.filters.length) {
+          this.filters = payload.filters;
+        }
+        if (payload.perPage) {
+          this.perPage = payload.perPage;
+        }
+        if (payload.labels) {
+          if (payload.labels.readMore) {
+            this.readMoreLabel = payload.labels.readMore;
+          }
+          if (payload.labels.empty) {
+            this.emptyListLabel = payload.labels.empty;
+          }
+          if (payload.labels.previous) {
+            this.prevLabel = payload.labels.previous;
+          }
+          if (payload.labels.next) {
+            this.nextLabel = payload.labels.next;
+          }
+        }
       },
       equalizeCardContentHeights: function () {
         var isMultiColumn = window.innerWidth >= 768;

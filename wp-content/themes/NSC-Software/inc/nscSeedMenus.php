@@ -44,20 +44,24 @@ function nsc_seed_menus_run(array $options = []): array
         if (!is_array($locations)) {
             $locations = [];
         }
+
         $locationsDirty = false;
         if ($menuIds['navigation_main'] > 0) {
             $locations['navigation_main'] = $menuIds['navigation_main'];
             $locationsDirty = true;
         }
+
         if ($menuIds['sitemap_footer'] > 0) {
             $locations['sitemap_footer'] = $menuIds['sitemap_footer'];
             $locations['navigation_footer'] = $menuIds['sitemap_footer'];
             $locationsDirty = true;
         }
+
         if (!empty($menuIds['footer_policy']) && $menuIds['footer_policy'] > 0) {
             $locations['footer_policy'] = $menuIds['footer_policy'];
             $locationsDirty = true;
         }
+
         if ($locationsDirty) {
             set_theme_mod('nav_menu_locations', $locations);
         }
@@ -66,10 +70,12 @@ function nsc_seed_menus_run(array $options = []): array
             if ($menuIds['navigation_main'] > 0) {
                 nsc_polylang_sync_nav_menu_for_default_language('navigation_main', $menuIds['navigation_main']);
             }
+
             if ($menuIds['sitemap_footer'] > 0) {
                 nsc_polylang_sync_nav_menu_for_default_language('sitemap_footer', $menuIds['sitemap_footer']);
                 nsc_polylang_sync_nav_menu_for_default_language('navigation_footer', $menuIds['sitemap_footer']);
             }
+
             if (!empty($menuIds['footer_policy']) && $menuIds['footer_policy'] > 0) {
                 nsc_polylang_sync_nav_menu_for_default_language('footer_policy', $menuIds['footer_policy']);
             }
@@ -107,6 +113,7 @@ function nsc_seed_menus_build_for_languages(array $langs, bool $rebuild, array &
             } else {
                 nsc_seed_nav_menu_delete_marked_items($mainId);
             }
+
             nsc_seed_menus_populate_main($mainId, $workLang);
             $out['navigation_main'] = $mainId;
             $results[] = [
@@ -123,6 +130,7 @@ function nsc_seed_menus_build_for_languages(array $langs, bool $rebuild, array &
             } else {
                 nsc_seed_nav_menu_delete_marked_items($siteId);
             }
+
             nsc_seed_menus_populate_sitemap($siteId, $workLang);
             $out['sitemap_footer'] = $siteId;
             $results[] = [
@@ -146,6 +154,7 @@ function nsc_seed_menus_build_for_languages(array $langs, bool $rebuild, array &
             } else {
                 nsc_seed_nav_menu_delete_marked_items($policyId);
             }
+
             nsc_seed_menus_populate_footer_policy($policyId, $workLang);
             $out['footer_policy'] = $policyId;
             $results[] = [
@@ -162,10 +171,12 @@ function nsc_seed_menus_build_for_languages(array $langs, bool $rebuild, array &
             if ($mainId > 0) {
                 nsc_polylang_assign_nav_menu_for_language('navigation_main', $workLang, $mainId);
             }
+
             if ($siteId > 0) {
                 nsc_polylang_assign_nav_menu_for_language('sitemap_footer', $workLang, $siteId);
                 nsc_polylang_assign_nav_menu_for_language('navigation_footer', $workLang, $siteId);
             }
+
             if ($policyId > 0) {
                 nsc_polylang_assign_nav_menu_for_language('footer_policy', $workLang, $policyId);
             }
@@ -181,12 +192,14 @@ function nsc_seed_nav_menu_delete_marked_items(int $menuId): void
     if (!is_array($items)) {
         return;
     }
+
     $ids = [];
     foreach ($items as $item) {
         if (isset($item->ID) && get_post_meta((int) $item->ID, '_nsc_seeded', true) === '1') {
             $ids[] = (int) $item->ID;
         }
     }
+
     foreach ($ids as $id) {
         wp_delete_post($id, true);
     }
@@ -198,6 +211,7 @@ function nsc_seed_nav_menu_delete_all_items(int $menuId): void
     if (!is_array($items)) {
         return;
     }
+
     foreach ($items as $item) {
         if (isset($item->ID) && (int) $item->ID > 0) {
             wp_delete_post((int) $item->ID, true);
@@ -210,6 +224,7 @@ function nsc_seed_menus_page_id(string $slug, string $lang): int
     if ($slug === '') {
         return 0;
     }
+
     if ($lang === '' || !function_exists('pll_default_language')) {
         $p = get_page_by_path($slug, OBJECT, 'page');
 
@@ -254,10 +269,12 @@ function nsc_seed_menus_ensure_menu_term(string $locationKey, string $lang, arra
         if ($menu->name !== $menuName) {
             continue;
         }
+
         $tid = (int) $menu->term_id;
         if ($tid <= 0) {
             continue;
         }
+
         if ($termLangForPolylang !== '' && function_exists('pll_get_term_language')) {
             $tl = pll_get_term_language($tid);
             if (is_string($tl) && $tl !== '' && $tl !== $termLangForPolylang) {
@@ -297,12 +314,15 @@ function nsc_seed_menus_menu_name_for_language(string $locationKey, string $lang
     } else {
         $baseName = 'Footer Sitemap';
     }
+
     if ($lang === '') {
         return $baseName;
     }
+
     if (!function_exists('pll_default_language')) {
         return $baseName . ' (' . $lang . ')';
     }
+
     $def = (string) pll_default_language('slug');
     if ($def !== '' && $lang === $def) {
         return $baseName;
@@ -319,6 +339,7 @@ function nsc_seed_menus_polylang_term_language_slug(string $lang): string
     if ($lang !== '') {
         return $lang;
     }
+
     if (function_exists('pll_default_language')) {
         $d = pll_default_language('slug');
 
@@ -333,13 +354,16 @@ function nsc_seed_menus_translate_label(string $label, string $lang): string
     if ($label === '' || $lang === '') {
         return $label;
     }
+
     if (!function_exists('nsc_seed_polylang_active') || !nsc_seed_polylang_active()) {
         return $label;
     }
+
     $def = pll_default_language('slug');
     if (!is_string($def) || $def === '' || $lang === $def) {
         return $label;
     }
+
     if (!function_exists('nsc_seed_translate_text')) {
         return $label;
     }
@@ -389,6 +413,7 @@ function nsc_seed_menus_populate_main(int $menuId, string $lang): void
         if ($pid <= 0) {
             return;
         }
+
         $id = nsc_seed_menus_add_item($menuId, [
             'menu-item-title' => $t($label),
             'menu-item-object-id' => $pid,
@@ -427,7 +452,8 @@ function nsc_seed_menus_populate_main(int $menuId, string $lang): void
         nsc_seed_menus_mark_item($cid);
         ++$childPos;
     }
-    $capId = nsc_seed_menus_page_id('technology-apabilities', $lang);
+
+    $capId = nsc_seed_menus_page_id('technology-capabilities', $lang);
     if ($capId > 0) {
         $cid = nsc_seed_menus_add_item($menuId, [
             'menu-item-title' => $t('Technology Capabilities'),
@@ -460,6 +486,7 @@ function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
         if ($pid <= 0) {
             return;
         }
+
         $id = nsc_seed_menus_add_item($menuId, [
             'menu-item-title' => $t($label),
             'menu-item-object-id' => $pid,
@@ -485,11 +512,12 @@ function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
     }
 
     $childPos = 1;
-    foreach (['our-services' => 'Our Services', 'technology-apabilities' => 'Technology Capabilities'] as $slug => $label) {
+    foreach (['our-services' => 'Our Services', 'technology-capabilities' => 'Technology Capabilities'] as $slug => $label) {
         $pid = nsc_seed_menus_page_id($slug, $lang);
         if ($pid <= 0) {
             continue;
         }
+
         $cid = nsc_seed_menus_add_item($menuId, [
             'menu-item-title' => $t($label),
             'menu-item-object-id' => $pid,
@@ -513,12 +541,14 @@ function nsc_seed_menus_populate_footer_policy(int $menuId, string $lang): void
     if ($menuId <= 0) {
         return;
     }
+
     $position = 1;
     foreach (['privacy-policy', 'cookies-policy', 'terms-of-use'] as $slug) {
         $pid = nsc_seed_menus_page_id($slug, $lang);
         if ($pid <= 0) {
             continue;
         }
+
         $id = nsc_seed_menus_add_item($menuId, [
             'menu-item-title' => get_the_title($pid),
             'menu-item-object-id' => $pid,

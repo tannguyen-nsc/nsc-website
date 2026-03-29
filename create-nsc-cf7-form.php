@@ -203,7 +203,7 @@ FORM;
 </div>
 <div class="form-group">
   <label>Your Message</label>
-  [textarea* message id:message placeholder "Enter Your Message here"]
+  [textarea* message id:message placeholder rows:5 "Enter Your Message here"]
 </div>
 [submit class:btn "Send"]
 FORM;

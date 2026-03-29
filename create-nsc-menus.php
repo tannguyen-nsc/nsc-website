@@ -12,7 +12,7 @@ declare(strict_types=1);
  *   http://localhost/nsc/create-nsc-menus.php?token=nsc-create-menus-2026&seed_lang=all
  *
  * Notes:
- * - Uses the same page slugs as create-nsc-pages.php (home, about, ai, our-services, technology-apabilities,
+ * - Uses the same page slugs as create-nsc-pages.php (home, about, ai, our-services, technology-capabilities,
  *   blogs, career, case-studies, contact). Run create-nsc-pages.php first so pages exist.
  * - Main nav matches desktop header: Home, About Us, AI, What We Do ▾ (Our Services, Technology Capabilities),
  *   Blog, Careers, Case Studies, Contact Us (CSS classes: highlight, no-link-cursor, contact-btn).
@@ -58,6 +58,7 @@ $nscSeedPolylang = get_template_directory() . '/inc/nscSeedPolylang.php';
 if (is_readable($nscSeedPolylang)) {
     require_once $nscSeedPolylang;
 }
+
 if (function_exists('nsc_seed_bootstrap_acf_polylang_default_language')) {
     nsc_seed_bootstrap_acf_polylang_default_language();
 }
@@ -95,4 +96,5 @@ foreach ($results as $row) {
     echo '<td>' . esc_html($row['message']) . '</td>';
     echo '</tr>';
 }
+
 echo '</tbody></table></body></html>';

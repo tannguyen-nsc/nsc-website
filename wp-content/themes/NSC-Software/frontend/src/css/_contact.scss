@@ -49,6 +49,10 @@
               @apply min-h-[100px] resize-none;
             }
           }
+
+          .wpcf7-spinner {
+            @apply absolute left-[10rem] bottom-[4.5rem];
+          }
         }
       }
 

@@ -4,7 +4,7 @@ const config = {
   purgecss: {
     content: [
       "src/**/*.{html,js,php,scss}",
-      "../Components/**/*.twig",
+      "../wp-content/themes/NSC-Software/Components/**/*.twig",
     ],
     safelist: {
       standard: [
@@ -52,6 +52,8 @@ const config = {
         /header.*/,
         /globe.*/,
         /why-us.*/,
+        /case-study.*/,
+        /hero-case-study.*/,
       ],
     },
   },

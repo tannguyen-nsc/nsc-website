@@ -1,0 +1,66 @@
+.case-study-detail-quote {
+  @apply min-h-[150vw] lg:min-h-0 flex items-center justify-center relative overflow-hidden pb-16;
+
+  .case-study-detail-quote__bg {
+    @apply pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-center;
+  }
+
+  .wrapper {
+    @apply relative z-10 mx-auto w-full max-w-full px-4 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] lg:pt-60 xl:pt-52;
+  }
+
+  .case-study-detail-quote__inner {
+    @apply mx-auto max-w-4xl text-center;
+  }
+
+  .case-study-detail-quote__row {
+    @apply flex flex-row items-start justify-center gap-3 sm:gap-4 lg:items-center lg:gap-8 xl:gap-12;
+  }
+
+  .case-study-detail-quote__body {
+    @apply min-w-0 flex-1 text-center;
+  }
+
+  // Below lg: icons sit at top-left and bottom-right of the quote text only.
+  .case-study-detail-quote__quote-wrap {
+    @apply relative w-full max-w-full;
+  }
+
+  .case-study-detail-quote__mark {
+    @apply h-auto w-auto flex-shrink-0 object-contain object-center;
+    @apply max-h-12 max-w-[3rem] sm:max-h-14 sm:max-w-[3.5rem] lg:max-h-20 lg:max-w-[4.5rem] xl:max-h-24 xl:max-w-[5rem];
+  }
+
+  .case-study-detail-quote__mark--corner {
+    &.case-study-detail-quote__mark--left {
+      @apply absolute left-0 top-0 z-[1];
+    }
+
+    &.case-study-detail-quote__mark--right {
+      @apply absolute bottom-0 right-0 z-[1];
+    }
+  }
+
+  .case-study-detail-quote__blockquote {
+    @apply m-0 border-0 p-0;
+    // Room for corner icons (below lg only)
+    @apply px-10 pb-10 pt-8 lg:px-0 lg:pb-0 lg:pt-0;
+  }
+
+  .case-study-detail-quote__text {
+    @apply text-xl lg:text-4xl font-bold leading-relaxed text-white lg:text-lg xl:text-xl;
+  }
+
+  // Reset global `footer { bg-white border-t }` (_footer.scss) so attribution is not a white strip.
+  footer.case-study-detail-quote__cite {
+    @apply mt-6 border-0 border-t-0 bg-transparent p-0 lg:mt-8;
+  }
+
+  .case-study-detail-quote__name {
+    @apply block font-semibold not-italic text-[#F9F9FB] text-2xl;
+  }
+
+  .case-study-detail-quote__role {
+    @apply mt-1 text-2xl font-normal text-white/60;
+  }
+}

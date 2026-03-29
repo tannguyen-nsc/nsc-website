@@ -32,12 +32,15 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     if (function_exists('NscSoftware\\Menu\\mark_career_menu_active_for_job_single')) {
         Menu\mark_career_menu_active_for_job_single($data['menu']);
     }
+
     if (function_exists('NscSoftware\\Menu\\mark_case_study_archive_menu_active')) {
         Menu\mark_case_study_archive_menu_active($data['menu']);
     }
+
     if (\function_exists('nsc_features_filter_timber_menu')) {
         $data['menu'] = \nsc_features_filter_timber_menu($data['menu']);
     }
+
     Menu\set_current_ancestor_on_parents($data['menu']);
     $blogName = get_bloginfo('name');
 
@@ -64,6 +67,7 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
             $data['logo']['alt'] = $options['logo']['alt'];
         }
     }
+
     if (!empty($options['logoWhite'])) {
         $data['logoWhite']['url'] = $options['logoWhite']['url'] ?? $options['logoWhite']['src'] ?? null;
         $data['logoWhite']['src'] = $data['logoWhite']['src'] ?: $data['logoWhite']['url'];
@@ -71,10 +75,12 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
             $data['logoWhite']['alt'] = $options['logoWhite']['alt'];
         }
     }
+
     if (!empty($options['mobileLogoWhite'])) {
         $data['mobileLogo']['white']['url'] = $options['mobileLogoWhite']['url'] ?? $options['mobileLogoWhite']['src'] ?? null;
         $data['mobileLogo']['white']['src'] = $data['mobileLogo']['white']['src'] ?: $data['mobileLogo']['white']['url'];
     }
+
     if (!empty($options['mobileLogoColored'])) {
         $data['mobileLogo']['colored']['url'] = $options['mobileLogoColored']['url'] ?? $options['mobileLogoColored']['src'] ?? null;
         $data['mobileLogo']['colored']['src'] = $data['mobileLogo']['colored']['src'] ?: $data['mobileLogo']['colored']['url'];
@@ -88,12 +94,15 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     if (empty($data['logo']['src']) && empty($data['logo']['url'])) {
         $data['logo']['src'] = $defaultLogo;
     }
+
     if (empty($data['logoWhite']['src']) && empty($data['logoWhite']['url'])) {
         $data['logoWhite']['src'] = $defaultLogoWhite;
     }
+
     if (empty($data['mobileLogo']['white']['src']) && empty($data['mobileLogo']['white']['url'])) {
         $data['mobileLogo']['white']['src'] = $defaultMobWhite;
     }
+
     if (empty($data['mobileLogo']['colored']['src']) && empty($data['mobileLogo']['colored']['url'])) {
         $data['mobileLogo']['colored']['src'] = $defaultMobColored;
     }
@@ -110,6 +119,7 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
         global $post;
         $postId = ($post instanceof \WP_Post) ? (int) $post->ID : 0;
     }
+
     $headerType = '';
     $rawHeaderType = null;
     if ($postId && function_exists('get_field')) {
@@ -120,6 +130,7 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
             $headerType = is_string($rawHeaderType) ? $rawHeaderType : '';
         }
     }
+
     $data['headerType'] = in_array($headerType, ['home', 'transparent_floating'], true) ? $headerType : '';
     if ($data['headerType'] === 'transparent_floating') {
         $data['headerClass'] = 'transparent-floating';
@@ -130,7 +141,7 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     }
 
     // Blog / job / case study single: match blog-details, career-details, case-study-details (transparent bar + white logos).
-    if (is_singular('post') || is_singular('job') || is_singular('case_study')) {
+    if (is_singular('post') || is_singular('job') || is_singular('case_study') || is_404()) {
         $data['headerType'] = 'transparent_floating';
         $data['headerClass'] = 'transparent-floating';
     }
@@ -140,9 +151,11 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     if (empty($data['labels']['languageLabel'])) {
         $data['labels']['languageLabel'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Language: English') : __('Language: English', 'NscSoftware');
     }
+
     if (empty($data['labels']['ariaLabel'])) {
         $data['labels']['ariaLabel'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Main navigation') : __('Main navigation', 'NscSoftware');
     }
+
     $data['labels']['closeMenu'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Close menu') : __('Close menu', 'NscSoftware');
     if (Menu\is_blog_navigation_context()) {
         $data['labels']['mobileHomeText'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Blog') : __('Blog', 'NscSoftware');

@@ -3,5 +3,5 @@
 Template Name: NSC Technology Capabilities
 */
 
-$buildTemplate = 'technology-apabilities.html';
+$buildTemplate = 'technology-capabilities.html';
 require __DIR__ . '/template-static-build-page.php';

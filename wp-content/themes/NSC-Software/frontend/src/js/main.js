@@ -24,6 +24,10 @@
     RESIZE_DEBOUNCE: 250
   };
 
+  // WordPress loads jQuery in noConflict mode, so global `$` is undefined. Static HTML
+  // (e.g. case-study-details.html) uses CDN jQuery which sets `$`. Alias for Slick sliders.
+  const $ = typeof window !== 'undefined' ? (window.jQuery || window.$) : undefined;
+
   // ============================================================================
   // UTILITIES
   // ============================================================================
@@ -735,6 +739,92 @@
             }
           }, CONFIG.RESIZE_DEBOUNCE);
         });
+      };
+
+      checkDependencies();
+    }
+  }
+
+  class CaseStudyDetailGallerySlider {
+    constructor() {
+      this.slider = null;
+    }
+
+    init() {
+      const checkDependencies = () => {
+        if (typeof $ === 'undefined' || typeof $.fn.slick === 'undefined') {
+          setTimeout(checkDependencies, 100);
+          return;
+        }
+
+        const $gallery = $('.js-case-study-detail-gallery');
+
+        if ($gallery.length === 0 || $gallery.hasClass('slick-initialized')) {
+          return;
+        }
+
+        const prevArrow =
+          '<button type="button" class="slick-prev" aria-label="Previous"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15.707 4.29289C16.0975 4.68342 16.0975 5.31643 15.707 5.70696L10.4141 10.9999H22C22.5522 10.9999 23 11.4476 23 11.9999C23 12.5522 22.5522 12.9999 22 12.9999H10.4141L15.707 18.2929C16.0975 18.6834 16.0975 19.3164 15.707 19.707C15.3165 20.0975 14.6834 20.0975 14.2929 19.707L7.29289 12.707C6.90237 12.3164 6.90237 11.6834 7.29289 11.293L14.2929 4.29289C14.6834 3.90237 15.3165 3.90237 15.707 4.29289Z" fill="currentColor"/></svg></button>';
+        const nextArrow =
+          '<button type="button" class="slick-next" aria-label="Next"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/></svg></button>';
+
+        // Slick only builds dots / binds arrows when slideCount > slidesToShow (slick.js buildDots, initArrowEvents, initUI).
+        // With slidesToShow: 3 we duplicate slides in HTML (6 slides) so 6 > 3.
+        const positionGallery = () => {
+          if ($gallery.hasClass('slick-initialized')) {
+            $gallery.slick('setPosition');
+          }
+        };
+
+        $gallery.on('init', () => {
+          setTimeout(positionGallery, 0);
+        });
+
+        $gallery.slick({
+          slidesToShow: 3,
+          slidesToScroll: 1,
+          centerMode: true,
+          centerPadding: '0px',
+          dots: true,
+          infinite: true,
+          autoplay: false,
+          arrows: true,
+          prevArrow: prevArrow,
+          nextArrow: nextArrow,
+          adaptiveHeight: false,
+          speed: 500,
+          swipeToSlide: true,
+          responsive: [
+            {
+              breakpoint: 768,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                centerMode: true,
+                centerPadding: '5%',
+                infinite: true,
+              },
+            },
+          ],
+        });
+
+        if (document.readyState === 'complete') {
+          setTimeout(positionGallery, 0);
+        } else {
+          $(window).on('load.caseStudyDetailGallery', positionGallery);
+        }
+
+        $gallery.find('img').each(function bindGalleryImgResize() {
+          const img = this;
+          if (img.complete) {
+            setTimeout(positionGallery, 0);
+          } else {
+            $(img).on('load', positionGallery);
+          }
+        });
+
+        this.slider = $gallery;
+        debugLog('✨', 'SLIDER', 'Case study detail gallery initialized');
       };
 
       checkDependencies();
@@ -2407,10 +2497,12 @@
     if (!bar) {
       return 0;
     }
+
     const st = window.getComputedStyle(bar);
     if (st.display === 'none' || st.visibility === 'hidden' || bar.getBoundingClientRect().height === 0) {
       return 0;
     }
+
     return Math.ceil(bar.getBoundingClientRect().height);
   }
 
@@ -2425,6 +2517,7 @@
     if (!bar) {
       return 88;
     }
+
     return Math.ceil(bar.getBoundingClientRect().height);
   }
 
@@ -2459,6 +2552,7 @@
       if (!statsEl) {
         return;
       }
+
       const y = getScrollYToRevealStatsSection(statsEl);
       window.scrollTo({ top: y, behavior: 'smooth' });
     };
@@ -2496,6 +2590,9 @@
     const testimonialsSlider = new TestimonialsSlider();
     testimonialsSlider.init();
 
+    const caseStudyDetailGallerySlider = new CaseStudyDetailGallerySlider();
+    caseStudyDetailGallerySlider.init();
+
     whyUsSliderInstance = new WhyUsSlider();
     whyUsSliderInstance.init();
   }
@@ -2515,6 +2612,12 @@
         if ($testimonialsContainer.length > 0 && !$testimonialsContainer.hasClass('slick-initialized')) {
           const testimonialsSlider = new TestimonialsSlider();
           testimonialsSlider.init();
+        }
+
+        const $caseStudyGallery = $('.js-case-study-detail-gallery');
+        if ($caseStudyGallery.length > 0 && !$caseStudyGallery.hasClass('slick-initialized')) {
+          const caseStudyDetailGallerySlider = new CaseStudyDetailGallerySlider();
+          caseStudyDetailGallerySlider.init();
         }
 
         // Initialize Why Us slider if on mobile
@@ -2733,6 +2836,7 @@
         } else if (kind === 'linkedin') {
           shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encoded}`;
         }
+
         if (!shareUrl) return;
 
         anchor.href = shareUrl;
@@ -2740,6 +2844,7 @@
           if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
             return;
           }
+
           e.preventDefault();
           const win = window.open(shareUrl, 'blogShare', popupFeatures);
           if (win) {

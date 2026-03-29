@@ -39,6 +39,7 @@ function nsc_seed_polylang_default_slug(): string
     if (!function_exists('pll_default_language')) {
         return '';
     }
+
     $s = pll_default_language('slug');
 
     return is_string($s) ? $s : '';
@@ -58,10 +59,12 @@ function nsc_seed_polylang_ensure_term_language_context(): void
     if (!\function_exists('PLL')) {
         return;
     }
+
     $pll = \PLL();
     if (\property_exists($pll, 'curlang') && $pll->curlang === false) {
         $pll->curlang = null;
     }
+
     if (\property_exists($pll, 'pref_lang') && $pll->pref_lang === false) {
         $pll->pref_lang = null;
     }
@@ -73,6 +76,7 @@ function nsc_seed_polylang_ensure_term_language_context(): void
             $langObj = $obj;
         }
     }
+
     if (!$langObj instanceof \PLL_Language && isset($pll->model) && \is_object($pll->model) && \method_exists($pll->model, 'get_language') && \function_exists('pll_languages_list')) {
         $list = pll_languages_list(['fields' => 'slug']);
         if (\is_array($list)) {
@@ -80,6 +84,7 @@ function nsc_seed_polylang_ensure_term_language_context(): void
                 if (!\is_string($s) || $s === '') {
                     continue;
                 }
+
                 $o = $pll->model->get_language($s);
                 if ($o instanceof \PLL_Language) {
                     $langObj = $o;
@@ -119,6 +124,7 @@ function nsc_seed_bootstrap_acf_polylang_default_language(): void
     if ($registered || !\function_exists('pll_default_language')) {
         return;
     }
+
     $registered = true;
 
     nsc_seed_polylang_ensure_term_language_context();
@@ -154,10 +160,12 @@ function nsc_seed_polylang_target_slugs(): array
     if (!function_exists('pll_languages_list')) {
         return [];
     }
+
     $list = pll_languages_list(['fields' => 'slug']);
     if (!is_array($list)) {
         return [];
     }
+
     $def = nsc_seed_polylang_default_slug();
     $out = [];
     foreach ($list as $slug) {
@@ -186,21 +194,26 @@ function nsc_seed_polylang_sync_target_slugs_for_request(): array
     if (!function_exists('pll_languages_list')) {
         return [];
     }
+
     $seedLangParam = $_GET['seed_lang'] ?? $_POST['seed_lang'] ?? '';
     if (empty($seedLangParam)) {
         return [];
     }
+
     $raw = sanitize_key((string) $seedLangParam);
     if ($raw === '') {
         return [];
     }
+
     if ($raw === 'all') {
         return nsc_seed_polylang_target_slugs();
     }
+
     $allowed = pll_languages_list(['fields' => 'slug']);
     if (!is_array($allowed) || !in_array($raw, $allowed, true)) {
         return [];
     }
+
     $def = nsc_seed_polylang_default_slug();
     if ($def === '' || $raw === $def) {
         return [];
@@ -222,6 +235,7 @@ function nsc_seed_get_canonical_post_by_type_and_slug(string $postType, string $
     if ($slug === '' || $postType === '') {
         return null;
     }
+
     $postStatus = $anyStatus ? 'any' : 'publish';
     if (!\function_exists('pll_default_language') || !\function_exists('pll_get_post_language')) {
         $posts = \get_posts([
@@ -235,6 +249,7 @@ function nsc_seed_get_canonical_post_by_type_and_slug(string $postType, string $
 
         return !empty($posts[0]) && $posts[0] instanceof \WP_Post ? $posts[0] : null;
     }
+
     $def = \pll_default_language('slug');
     if (!\is_string($def) || $def === '') {
         $posts = \get_posts([
@@ -248,6 +263,7 @@ function nsc_seed_get_canonical_post_by_type_and_slug(string $postType, string $
 
         return !empty($posts[0]) && $posts[0] instanceof \WP_Post ? $posts[0] : null;
     }
+
     $posts = \get_posts([
         'post_type'        => $postType,
         'post_status'      => $postStatus,
@@ -260,6 +276,7 @@ function nsc_seed_get_canonical_post_by_type_and_slug(string $postType, string $
     if (!empty($posts[0]) && $posts[0] instanceof \WP_Post) {
         return $posts[0];
     }
+
     $posts = \get_posts([
         'post_type'        => $postType,
         'post_status'      => $postStatus,
@@ -271,11 +288,13 @@ function nsc_seed_get_canonical_post_by_type_and_slug(string $postType, string $
     if (empty($posts[0]) || !$posts[0] instanceof \WP_Post) {
         return null;
     }
+
     $p = $posts[0];
     $postLang = \pll_get_post_language($p->ID);
     if ($postLang === $def) {
         return $p;
     }
+
     if (\function_exists('pll_get_post')) {
         $canonicalId = \pll_get_post($p->ID, $def);
         if ($canonicalId) {
@@ -299,6 +318,7 @@ function nsc_seed_get_canonical_page_by_slug(string $slug): ?\WP_Post
     if ($slug === '') {
         return null;
     }
+
     if (!\function_exists('pll_default_language') || !\function_exists('pll_get_post_language')) {
         $p = \get_page_by_path($slug, \OBJECT, 'page');
 
@@ -314,14 +334,17 @@ function nsc_seed_get_canonical_page_by_slug(string $slug): ?\WP_Post
     if (!$p instanceof \WP_Post) {
         return null;
     }
+
     $def = \pll_default_language('slug');
     if (!\is_string($def) || $def === '') {
         return $p;
     }
+
     $postLang = \pll_get_post_language($p->ID);
     if ($postLang === $def) {
         return $p;
     }
+
     if (\function_exists('pll_get_post')) {
         $canonicalId = \pll_get_post($p->ID, $def);
         if ($canonicalId) {
@@ -344,10 +367,12 @@ function nsc_resolve_page_permalink(string $slug, ?string $polylangSlug = null):
     if ($slug === '') {
         return \home_url('/');
     }
+
     $canonical = nsc_seed_get_canonical_page_by_slug($slug);
     if (!$canonical instanceof \WP_Post) {
         return \home_url('/' . $slug . '/');
     }
+
     $baseId = (int) $canonical->ID;
     $targetLang = $polylangSlug;
     if ($targetLang === null || $targetLang === '') {
@@ -358,10 +383,12 @@ function nsc_resolve_page_permalink(string $slug, ?string $polylangSlug = null):
             }
         }
     }
+
     if ($targetLang === '' && \function_exists('pll_default_language')) {
         $dl = \pll_default_language('slug');
         $targetLang = \is_string($dl) ? $dl : '';
     }
+
     if ($targetLang !== '' && \function_exists('pll_get_post')) {
         $tr = \pll_get_post($baseId, $targetLang);
         if ($tr) {
@@ -403,13 +430,14 @@ function nsc_seed_polylang_rewrite_internal_url(string $url, string $sourceLang,
     if ($url === '' || $sourceLang === '' || $targetLang === '' || $sourceLang === $targetLang) {
         return $url;
     }
+
     static $knownSlugs = null;
     if ($knownSlugs === null) {
         $knownSlugs = [
             'our-services',
             'ai',
             'blogs',
-            'technology-apabilities',
+            'technology-capabilities',
             'contact',
             'career',
             'case-studies',
@@ -417,6 +445,7 @@ function nsc_seed_polylang_rewrite_internal_url(string $url, string $sourceLang,
             'home',
         ];
     }
+
     foreach ($knownSlugs as $pageSlug) {
         $srcPerm = nsc_resolve_page_permalink($pageSlug, $sourceLang);
         if (nsc_seed_urls_same_path($url, $srcPerm)) {
@@ -456,6 +485,7 @@ function nsc_seed_polylang_localize_flexible_component_urls(?array $components, 
     if ($components === null || $sourceLang === '' || $targetLang === '' || $sourceLang === $targetLang) {
         return $components;
     }
+
     $out = [];
     foreach ($components as $i => $block) {
         $out[$i] = \is_array($block)
@@ -483,18 +513,22 @@ function nsc_seed_is_single_target_language_run(): bool
     if (!nsc_seed_polylang_active()) {
         return false;
     }
+
     $seedLangParam = $_GET['seed_lang'] ?? $_POST['seed_lang'] ?? '';
     if ($seedLangParam === '') {
         return false;
     }
+
     $raw = \sanitize_key((string) $seedLangParam);
     if ($raw === '' || $raw === 'all') {
         return false;
     }
+
     $def = nsc_seed_polylang_default_slug();
     if ($def === '' || $raw === $def) {
         return false;
     }
+
     $allowed = \pll_languages_list(['fields' => 'slug']);
     if (!\is_array($allowed) || !\in_array($raw, $allowed, true)) {
         return false;
@@ -525,6 +559,7 @@ function nsc_seed_polylang_get_explicit_lang_query_args(): array
     if (!nsc_seed_polylang_active() || nsc_seed_is_single_target_language_run()) {
         return [];
     }
+
     $def = nsc_seed_polylang_default_slug();
 
     return ($def !== '' && is_string($def)) ? ['lang' => $def] : [];
@@ -538,6 +573,7 @@ function nsc_seed_polylang_default_lang_query_args(): array
     if (!nsc_seed_polylang_active()) {
         return [];
     }
+
     $def = nsc_seed_polylang_default_slug();
 
     return ($def !== '' && is_string($def)) ? ['lang' => $def] : [];
@@ -551,6 +587,7 @@ function nsc_seed_google_translate_api_key(): string
     if (defined('NSC_SEED_GOOGLE_TRANSLATE_API_KEY') && constant('NSC_SEED_GOOGLE_TRANSLATE_API_KEY') !== '') {
         return (string) constant('NSC_SEED_GOOGLE_TRANSLATE_API_KEY');
     }
+
     $e = getenv('NSC_SEED_GOOGLE_TRANSLATE_API_KEY');
 
     return is_string($e) && $e !== '' ? $e : '';
@@ -565,15 +602,19 @@ function nsc_seed_should_skip_translating_string(string $text): bool
     if ($t === '') {
         return true;
     }
+
     if (preg_match('#^https?://#i', $t)) {
         return true;
     }
+
     if (preg_match('#^\s*\[contact-form-7\b#i', $t)) {
         return true;
     }
+
     if (preg_match('#^\s*mailto:#i', $t)) {
         return true;
     }
+
     if (preg_match('#^\s*tel:#i', $t)) {
         return true;
     }
@@ -591,29 +632,36 @@ function nsc_seed_translate_chunks(string $text, int $maxBytes = 4500): array
     if (strlen($text) <= $maxBytes) {
         return [$text];
     }
+
     $parts = [];
     $buf = '';
     $units = preg_split('#(\s+)#u', $text, -1, PREG_SPLIT_DELIM_CAPTURE);
     if (!is_array($units)) {
         return [substr($text, 0, $maxBytes)];
     }
+
     foreach ($units as $u) {
         if ($u === '') {
             continue;
         }
+
         if (strlen($buf) + strlen($u) > $maxBytes) {
             if ($buf !== '') {
                 $parts[] = $buf;
             }
+
             $buf = $u;
             while (strlen($buf) > $maxBytes) {
                 $parts[] = substr($buf, 0, $maxBytes);
                 $buf = substr($buf, $maxBytes);
             }
+
             continue;
         }
+
         $buf .= $u;
     }
+
     if ($buf !== '') {
         $parts[] = $buf;
     }
@@ -633,6 +681,7 @@ function nsc_seed_google_translate_chunks(array $chunks, string $targetLang, str
     if ($key === '' || $chunks === []) {
         return $chunks;
     }
+
     $url = 'https://translation.googleapis.com/language/translate/v2?key=' . rawurlencode($key);
     $out = [];
     foreach ($chunks as $chunk) {
@@ -640,6 +689,7 @@ function nsc_seed_google_translate_chunks(array $chunks, string $targetLang, str
             $out[] = '';
             continue;
         }
+
         $body = [
             'q' => $chunk,
             'target' => $targetLang,
@@ -648,6 +698,7 @@ function nsc_seed_google_translate_chunks(array $chunks, string $targetLang, str
         if ($sourceLang !== '') {
             $body['source'] = $sourceLang;
         }
+
         $resp = wp_remote_post($url, [
             'timeout' => 45,
             'headers' => ['Content-Type' => 'application/json'],
@@ -657,16 +708,19 @@ function nsc_seed_google_translate_chunks(array $chunks, string $targetLang, str
             $out[] = $chunk;
             continue;
         }
+
         if ((int) wp_remote_retrieve_response_code($resp) !== 200) {
             $out[] = $chunk;
             continue;
         }
+
         $json = json_decode((string) wp_remote_retrieve_body($resp), true);
         $translated = $json['data']['translations'][0]['translatedText'] ?? null;
         if (!is_string($translated)) {
             $out[] = $chunk;
             continue;
         }
+
         $out[] = html_entity_decode($translated, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
@@ -682,6 +736,7 @@ function nsc_seed_strip_leading_placeholder_prefix(string $text): string
     if ($text === '') {
         return $text;
     }
+
     $stripped = preg_replace('/^(?:\[[A-Z0-9_-]+\]|\([a-z0-9_-]+\))\s+/u', '', $text);
 
     return $stripped ?? $text;
@@ -695,19 +750,23 @@ function nsc_seed_translate_text(string $text, string $targetLang, string $sourc
     if (nsc_seed_should_skip_translating_string($text)) {
         return $text;
     }
+
     $text = nsc_seed_strip_leading_placeholder_prefix($text);
     if ($sourceLang !== '' && $targetLang === $sourceLang) {
         return $text;
     }
+
     $key = nsc_seed_google_translate_api_key();
     if ($key === '') {
         if ($targetLang === '') {
             return $text;
         }
+
         $label = strtolower($targetLang);
 
         return '(' . $label . ') ' . $text;
     }
+
     $chunks = nsc_seed_translate_chunks($text);
     $done = nsc_seed_google_translate_chunks($chunks, $targetLang, $sourceLang);
 
@@ -725,9 +784,11 @@ function nsc_seed_polylang_map_string_fields($data, callable $translate, array $
     if (is_string($data)) {
         return nsc_seed_should_skip_translating_string($data) ? $data : $translate($data);
     }
+
     if (!is_array($data)) {
         return $data;
     }
+
     $out = [];
     foreach ($data as $k => $v) {
         $key = is_string($k) ? $k : (string) $k;
@@ -735,6 +796,7 @@ function nsc_seed_polylang_map_string_fields($data, callable $translate, array $
             $out[$k] = $v;
             continue;
         }
+
         $out[$k] = nsc_seed_polylang_map_string_fields($v, $translate, $skipKeys);
     }
 
@@ -797,16 +859,19 @@ function nsc_seed_polylang_suspend_post_meta_sync(callable $callback)
     if (!\function_exists('PLL')) {
         return $callback();
     }
+
     $pll = \PLL();
     if (!isset($pll->sync->post_metas) || !\is_object($pll->sync->post_metas)) {
         return $callback();
     }
+
     /** @var object $postMetas */
     $postMetas = $pll->sync->post_metas;
     if ($depth === 0) {
         $postMetas->remove_all_meta_actions();
         \remove_action('pll_save_post', [$postMetas, 'save_object'], 10);
     }
+
     ++$depth;
     try {
         return $callback();
@@ -827,10 +892,12 @@ function nsc_seed_polylang_set_default_language_on_post(int $postId): void
     if (!nsc_seed_polylang_active() || $postId <= 0) {
         return;
     }
+
     $def = nsc_seed_polylang_default_slug();
     if ($def === '') {
         return;
     }
+
     $current = function_exists('pll_get_post_language') ? pll_get_post_language($postId) : false;
     if ($current === false || $current === '') {
         pll_set_post_language($postId, $def, false);
@@ -865,9 +932,11 @@ function nsc_seed_polylang_upsert_linked_post(
             unset($post['ID']);
             $r = wp_insert_post($post, true);
         }
+
         if (is_wp_error($r)) {
             return 0;
         }
+
         $trId = (int) $r;
         pll_set_post_language($trId, $lang, false);
         $applyMeta($trId);
@@ -876,10 +945,12 @@ function nsc_seed_polylang_upsert_linked_post(
         if (!is_array($translations)) {
             $translations = [];
         }
+
         $def = nsc_seed_polylang_default_slug();
         if ($def !== '') {
             $translations[$def] = $canonicalPostId;
         }
+
         $translations[$lang] = $trId;
         pll_save_post_translations($translations);
 
@@ -895,9 +966,11 @@ function nsc_seed_polylang_copy_thumbnail_if_missing(int $canonicalId, int $tran
     if ($translationId <= 0 || $canonicalId <= 0) {
         return;
     }
+
     if (has_post_thumbnail($translationId)) {
         return;
     }
+
     $thumb = get_post_thumbnail_id($canonicalId);
     if ($thumb) {
         set_post_thumbnail($translationId, (int) $thumb);
@@ -915,12 +988,14 @@ function nsc_seed_polylang_map_term_ids(array $termIds, string $lang): array
     if (!function_exists('pll_get_term') || $lang === '') {
         return [];
     }
+
     $out = [];
     foreach ($termIds as $tid) {
         $tid = (int) $tid;
         if ($tid <= 0) {
             continue;
         }
+
         $tr = pll_get_term($tid, $lang);
         if ($tr) {
             $out[] = (int) $tr;
@@ -940,10 +1015,12 @@ function nsc_seed_polylang_sync_page_translations(int $pageId, string $slug, str
     if (!nsc_seed_polylang_active() || $pageId <= 0) {
         return;
     }
+
     $sourceLang = nsc_seed_polylang_default_slug();
     if ($sourceLang === '') {
         return;
     }
+
     nsc_seed_polylang_set_default_language_on_post($pageId);
 
     foreach (nsc_seed_polylang_sync_target_slugs_for_request() as $lang) {
@@ -1003,10 +1080,12 @@ function nsc_seed_polylang_sync_post_with_taxonomies(
     if (!nsc_seed_polylang_active() || $postId <= 0) {
         return;
     }
+
     $sourceLang = nsc_seed_polylang_default_slug();
     if ($sourceLang === '') {
         return;
     }
+
     nsc_seed_polylang_set_default_language_on_post($postId);
 
     foreach (nsc_seed_polylang_sync_target_slugs_for_request() as $lang) {
@@ -1040,21 +1119,26 @@ function nsc_seed_polylang_sync_post_with_taxonomies(
                     foreach ($translatedAcf as $fname => $val) {
                         \update_field($fname, $val, $trId);
                     }
+
                     \remove_filter('acf/settings/current_language', $acfLang, 99999);
                 }
+
                 foreach ($taxonomies as $tax) {
                     if (!is_string($tax) || !taxonomy_exists($tax)) {
                         continue;
                     }
+
                     $ids = wp_get_post_terms($postId, $tax, ['fields' => 'ids']);
                     if (is_wp_error($ids) || !is_array($ids) || $ids === []) {
                         continue;
                     }
+
                     $mapped = nsc_seed_polylang_map_term_ids(array_map('intval', $ids), $lang);
                     if ($mapped !== []) {
                         wp_set_object_terms($trId, $mapped, $tax, false);
                     }
                 }
+
                 nsc_seed_polylang_copy_thumbnail_if_missing($postId, $trId);
             }
         );
@@ -1072,10 +1156,12 @@ function nsc_seed_polylang_translate_global_options(): int
     if (!nsc_seed_polylang_active() || !function_exists('get_field') || !function_exists('update_field')) {
         return 0;
     }
+
     $def = nsc_seed_polylang_default_slug();
     if ($def === '') {
         return 0;
     }
+
     $targets = nsc_seed_polylang_sync_target_slugs_for_request();
     if ($targets === []) {
         return 0;
@@ -1107,14 +1193,17 @@ function nsc_seed_polylang_translate_global_options(): int
     foreach ($flatFooter as $name) {
         $footerValues[$name] = get_field($footerPrefix . $name, 'option');
     }
+
     $offices = get_field($footerPrefix . 'offices', 'option');
     if (!is_array($offices)) {
         $offices = [];
     }
+
     $socialLinks = get_field($footerPrefix . 'socialLinks', 'option');
     if (!is_array($socialLinks)) {
         $socialLinks = [];
     }
+
     $headerLabels = get_field('translatable_NSCHeader_labels', 'option');
     if (!is_array($headerLabels)) {
         $headerLabels = [];
