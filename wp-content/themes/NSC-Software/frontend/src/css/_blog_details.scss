@@ -45,6 +45,33 @@
 
   &__body {
     @apply space-y-5 text-sm lg:text-base font-medium leading-relaxed lg:space-y-6 lg:text-lg;
+
+    table {
+      @apply my-6 w-full border-collapse border border-[#E5E5E5] text-left text-sm lg:my-8 lg:text-base;
+    }
+
+    thead th {
+      @apply bg-[#F7FAFC] font-bold text-black;
+    }
+
+    th,
+    td {
+      @apply border border-[#E5E5E5] px-3 py-2 align-top lg:px-4 lg:py-3;
+    }
+
+    tbody tr:nth-child(even) {
+      @apply bg-[#FCFCFC];
+    }
+
+    // Keep wide tables usable on mobile without breaking layout.
+    .table-responsive,
+    .wp-block-table {
+      @apply my-6 overflow-x-auto lg:my-8;
+    }
+
+    .wp-block-table table {
+      @apply my-0;
+    }
   }
 
   &__lead {
