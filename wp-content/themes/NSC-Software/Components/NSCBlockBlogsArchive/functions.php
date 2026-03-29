@@ -10,6 +10,33 @@ const TAXONOMY = 'category';
 const VUE_POSTS_MAX = 500;
 
 /**
+ * ACF true_false stores "1"/"0"; include legacy "yes"/"true" values too.
+ *
+ * @return array<string, mixed>
+ */
+function featured_article_yes_meta_query(): array
+{
+    return [
+        'relation' => 'OR',
+        [
+            'key' => 'nsc_featured_article',
+            'value' => '1',
+            'compare' => '=',
+        ],
+        [
+            'key' => 'nsc_featured_article',
+            'value' => 'yes',
+            'compare' => '=',
+        ],
+        [
+            'key' => 'nsc_featured_article',
+            'value' => 'true',
+            'compare' => '=',
+        ],
+    ];
+}
+
+/**
  * @return array<string, string>
  */
 function default_archive_list_labels(): array
@@ -239,35 +266,12 @@ function get_featured_posts_for_archive(int $limit = 4): array
         'ignore_sticky_posts' => 1,
         'orderby' => 'date',
         'order' => 'DESC',
-        'meta_query' => [
-            [
-                'key' => 'nsc_featured_article',
-                'value' => '1',
-                'compare' => '=',
-            ],
-        ],
+        'meta_query' => featured_article_yes_meta_query(),
     ];
     $featured = Timber::get_posts($q);
-    $arr = is_object($featured) && method_exists($featured, 'to_array')
+    return is_object($featured) && method_exists($featured, 'to_array')
         ? $featured->to_array()
         : (array) $featured;
-
-    if (count($arr) >= 1) {
-        return $arr;
-    }
-
-    $fallback = Timber::get_posts([
-        'post_type' => POST_TYPE,
-        'post_status' => 'publish',
-        'posts_per_page' => $limit,
-        'ignore_sticky_posts' => 1,
-        'orderby' => 'date',
-        'order' => 'DESC',
-    ]);
-
-    return is_object($fallback) && method_exists($fallback, 'to_array')
-        ? $fallback->to_array()
-        : (array) $fallback;
 }
 
 add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($data) {

@@ -2488,6 +2488,7 @@
 
   /** Additional offset subtracted from scroll `top` (more clearance below fixed nav). */
   const EXPLORE_STATS_SCROLL_EXTRA_PX = 100;
+  const ANCHOR_SCROLL_OFFSET_PX = 100;
 
   /**
    * Height of the WP admin bar when visible (front-end), else 0.
@@ -2562,6 +2563,118 @@
     });
   }
 
+  function getHashTargetElement(hash) {
+    if (!hash || hash.length <= 1) {
+      return null;
+    }
+
+    const rawId = hash.slice(1);
+    if (!rawId) {
+      return null;
+    }
+
+    let decodedId = rawId;
+    try {
+      decodedId = decodeURIComponent(rawId);
+    } catch (err) {
+      decodedId = rawId;
+    }
+
+    const byId = document.getElementById(decodedId);
+    if (byId) {
+      return byId;
+    }
+
+    const byName = document.getElementsByName(decodedId);
+    if (byName && byName.length > 0) {
+      return byName[0];
+    }
+
+    return null;
+  }
+
+  function getAnchorScrollTop(targetEl) {
+    const elementTop = targetEl.getBoundingClientRect().top + window.pageYOffset;
+    const docHeight = Math.max(
+      document.documentElement.scrollHeight,
+      document.body ? document.body.scrollHeight : 0
+    );
+    const viewportHeight = window.innerHeight;
+    const maxScroll = Math.max(0, docHeight - viewportHeight);
+    const targetTop = elementTop - ANCHOR_SCROLL_OFFSET_PX;
+
+    return Math.min(Math.max(0, targetTop), maxScroll);
+  }
+
+  function scrollToHashTarget(hash, behavior) {
+    const targetEl = getHashTargetElement(hash);
+    if (!targetEl) {
+      return;
+    }
+
+    const top = getAnchorScrollTop(targetEl);
+    window.scrollTo({
+      top,
+      behavior: behavior || 'auto'
+    });
+  }
+
+  function initAnchorHashOffsetScroll() {
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest('a[href]');
+      if (!link || link.hasAttribute('data-nsc-anchor-no-offset')) {
+        return;
+      }
+
+      const href = link.getAttribute('href') || '';
+      if (!href.includes('#')) {
+        return;
+      }
+
+      let url;
+      try {
+        url = new URL(link.href, window.location.href);
+      } catch (err) {
+        return;
+      }
+
+      if (
+        !url.hash ||
+        url.hash === '#' ||
+        url.origin !== window.location.origin ||
+        url.pathname !== window.location.pathname
+      ) {
+        return;
+      }
+
+      const targetEl = getHashTargetElement(url.hash);
+      if (!targetEl) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (window.history && typeof window.history.pushState === 'function') {
+        window.history.pushState(null, '', url.hash);
+      } else {
+        window.location.hash = url.hash;
+      }
+
+      const top = getAnchorScrollTop(targetEl);
+      window.scrollTo({ top, behavior: 'smooth' });
+    });
+
+    window.addEventListener('hashchange', () => {
+      scrollToHashTarget(window.location.hash, 'auto');
+    });
+
+    if (window.location.hash) {
+      setTimeout(() => {
+        scrollToHashTarget(window.location.hash, 'auto');
+      }, 0);
+    }
+  }
+
   // ============================================================================
   // INITIALIZATION
   // ============================================================================
@@ -2571,6 +2684,7 @@
 
   function init() {
     initHeroExploreScroll();
+    initAnchorHashOffsetScroll();
     initMobileMenu();
     initHeaderScroll();
     initDropdownMenu();

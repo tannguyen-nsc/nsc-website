@@ -7,6 +7,33 @@ use Timber\Timber;
 
 const POST_TYPE = 'post';
 
+/**
+ * ACF true_false stores "1"/"0"; include legacy "yes"/"true" values too.
+ *
+ * @return array<string, mixed>
+ */
+function featured_article_yes_meta_query(): array
+{
+    return [
+        'relation' => 'OR',
+        [
+            'key' => 'nsc_featured_article',
+            'value' => '1',
+            'compare' => '=',
+        ],
+        [
+            'key' => 'nsc_featured_article',
+            'value' => 'yes',
+            'compare' => '=',
+        ],
+        [
+            'key' => 'nsc_featured_article',
+            'value' => 'true',
+            'compare' => '=',
+        ],
+    ];
+}
+
 add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsHome', function ($data) {
     $blogPageUrl = get_permalink(get_option('page_for_posts')) ?: get_post_type_archive_link(POST_TYPE);
     $currentPostId = get_the_ID();
@@ -17,7 +44,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsHome', function ($dat
     $postsLimit = ($rawHomeLimit === null || $rawHomeLimit === '') ? 4 : (int) $rawHomeLimit;
     $postsLimit = max(1, min(24, $postsLimit));
 
-    // Featured Insights: from selected category or latest posts if no category
+    // Featured Insights: always only posts marked "Featured article" = yes.
     $featuredCategoryIds = [];
     if (!empty($data['featuredCategory'])) {
         $raw = $data['featuredCategory'];
@@ -36,6 +63,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsHome', function ($dat
         'posts_per_page' => $postsLimit,
         'ignore_sticky_posts' => 1,
         'post__not_in' => $excludeCurrent,
+        'meta_query' => featured_article_yes_meta_query(),
     ];
     if (!empty($featuredCategoryIds)) {
         $featuredArgs['cat'] = implode(',', $featuredCategoryIds);
