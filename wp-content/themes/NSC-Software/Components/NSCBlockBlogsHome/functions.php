@@ -7,6 +7,49 @@ use Timber\Timber;
 
 const POST_TYPE = 'post';
 
+function resolve_post_square_image_url(int $postId): string
+{
+    if ($postId <= 0) {
+        return '';
+    }
+
+    $value = function_exists('get_field') ? get_field('nsc_square_thumbnail', $postId) : null;
+    if (is_array($value)) {
+        $url = isset($value['url']) ? trim((string) $value['url']) : '';
+        if ($url !== '') {
+            return $url;
+        }
+    }
+    if (is_numeric($value)) {
+        $url = wp_get_attachment_image_url((int) $value, 'medium_large');
+        if (is_string($url) && $url !== '') {
+            return $url;
+        }
+    }
+    if (is_string($value)) {
+        $url = trim($value);
+        if ($url !== '') {
+            return $url;
+        }
+    }
+
+    $raw = get_post_meta($postId, 'nsc_square_thumbnail', true);
+    if (is_numeric($raw)) {
+        $url = wp_get_attachment_image_url((int) $raw, 'medium_large');
+        if (is_string($url) && $url !== '') {
+            return $url;
+        }
+    }
+    if (is_string($raw)) {
+        $raw = trim($raw);
+        if ($raw !== '' && filter_var($raw, FILTER_VALIDATE_URL)) {
+            return $raw;
+        }
+    }
+
+    return '';
+}
+
 /**
  * ACF true_false stores "1"/"0"; include legacy "yes"/"true" values too.
  *

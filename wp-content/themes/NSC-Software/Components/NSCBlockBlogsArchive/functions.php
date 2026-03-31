@@ -132,6 +132,53 @@ function resolve_post_list_image_url($post, string $placeholderUrl): string
 }
 
 /**
+ * Optional square thumbnail URL from post field.
+ */
+function resolve_post_square_image_url(int $postId): string
+{
+    if ($postId <= 0) {
+        return '';
+    }
+
+    $value = function_exists('get_field') ? get_field('nsc_square_thumbnail', $postId) : null;
+    if (is_array($value)) {
+        $url = isset($value['url']) ? trim((string) $value['url']) : '';
+        if ($url !== '') {
+            return $url;
+        }
+    }
+    if (is_numeric($value)) {
+        $url = wp_get_attachment_image_url((int) $value, 'medium_large');
+        if (is_string($url) && $url !== '') {
+            return $url;
+        }
+    }
+    if (is_string($value)) {
+        $url = trim($value);
+        if ($url !== '') {
+            return $url;
+        }
+    }
+
+    // Fallback for environments where ACF returns empty but meta stores attachment ID.
+    $raw = get_post_meta($postId, 'nsc_square_thumbnail', true);
+    if (is_numeric($raw)) {
+        $url = wp_get_attachment_image_url((int) $raw, 'medium_large');
+        if (is_string($url) && $url !== '') {
+            return $url;
+        }
+    }
+    if (is_string($raw)) {
+        $raw = trim($raw);
+        if ($raw !== '' && filter_var($raw, FILTER_VALIDATE_URL)) {
+            return $raw;
+        }
+    }
+
+    return '';
+}
+
+/**
  * @param array<int, mixed> $rows
  */
 function flexible_rows_include_blogs_archive(array $rows): bool
@@ -215,7 +262,7 @@ function post_plain_excerpt($post, int $maxLen = 280): string
 }
 
 /**
- * @return list<array{id:int,title:string,excerpt:string,category:string,image:string,link:string}>
+ * @return list<array{id:int,title:string,excerpt:string,category:string,image:string,squareImage:string,link:string}>
  */
 function build_vue_blog_items(string $placeholderImageUrl): array
 {
@@ -240,12 +287,15 @@ function build_vue_blog_items(string $placeholderImageUrl): array
         $catName = primary_public_category_name((int) $post->ID);
         $img = resolve_post_list_image_url($post, $placeholderImageUrl);
 
+        $squareImg = resolve_post_square_image_url((int) $post->ID);
+
         $items[] = [
             'id' => (int) $post->ID,
             'title' => html_entity_decode((string) $post->title, ENT_QUOTES | ENT_HTML5, 'UTF-8'),
             'excerpt' => post_plain_excerpt($post),
             'category' => $catName,
             'image' => $img,
+            'squareImage' => $squareImg,
             'link' => (string) $post->link,
         ];
     }

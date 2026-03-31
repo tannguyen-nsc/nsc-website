@@ -438,7 +438,7 @@
             <template v-if="paginatedPosts.length">
               <article class="blog-post" v-for="post in paginatedPosts" :key="post.id">
                 <div class="post-image">
-                  <img :src="post.image" :alt="post.title" loading="lazy" />
+                  <img :src="post.squareImage || post.image" :alt="post.title" loading="lazy" />
                 </div>
                 <div class="post-content">
                   <h3><a :href="post.link">{{ post.title }}</a></h3>

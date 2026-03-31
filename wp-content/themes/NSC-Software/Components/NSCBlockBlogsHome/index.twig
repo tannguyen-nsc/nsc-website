@@ -1,9 +1,12 @@
-{% macro post_image(post, theme) %}
+{% macro post_image(post, theme, preferSquare) %}
   {% set postId = post.id|default(post.ID|default(0)) %}
   {% set img = '' %}
-  {% if post.thumbnail and post.thumbnail.src %}
+  {% if preferSquare and postId %}
+    {% set img = function('NscSoftware\\Components\\NSCBlockBlogsHome\\resolve_post_square_image_url', postId)|default('') %}
+  {% endif %}
+  {% if not img and post.thumbnail and post.thumbnail.src %}
     {% set img = post.thumbnail.src %}
-  {% elseif postId %}
+  {% elseif not img and postId %}
     {% set img = function('get_the_post_thumbnail_url', postId, 'large')|default('') %}
     {% if not img %}
       {% set img = function('get_the_post_thumbnail_url', postId, 'medium_large')|default('') %}
@@ -52,7 +55,7 @@
             {% set mainFeatured = featuredPosts[0] %}
             <div class="content">
               <div class="post-image">
-                {{ blogs_home.post_image(mainFeatured, theme) }}
+                {{ blogs_home.post_image(mainFeatured, theme, false) }}
               </div>
               <h2><a href="{{ mainFeatured.link|e('esc_url') }}">{{ mainFeatured.title|e }}</a></h2>
               <a href="{{ mainFeatured.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
@@ -67,7 +70,7 @@
             {% for post in featuredPosts|slice(1) %}
               <div class="item">
                 <div class="thumbnail">
-                  {{ blogs_home.post_image(post, theme) }}
+                  {{ blogs_home.post_image(post, theme, true) }}
                 </div>
                 <div class="content-wrapper">
                   <h2><a href="{{ post.link|e('esc_url') }}">{{ post.title|e }}</a></h2>
@@ -92,7 +95,7 @@
             {% set mainLatest = latestPosts[0] %}
             <div class="content">
               <div class="post-image">
-                {{ blogs_home.post_image(mainLatest, theme) }}
+                {{ blogs_home.post_image(mainLatest, theme, false) }}
               </div>
               <h2><a href="{{ mainLatest.link|e('esc_url') }}">{{ mainLatest.title|e }}</a></h2>
               <a href="{{ mainLatest.link|e('esc_url') }}" class="read-more">{{ labels.readMore|default('Read More')|e }}
@@ -107,7 +110,7 @@
             {% for post in latestPosts|slice(1) %}
               <div class="item">
                 <div class="thumbnail">
-                  {{ blogs_home.post_image(post, theme) }}
+                  {{ blogs_home.post_image(post, theme, true) }}
                 </div>
                 <div class="content-wrapper">
                   <h2><a href="{{ post.link|e('esc_url') }}">{{ post.title|e }}</a></h2>

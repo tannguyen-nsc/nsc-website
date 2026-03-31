@@ -12,8 +12,9 @@
   {% set read_sfx_one = (author.readingTimeSuffixSingular|default(''))|trim ?: __('min read', 'NscSoftware') %}
   {% set read_sfx_many = (author.readingTimeSuffixPlural|default(''))|trim ?: __('mins read', 'NscSoftware') %}
   {% set read_suffix = reading_minutes_display == 1 ? read_sfx_one : read_sfx_many %}
+  {% set post_title_plain = function('html_entity_decode', post.title|default('')) %}
 
-  <section class="blog-details blog-list-details blog-single"{% if theme.buildUri %} style="background-image:url('{{ theme.buildUri|e('esc_url') }}/img/blogs-bg-details.png');"{% endif %} aria-label="{{ __('Blog article', 'NscSoftware')|e }}">
+  <section class="blog-details blog-list-details blog-single" aria-label="{{ __('Blog article', 'NscSoftware')|e }}">
     <div class="wrapper">
       <div class="blog-details__top">
         <article class="blog-details__main">
@@ -29,7 +30,7 @@
             {% endif %}
           </nav>
 
-          <h1 class="blog-details__title">{{ post.title|e }}</h1>
+          <h1 class="blog-details__title">{{ post_title_plain|e }}</h1>
 
           <p class="blog-details__meta">
             {% if post.date %}

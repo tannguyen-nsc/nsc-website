@@ -20,6 +20,16 @@ add_action('NscSoftware/afterRegisterComponents', function () {
                 'ui' => 1,
             ],
             [
+                'label' => __('Square thumbnail', 'NscSoftware'),
+                'name' => 'nsc_square_thumbnail',
+                'type' => 'image',
+                'instructions' => __('Optional square thumbnail for archive list cards.', 'NscSoftware'),
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+                'library' => 'all',
+                'mime_types' => 'jpg,jpeg,png,webp,avif',
+            ],
+            [
                 'label' => __('Related content heading', 'NscSoftware'),
                 'name' => 'nsc_related_heading',
                 'type' => 'text',
