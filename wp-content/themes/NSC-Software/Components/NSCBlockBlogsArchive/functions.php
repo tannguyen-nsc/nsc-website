@@ -152,6 +152,10 @@ function resolve_post_square_image_url(int $postId): string
         if (is_string($url) && $url !== '') {
             return $url;
         }
+        $url = wp_get_attachment_url((int) $value);
+        if (is_string($url) && $url !== '') {
+            return $url;
+        }
     }
     if (is_string($value)) {
         $url = trim($value);
@@ -164,6 +168,10 @@ function resolve_post_square_image_url(int $postId): string
     $raw = get_post_meta($postId, 'nsc_square_thumbnail', true);
     if (is_numeric($raw)) {
         $url = wp_get_attachment_image_url((int) $raw, 'medium_large');
+        if (is_string($url) && $url !== '') {
+            return $url;
+        }
+        $url = wp_get_attachment_url((int) $raw);
         if (is_string($url) && $url !== '') {
             return $url;
         }

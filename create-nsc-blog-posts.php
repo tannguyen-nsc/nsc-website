@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Seed ~30 blog posts with HTML content, featured image, categories (Technology / Cultures),
+ * Seed blog posts with HTML content, featured image, categories (Technology / Cultures),
  * sidebar fields (featured flag, related links). Idempotent by post slug (updates if exists).
  *
  * Prerequisites: run global options once so categories Technology & Cultures exist
@@ -10,6 +10,7 @@ declare(strict_types=1);
  *
  * Usage:
  *   http://localhost/nsc/create-nsc-blog-posts.php?token=nsc-create-blog-posts-2026
+ *   Optional count={n} to limit seeded posts (1..300, default: all predefined titles).
  *   Optional seed_lang={slug}|all for Polylang-linked posts. Omit seed_lang for default-language only; seed_lang=all for every non-default language. (lang) lowercase prefix without Google API key; legacy [LANG] stripped when re-seeding.
  */
 
@@ -163,6 +164,10 @@ $titles = [
     'Engineering Leadership Without Micromanagement',
     'Celebrating Wins: Team Rituals at NSC',
 ];
+
+$requestedCount = isset($_GET['count']) ? (int) $_GET['count'] : count($titles);
+$requestedCount = max(1, min(300, $requestedCount));
+$seedTitles = array_slice($titles, 0, min($requestedCount, count($titles)));
 
 /**
  * Unique copy per seeded post so excerpts and body text differ in the blog list and single views.
@@ -634,7 +639,7 @@ $imgUriBase   = trailingslashit(get_template_directory_uri()) . 'frontend/build/
 $results = [];
 $i       = 0;
 
-foreach ($titles as $title) {
+foreach ($seedTitles as $title) {
     $i++;
     $slug = sanitize_title($title);
     $singleTarget = function_exists('nsc_seed_is_single_target_language_run') && nsc_seed_is_single_target_language_run();
@@ -818,7 +823,7 @@ header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Blog Posts Seed</title>';
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:1100px}th,td{border:1px solid #ddd;padding:8px;font-size:13px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body><h1>NSC Blog Posts</h1>';
-echo '<p>Seeded or updated ' . count($results) . ' posts. Categories: Technology, Cultures. Rich HTML body (blog-details-style), tags, ACF featured + related links. Thumbnails from build images when sideload works. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang duplicates (omit for default language only).</p>';
+echo '<p>Seeded or updated ' . count($results) . ' posts (requested: ' . (int) $requestedCount . '). Categories: Technology, Cultures. Rich HTML body (blog-details-style), tags, ACF featured + related links. Thumbnails from build images when sideload works. Optional <code>count</code> to limit posts and <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang duplicates (omit for default language only).</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $cls = $row['status'] === 'error' ? 'error' : 'ok';

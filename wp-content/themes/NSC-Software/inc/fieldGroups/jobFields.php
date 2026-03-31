@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Job opening (CPT job) fields: skills repeater, descriptions, customer, project, tech, listing date.
+ * Job opening (CPT job) fields: listing date, customer company, skills, content blocks, tech.
  */
 
 use ACFComposer\ACFComposer;
@@ -19,6 +19,12 @@ add_action('NscSoftware/afterRegisterComponents', static function (): void {
                 'display_format' => 'd/m/Y',
                 'return_format' => 'Y-m-d',
                 'first_day' => 1,
+            ],
+            [
+                'label' => __('Customer company name', 'NscSoftware'),
+                'name' => 'nsc_job_customer_company',
+                'type' => 'text',
+                'instructions' => __('Displayed in the open positions section.', 'NscSoftware'),
             ],
             [
                 'label' => __('Required skills', 'NscSoftware'),
@@ -60,38 +66,28 @@ add_action('NscSoftware/afterRegisterComponents', static function (): void {
                 ],
             ],
             [
-                'label' => __('Job description', 'NscSoftware'),
-                'name' => 'nsc_job_description',
-                'type' => 'wysiwyg',
-                'tabs' => 'all',
-                'toolbar' => 'full',
-                'media_upload' => 1,
-                'delay' => 0,
-            ],
-            [
-                'label' => __('Customer company name', 'NscSoftware'),
-                'name' => 'nsc_job_customer_company',
-                'type' => 'text',
-                'instructions' => __('Displayed in the open positions section.', 'NscSoftware'),
-            ],
-            [
-                'label' => __('Customer (detail content)', 'NscSoftware'),
-                'name' => 'nsc_job_customer_content',
-                'type' => 'wysiwyg',
-                'instructions' => __('Shown on the career / job detail page.', 'NscSoftware'),
-                'tabs' => 'all',
-                'toolbar' => 'full',
-                'media_upload' => 1,
-                'delay' => 0,
-            ],
-            [
-                'label' => __('Project', 'NscSoftware'),
-                'name' => 'nsc_job_project',
-                'type' => 'wysiwyg',
-                'tabs' => 'all',
-                'toolbar' => 'full',
-                'media_upload' => 1,
-                'delay' => 0,
+                'label' => __('Content blocks', 'NscSoftware'),
+                'name' => 'nsc_job_content_blocks',
+                'type' => 'repeater',
+                'layout' => 'block',
+                'button_label' => __('Add block', 'NscSoftware'),
+                'sub_fields' => [
+                    [
+                        'label' => __('Block title', 'NscSoftware'),
+                        'name' => 'block_title',
+                        'type' => 'text',
+                        'required' => 1,
+                    ],
+                    [
+                        'label' => __('Block content', 'NscSoftware'),
+                        'name' => 'block_content',
+                        'type' => 'wysiwyg',
+                        'tabs' => 'all',
+                        'toolbar' => 'full',
+                        'media_upload' => 1,
+                        'delay' => 0,
+                    ],
+                ],
             ],
             [
                 'label' => __('Key technologies', 'NscSoftware'),

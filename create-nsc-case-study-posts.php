@@ -2,12 +2,14 @@
 declare(strict_types=1);
 
 /**
- * Seed up to 30 case_study posts with ACF flexible field `caseStudyComponents`
- * (Hero, Instruction, Quote, Contact, Main content). Matches theme single-case_study layout.
+ * Seed 2 case_study posts with ACF flexible field `caseStudyComponents`
+ * (minimal: Hero + Main, full: Hero, Instruction, Quote, Main, Contact). Matches theme single-case_study layout.
  * Idempotent by post slug (updates if exists).
  *
  * Usage:
  *   http://localhost/nsc/create-nsc-case-study-posts.php?token=nsc-create-case-studies-2026
+ *   Optional mode=default|scope (default: scope).
+ *   Optional count={n} used only with mode=default (1..100).
  *   Optional seed_lang={slug}|all for Polylang-linked case studies. Omit seed_lang for default-language only; seed_lang=all for every non-default language. (lang) lowercase prefix without Google API key; legacy [LANG] stripped when re-seeding.
  */
 
@@ -41,6 +43,14 @@ if (is_readable($nscSeedPolylang)) {
 if (function_exists('nsc_seed_bootstrap_acf_polylang_default_language')) {
     nsc_seed_bootstrap_acf_polylang_default_language();
 }
+
+$seedMode = isset($_GET['mode']) ? sanitize_key((string) $_GET['mode']) : 'scope';
+if (!in_array($seedMode, ['default', 'scope'], true)) {
+    $seedMode = 'scope';
+}
+
+$requestedCount = isset($_GET['count']) ? (int) $_GET['count'] : 2;
+$requestedCount = max(1, min(100, $requestedCount));
 
 /**
  * @return array<string, int> filename => attachment ID
@@ -298,7 +308,7 @@ function nsc_case_study_seed_instruction_pair_for_index(int $index, string $titl
  *
  * @return list<array<string, mixed>>
  */
-function nsc_case_study_seed_component_rows(int $index, array $study, array $imageMap): array
+function nsc_case_study_seed_component_rows(int $index, array $study, array $imageMap, bool $minimal = false): array
 {
     $title = $study['title'];
     $seed  = nsc_case_study_seed_hash_u($title);
@@ -345,14 +355,14 @@ function nsc_case_study_seed_component_rows(int $index, array $study, array $ima
 
     $blockSets = [
         [
-            ['blockTitle' => 'Key facts', 'blockLines' => "Long-term partnership focused on scalable delivery and continuous improvement.\nCross-functional collaboration between stakeholders, product, and engineering.\nTransparent reporting and milestone reviews throughout the engagement."],
-            ['blockTitle' => 'Platform & integration', 'blockLines' => "API-first integrations with stable contracts and backward-compatible releases.\nOperational runbooks and on-call alignment with client processes.\nSecurity reviews folded into the definition of done for critical paths."],
-            ['blockTitle' => 'Outcomes', 'blockLines' => "Faster release cadence with fewer production incidents on core journeys.\nLower mean time to recovery through shared dashboards and playbooks.\nClear roadmap for the next phase of automation and analytics."],
+            ['blockTitle' => 'Key facts', 'blockLines' => '<p>Long-term partnership focused on scalable delivery and continuous improvement.</p><p>Cross-functional collaboration between stakeholders, product, and engineering.</p><p>Transparent reporting and milestone reviews throughout the engagement.</p>'],
+            ['blockTitle' => 'Platform & integration', 'blockLines' => '<p>API-first integrations with stable contracts and backward-compatible releases.</p><p>Operational runbooks and on-call alignment with client processes.</p><p>Security reviews folded into the definition of done for critical paths.</p>'],
+            ['blockTitle' => 'Outcomes', 'blockLines' => '<p>Faster release cadence with fewer production incidents on core journeys.</p><p>Lower mean time to recovery through shared dashboards and playbooks.</p><p>Clear roadmap for the next phase of automation and analytics.</p>'],
         ],
         [
-            ['blockTitle' => 'Engagement model', 'blockLines' => "Embedded squads with shared rituals and a single backlog.\nArchitecture spikes early to de-risk the highest-unknown integrations.\nQuarterly planning that balances maintenance with new capabilities."],
-            ['blockTitle' => 'Data & quality', 'blockLines' => "Automated tests on critical business rules and regression suites in CI.\nData validation hooks at ingestion to protect downstream consumers.\nPerformance budgets for APIs that customer-facing apps depend on."],
-            ['blockTitle' => 'Cloud & operations', 'blockLines' => "Infrastructure as code with peer-reviewed changes.\nMonitoring and alerting mapped to customer-visible journeys.\nCost-aware scaling patterns for variable load."],
+            ['blockTitle' => 'Engagement model', 'blockLines' => '<p>Embedded squads with shared rituals and a single backlog.</p><p>Architecture spikes early to de-risk the highest-unknown integrations.</p><p>Quarterly planning that balances maintenance with new capabilities.</p>'],
+            ['blockTitle' => 'Data & quality', 'blockLines' => '<p>Automated tests on critical business rules and regression suites in CI.</p><p>Data validation hooks at ingestion to protect downstream consumers.</p><p>Performance budgets for APIs that customer-facing apps depend on.</p>'],
+            ['blockTitle' => 'Cloud & operations', 'blockLines' => '<p>Infrastructure as code with peer-reviewed changes.</p><p>Monitoring and alerting mapped to customer-visible journeys.</p><p>Cost-aware scaling patterns for variable load.</p>'],
         ],
     ];
     $overviewBlocks = $blockSets[$index % count($blockSets)];
@@ -426,41 +436,63 @@ function nsc_case_study_seed_component_rows(int $index, array $study, array $ima
         'gallery'               => $galleryIds,
     ];
 
-    return [$hero, $instruction, $quote, $contact, $main];
+    if ($minimal) {
+        return [$hero, $main];
+    }
+
+    return [$hero, $instruction, $quote, $main, $contact];
 }
 
-$caseStudies = [
-    ['title' => 'Smart Energy Monitor', 'description' => 'Tracks real-time electricity usage of home appliances and sends alerts when consumption exceeds thresholds.', 'category' => 'Technology'],
-    ['title' => 'Automated Plant Care System', 'description' => 'Uses soil moisture and light sensors to water plants automatically and notify users via app.', 'category' => 'Fintech'],
-    ['title' => 'Smart Parking Availability System', 'description' => 'Detects empty parking spots using sensors and shows availability on a live map.', 'category' => 'Blockchain'],
-    ['title' => 'Home Air Quality Monitor', 'description' => 'Measures temperature, humidity, and air pollution levels, then alerts users when air quality drops.', 'category' => 'Web 3'],
-    ['title' => 'Industrial Equipment Health Tracker', 'description' => 'Monitors vibration and temperature of machines to predict failures before breakdown occurs.', 'category' => 'Lifestyle'],
-    ['title' => 'Smart Water Leak Detection', 'description' => 'Detects leaks in pipelines or homes and instantly sends alerts to prevent water damage.', 'category' => 'Lifestyle'],
-    ['title' => 'Digital Wallet Platform', 'description' => 'Secure mobile payment solution with multi-currency support and real-time transaction tracking.', 'category' => 'Fintech'],
-    ['title' => 'Blockchain Supply Chain Tracker', 'description' => 'Transparent tracking system for supply chains using distributed ledger technology.', 'category' => 'Blockchain'],
-    ['title' => 'AI-Powered Learning Platform', 'description' => 'Personalized education platform that adapts to student learning patterns and progress.', 'category' => 'Education'],
-    ['title' => 'SaaS Project Management Tool', 'description' => 'Collaborative project management platform with real-time updates and team communication.', 'category' => 'Saas'],
-    ['title' => 'Smart Home Automation System', 'description' => 'Integrated IoT solution for controlling lights, temperature, and security systems.', 'category' => 'Technology'],
-    ['title' => 'Fitness Tracking Mobile App', 'description' => 'Comprehensive fitness app with workout plans, nutrition tracking, and progress analytics.', 'category' => 'Lifestyle'],
-    ['title' => 'Cryptocurrency Exchange Platform', 'description' => 'Secure trading platform for cryptocurrencies with advanced charting and portfolio management.', 'category' => 'Blockchain'],
-    ['title' => 'NFT Marketplace', 'description' => 'Decentralized marketplace for buying and selling digital art and collectibles.', 'category' => 'Web 3'],
-    ['title' => 'Online Course Platform', 'description' => 'Interactive learning platform with video courses, quizzes, and certification programs.', 'category' => 'Education'],
-    ['title' => 'CRM Software Solution', 'description' => 'Customer relationship management system with sales pipeline and analytics dashboard.', 'category' => 'Saas'],
-    ['title' => 'Payment Gateway Integration', 'description' => 'Secure payment processing system with support for multiple payment methods.', 'category' => 'Fintech'],
-    ['title' => 'Smart City Traffic Management', 'description' => 'AI-powered traffic optimization system for reducing congestion and improving flow.', 'category' => 'Technology'],
-    ['title' => 'DeFi Lending Platform', 'description' => 'Decentralized finance platform for peer-to-peer lending and borrowing.', 'category' => 'Blockchain'],
-    ['title' => 'Virtual Reality Training Simulator', 'description' => 'Immersive VR training platform for professional skill development.', 'category' => 'Education'],
-    ['title' => 'Cloud-Based Accounting Software', 'description' => 'Comprehensive accounting solution with invoicing, expense tracking, and reporting.', 'category' => 'Saas'],
-    ['title' => 'Meditation and Wellness App', 'description' => 'Guided meditation app with sleep stories and mindfulness exercises.', 'category' => 'Lifestyle'],
-    ['title' => 'Smart Grid Energy Management', 'description' => 'Intelligent energy distribution system for optimizing power consumption.', 'category' => 'Technology'],
-    ['title' => 'Peer-to-Peer Payment App', 'description' => 'Mobile app for instant money transfers between users with low fees.', 'category' => 'Fintech'],
-    ['title' => 'Smart Contract Platform', 'description' => 'Platform for creating and deploying automated smart contracts.', 'category' => 'Blockchain'],
-    ['title' => 'Metaverse Virtual Events', 'description' => 'Virtual event platform for hosting conferences and meetings in 3D spaces.', 'category' => 'Web 3'],
-    ['title' => 'Language Learning Platform', 'description' => 'Interactive language learning app with speech recognition and gamification.', 'category' => 'Education'],
-    ['title' => 'Team Collaboration Tool', 'description' => 'Real-time collaboration platform with chat, video calls, and file sharing.', 'category' => 'Saas'],
-    ['title' => 'IoT Fleet Management System', 'description' => 'Real-time tracking and management system for vehicle fleets.', 'category' => 'Technology'],
-    ['title' => 'Personal Finance Manager', 'description' => 'Budgeting and expense tracking app with financial insights and recommendations.', 'category' => 'Fintech'],
-];
+$caseStudies = [];
+if ($seedMode === 'scope') {
+    $caseStudies = [
+        ['title' => 'Smart Energy Monitor (Minimal)', 'description' => 'Minimal case study sample with only Hero and Main content components.', 'category' => 'Technology', 'mode' => 'minimal'],
+        ['title' => 'Digital Wallet Platform (Full)', 'description' => 'Full case study sample with Hero, Instruction, Quote, Main content, and Contact components.', 'category' => 'Fintech', 'mode' => 'full'],
+    ];
+} else {
+    $titlePool = [
+        'Smart Energy Monitor',
+        'Automated Plant Care System',
+        'Smart Parking Availability System',
+        'Home Air Quality Monitor',
+        'Industrial Equipment Health Tracker',
+        'Smart Water Leak Detection',
+        'Digital Wallet Platform',
+        'Blockchain Supply Chain Tracker',
+        'AI-Powered Learning Platform',
+        'SaaS Project Management Tool',
+        'Smart Home Automation System',
+        'Fitness Tracking Mobile App',
+        'Cryptocurrency Exchange Platform',
+        'NFT Marketplace',
+        'Online Course Platform',
+        'CRM Software Solution',
+        'Payment Gateway Integration',
+        'Smart City Traffic Management',
+        'DeFi Lending Platform',
+        'Virtual Reality Training Simulator',
+        'Cloud-Based Accounting Software',
+        'Meditation and Wellness App',
+        'Smart Grid Energy Management',
+        'Peer-to-Peer Payment App',
+        'Smart Contract Platform',
+        'Metaverse Virtual Events',
+        'Language Learning Platform',
+        'Team Collaboration Tool',
+        'IoT Fleet Management System',
+        'Personal Finance Manager',
+    ];
+    $categoryPool = ['Technology', 'Fintech', 'Blockchain', 'Web 3', 'Lifestyle', 'Education', 'Saas'];
+    $selectedTitles = array_slice($titlePool, 0, min($requestedCount, count($titlePool)));
+    foreach ($selectedTitles as $idx => $title) {
+        $caseStudies[] = [
+            'title' => $title,
+            'description' => 'Case study seed for ' . $title . ' with full component flow and rich content.',
+            'category' => $categoryPool[$idx % count($categoryPool)],
+            'mode' => 'full',
+        ];
+    }
+}
 
 $poolIndustry = ['EdTech', 'FinTech', 'Healthcare', 'Manufacturing', 'Retail', 'Logistics', 'Energy'];
 $poolCountry  = ['USA', 'Vietnam', 'Germany', 'Australia', 'Singapore', 'United Kingdom'];
@@ -502,7 +534,8 @@ foreach ($caseStudies as $study) {
     ], $langArgs));
     $postId = !empty($existing) ? (int) $existing[0] : 0;
 
-    $components = nsc_case_study_seed_component_rows($i, $study, $imageMap);
+    $isMinimal = (($study['mode'] ?? 'full') === 'minimal');
+    $components = nsc_case_study_seed_component_rows($i, $study, $imageMap, $isMinimal);
 
     $postarr = [
         'post_title'   => $title,
@@ -638,7 +671,7 @@ foreach ($caseStudies as $study) {
     $results[] = [
         'slug'    => $slug,
         'status'  => $rowStatus,
-        'message' => 'post_id=' . $reportId . ', components=5, cat=' . $study['category'],
+        'message' => 'post_id=' . $reportId . ', mode=' . ($isMinimal ? 'minimal' : 'full') . ', components=' . count($components) . ', cat=' . $study['category'],
     ];
 }
 
@@ -646,7 +679,11 @@ header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Case Studies Seed</title>';
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:1100px}th,td{border:1px solid #ddd;padding:8px;font-size:13px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body><h1>Case studies (case_study)</h1>';
-echo '<p>Seeded or updated ' . count($results) . ' posts. ACF flexible field <code>caseStudyComponents</code> (Hero, Instruction, Quote, Contact, Main). Taxonomies + featured image. Re-save in WP if ACF field keys need sync. Run <code>create-nsc-cf7-form.php</code> for a primary form ID in the Contact block. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang copies (omit for default language only).</p>';
+if ($seedMode === 'scope') {
+    echo '<p>Seeded or updated ' . count($results) . ' posts in <strong>scope mode</strong> (fixed: 1 minimal + 1 full). Taxonomies + featured image are assigned. Re-save in WP if ACF field keys need sync. Run <code>create-nsc-cf7-form.php</code> for a primary form ID in the Contact block. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang copies (omit for default language only).</p>';
+} else {
+    echo '<p>Seeded or updated ' . count($results) . ' posts in <strong>default mode</strong> (requested count: ' . (int) $requestedCount . '). All posts use full components order: Hero, Instruction, Quote, Main content, Contact. Taxonomies + featured image are assigned. Re-save in WP if ACF field keys need sync. Run <code>create-nsc-cf7-form.php</code> for a primary form ID in the Contact block. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang copies (omit for default language only).</p>';
+}
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $cls = $row['status'] === 'error' ? 'error' : 'ok';

@@ -55,20 +55,19 @@
               {% endif %}
 
               <div class="career-details__body">
-                {% if job_description %}
-                  {{ job_description|raw }}
-                {% elseif post.content %}
+                {% if post.content %}
                   {{ post.content }}
                 {% endif %}
 
-                {% if job_customer_content %}
-                  <h2 class="career-details__h2">{{ __('Customer', 'NscSoftware')|e }}</h2>
-                  {{ job_customer_content|raw }}
-                {% endif %}
-
-                {% if job_project %}
-                  <h2 class="career-details__h2">{{ __('Project', 'NscSoftware')|e }}</h2>
-                  {{ job_project|raw }}
+                {% if job_content_blocks is iterable and job_content_blocks|length > 0 %}
+                  {% for block in job_content_blocks %}
+                    {% if block.title|default('') %}
+                      <h2 class="career-details__h2">{{ block.title|e }}</h2>
+                    {% endif %}
+                    {% if block.content|default('') %}
+                      {{ block.content|raw }}
+                    {% endif %}
+                  {% endfor %}
                 {% endif %}
 
                 {% if job_key_technology_names is iterable and job_key_technology_names|length > 0 %}

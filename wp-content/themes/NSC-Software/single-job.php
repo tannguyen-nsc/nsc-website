@@ -55,15 +55,27 @@ if (is_array($skillsRaw)) {
 }
 $context['job_skills'] = $jobSkills;
 
-$context['job_description'] = function_exists('get_field')
-    ? (string) (get_field('nsc_job_description', $postId) ?: '')
-    : '';
-$context['job_customer_content'] = function_exists('get_field')
-    ? (string) (get_field('nsc_job_customer_content', $postId) ?: '')
-    : '';
-$context['job_project'] = function_exists('get_field')
-    ? (string) (get_field('nsc_job_project', $postId) ?: '')
-    : '';
+$contentBlocksRaw = function_exists('get_field') ? get_field('nsc_job_content_blocks', $postId) : null;
+$jobContentBlocks = [];
+if (is_array($contentBlocksRaw)) {
+    foreach ($contentBlocksRaw as $row) {
+        if (!is_array($row)) {
+            continue;
+        }
+
+        $title = isset($row['block_title']) ? trim((string) $row['block_title']) : '';
+        $content = isset($row['block_content']) ? (string) $row['block_content'] : '';
+        if ($title === '' && trim(wp_strip_all_tags($content)) === '') {
+            continue;
+        }
+
+        $jobContentBlocks[] = [
+            'title' => $title,
+            'content' => $content,
+        ];
+    }
+}
+$context['job_content_blocks'] = $jobContentBlocks;
 
 $keyTech = function_exists('get_field') ? get_field('nsc_job_key_technologies', $postId) : null;
 $keyNames = [];

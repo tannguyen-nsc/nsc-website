@@ -22,15 +22,9 @@
               {% if bt %}
                 <div class="case-study-detail-overview__block">
                   <h3>{{ bt|e }}</h3>
-                  <ul>
-                    {% set raw = bl|replace({'\r':''})|split('\n') %}
-                    {% for line in raw %}
-                      {% set t = line|trim %}
-                      {% if t %}
-                        <li>{{ t|e }}</li>
-                      {% endif %}
-                    {% endfor %}
-                  </ul>
+                  {% if bl %}
+                    {{ function('wpautop', bl)|raw }}
+                  {% endif %}
                 </div>
               {% endif %}
             {% endfor %}

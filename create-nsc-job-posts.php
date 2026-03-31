@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * Seed 30 dummy Job openings (CPT `job`) with ACF fields + taxonomies.
+ * Seed 1 dummy Job opening (CPT `job`) with ACF fields + taxonomies.
  * Idempotent by post slug (updates if exists).
  *
  * Prerequisites: Advanced Custom Fields (theme registers field group `nscJobFields`).
@@ -10,6 +10,8 @@ declare(strict_types=1);
  *
  * Usage:
  *   https://yoursite.test/create-nsc-job-posts.php?token=nsc-create-job-posts-2026
+ *   Optional count={n} to control number of seeded jobs (1..100, default: 1).
+ *   Optional with_skills=1|0 to include/exclude Required skills (default: 1).
  *   Optional seed_lang={slug}|all for Polylang-linked jobs. Omit seed_lang for default-language only; seed_lang=all for every non-default language. (lang) lowercase prefix without Google API key; legacy [LANG] stripped when re-seeding.
  */
 
@@ -186,7 +188,7 @@ function nsc_job_seed_tech_for_index(int $index): array
     return array_map(static fn (string $t): array => ['technology_name' => $t], $pool);
 }
 
-$titles = [
+$titlePool = [
     'Senior Full Stack Engineer',
     'Principal Backend Engineer (Go)',
     'Staff Software Engineer — Platform',
@@ -218,6 +220,11 @@ $titles = [
     'Marketing Technology Specialist',
     'Pre-Sales Engineer',
 ];
+$requestedCount = isset($_GET['count']) ? (int) $_GET['count'] : 1;
+$requestedCount = max(1, min(100, $requestedCount));
+$withSkillsRaw = isset($_GET['with_skills']) ? strtolower((string) $_GET['with_skills']) : '1';
+$withSkills = !in_array($withSkillsRaw, ['0', 'false', 'no', 'off'], true);
+$titles = array_slice($titlePool, 0, min($requestedCount, count($titlePool)));
 
 $companies = [
     'Global Automotive Tech', 'FinScale Payments', 'HealthCloud Systems', 'RetailNext Analytics',
@@ -274,21 +281,16 @@ foreach ($titles as $title) {
     $company = $companies[($i - 1) % count($companies)];
     $listingDate = gmdate('Y-m-d', strtotime(sprintf('-%d days', ($i * 11) % 120)));
 
-    $jobDesc = nsc_job_seed_wysiwyg_paragraphs(
+    $overviewContent = nsc_job_seed_wysiwyg_paragraphs(
         sprintf('We are hiring a %s to strengthen our delivery organization.', $title),
-        3
-    );
-    $customerContent = nsc_job_seed_wysiwyg_paragraphs(
-        sprintf('%s partners with NSC on long-term product engineering. The environment is collaborative, quality-driven, and focused on customer outcomes.', $company),
         2
     );
-    $projectHtml = nsc_job_seed_wysiwyg_paragraphs(
-        'You will contribute to distributed systems and customer-facing applications with modern APIs, observability, and secure delivery practices.',
+    $responsibilityContent = nsc_job_seed_wysiwyg_paragraphs(
+        'You will own features end-to-end, collaborate closely with product/design, and continuously improve code quality, reliability, and developer experience.',
         2
     );
-
     $excerpt = wp_trim_words(
-        wp_strip_all_tags($title . ' — ' . $company . ' ' . $jobDesc),
+        wp_strip_all_tags($title . ' — ' . $company . ' ' . $overviewContent),
         36,
         '…'
     );
@@ -305,11 +307,18 @@ foreach ($titles as $title) {
 
     $acfPayload = [
         'nsc_job_listing_date' => $listingDate,
-        'nsc_job_required_skills' => nsc_job_seed_skills_for_index($i),
-        'nsc_job_description' => $jobDesc,
         'nsc_job_customer_company' => $company,
-        'nsc_job_customer_content' => $customerContent,
-        'nsc_job_project' => $projectHtml,
+        'nsc_job_required_skills' => $withSkills ? nsc_job_seed_skills_for_index($i) : [],
+        'nsc_job_content_blocks' => [
+            [
+                'block_title' => 'Overview',
+                'block_content' => $overviewContent,
+            ],
+            [
+                'block_title' => 'Responsibilities',
+                'block_content' => $responsibilityContent,
+            ],
+        ],
         'nsc_job_key_technologies' => nsc_job_seed_tech_for_index($i),
     ];
 
@@ -390,7 +399,7 @@ header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Job Posts Seed</title>';
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:1100px}th,td{border:1px solid #ddd;padding:8px;font-size:13px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
 echo '</head><body><h1>NSC Job openings</h1>';
-echo '<p>Seeded or updated ' . count($results) . ' <code>job</code> posts. Fields: skills repeater, WYSIWYG blocks, customer, project, key tech, listing date. Taxonomies: job_category, job_employment, tags. Optional <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang copies (omit for default language only).</p>';
+echo '<p>Seeded or updated ' . count($results) . ' <code>job</code> post(s) (requested: ' . (int) $requestedCount . ', required skills: ' . ($withSkills ? 'on' : 'off') . '). Fields: listing date, customer company, optional skills repeater, content blocks (title + WYSIWYG), key tech. Taxonomies: job_category, job_employment, tags. Optional <code>count</code>, <code>with_skills</code>, and <code>seed_lang</code> / <code>seed_lang=all</code> for Polylang copies (omit for default language only).</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
 foreach ($results as $row) {
     $cls = $row['status'] === 'error' ? 'error' : 'ok';

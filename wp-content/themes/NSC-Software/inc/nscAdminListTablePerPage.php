@@ -11,6 +11,19 @@ namespace NscSoftware\AdminListTablePerPage;
 const NONCE_ACTION = 'nsc_list_per_page';
 
 /**
+ * Table-limit behavior is controlled by NHT WP Optimizer option.
+ */
+function optimizer_table_limit_enabled(): bool
+{
+    $opt = \get_option('wp_optimizer_options', []);
+    if (!\is_array($opt)) {
+        return false;
+    }
+
+    return !empty($opt['optimize_table_list']);
+}
+
+/**
  * Maximum items per page allowed when saving Screen Options (default 5000).
  *
  * @return int Positive integer.
@@ -128,6 +141,10 @@ function core_capped_per_page_map_options(): array
  */
 function maybe_save_extended_per_page(): void
 {
+    if (!optimizer_table_limit_enabled()) {
+        return;
+    }
+
     if (!\is_admin() || \wp_doing_ajax()) {
         return;
     }
@@ -193,6 +210,10 @@ function maybe_save_extended_per_page(): void
  */
 function maybe_apply_per_page_from_dropdown(): void
 {
+    if (!optimizer_table_limit_enabled()) {
+        return;
+    }
+
     if (!isset($_GET['nsc_per_page'], $_GET['_wpnonce']) || !\is_user_logged_in()) {
         return;
     }
@@ -250,6 +271,10 @@ function maybe_apply_per_page_from_dropdown(): void
  */
 function enqueue_list_per_page_max_script(string $hookSuffix): void
 {
+    if (!optimizer_table_limit_enabled()) {
+        return;
+    }
+
     if ($hookSuffix === '') {
         return;
     }
@@ -273,6 +298,10 @@ function enqueue_list_per_page_max_script(string $hookSuffix): void
  */
 function enqueue_list_per_page_dropdown(string $hookSuffix): void
 {
+    if (!optimizer_table_limit_enabled()) {
+        return;
+    }
+
     if ($hookSuffix === '') {
         return;
     }

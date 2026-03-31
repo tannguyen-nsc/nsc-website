@@ -39,6 +39,7 @@ function seeder_script_urls(): array
         'blogs' => $root . 'create-nsc-blog-posts.php',
         'career' => $root . 'create-nsc-job-posts.php',
         'case_study' => $root . 'create-nsc-case-study-posts.php',
+        'case_study_scope' => $root . 'create-nsc-case-study-posts.php',
     ];
 }
 
@@ -53,6 +54,7 @@ function seeder_tokens(): array
         'blogs' => 'nsc-create-blog-posts-2026',
         'career' => 'nsc-create-job-posts-2026',
         'case_study' => 'nsc-create-case-studies-2026',
+        'case_study_scope' => 'nsc-create-case-studies-2026',
     ];
 }
 
@@ -233,6 +235,16 @@ function build_seeder_request_url(string $key, string $seedLangRaw, array $extra
     return $urls[$key] . '?' . \http_build_query($query);
 }
 
+function normalize_requested_count($raw, int $default, int $min = 1, int $max = 300): int
+{
+    $n = \is_numeric($raw) ? (int) $raw : $default;
+    if ($n < $min) {
+        $n = $default;
+    }
+
+    return max($min, min($max, $n));
+}
+
 /**
  * Whether to verify SSL for wp_remote_* to seeder URLs (cURL error 60 with self-signed local certs).
  */
@@ -291,6 +303,147 @@ function seeder_http_request_headers(string $url): array
     }
 
     return \apply_filters('nsc_seeder_wp_remote_headers', $headers, $url);
+}
+
+/**
+ * @return list<int>
+ */
+function get_all_post_ids_by_type(string $postType): array
+{
+    if ($postType === '') {
+        return [];
+    }
+
+    $ids = \get_posts([
+        'post_type' => $postType,
+        'post_status' => 'any',
+        'posts_per_page' => -1,
+        'fields' => 'ids',
+        'orderby' => 'ID',
+        'order' => 'ASC',
+        'no_found_rows' => true,
+    ]);
+
+    return \array_values(\array_map('intval', \is_array($ids) ? $ids : []));
+}
+
+/**
+ * @return int Number of deleted posts.
+ */
+function force_delete_posts_by_type(string $postType): int
+{
+    $deleted = 0;
+    foreach (get_all_post_ids_by_type($postType) as $postId) {
+        if ($postId <= 0) {
+            continue;
+        }
+
+        $res = \wp_delete_post($postId, true);
+        if ($res instanceof \WP_Post) {
+            $deleted++;
+        }
+    }
+
+    return $deleted;
+}
+
+/**
+ * @return int Number of deleted menu terms.
+ */
+function force_delete_all_menus(): int
+{
+    $menus = \get_terms([
+        'taxonomy' => 'nav_menu',
+        'hide_empty' => false,
+    ]);
+    if (\is_wp_error($menus) || !\is_array($menus)) {
+        return 0;
+    }
+
+    $deleted = 0;
+    foreach ($menus as $menu) {
+        if (!$menu instanceof \WP_Term) {
+            continue;
+        }
+
+        $items = \wp_get_nav_menu_items((int) $menu->term_id, ['post_status' => 'any']);
+        if (\is_array($items)) {
+            foreach ($items as $item) {
+                if ($item instanceof \WP_Post) {
+                    \wp_delete_post((int) $item->ID, true);
+                }
+            }
+        }
+
+        $r = \wp_delete_term((int) $menu->term_id, 'nav_menu');
+        if (!\is_wp_error($r)) {
+            $deleted++;
+        }
+    }
+
+    return $deleted;
+}
+
+/**
+ * Cleanup seeded content for selected seeder key before execution.
+ */
+function maybe_cleanup_content_before_seed(string $key): string
+{
+    switch ($key) {
+        case 'pages':
+            $deleted = force_delete_posts_by_type('page');
+            return \sprintf(
+                /* translators: %d deleted pages count */
+                \__('Cleanup done: deleted %d page(s).', 'NscSoftware'),
+                $deleted
+            );
+
+        case 'blogs':
+            $deleted = force_delete_posts_by_type('post');
+            return \sprintf(
+                /* translators: %d deleted blog posts count */
+                \__('Cleanup done: deleted %d post(s).', 'NscSoftware'),
+                $deleted
+            );
+
+        case 'career':
+            $deleted = force_delete_posts_by_type('job');
+            return \sprintf(
+                /* translators: %d deleted jobs count */
+                \__('Cleanup done: deleted %d job post(s).', 'NscSoftware'),
+                $deleted
+            );
+
+        case 'case_study':
+        case 'case_study_scope':
+            $deleted = force_delete_posts_by_type('case_study');
+            return \sprintf(
+                /* translators: %d deleted case studies count */
+                \__('Cleanup done: deleted %d case study post(s).', 'NscSoftware'),
+                $deleted
+            );
+
+        case 'cf7':
+            $deleted = \post_type_exists('wpcf7_contact_form')
+                ? force_delete_posts_by_type('wpcf7_contact_form')
+                : 0;
+            return \sprintf(
+                /* translators: %d deleted forms count */
+                \__('Cleanup done: deleted %d Contact Form 7 form(s).', 'NscSoftware'),
+                $deleted
+            );
+
+        case 'menus':
+            $deletedMenus = force_delete_all_menus();
+            return \sprintf(
+                /* translators: %d deleted menus count */
+                \__('Cleanup done: deleted %d menu(s).', 'NscSoftware'),
+                $deletedMenus
+            );
+
+        default:
+            return \__('Cleanup skipped for this seeder.', 'NscSoftware');
+    }
 }
 
 add_action('admin_menu', static function (): void {
@@ -362,7 +515,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
   }
 
   function setBusy(on) {
-    $(".nsc-run-seeder, #nsc-seed-lang, #nsc-page-scope, #nsc-menu-rebuild, #nsc-run-all-seeders, #nsc-prefix-migrate").prop(
+    $(".nsc-run-seeder, #nsc-seed-lang, #nsc-page-scope, #nsc-menu-rebuild, #nsc-seeder-cleanup, #nsc-blog-count, #nsc-career-count, #nsc-career-with-skills, #nsc-case-study-count, #nsc-run-all-seeders, #nsc-prefix-migrate").prop(
       "disabled",
       !!on
     );
@@ -473,6 +626,11 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
           seed_lang: "",
           page_scope: "",
           menu_rebuild: "",
+          blog_count: "",
+          career_count: "",
+          career_with_skills: "",
+          case_study_count: "",
+          case_mode: "",
           nsc_run_all: ""
         },
         payload
@@ -484,6 +642,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
     e.preventDefault();
     var seeder = $(this).data("seeder");
     if (!seeder) return;
+    var caseMode = seeder === "case_study_scope" ? "scope" : "default";
 
     setBusy(true);
     notice("success", nscSeedersAdmin.i18n.running);
@@ -496,7 +655,13 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
         return v === "all-others" ? "all" : v;
       })(),
       page_scope: $("#nsc-page-scope").val() || "",
-      menu_rebuild: $("#nsc-menu-rebuild").is(":checked") ? "1" : ""
+        menu_rebuild: $("#nsc-menu-rebuild").is(":checked") ? "1" : "",
+        blog_count: $("#nsc-blog-count").val() || "",
+        career_count: $("#nsc-career-count").val() || "",
+        career_with_skills: $("#nsc-career-with-skills").is(":checked") ? "1" : "0",
+        case_study_count: $("#nsc-case-study-count").val() || "",
+        case_mode: caseMode,
+        cleanup_seeded: $("#nsc-seeder-cleanup").is(":checked") ? "1" : ""
     } )
       .done(function (res) {
         if (!res || res.success !== true) {
@@ -625,6 +790,12 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
         seed_lang: step.seed_lang || "",
         page_scope: "",
         menu_rebuild: step.seeder === "menus" ? "1" : "",
+        blog_count: $("#nsc-blog-count").val() || "",
+        career_count: $("#nsc-career-count").val() || "",
+        career_with_skills: $("#nsc-career-with-skills").is(":checked") ? "1" : "0",
+        case_study_count: $("#nsc-case-study-count").val() || "",
+        case_mode: "default",
+        cleanup_seeded: $("#nsc-seeder-cleanup").is(":checked") ? "1" : "",
         nsc_run_all: "1"
       })
         .done(function (res) {
@@ -747,6 +918,7 @@ add_action('wp_ajax_nsc_run_seeder', static function (): void {
     if ($seedLang === 'all-others') {
         $seedLang = 'all';
     }
+    $cleanupSeeded = isset($_POST['cleanup_seeded']) && (string) $_POST['cleanup_seeded'] === '1';
 
     $isRunAll = isset($_POST['nsc_run_all']) && (string) $_POST['nsc_run_all'] === '1';
 
@@ -762,9 +934,32 @@ add_action('wp_ajax_nsc_run_seeder', static function (): void {
         $extraQuery['rebuild'] = '1';
     }
 
+    if ($key === 'blogs') {
+        $extraQuery['count'] = (string) normalize_requested_count($_POST['blog_count'] ?? null, 30, 1, 300);
+    }
+
+    if ($key === 'career') {
+        $extraQuery['count'] = (string) normalize_requested_count($_POST['career_count'] ?? null, 1, 1, 100);
+        $extraQuery['with_skills'] = (isset($_POST['career_with_skills']) && (string) $_POST['career_with_skills'] === '0') ? '0' : '1';
+    }
+
+    if ($key === 'case_study') {
+        $extraQuery['count'] = (string) normalize_requested_count($_POST['case_study_count'] ?? null, 2, 1, 100);
+        $extraQuery['mode'] = 'default';
+    }
+
+    if ($key === 'case_study_scope') {
+        $extraQuery['mode'] = 'scope';
+    }
+
     $url = build_seeder_request_url($key, $seedLang, $extraQuery);
     if ($url === null) {
         \wp_send_json_error(['message' => \__('Invalid seeder.', 'NscSoftware')], 400);
+    }
+
+    $cleanupMessage = '';
+    if ($cleanupSeeded) {
+        $cleanupMessage = maybe_cleanup_content_before_seed($key);
     }
 
     $response = \wp_remote_get(
@@ -798,7 +993,7 @@ add_action('wp_ajax_nsc_run_seeder', static function (): void {
     }
 
     \wp_send_json_success([
-        'html' => $body,
+        'html' => ($cleanupMessage !== '' ? '<p><strong>' . \esc_html($cleanupMessage) . '</strong></p>' : '') . $body,
         'httpStatus' => $code,
     ]);
 });
@@ -1011,6 +1206,51 @@ function render_page(): void
                     </p>
                 </td>
             </tr>
+            <tr>
+                <th scope="row">
+                    <label for="nsc-seeder-cleanup"><?php echo \esc_html(\__('Clean up before run', 'NscSoftware')); ?></label>
+                </th>
+                <td>
+                    <label><input type="checkbox" id="nsc-seeder-cleanup" value="1" /> <?php echo \esc_html(\__('Remove existing seeded content before running selected seeder.', 'NscSoftware')); ?></label>
+                    <p class="description">
+                        <?php echo \esc_html(\__('When enabled: Pages deletes all pages, Blog posts deletes all posts, Careers deletes all job posts, Case studies deletes all case_study posts, Contact Form 7 deletes all forms, Menus deletes all menus/items. Then the selected seeder runs again.', 'NscSoftware')); ?>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="nsc-blog-count"><?php echo \esc_html(\__('Blog posts count', 'NscSoftware')); ?></label>
+                </th>
+                <td>
+                    <input type="number" id="nsc-blog-count" min="1" max="300" step="1" value="30" />
+                    <p class="description">
+                        <?php echo \esc_html(\__('Number of blog posts to seed when running “Blog posts”. Also used by “Run all seeders”.', 'NscSoftware')); ?>
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="nsc-career-count"><?php echo \esc_html(\__('Careers / jobs count', 'NscSoftware')); ?></label>
+                </th>
+                <td>
+                    <input type="number" id="nsc-career-count" min="1" max="100" step="1" value="1" />
+                    <p class="description">
+                        <?php echo \esc_html(\__('Number of job posts to seed when running “Careers (jobs)”. Also used by “Run all seeders”.', 'NscSoftware')); ?>
+                    </p>
+                    <label style="display:inline-block;margin-top:8px;"><input type="checkbox" id="nsc-career-with-skills" value="1" checked /> <?php echo \esc_html(\__('Generate Required skills in job seeder', 'NscSoftware')); ?></label>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">
+                    <label for="nsc-case-study-count"><?php echo \esc_html(\__('Case studies count', 'NscSoftware')); ?></label>
+                </th>
+                <td>
+                    <input type="number" id="nsc-case-study-count" min="1" max="100" step="1" value="2" />
+                    <p class="description">
+                        <?php echo \esc_html(\__('Number of case studies for “Case studies (full by count)”. This one is also used by “Run all seeders”. The scope button ignores this field.', 'NscSoftware')); ?>
+                    </p>
+                </td>
+            </tr>
         </table>
 
         <h2 class="title" style="margin-top:1.5em;"><?php echo \esc_html(\__('Run all (queue)', 'NscSoftware')); ?></h2>
@@ -1065,7 +1305,10 @@ function render_page(): void
                 <?php echo \esc_html(\__('Careers (jobs)', 'NscSoftware')); ?>
             </button>
             <button type="button" class="button button-primary nsc-run-seeder" data-seeder="case_study" style="margin:4px 8px 4px 0;">
-                <?php echo \esc_html(\__('Case studies', 'NscSoftware')); ?>
+                <?php echo \esc_html(\__('Case studies (full by count)', 'NscSoftware')); ?>
+            </button>
+            <button type="button" class="button button-primary nsc-run-seeder" data-seeder="case_study_scope" style="margin:4px 8px 4px 0;">
+                <?php echo \esc_html(\__('Case studies (scope: 1 minimal + 1 full)', 'NscSoftware')); ?>
             </button>
         </p>
 
