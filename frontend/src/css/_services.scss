@@ -63,7 +63,7 @@
           &:not(:first-child):hover,
           &:not(:first-child):focus,
           &:not(:first-child):focus-within {
-            @apply bg-[url('../img/serivce-hover.png')] bg-cover bg-right-top bg-no-repeat;
+            @apply bg-[url('../img/serivce-hover.webp')] bg-cover bg-right-top bg-no-repeat;
             height: var(--service-height, auto);
             min-height: var(--service-height, auto);
             
@@ -176,7 +176,7 @@
   }
 
 .bottom-sheet {
-    @apply fixed left-1/2 top-1/2 z-[101] hidden -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ease-in-out overflow-y-auto lg:hidden bg-[url('../img/serivce-hover.png')] bg-primary bg-cover bg-right-top bg-no-repeat max-h-[90vh] w-[90%] mx-auto opacity-0;
+    @apply fixed left-1/2 top-1/2 z-[101] hidden -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ease-in-out overflow-y-auto lg:hidden bg-[url('../img/serivce-hover.webp')] bg-primary bg-cover bg-right-top bg-no-repeat max-h-[90vh] w-[90%] mx-auto opacity-0;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     

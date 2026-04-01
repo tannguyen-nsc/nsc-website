@@ -34,6 +34,7 @@ function normalize_list_labels(array $raw): array
         if (!array_key_exists($key, $raw)) {
             continue;
         }
+
         $v = $raw[$key];
         if (is_string($v) && $v !== '') {
             $out[$key] = $v;
@@ -52,6 +53,7 @@ function primary_case_study_category_name(int $postId): string
     if (empty($terms) || is_wp_error($terms)) {
         return '';
     }
+
     foreach ($terms as $term) {
         if ($term instanceof \WP_Term) {
             return (string) $term->name;
@@ -83,6 +85,7 @@ function build_vue_case_study_items(string $placeholderImageUrl): array
         if (!is_object($post) || !isset($post->ID)) {
             continue;
         }
+
         $id = (int) $post->ID;
         $catName = primary_case_study_category_name($id);
         $img = \NscSoftware\Components\NSCBlockBlogsArchive\resolve_post_list_image_url($post, $placeholderImageUrl);
@@ -104,7 +107,7 @@ function build_vue_case_study_items(string $placeholderImageUrl): array
 add_filter('NscSoftware/addComponentData?name=NSCBlockCaseStudiesArchive', function ($data) {
     $buildUri = trailingslashit(get_template_directory_uri()) . 'frontend/build';
     $data['buildUri'] = $buildUri;
-    $placeholderImage = $buildUri . 'img/blog1.png';
+    $placeholderImage = $buildUri . '/img/blog1.webp';
 
     $opts = isset($data['options']) && is_array($data['options']) ? $data['options'] : [];
     $rawPerPage = $opts['caseStudiesPerPage'] ?? null;
@@ -129,6 +132,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockCaseStudiesArchive', funct
             if (!$term instanceof \WP_Term) {
                 continue;
             }
+
             $filterDefs[] = [
                 'id' => $term->name,
                 'label' => $term->name,

@@ -65,6 +65,7 @@ function normalize_archive_list_labels(array $raw): array
         if (!array_key_exists($key, $raw)) {
             continue;
         }
+
         $v = $raw[$key];
         if (is_string($v) && $v !== '') {
             $out[$key] = $v;
@@ -88,10 +89,12 @@ function primary_public_category_name(int $postId): string
     if (empty($cats) || !is_array($cats)) {
         return '';
     }
+
     foreach ($cats as $cat) {
         if (!$cat instanceof \WP_Term) {
             continue;
         }
+
         if ($cat->slug === 'uncategorized') {
             continue;
         }
@@ -100,6 +103,27 @@ function primary_public_category_name(int $postId): string
     }
 
     return '';
+}
+
+function is_seeded_post(int $postId): bool
+{
+    if ($postId <= 0) {
+        return false;
+    }
+
+    $raw = get_post_meta($postId, 'is_seeded', true);
+    if (is_bool($raw)) {
+        return $raw;
+    }
+    if (is_numeric($raw)) {
+        return ((int) $raw) === 1;
+    }
+    if (is_string($raw)) {
+        $v = strtolower(trim($raw));
+        return in_array($v, ['1', 'yes', 'true', 'on'], true);
+    }
+
+    return false;
 }
 
 /**
@@ -112,6 +136,7 @@ function resolve_post_list_image_url($post, string $placeholderUrl): string
     if (!is_object($post) || !isset($post->ID)) {
         return $placeholderUrl;
     }
+
     $id = (int) $post->ID;
     if (!empty($post->thumbnail)) {
         $thumb = $post->thumbnail;
@@ -119,16 +144,18 @@ function resolve_post_list_image_url($post, string $placeholderUrl): string
             return (string) $thumb->src;
         }
     }
+
     $url = get_the_post_thumbnail_url($id, 'large');
     if ($url) {
         return $url;
     }
+
     $url = get_the_post_thumbnail_url($id, 'medium_large');
     if ($url) {
         return $url;
     }
 
-    return $placeholderUrl;
+    return is_seeded_post($id) ? $placeholderUrl : '';
 }
 
 /**
@@ -147,16 +174,19 @@ function resolve_post_square_image_url(int $postId): string
             return $url;
         }
     }
+
     if (is_numeric($value)) {
         $url = wp_get_attachment_image_url((int) $value, 'medium_large');
         if (is_string($url) && $url !== '') {
             return $url;
         }
+
         $url = wp_get_attachment_url((int) $value);
         if (is_string($url) && $url !== '') {
             return $url;
         }
     }
+
     if (is_string($value)) {
         $url = trim($value);
         if ($url !== '') {
@@ -171,11 +201,13 @@ function resolve_post_square_image_url(int $postId): string
         if (is_string($url) && $url !== '') {
             return $url;
         }
+
         $url = wp_get_attachment_url((int) $raw);
         if (is_string($url) && $url !== '') {
             return $url;
         }
     }
+
     if (is_string($raw)) {
         $raw = trim($raw);
         if ($raw !== '' && filter_var($raw, FILTER_VALIDATE_URL)) {
@@ -195,6 +227,7 @@ function flexible_rows_include_blogs_archive(array $rows): bool
         if (!is_array($row)) {
             continue;
         }
+
         if (($row['acf_fc_layout'] ?? '') === 'nscBlockBlogsArchive') {
             return true;
         }
@@ -213,6 +246,7 @@ function current_page_includes_blogs_archive_block(): bool
     if (!is_singular('page')) {
         return false;
     }
+
     $pageId = (int) get_queried_object_id();
     if ($pageId <= 0) {
         return false;
@@ -235,6 +269,7 @@ function current_page_includes_blogs_archive_block(): bool
     if (is_array($raw) && flexible_rows_include_blogs_archive($raw)) {
         return true;
     }
+
     $allMeta = get_post_meta($pageId);
     if (is_array($allMeta)) {
         foreach ($allMeta as $values) {
@@ -259,6 +294,7 @@ function post_plain_excerpt($post, int $maxLen = 280): string
     if ($text === '') {
         $text = (string) ($post->content ?? '');
     }
+
     $text = wp_strip_all_tags($text);
     $text = preg_replace('/\s+/', ' ', $text);
     $text = trim($text);
@@ -292,6 +328,7 @@ function build_vue_blog_items(string $placeholderImageUrl): array
         if (!is_object($post) || !isset($post->ID)) {
             continue;
         }
+
         $catName = primary_public_category_name((int) $post->ID);
         $img = resolve_post_list_image_url($post, $placeholderImageUrl);
 
@@ -337,7 +374,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($
 
     $buildUri = trailingslashit(get_template_directory_uri()) . 'frontend/build';
     $data['buildUri'] = $buildUri;
-    $placeholderImage = $buildUri . 'img/blog1.png';
+    $placeholderImage = $buildUri . '/img/blog1.webp';
 
     $opts = isset($data['options']) && is_array($data['options']) ? $data['options'] : [];
     $rawFeaturedLimit = $opts['featuredPostsLimit'] ?? null;
@@ -370,6 +407,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($
             if (!$term instanceof \WP_Term || is_uncategorized_category($term)) {
                 continue;
             }
+
             $filterDefs[] = [
                 'id' => $term->name,
                 'label' => $term->name,

@@ -12,8 +12,9 @@
       {% set img = function('get_the_post_thumbnail_url', postId, 'medium_large')|default('') %}
     {% endif %}
   {% endif %}
-  {% if not img and theme.buildUri|default('') %}
-    {% set img = theme.buildUri ~ '/img/blog1.png' %}
+  {% set allowSeedFallback = postId and function('NscSoftware\\Components\\NSCBlockBlogsArchive\\is_seeded_post', postId) %}
+  {% if not img and allowSeedFallback and theme.buildUri|default('') %}
+    {% set img = theme.buildUri ~ '/img/blog1.webp' %}
   {% endif %}
   {% if img %}
     {% set alt = '' %}
@@ -34,7 +35,7 @@
     {% if headingIcon.url or headingIcon.src %}
       <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+      <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
     {% endif %}
     <h2>{{ title|e }}</h2>
   </div>
@@ -133,7 +134,7 @@
         </div>
       {% elseif theme.buildUri %}
         <div class="image">
-          <img src="{{ theme.buildUri }}/img/join-conversation.png" alt="Join Us" loading="lazy" />
+          <img src="{{ theme.buildUri }}/img/join-conversation.webp" alt="Join Us" loading="lazy" />
         </div>
       {% endif %}
       <div class="content">
@@ -151,7 +152,7 @@
     </div>
   </div>
   {% if theme.buildUri %}
-    <img src="{{ theme.buildUri }}/img/mob-blogs--bot-bg.png" class="block lg:hidden mob-bottom-pattern" alt="" loading="lazy" />
+    <img src="{{ theme.buildUri }}/img/mob-blogs--bot-bg.webp" class="block lg:hidden mob-bottom-pattern" alt="" loading="lazy" />
   {% endif %}
   </section>
 </nsc-software-component>

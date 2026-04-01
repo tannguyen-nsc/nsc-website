@@ -1,6 +1,6 @@
 {% if not (options.hidden|default(0)) %}
 <nsc-software-component name="NSCBlockAiBanner">
-  <section class="ai-banner" {% if backgroundImage.url or backgroundImage.src %}style="background-image: url('{{ (backgroundImage.url|default(backgroundImage.src))|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/ai-banner-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <section class="ai-banner" {% if backgroundImage.url or backgroundImage.src %}style="background-image: url('{{ (backgroundImage.url|default(backgroundImage.src))|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/ai-banner-bg.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
     <div class="wrapper">
       <div class="content">
         {% if title %}<h2>{{ title|raw }}</h2>{% endif %}

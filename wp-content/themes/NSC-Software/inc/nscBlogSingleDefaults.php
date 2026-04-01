@@ -12,7 +12,7 @@ namespace NscSoftware\BlogSingle;
  */
 function merge_blog_single_defaults(array $opts): array
 {
-    $buildImg = trailingslashit(get_template_directory_uri()) . 'frontend/build/img/mob-logo.png';
+    $build_img = trailingslashit(get_template_directory_uri()) . 'frontend/build/img/mob-logo.webp';
 
     $defaultContent = '<p class="blog-details__author-name">'
         . esc_html__('NSC Software Co., LTD', 'NscSoftware')
@@ -34,8 +34,8 @@ function merge_blog_single_defaults(array $opts): array
     ];
 
     $defaultAvatar = [
-        'url' => $buildImg,
-        'src' => $buildImg,
+        'url' => $build_img,
+        'src' => $build_img,
         'alt' => __('NSC Software', 'NscSoftware'),
     ];
 
@@ -51,6 +51,7 @@ function merge_blog_single_defaults(array $opts): array
     } elseif (isset($link['link_url'])) {
         $linkUrl = trim((string) $link['link_url']);
     }
+
     if ($linkUrl === '') {
         $opts['aboutAuthorLink'] = $defaultLink;
     }

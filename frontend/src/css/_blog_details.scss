@@ -191,9 +191,9 @@
     @apply rounded-lg border border-[#E5E5E5] bg-white p-5 shadow-sm lg:p-6;
   }
 
-  // About the author: title in .author-section; card uses author-box-bg.png
+  // About the author: title in .author-section; card uses author-box-bg.webp
   &__card.blog-details__author {
-    @apply relative overflow-hidden rounded-none border border-[#E5E5E5] border-t-0 bg-white bg-[url('../img/author-box-bg.png')] bg-cover bg-center bg-no-repeat p-0 shadow-lg;
+    @apply relative overflow-hidden rounded-none border border-[#E5E5E5] border-t-0 bg-white bg-[url('../img/author-box-bg.webp')] bg-cover bg-center bg-no-repeat p-0 shadow-lg;
   }
 
   &__author-inner {
@@ -242,7 +242,7 @@
   }
 
   &__cta {
-    @apply relative flex min-h-[400px] flex-col items-center justify-center overflow-hidden rounded-none bg-[#e8f6fa] bg-[url('../img/connect-box-bg.png')] bg-cover bg-center bg-no-repeat px-10 py-10 text-center shadow-[inset_0_0_0_1px_rgba(54,195,220,0.2)] lg:px-0 lg:py-12;
+    @apply relative flex min-h-[400px] flex-col items-center justify-center overflow-hidden rounded-none bg-[#e8f6fa] bg-[url('../img/connect-box-bg.webp')] bg-cover bg-center bg-no-repeat px-10 py-10 text-center shadow-[inset_0_0_0_1px_rgba(54,195,220,0.2)] lg:px-0 lg:py-12;
   }
 
   &__cta-title {

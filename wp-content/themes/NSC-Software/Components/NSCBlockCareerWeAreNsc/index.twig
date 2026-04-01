@@ -2,39 +2,39 @@
 <nsc-software-component name="NSCBlockCareerWeAreNsc">
   <section class="we-are-nsc">
     {% if theme.buildUri %}
-      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-1.png" class="hidden xl:block gallery-image gallery-image-top-left" alt="" loading="lazy" />
-      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-2.png" class="hidden xl:block gallery-image gallery-image-top-right" alt="" loading="lazy" />
-      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-6.png" class="hidden xl:block gallery-image gallery-image-middle-right" alt="" loading="lazy" />
-      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-7.png" class="hidden xl:block gallery-image gallery-image-bottom-right" alt="" loading="lazy" />
-      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-4.png" class="hidden xl:block gallery-image gallery-image-center-bottom" alt="" loading="lazy" />
-      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-3.png" class="hidden xl:block gallery-image gallery-image-middle-left" alt="" loading="lazy" />
-      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-5.png" class="hidden xl:block gallery-image gallery-image-bottom-left" alt="" loading="lazy" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-1.webp" class="hidden xl:block gallery-image gallery-image-top-left" alt="" loading="lazy" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-2.webp" class="hidden xl:block gallery-image gallery-image-top-right" alt="" loading="lazy" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-6.webp" class="hidden xl:block gallery-image gallery-image-middle-right" alt="" loading="lazy" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-7.webp" class="hidden xl:block gallery-image gallery-image-bottom-right" alt="" loading="lazy" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-4.webp" class="hidden xl:block gallery-image gallery-image-center-bottom" alt="" loading="lazy" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-3.webp" class="hidden xl:block gallery-image gallery-image-middle-left" alt="" loading="lazy" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-5.webp" class="hidden xl:block gallery-image gallery-image-bottom-left" alt="" loading="lazy" />
     {% endif %}
     <div class="wrapper">
       <div class="col">
         {% if theme.buildUri %}
-          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-heading.png" class="hidden xl:block gallery-image gallery-image-heading" alt="" loading="lazy" />
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-heading.webp" class="hidden xl:block gallery-image gallery-image-heading" alt="" loading="lazy" />
         {% endif %}
         <div class="heading">
           {% if headingIcon.url or headingIcon.src %}
             <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
           {% elseif theme.buildUri %}
-            <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" loading="lazy" />
+            <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.webp" alt="" loading="lazy" />
           {% endif %}
           <h2>{{ heading|default('WE ARE NSC <br class="hidden xl:block"> SOFTWARE')|raw }}</h2>
         </div>
       </div>
       {% if theme.buildUri %}
-        <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-group-1.png" class="xl:hidden gallery-image-group" alt="" loading="lazy" />
+        <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-group-1.webp" class="xl:hidden gallery-image-group" alt="" loading="lazy" />
       {% endif %}
       <div class="col right-col">
         {% if theme.buildUri %}
-          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-4.png" class="hidden xl:block gallery-image gallery-image-content-top" alt="" loading="lazy" />
-          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-3.png" class="hidden xl:block gallery-image gallery-image-content-image-top-right" alt="" loading="lazy" />
-          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-2.png" class="hidden xl:block gallery-image gallery-image-content-bottom-right" alt="" loading="lazy" />
-          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-1.png" class="hidden xl:block gallery-image gallery-image-content-bottom" alt="" loading="lazy" />
-          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-6.png" class="hidden xl:block gallery-image gallery-image-content-bottom-left" alt="" loading="lazy" />
-          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-5.png" class="hidden xl:block gallery-image gallery-image-content-top-left" alt="" loading="lazy" />
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-4.webp" class="hidden xl:block gallery-image gallery-image-content-top" alt="" loading="lazy" />
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-3.webp" class="hidden xl:block gallery-image gallery-image-content-image-top-right" alt="" loading="lazy" />
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-2.webp" class="hidden xl:block gallery-image gallery-image-content-bottom-right" alt="" loading="lazy" />
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-1.webp" class="hidden xl:block gallery-image gallery-image-content-bottom" alt="" loading="lazy" />
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-6.webp" class="hidden xl:block gallery-image gallery-image-content-bottom-left" alt="" loading="lazy" />
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-body-5.webp" class="hidden xl:block gallery-image gallery-image-content-top-left" alt="" loading="lazy" />
         {% endif %}
         <div>
           {{ body|default('')|raw }}
@@ -50,7 +50,7 @@
         {% endif %}
       </div>
       {% if theme.buildUri %}
-        <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-group-2.png" class="xl:hidden gallery-image-group pt-6" alt="" loading="lazy" />
+        <img src="{{ theme.buildUri|e('esc_url') }}/img/wansc-group-2.webp" class="xl:hidden gallery-image-group pt-6" alt="" loading="lazy" />
       {% endif %}
     </div>
   </section>

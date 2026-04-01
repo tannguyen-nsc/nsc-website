@@ -181,7 +181,7 @@
   }
 
   &__apply-wrapper {
-    @apply relative mx-auto w-full max-w-full bg-[url('../img/apply-form-bg.png')] bg-cover bg-right-top bg-no-repeat px-5 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:max-w-[90%] lg:px-10 lg:py-12 xl:max-w-[1140px] xl:px-12 xl:py-14 2xl:max-w-[1280px];
+    @apply relative mx-auto w-full max-w-full bg-[url('../img/apply-form-bg.webp')] bg-cover bg-right-top bg-no-repeat px-5 py-6 sm:px-6 sm:py-8 md:px-8 md:py-10 lg:max-w-[90%] lg:px-10 lg:py-12 xl:max-w-[1140px] xl:px-12 xl:py-14 2xl:max-w-[1280px];
   }
 
   /* Uses global `section .heading` + `.light` (white title on gradient) */

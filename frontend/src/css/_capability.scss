@@ -8,7 +8,7 @@
       @apply relative w-full h-full overflow-hidden;
 
       .capability-graphic {
-        @apply absolute inset-0 z-0 bg-[url('../img/body-capabilities.png')] bg-cover bg-center bg-no-repeat;
+        @apply absolute inset-0 z-0 bg-[url('../img/body-capabilities.webp')] bg-cover bg-center bg-no-repeat;
       }
 
       .capability-content {

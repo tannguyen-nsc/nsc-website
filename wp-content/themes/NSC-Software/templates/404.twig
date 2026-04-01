@@ -1,12 +1,12 @@
 {% extends 'templates/_document.twig' %}
 
 {% block content %}
-  <section class="error-404" style="background-image:url('{{theme.buildUri ~ '/img/default-content-bg.png'}}');" aria-label="Page not found">
+  <section class="error-404" style="background-image:url('{{theme.buildUri ~ '/img/default-content-bg.webp'}}');" aria-label="Page not found">
       <div class="wrapper">
         <div class="error-404__inner">
           <p class="error-404__code" aria-hidden="true">404</p>
           <h1 class="error-404__title">{{ __('Page not found', 'NscSoftware')|e }}</h1>
-          <p><img src="{{theme.buildUri ~ '/img/404.png'}}" alt="404" loading="lazy"></p>
+          <p><img src="{{theme.buildUri ~ '/img/404.webp'}}" alt="404" loading="lazy"></p>
           
           <!-- <p class="error-404__lead">The page you are looking for might have been removed or is temporarily unavailable.</p> -->
           <a class="error-404__btn" href="./">{{ __('Go to homepage', 'NscSoftware')|e }}</a>

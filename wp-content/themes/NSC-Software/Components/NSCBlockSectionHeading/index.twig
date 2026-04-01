@@ -3,7 +3,7 @@
   {% if icon.url or icon.src %}
     <img src="{{ (icon.url|default(icon.src))|e('esc_url') }}" alt="{{ (icon.alt|default(''))|e }}" loading="lazy" />
   {% elseif theme.buildUri %}
-    <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="" loading="lazy" />
+    <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="" loading="lazy" />
   {% endif %}
   <h2>{{ title|e }}</h2>
 </nsc-software-component>

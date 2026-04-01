@@ -59,10 +59,10 @@ function nscCaseStudySeedGetImageIds(): array
 {
     $buildUri = get_template_directory_uri() . '/frontend/build';
     $files    = [
-        'blog1.png', 'blog2.png', 'blog3.png', 'blog4.png', 'blog5.png', 'blog6.png', 'blog7.png', 'blog8.png',
-        'gallery-1.png', 'gallery-2.png', 'gallery-3.png',
-        'logo-black.png',
-        'hero-light-case-study.png',
+        'blog1.webp', 'blog2.webp', 'blog3.webp', 'blog4.webp', 'blog5.webp', 'blog6.webp', 'blog7.webp', 'blog8.webp',
+        'gallery-1.webp', 'gallery-2.webp', 'gallery-3.webp',
+        'logo-black.webp',
+        'hero-light-case-study.webp',
     ];
     $map      = [];
 
@@ -76,10 +76,37 @@ function nscCaseStudySeedGetImageIds(): array
         if (!empty($existing)) {
             return (int) $existing[0]->ID;
         }
-        $url = $buildUri . '/img/' . $filename;
-        $tmp = download_url($url);
-        if (is_wp_error($tmp)) {
-            return 0;
+
+        $tmp = null;
+        $localCandidates = [
+            get_template_directory() . '/frontend/build/img/' . $filename,
+            __DIR__ . '/frontend/build/img/' . $filename,
+        ];
+        foreach ($localCandidates as $localPath) {
+            if (!is_readable($localPath)) {
+                continue;
+            }
+
+            $tmp = wp_tempnam($filename);
+            if ($tmp && @copy($localPath, $tmp)) {
+                break;
+            }
+
+            if ($tmp && is_file($tmp)) {
+                @unlink($tmp);
+            }
+
+            $tmp = null;
+        }
+
+        if ($tmp === null) {
+            $url = $buildUri . '/img/' . rawurlencode($filename);
+            $downloaded = download_url($url);
+            if (is_wp_error($downloaded)) {
+                return 0;
+            }
+
+            $tmp = $downloaded;
         }
         $file = ['name' => $filename, 'tmp_name' => $tmp];
         $id   = media_handle_sideload($file, 0, $filename);
@@ -378,7 +405,7 @@ function nsc_case_study_seed_component_rows(int $index, array $study, array $ima
     $sizeDuration = $durations[$seed % count($durations)];
 
     $galleryIds = [];
-    foreach (['gallery-1.png', 'gallery-2.png', 'gallery-3.png'] as $gf) {
+    foreach (['gallery-1.webp', 'gallery-2.webp', 'gallery-3.webp'] as $gf) {
         $gid = $imageMap[$gf] ?? 0;
         if ($gid > 0) {
             $galleryIds[] = $gid;
@@ -388,7 +415,7 @@ function nsc_case_study_seed_component_rows(int $index, array $study, array $ima
         $galleryIds = array_slice($galleryIds, 0, 2);
     }
 
-    $logoId = $imageMap['logo-black.png'] ?? 0;
+    $logoId = $imageMap['logo-black.webp'] ?? 0;
 
     $hero = [
         'acf_fc_layout'   => 'nscCaseStudyHero',
@@ -399,7 +426,7 @@ function nsc_case_study_seed_component_rows(int $index, array $study, array $ima
     if ($logoId > 0) {
         $hero['customerLogo'] = $logoId;
     }
-    $heroBgId = $imageMap['hero-light-case-study.png'] ?? 0;
+    $heroBgId = $imageMap['hero-light-case-study.webp'] ?? 0;
     if ($heroBgId > 0) {
         $hero['backgroundDesktop'] = $heroBgId;
         $hero['backgroundMobile']  = $heroBgId;
@@ -507,7 +534,7 @@ $poolService  = ['CTO services & tech reviews', 'Software product management', '
 $poolTech     = ['AWS', 'Kubernetes', 'Docker', 'PostgreSQL', 'React', 'Java', 'Kafka', 'Terraform', 'MongoDB', 'Spark', 'Angular', 'Redis'];
 
 $imageMap = nscCaseStudySeedGetImageIds();
-$blogFiles = ['blog1.png', 'blog2.png', 'blog3.png', 'blog4.png', 'blog5.png', 'blog6.png', 'blog7.png', 'blog8.png'];
+$blogFiles = ['blog1.webp', 'blog2.webp', 'blog3.webp', 'blog4.webp', 'blog5.webp', 'blog6.webp', 'blog7.webp', 'blog8.webp'];
 
 $results = [];
 $i       = 0;
@@ -553,6 +580,10 @@ foreach ($caseStudies as $study) {
         'post_author'  => get_current_user_id() ?: 1,
     ];
 
+    $imgIdx  = ($i * 5 + 2) % count($blogFiles);
+    $imgFile = $blogFiles[$imgIdx];
+    $thumbId = $imageMap[$imgFile] ?? 0;
+
     if (!$singleTarget) {
         if ($postId > 0) {
             $postarr['ID'] = $postId;
@@ -574,12 +605,10 @@ foreach ($caseStudies as $study) {
             update_post_meta($postId, 'caseStudyComponents', $components);
         }
 
-        $imgIdx  = ($i * 5 + 2) % count($blogFiles);
-        $imgFile = $blogFiles[$imgIdx];
-        $thumbId = $imageMap[$imgFile] ?? 0;
         if ($thumbId > 0) {
             set_post_thumbnail($postId, $thumbId);
         }
+        update_post_meta($postId, 'is_seeded', '1');
 
         $catId = nsc_case_study_seed_category_id($study['category']);
         if ($catId > 0) {
@@ -667,6 +696,10 @@ foreach ($caseStudies as $study) {
             $tp = (int) pll_get_post($canonicalId, $t0);
             if ($tp > 0) {
                 $reportId = $tp;
+                if ($thumbId > 0) {
+                    set_post_thumbnail($reportId, $thumbId);
+                }
+                update_post_meta($reportId, 'is_seeded', '1');
             }
         }
     }

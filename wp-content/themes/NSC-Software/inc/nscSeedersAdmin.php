@@ -348,6 +348,29 @@ function force_delete_posts_by_type(string $postType): int
 }
 
 /**
+ * Remove `is_seeded` marker from posts of a post type.
+ *
+ * @return int Number of posts where marker was removed.
+ */
+function clear_seeded_flag_by_type(string $postType): int
+{
+    $cleared = 0;
+    foreach (get_all_post_ids_by_type($postType) as $postId) {
+        if ($postId <= 0) {
+            continue;
+        }
+        if (!metadata_exists('post', $postId, 'is_seeded')) {
+            continue;
+        }
+        if (delete_post_meta($postId, 'is_seeded')) {
+            $cleared++;
+        }
+    }
+
+    return $cleared;
+}
+
+/**
  * @return int Number of deleted menu terms.
  */
 function force_delete_all_menus(): int
@@ -399,27 +422,27 @@ function maybe_cleanup_content_before_seed(string $key): string
             );
 
         case 'blogs':
-            $deleted = force_delete_posts_by_type('post');
+            $deleted = clear_seeded_flag_by_type('post');
             return \sprintf(
-                /* translators: %d deleted blog posts count */
-                \__('Cleanup done: deleted %d post(s).', 'NscSoftware'),
+                /* translators: %d blog posts with removed is_seeded flag */
+                \__('Cleanup done: removed is_seeded from %d post(s).', 'NscSoftware'),
                 $deleted
             );
 
         case 'career':
-            $deleted = force_delete_posts_by_type('job');
+            $deleted = clear_seeded_flag_by_type('job');
             return \sprintf(
-                /* translators: %d deleted jobs count */
-                \__('Cleanup done: deleted %d job post(s).', 'NscSoftware'),
+                /* translators: %d job posts with removed is_seeded flag */
+                \__('Cleanup done: removed is_seeded from %d job post(s).', 'NscSoftware'),
                 $deleted
             );
 
         case 'case_study':
         case 'case_study_scope':
-            $deleted = force_delete_posts_by_type('case_study');
+            $deleted = clear_seeded_flag_by_type('case_study');
             return \sprintf(
-                /* translators: %d deleted case studies count */
-                \__('Cleanup done: deleted %d case study post(s).', 'NscSoftware'),
+                /* translators: %d case study posts with removed is_seeded flag */
+                \__('Cleanup done: removed is_seeded from %d case study post(s).', 'NscSoftware'),
                 $deleted
             );
 
@@ -1213,7 +1236,7 @@ function render_page(): void
                 <td>
                     <label><input type="checkbox" id="nsc-seeder-cleanup" value="1" /> <?php echo \esc_html(\__('Remove existing seeded content before running selected seeder.', 'NscSoftware')); ?></label>
                     <p class="description">
-                        <?php echo \esc_html(\__('When enabled: Pages deletes all pages, Blog posts deletes all posts, Careers deletes all job posts, Case studies deletes all case_study posts, Contact Form 7 deletes all forms, Menus deletes all menus/items. Then the selected seeder runs again.', 'NscSoftware')); ?>
+                        <?php echo \esc_html(\__('When enabled: Pages deletes all pages; Blog/Careers/Case studies only remove the is_seeded flag on their posts; Contact Form 7 deletes all forms; Menus deletes all menus/items. Then the selected seeder runs again.', 'NscSoftware')); ?>
                     </p>
                 </td>
             </tr>

@@ -1,13 +1,13 @@
 {% if not (options.hidden|default(0)) %}
 <nsc-software-component name="NSCBlockHowWeWork">
   {% set sectionBg = (backgroundImage.url|default(backgroundImage.src)) %}
-  <section class="how-we-work" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/how-we-work.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <section class="how-we-work" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/how-we-work.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
   <div class="wrapper">
     <div class="heading animate__animated animate__zoomIn">
       {% if headingIcon.url %}
         <img src="{{ headingIcon.url|e('esc_url') }}" alt="" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
       {% endif %}
       <h2>{{ title|e }}</h2>
     </div>
@@ -19,12 +19,12 @@
       {% if image.url or image.src %}
         <img src="{{ (image.url|default(image.src))|e('esc_url') }}" class="hidden lg:block" alt="{{ (image.alt|default(''))|e }}" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/nsc-members.png" class="hidden lg:block" alt="NSC Members" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/nsc-members.webp" class="hidden lg:block" alt="NSC Members" loading="lazy" />
       {% endif %}
       {% if imageMobile.url or imageMobile.src %}
         <img src="{{ (imageMobile.url|default(imageMobile.src))|e('esc_url') }}" class="block lg:hidden" alt="{{ (imageMobile.alt|default(''))|e }}" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/mob-nsc-members.png" class="block lg:hidden" alt="NSC Members" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/mob-nsc-members.webp" class="block lg:hidden" alt="NSC Members" loading="lazy" />
       {% endif %}
       <div class="items">
         {% for item in items %}

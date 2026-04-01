@@ -4,24 +4,24 @@
     {% if backgroundTop.url or backgroundTop.src %}
       <img src="{{ (backgroundTop.url|default(backgroundTop.src))|e('esc_url') }}" alt="" class="leader-top lg:block hidden" loading="eager" fetchpriority="high" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/leaders-top-bg.png" alt="" class="leader-top lg:block hidden" loading="eager" fetchpriority="high" />
+      <img src="{{ theme.buildUri }}/img/leaders-top-bg.webp" alt="" class="leader-top lg:block hidden" loading="eager" fetchpriority="high" />
     {% endif %}
     {% if backgroundDesktop.url or backgroundDesktop.src %}
       <img src="{{ (backgroundDesktop.url|default(backgroundDesktop.src))|e('esc_url') }}" alt="" class="lg:block hidden" loading="eager" fetchpriority="high" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/leaders-bg.png" alt="" class="lg:block hidden" loading="eager" fetchpriority="high" />
+      <img src="{{ theme.buildUri }}/img/leaders-bg.webp" alt="" class="lg:block hidden" loading="eager" fetchpriority="high" />
     {% endif %}
     {% if backgroundMobile.url or backgroundMobile.src %}
       <img src="{{ (backgroundMobile.url|default(backgroundMobile.src))|e('esc_url') }}" alt="" class="lg:hidden" loading="eager" fetchpriority="high" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/mob-leaders-bg.png" alt="" class="lg:hidden" loading="eager" fetchpriority="high" />
+      <img src="{{ theme.buildUri }}/img/mob-leaders-bg.webp" alt="" class="lg:hidden" loading="eager" fetchpriority="high" />
     {% endif %}
 
     <div class="heading">
       {% if headingIcon.url or headingIcon.src %}
         <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
       {% endif %}
       <h2>{{ title|e }}</h2>
     </div>
@@ -38,7 +38,7 @@
             {% if leader.image.url or leader.image.src %}
               <img src="{{ (leader.image.url|default(leader.image.src))|e('esc_url') }}" alt="{{ (leader.image.alt|default(leader.name))|e }}" loading="lazy" />
             {% elseif theme.buildUri %}
-              <img src="{{ theme.buildUri }}/img/leader{{ loop.index }}.png" alt="{{ leader.name|e }}" loading="lazy" />
+              <img src="{{ theme.buildUri }}/img/leader{{ loop.index }}.webp" alt="{{ leader.name|e }}" loading="lazy" />
             {% endif %}
           </div>
           <div class="content">

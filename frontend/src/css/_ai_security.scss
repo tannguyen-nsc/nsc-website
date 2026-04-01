@@ -33,7 +33,7 @@
         @apply flex flex-col lg:flex-row items-stretch justify-center bg-white/60 w-full max-w-full relative;
 
         &::before {
-          @apply content-[''] block absolute top-0 left-0 w-full h-10 -translate-y-full bg-[length:100%_100%] bg-center bg-no-repeat bg-[url('../img/ai-security-items-top.png')] lg:h-[50px] xl:h-[60px];
+          @apply content-[''] block absolute top-0 left-0 w-full h-10 -translate-y-full bg-[length:100%_100%] bg-center bg-no-repeat bg-[url('../img/ai-security-items-top.webp')] lg:h-[50px] xl:h-[60px];
         }
 
         .item {

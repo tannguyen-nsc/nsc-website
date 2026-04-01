@@ -1,5 +1,5 @@
 .company-stats-full {
-  @apply relative min-h-[180vw] md:min-h-[130vw] lg:min-h-[45vw] xl:min-h-[35vw] bg-cover bg-top bg-no-repeat px-4 bg-[url('../img/mob-company-stats-full.png')] lg:bg-[url('../img/company-stats-full.png')] flex flex-col items-center justify-between bg-primary py-12 lg:py-16;
+  @apply relative min-h-[180vw] md:min-h-[130vw] lg:min-h-[45vw] xl:min-h-[35vw] bg-cover bg-top bg-no-repeat px-4 bg-[url('../img/mob-company-stats-full.webp')] lg:bg-[url('../img/company-stats-full.webp')] flex flex-col items-center justify-between bg-primary py-12 lg:py-16;
 
   @media screen and (min-width: 1440px) {
     @apply min-h-[32vw];

@@ -27,7 +27,7 @@
             {% if customerLogo.url|default(customerLogo.src) %}
               <img src="{{ (customerLogo.url|default(customerLogo.src))|e('esc_url') }}" alt="{{ (customerLogo.alt|default(''))|e }}" class="case-study-customer__logo" width="220" height="48" loading="eager" />
             {% elseif theme.buildUri|default('') %}
-              <img src="{{ theme.buildUri|e('esc_url') }}/img/logo-black.png" alt="" class="case-study-customer__logo" width="220" height="48" loading="eager" />
+              <img src="{{ theme.buildUri|e('esc_url') }}/img/logo-black.webp" alt="" class="case-study-customer__logo" width="220" height="48" loading="eager" />
             {% endif %}
             {% if customerTagline|default('') %}
               <p class="case-study-customer__tagline">{{ customerTagline|e }}</p>

@@ -1,14 +1,14 @@
 {% if not (options.hidden|default(0)) %}
 <nsc-software-component name="NSCCaseStudyContact">
   {% set sectionBg = (backgroundImage.url|default(backgroundImage.src)) %}
-  <section class="contact-us" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/join-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <section class="contact-us" {% if sectionBg %}style="background-image: url('{{ sectionBg|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/join-bg.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
   <div class="wrapper">
     <div class="col">
       <div class="heading">
         {% if headingIcon.url or headingIcon.src %}
           <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
         {% elseif theme.buildUri %}
-          <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+          <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
         {% endif %}
         <h2>{{ title|e }}</h2>
       </div>

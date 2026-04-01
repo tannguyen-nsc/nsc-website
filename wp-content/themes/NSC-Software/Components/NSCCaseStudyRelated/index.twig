@@ -13,10 +13,11 @@
             {% set study_title_plain = function('html_entity_decode', study.title|default('')) %}
             <article class="case-study-card">
               <div class="card-image">
+                {% set seededStudy = function('NscSoftware\\Components\\NSCBlockBlogsArchive\\is_seeded_post', study.id|default(0)) %}
                 {% if img_url %}
                   <img src="{{ img_url|e('esc_url') }}" alt="{{ study_title_plain|e }}" loading="lazy" decoding="async" />
-                {% elseif theme.buildUri|default('') %}
-                  <img src="{{ theme.buildUri|e('esc_url') }}/img/blog1.png" alt="" loading="lazy" decoding="async" />
+                {% elseif seededStudy and theme.buildUri|default('') %}
+                  <img src="{{ theme.buildUri|e('esc_url') }}/img/blog1.webp" alt="" loading="lazy" decoding="async" />
                 {% endif %}
               </div>
               <div class="card-content">

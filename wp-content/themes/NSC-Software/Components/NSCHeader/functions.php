@@ -89,7 +89,7 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
     $defaultLogo = $themeBuildUri . '/img/logo.png';
     $defaultLogoWhite = $themeBuildUri . '/img/logo-white.png';
     $defaultMobWhite = $themeBuildUri . '/img/mob-logo-white.png';
-    $defaultMobColored = $themeBuildUri . '/img/mob-logo.png';
+    $defaultMobColored = $themeBuildUri . '/img/mob-logo.webp';
 
     if (empty($data['logo']['src']) && empty($data['logo']['url'])) {
         $data['logo']['src'] = $defaultLogo;

@@ -5,12 +5,12 @@
     {% if imageDesktop.url or imageDesktop.src %}
       <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="lg:block hidden" loading="lazy" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/company-stats.png" alt="Company Stats" class="lg:block hidden" loading="lazy" />
+      <img src="{{ theme.buildUri }}/img/company-stats.webp" alt="Company Stats" class="lg:block hidden" loading="lazy" />
     {% endif %}
     {% if imageMobile.url or imageMobile.src %}
       <img src="{{ (imageMobile.url|default(imageMobile.src))|e('esc_url') }}" alt="{{ (imageMobile.alt|default(''))|e }}" class="lg:hidden" loading="lazy" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/company-stats-mob.png" alt="Company Stats" class="lg:hidden" loading="lazy" />
+      <img src="{{ theme.buildUri }}/img/company-stats-mob.webp" alt="Company Stats" class="lg:hidden" loading="lazy" />
     {% endif %}
     <div class="company-stats">
       {% for stat in stats %}

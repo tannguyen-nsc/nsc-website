@@ -29,7 +29,7 @@
             {% if logo and (logo.url or logo.src) %}
               <img src="{{ (logo.url|default(logo.src))|e('esc_url') }}" alt="{{ companyName|e }}" class="hidden lg:block" loading="lazy" />
             {% elseif buildUri %}
-              <img src="{{ buildUri }}/img/mob-foot-logo.png" alt="{{ companyName|e }}" class="hidden lg:block" loading="lazy" />
+              <img src="{{ buildUri }}/img/mob-foot-logo.webp" alt="{{ companyName|e }}" class="hidden lg:block" loading="lazy" />
             {% endif %}
           </div>
           <h3 class="company-name">{{ companyName|e }}</h3>

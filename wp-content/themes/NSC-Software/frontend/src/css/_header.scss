@@ -327,7 +327,7 @@ header.mobile-header {
   // Mobile Navigation Menu
   .mobile-nav {
     @apply fixed inset-0 w-full h-screen z-[300] overflow-y-auto;
-    @apply -translate-x-full transition-transform duration-300 ease-in-out bg-[url('../img/mob-header-bg.png')] bg-right-top bg-no-repeat bg-cover bg-[#36C3DC];
+    @apply -translate-x-full transition-transform duration-300 ease-in-out bg-[url('../img/mob-header-bg.webp')] bg-right-top bg-no-repeat bg-cover bg-[#36C3DC];
     
     &.active {
       @apply translate-x-0;

@@ -9,7 +9,7 @@
         {% if headingIcon.url or headingIcon.src %}
           <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
         {% elseif theme.buildUri %}
-          <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" loading="lazy" />
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.webp" alt="" loading="lazy" />
         {% endif %}
         <h2>{{ title|default('OPEN POSITIONS')|e }}</h2>
       </div>

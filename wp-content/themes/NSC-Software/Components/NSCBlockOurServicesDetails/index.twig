@@ -1,13 +1,13 @@
 {% if not (options.hidden|default(0)) %}
 <nsc-software-component name="NSCBlockOurServicesDetails">
-  <section class="our-services-details" {% if backgroundImage.url or backgroundImage.src %}style="background-image: url('{{ (backgroundImage.url|default(backgroundImage.src))|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/services-details-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+  <section class="our-services-details" {% if backgroundImage.url or backgroundImage.src %}style="background-image: url('{{ (backgroundImage.url|default(backgroundImage.src))|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/services-details-bg.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
     <div class="wrapper">
       <div class="info">
         <div class="col">
           {% if headingIcon.url or headingIcon.src %}
             <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
           {% elseif theme.buildUri %}
-            <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+            <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
           {% endif %}
           {% if titleLine1 %}<h2>{{ titleLine1|raw }}</h2>{% endif %}
           {% if titleLine2 %}<h2>{{ titleLine2|raw }}</h2>{% endif %}
@@ -44,7 +44,7 @@
         <div class="col right-column"></div>
       </div>
       {% if banner.title or banner.description or (banner.button.label and banner.button.url) %}
-        <div class="banner" {% if banner.backgroundImage.url or banner.backgroundImage.src %}style="background-image: url('{{ (banner.backgroundImage.url|default(banner.backgroundImage.src))|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/service-details-banner.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
+        <div class="banner" {% if banner.backgroundImage.url or banner.backgroundImage.src %}style="background-image: url('{{ (banner.backgroundImage.url|default(banner.backgroundImage.src))|e('esc_url') }}'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% elseif theme.buildUri %}style="background-image: url('{{ theme.buildUri }}/img/service-details-banner.webp'); background-size: cover; background-position: center; background-repeat: no-repeat;"{% endif %}>
           {% if banner.title %}<h2>{{ banner.title|raw }}</h2>{% endif %}
           {% if banner.description %}{{ banner.description|raw }}{% endif %}
           {% if banner.button.label and banner.button.url %}

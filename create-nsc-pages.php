@@ -133,8 +133,8 @@ $pages = [
 function nscGetTestimonialBuildImageIds(): array
 {
     $buildUri   = get_template_directory_uri() . '/frontend/build';
-    $logoFiles  = ['ACB.png', 'Petlinx.png', 'Atomworks.png', 'Greatscott.png', 'Healthcare.png', 'OCQ.png', 'visaplan.png', 'abri.png', 'anz.png', 'alawyer.png', 'hivello.png', 'commnia.png', 'STU.png', 'threat.png', 'littles.png', 'FW.png', 'monday.png', 'NUBO.png', 'salesbuildr.png', 'shft.png', 'dtails.png', 'timeblockr.png', 'Glassboxx.png', 'clowd.png', 'pl.png', 'Simpson.png', 'Timberyard.png', 'histofy.png', 'andromeda.png', 'endava.png', 'abouthealthcar.png', 'allshifts.png', 'Bruker.png'];
-    $avatarFiles = ['testimonial1.png', 'testimonial2.png', 'testimonial3.png', 'testimonial4.png', 'testimonial5.png', 'testimonial6.png', 'testimonial7.png', 'testimonial8.png'];
+    $logoFiles  = ['ACB.webp', 'Petlinx.webp', 'Atomworks.webp', 'Greatscott.webp', 'Healthcare.webp', 'OCQ.webp', 'visaplan.webp', 'abri.webp', 'anz.webp', 'alawyer.webp', 'hivello.webp', 'commnia.webp', 'STU.webp', 'threat.webp', 'littles.webp', 'FW.webp', 'monday.webp', 'NUBO.webp', 'salesbuildr.webp', 'shft.webp', 'dtails.webp', 'timeblockr.webp', 'Glassboxx.webp', 'clowd.webp', 'pl.webp', 'Simpson.webp', 'Timberyard.webp', 'histofy.webp', 'andromeda.webp', 'endava.webp', 'abouthealthcar.webp', 'allshifts.webp', 'Bruker.webp'];
+    $avatarFiles = ['testimonial1.webp', 'testimonial2.webp', 'testimonial3.webp', 'testimonial4.webp', 'testimonial5.webp', 'testimonial6.webp', 'testimonial7.webp', 'testimonial8.webp'];
 
     $getOrCreateId = static function (string $filename) use ($buildUri): int {
         $existing = get_posts([
@@ -269,13 +269,76 @@ function nsc_seed_pages_gallery_ids_from_filenames(array $filenames): array
 }
 
 /**
+ * Global Presence locations with optional sideloaded place images.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function nsc_seed_pages_global_presence_locations(): array
+{
+    $rows = [
+        [
+            'label' => 'Dallas',
+            'title' => 'Dallas',
+            'address' => '4245 N Central Expy, #490, Dallas, TX, USA 75205',
+            'phoneLink' => '+1 (713) 428 2289',
+            'imageFile' => 'global-presence-place-1.webp',
+        ],
+        [
+            'label' => 'Germany',
+            'title' => 'Germany',
+            'address' => 'Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany',
+            'phoneLink' => '(+49) 170 1633520',
+            'imageFile' => 'global-presence-place-2.webp',
+        ],
+        [
+            'label' => 'Ha Noi',
+            'title' => 'NSC Software Headquarters',
+            'address' => 'Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam',
+            'phoneLink' => '(+84) 866 639 497',
+            'imageFile' => 'global-presence-place-3.webp',
+        ],
+        [
+            'label' => 'Ho Chi Minh City',
+            'title' => 'Ho Chi Minh',
+            'address' => 'Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam',
+            'phoneLink' => '(+84) 866 639 497',
+            'imageFile' => 'global-presence-place-4.webp',
+        ],
+        [
+            'label' => 'Sydney',
+            'title' => 'Sydney',
+            'address' => 'Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia',
+            'phoneLink' => '(+61) 0488 860 719',
+            'imageFile' => 'global-presence-place-5.webp',
+        ],
+    ];
+
+    $locations = [];
+    foreach ($rows as $row) {
+        $filename = (string) ($row['imageFile'] ?? '');
+        unset($row['imageFile']);
+
+        if ($filename !== '') {
+            $imageId = nscSideloadBuildImageByFilename($filename);
+            if ($imageId > 0) {
+                $row['image'] = $imageId;
+            }
+        }
+
+        $locations[] = $row;
+    }
+
+    return $locations;
+}
+
+/**
  * @return array<int, string>
  */
 function nsc_seed_pages_png_range(string $prefix, int $from, int $to): array
 {
     $filenames = [];
     for ($i = $from; $i <= $to; $i++) {
-        $filenames[] = $prefix . $i . '.png';
+        $filenames[] = $prefix . $i . '.webp';
     }
 
     return $filenames;
@@ -573,13 +636,7 @@ function getAboutPageComponents(): array
         [
             'acf_fc_layout' => 'nscBlockGlobalPresence',
             'title'        => 'GLOBAL PRESENCE',
-            'locations'     => [
-                ['label' => 'Dallas', 'title' => 'Dallas', 'address' => '4245 N Central Expy, #490, Dallas, TX, USA 75205', 'phoneLink' => '+1 (713) 428 2289'],
-                ['label' => 'Germany', 'title' => 'Germany', 'address' => 'Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany', 'phoneLink' => '(+49) 170 1633520'],
-                ['label' => 'Ha Noi', 'title' => 'NSC Software Headquarters', 'address' => 'Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam', 'phoneLink' => '(+84) 866 639 497'],
-                ['label' => 'Ho Chi Minh City', 'title' => 'Ho Chi Minh', 'address' => 'Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam', 'phoneLink' => '(+84) 866 639 497'],
-                ['label' => 'Sydney', 'title' => 'Sydney', 'address' => 'Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia', 'phoneLink' => '(+61) 0488 860 719'],
-            ],
+            'locations'     => nsc_seed_pages_global_presence_locations(),
             'options'       => ['theme' => ''],
         ],
         // 8. Contact Us (section.contact-us)
@@ -606,9 +663,9 @@ function getAiPageComponents(): array
 {
     $baseUrl = home_url('/');
 
-    $aiHeroDesktopId = nscSideloadBuildImageByFilename('ai-hero.png');
-    $aiHeroMobileId  = nscSideloadBuildImageByFilename('mob-ai-hero.png');
-    $ecoHeadingIconId = nscSideloadBuildImageByFilename('heading-icon.png');
+    $aiHeroDesktopId = nscSideloadBuildImageByFilename('ai-hero.webp');
+    $aiHeroMobileId  = nscSideloadBuildImageByFilename('mob-ai-hero.webp');
+    $ecoHeadingIconId = nscSideloadBuildImageByFilename('heading-icon.webp');
 
     $hero = [
         'acf_fc_layout'   => 'nscBlockHero',
@@ -630,32 +687,32 @@ function getAiPageComponents(): array
         [
             'title' => 'Foundation Models (LLMs)',
             'badge' => '',
-            'images' => nsc_seed_pages_gallery_ids_from_filenames(['llms-1.png', 'llms-2.png', 'llms-3.png', 'llms-4.png']),
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['llms-1.webp', 'llms-2.webp', 'llms-3.webp', 'llms-4.webp']),
         ],
         [
             'title' => 'Efficient & Edge AI (SLMs)',
             'badge' => '💰 Cost Optimized',
-            'images' => nsc_seed_pages_gallery_ids_from_filenames(['slms-1.png', 'slms-2.png', 'slms-3.png', 'slms-4.png']),
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['slms-1.webp', 'slms-2.webp', 'slms-3.webp', 'slms-4.webp']),
         ],
         [
             'title' => 'Development Frameworks',
             'badge' => '',
-            'images' => nsc_seed_pages_gallery_ids_from_filenames(['df-1.png', 'df-2.png', 'df-3.png', 'df-4.png']),
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['df-1.webp', 'df-2.webp', 'df-3.webp', 'df-4.webp']),
         ],
         [
             'title' => 'Vector Databases <br> (AI Memory)',
             'badge' => '',
-            'images' => nsc_seed_pages_gallery_ids_from_filenames(['vd-1.png', 'vd-2.png', 'vd-3.png', 'vd-4.png']),
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['vd-1.webp', 'vd-2.webp', 'vd-3.webp', 'vd-4.webp']),
         ],
         [
             'title' => 'Cloud & MLOps <br> Infrastructure',
             'badge' => '',
-            'images' => nsc_seed_pages_gallery_ids_from_filenames(['cmi-1.png', 'cmi-2.png', 'cmi-3.png', 'cmi-4.png', 'cmi-5.png']),
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['cmi-1.webp', 'cmi-2.webp', 'cmi-3.webp', 'cmi-4.webp', 'cmi-5.webp']),
         ],
         [
             'title' => 'AI Coding Tools (Internal)',
             'badge' => '',
-            'images' => nsc_seed_pages_gallery_ids_from_filenames(['aict-1.png', 'aict-2.png', 'aict-3.png']),
+            'images' => nsc_seed_pages_gallery_ids_from_filenames(['aict-1.webp', 'aict-2.webp', 'aict-3.webp']),
         ],
     ];
 
@@ -672,7 +729,7 @@ function getAiPageComponents(): array
     }
 
     return [
-        // 1. Hero (section.hero.dark) — ai-hero.png / mob-ai-hero.png (frontend/build/ai.html)
+        // 1. Hero (section.hero.dark) — ai-hero.webp / mob-ai-hero.webp (frontend/build/ai.html)
         $hero,
         // 2. AI Banner (section.ai-banner)
         [
@@ -915,8 +972,8 @@ function getOurServicesPageComponents(): array
  */
 function getOurCapabilitiesPageComponents(): array
 {
-    $techHeroId = nscSideloadBuildImageByFilename('hero-dark.png');
-    $techHeadingIconId = nscSideloadBuildImageByFilename('heading-icon.png');
+    $techHeroId = nscSideloadBuildImageByFilename('hero-dark.webp');
+    $techHeadingIconId = nscSideloadBuildImageByFilename('heading-icon.webp');
 
     $hero = [
         'acf_fc_layout' => 'nscBlockHero',
@@ -1126,7 +1183,7 @@ function getBlogsPageComponents(): array
  */
 function getCaseStudiesPageComponents(): array
 {
-    $heroImgId = nscSideloadBuildImageByFilename('hero-cs.png');
+    $heroImgId = nscSideloadBuildImageByFilename('hero-cs.webp');
 
     $hero = [
         'acf_fc_layout' => 'nscBlockHero',
@@ -1167,7 +1224,7 @@ function getCaseStudiesPageComponents(): array
  */
 function getCareerPageComponents(): array
 {
-    $heroImgId = nscSideloadBuildImageByFilename('hero-career.png');
+    $heroImgId = nscSideloadBuildImageByFilename('hero-career.webp');
 
     $weAreBody = '<p>Founded in Vietnam with a global vision, NSC Software delivers innovative software solutions that empower enterprises worldwide. We foster a <b class="text-primary">collaborative</b>, <b class="text-primary">performance-driven</b>, and <b class="text-primary">learning-focused culture</b>, where our disciplined and passionate team tackles challenges with precision.</p>'
         . '<p>Committed to <b class="text-primary">global standards</b> and continuous growth, we invest in technical and language training, enabling our team to excel on international projects. Our goal is to be <b class="text-primary">Asia’s most trusted partner in software development and consulting</b>, positioning Vietnam as a leading global IT hub.</p>';
@@ -1287,13 +1344,7 @@ function getContactPageComponents(): array
         [
             'acf_fc_layout' => 'nscBlockGlobalPresence',
             'title'        => 'GLOBAL PRESENCE',
-            'locations'     => [
-                ['label' => 'Dallas', 'title' => 'Dallas', 'address' => '4245 N Central Expy, #490, Dallas, TX, USA 75205', 'phoneLink' => '+1 (713) 428 2289'],
-                ['label' => 'Germany', 'title' => 'Germany', 'address' => 'Am Hauptbahnhof 16, D-60306 Frankfurt am Main, Germany', 'phoneLink' => '(+49) 170 1633520'],
-                ['label' => 'Ha Noi', 'title' => 'NSC Software Headquarters', 'address' => 'Level 22, PVI Tower, Pham Van Bach, Cau Giay, Hanoi, Vietnam', 'phoneLink' => '(+84) 866 639 497'],
-                ['label' => 'Ho Chi Minh City', 'title' => 'Ho Chi Minh', 'address' => 'Level 10, Five Star Tower, 28 Bis, Ho Chi Minh, Vietnam', 'phoneLink' => '(+84) 866 639 497'],
-                ['label' => 'Sydney', 'title' => 'Sydney', 'address' => 'Level 24, Three International Towers, 300 Barangaroo Avenue, Sydney NSW 2000, Australia', 'phoneLink' => '(+61) 0488 860 719'],
-            ],
+            'locations'     => nsc_seed_pages_global_presence_locations(),
             'options'       => ['theme' => ''],
         ],
     ];

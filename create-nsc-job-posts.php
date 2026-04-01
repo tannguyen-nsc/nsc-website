@@ -344,6 +344,7 @@ foreach ($titles as $title) {
             wp_set_object_terms($postId, $empIds, 'job_employment', false);
         }
         wp_set_post_tags($postId, nsc_job_seed_tags_for_index($i), false);
+        update_post_meta($postId, 'is_seeded', '1');
 
         $acfNote = '';
         if (function_exists('update_field')) {
@@ -381,6 +382,7 @@ foreach ($titles as $title) {
             $tp = (int) pll_get_post($canonicalId, $t0);
             if ($tp > 0) {
                 $reportId = $tp;
+                update_post_meta($reportId, 'is_seeded', '1');
             }
         }
     }

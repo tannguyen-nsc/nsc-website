@@ -63,7 +63,7 @@
         @apply flex flex-col border border-[#E5E5E5] rounded lg:mx-2;
         
         &:focus, &:hover {
-          @apply text-white border-transparent bg-cover bg-center bg-no-repeat bg-[url('../img/testimonial-card-hover.png')];
+          @apply text-white border-transparent bg-cover bg-center bg-no-repeat bg-[url('../img/testimonial-card-hover.webp')];
         }
 
         .header {
@@ -110,7 +110,7 @@
         }
 
         .footer {
-          @apply flex-shrink-0 mt-auto flex items-center gap-4 px-4 pt-8 md:pt-12 lg:pt-8 pb-4 bg-no-repeat bg-[url('../img/testimonial-credit.png')] bg-cover bg-[top_left];
+          @apply flex-shrink-0 mt-auto flex items-center gap-4 px-4 pt-8 md:pt-12 lg:pt-8 pb-4 bg-no-repeat bg-[url('../img/testimonial-credit.webp')] bg-cover bg-[top_left];
           
           .thumbnail {
             @apply flex-shrink-0;
@@ -135,7 +135,7 @@
         
         &:focus .footer,
         &:hover .footer {
-          @apply bg-no-repeat bg-[url('../img/testimonial-credit-hover.png')] bg-cover bg-[top_left];
+          @apply bg-no-repeat bg-[url('../img/testimonial-credit-hover.webp')] bg-cover bg-[top_left];
           
           .name {
             h3 {
@@ -246,7 +246,7 @@
   }
   
   .testimonial-modal-footer {
-    @apply flex-shrink-0 flex items-center gap-2 px-2 pt-4 pb-2 sm:gap-3 sm:px-3 sm:pt-6 sm:pb-3 md:gap-4 md:px-4 md:pt-12 lg:pt-8 md:pb-4 bg-no-repeat bg-[url('../img/popup-credit.png')] bg-cover bg-[top_left];
+    @apply flex-shrink-0 flex items-center gap-2 px-2 pt-4 pb-2 sm:gap-3 sm:px-3 sm:pt-6 sm:pb-3 md:gap-4 md:px-4 md:pt-12 lg:pt-8 md:pb-4 bg-no-repeat bg-[url('../img/popup-credit.webp')] bg-cover bg-[top_left];
     
     .testimonial-modal-thumbnail {
       @apply flex-shrink-0;

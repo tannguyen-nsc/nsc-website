@@ -70,7 +70,7 @@
 
   // Expanded state: white background, primary/dark text, minus icon; content fills remaining height
   .ai-impact-item.active {
-    @apply bg-[url('../img/ai-impact-item-active.png')] bg-cover bg-left bg-no-repeat;
+    @apply bg-[url('../img/ai-impact-item-active.webp')] bg-cover bg-left bg-no-repeat;
 
     .ai-impact-item-num {
       @apply w-auto text-base font-medium text-primary lg:text-lg xl:text-2xl hidden;

@@ -15,7 +15,7 @@
     {% if image.url or image.src %}
       <img src="{{ (image.url|default(image.src))|e('esc_url') }}" alt="{{ (image.alt|default(''))|e }}" loading="lazy" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/hero-light.png" alt="" loading="lazy" />
+      <img src="{{ theme.buildUri }}/img/hero-light.webp" alt="" loading="lazy" />
     {% endif %}
     <div class="headlines animate__animated animate__zoomIn">
       <h1>{{ headline|raw }}</h1>
@@ -53,12 +53,12 @@
     {% if imageDesktop.url or imageDesktop.src %}
       <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="xl:block hidden" loading="eager" fetchpriority="high" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/hero-left-text.png" alt="" class="xl:block hidden" loading="eager" fetchpriority="high" />
+      <img src="{{ theme.buildUri }}/img/hero-left-text.webp" alt="" class="xl:block hidden" loading="eager" fetchpriority="high" />
     {% endif %}
     {% if imageMobile.url or imageMobile.src %}
       <img src="{{ (imageMobile.url|default(imageMobile.src))|e('esc_url') }}" alt="{{ (imageMobile.alt|default(''))|e }}" class="xl:hidden" loading="eager" fetchpriority="high" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/hero-left-text-mob.png" alt="" class="xl:hidden" loading="eager" fetchpriority="high" />
+      <img src="{{ theme.buildUri }}/img/hero-left-text-mob.webp" alt="" class="xl:hidden" loading="eager" fetchpriority="high" />
     {% endif %}
     <div class="headlines animate__animated animate__fadeInRightBig">
       <h1>{{ headline|raw }}</h1>
@@ -76,7 +76,7 @@
     {% if image.url or image.src %}
       <img src="{{ (image.url|default(image.src))|e('esc_url') }}" alt="{{ (image.alt|default(''))|e }}" loading="lazy" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri|e('esc_url') }}/img/hero-cs.png" alt="" loading="lazy" />
+      <img src="{{ theme.buildUri|e('esc_url') }}/img/hero-cs.webp" alt="" loading="lazy" />
     {% endif %}
     <div class="headlines animate__animated animate__zoomIn">
       <h1>{{ headline|raw }}</h1>
@@ -96,18 +96,18 @@
       {% if imageDesktop.url or imageDesktop.src %}
         <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="xl:block hidden" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/ai-hero.png" alt="" class="xl:block hidden" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/ai-hero.webp" alt="" class="xl:block hidden" loading="lazy" />
       {% endif %}
       {% if imageMobile.url or imageMobile.src %}
         <img src="{{ (imageMobile.url|default(imageMobile.src))|e('esc_url') }}" alt="{{ (imageMobile.alt|default(''))|e }}" class="xl:hidden" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/mob-ai-hero.png" alt="" class="xl:hidden" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/mob-ai-hero.webp" alt="" class="xl:hidden" loading="lazy" />
       {% endif %}
     {% else %}
       {% if image.url or image.src %}
         <img src="{{ (image.url|default(image.src))|e('esc_url') }}" alt="{{ (image.alt|default(''))|e }}" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/hero-dark.png" alt="" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/hero-dark.webp" alt="" loading="lazy" />
       {% endif %}
     {% endif %}
     <div class="headlines animate__animated animate__zoomIn">

@@ -210,11 +210,11 @@ function prodExternalScripts() {
 }
 
 function prodImages() {
-  const pngQuality = Array.isArray(options.config.imagemin.png)
-    ? options.config.imagemin.png
+  const pngQuality = Array.isArray(options.config.imagemin.webp)
+    ? options.config.imagemin.webp
     : [0.7, 0.7];
-  const jpgQuality = Number.isInteger(options.config.imagemin.jpeg)
-    ? options.config.imagemin.jpeg
+  const jpgQuality = Number.isInteger(options.config.imagemin.webp)
+    ? options.config.imagemin.webp
     : 70;
   const plugins = [
     pngquant({ quality: pngQuality }),

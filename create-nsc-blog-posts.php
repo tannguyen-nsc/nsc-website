@@ -54,7 +54,7 @@ $baseUrl = home_url('/');
 function nscBlogSeedGetImageIds(): array
 {
     $buildUri = get_template_directory_uri() . '/frontend/build';
-    $files    = ['blog1.png', 'blog2.png', 'blog3.png', 'blog4.png', 'blog5.png', 'blog6.png', 'blog7.png', 'blog8.png'];
+    $files    = ['blog1.webp', 'blog2.webp', 'blog3.webp', 'blog4.webp', 'blog5.webp', 'blog6.webp', 'blog7.webp', 'blog8.webp'];
     $map      = [];
 
     $getOrCreateId = static function (string $filename) use ($buildUri): int {
@@ -68,10 +68,36 @@ function nscBlogSeedGetImageIds(): array
             return (int) $existing[0]->ID;
         }
 
-        $url = $buildUri . '/img/' . $filename;
-        $tmp = download_url($url);
-        if (is_wp_error($tmp)) {
-            return 0;
+        $tmp = null;
+        $localCandidates = [
+            get_template_directory() . '/frontend/build/img/' . $filename,
+            __DIR__ . '/frontend/build/img/' . $filename,
+        ];
+        foreach ($localCandidates as $localPath) {
+            if (!is_readable($localPath)) {
+                continue;
+            }
+
+            $tmp = wp_tempnam($filename);
+            if ($tmp && @copy($localPath, $tmp)) {
+                break;
+            }
+
+            if ($tmp && is_file($tmp)) {
+                @unlink($tmp);
+            }
+
+            $tmp = null;
+        }
+
+        if ($tmp === null) {
+            $url = $buildUri . '/img/' . rawurlencode($filename);
+            $downloaded = download_url($url);
+            if (is_wp_error($downloaded)) {
+                return 0;
+            }
+
+            $tmp = $downloaded;
         }
 
         $file = ['name' => $filename, 'tmp_name' => $tmp];
@@ -633,7 +659,7 @@ function nsc_blog_seed_rich_html(
 $imageMap     = nscBlogSeedGetImageIds();
 $categories   = nscBlogSeedEnsureCategories();
 $relatedPool  = nscBlogSeedRelatedPool($baseUrl);
-$blogFiles    = ['blog1.png', 'blog2.png', 'blog3.png', 'blog4.png', 'blog5.png', 'blog6.png', 'blog7.png', 'blog8.png'];
+$blogFiles    = ['blog1.webp', 'blog2.webp', 'blog3.webp', 'blog4.webp', 'blog5.webp', 'blog6.webp', 'blog7.webp', 'blog8.webp'];
 $imgUriBase   = trailingslashit(get_template_directory_uri()) . 'frontend/build/img/';
 
 $results = [];
@@ -725,6 +751,8 @@ foreach ($seedTitles as $title) {
         'post_author'  => get_current_user_id() ?: 1,
     ];
 
+    $thumbId = $imageMap[$imgFile] ?? 0;
+
     if (!$singleTarget) {
         if ($postId > 0) {
             $postarr['ID'] = $postId;
@@ -746,10 +774,10 @@ foreach ($seedTitles as $title) {
             wp_set_post_categories($postId, [$termId], false);
         }
 
-        $thumbId = $imageMap[$imgFile] ?? 0;
         if ($thumbId > 0) {
             set_post_thumbnail($postId, $thumbId);
         }
+        update_post_meta($postId, 'is_seeded', '1');
 
         wp_set_post_tags($postId, nsc_blog_seed_tags_for_post($i), false);
 
@@ -805,6 +833,10 @@ foreach ($seedTitles as $title) {
             $tp = (int) pll_get_post($canonicalId, $t0);
             if ($tp > 0) {
                 $reportId = $tp;
+                if ($thumbId > 0) {
+                    set_post_thumbnail($reportId, $thumbId);
+                }
+                update_post_meta($reportId, 'is_seeded', '1');
             }
         }
     }

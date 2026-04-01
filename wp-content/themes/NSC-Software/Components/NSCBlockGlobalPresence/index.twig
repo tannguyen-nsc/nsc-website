@@ -4,19 +4,19 @@
     {% if backgroundDesktop.url or backgroundDesktop.src %}
       <img src="{{ (backgroundDesktop.url|default(backgroundDesktop.src))|e('esc_url') }}" class="global-presence-bg lg:block hidden" alt="" loading="lazy" aria-hidden="true" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/global-presence-bg.png" class="global-presence-bg lg:block hidden" alt="" loading="lazy" aria-hidden="true" />
+      <img src="{{ theme.buildUri }}/img/global-presence-bg.webp" class="global-presence-bg lg:block hidden" alt="" loading="lazy" aria-hidden="true" />
     {% endif %}
     {% if backgroundMobile.url or backgroundMobile.src %}
       <img src="{{ (backgroundMobile.url|default(backgroundMobile.src))|e('esc_url') }}" class="global-presence-bg lg:hidden" alt="" loading="lazy" aria-hidden="true" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/mob-global-presence-bg.png" class="global-presence-bg lg:hidden" alt="" loading="lazy" aria-hidden="true" />
+      <img src="{{ theme.buildUri }}/img/mob-global-presence-bg.webp" class="global-presence-bg lg:hidden" alt="" loading="lazy" aria-hidden="true" />
     {% endif %}
 
     <div class="heading light">
       {% if headingIcon.url or headingIcon.src %}
         <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="Heading Icon" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
       {% endif %}
       <h2>{{ title|e }}</h2>
     </div>
@@ -34,14 +34,14 @@
           {% if locations|length and (locations[0].image.url or locations[0].image.src) %}
             <img src="{{ (locations[0].image.url|default(locations[0].image.src))|e('esc_url') }}" alt="{{ (locations[0].title|default(locations[0].label))|e }}" loading="lazy" />
           {% elseif theme.buildUri and locations|length %}
-            <img src="{{ theme.buildUri }}/img/global-presence-place-1.jpg" alt="{{ (locations[0].title|default(locations[0].label))|e }}" loading="lazy" />
+            <img src="{{ theme.buildUri }}/img/global-presence-place-1.webp" alt="{{ (locations[0].title|default(locations[0].label))|e }}" loading="lazy" />
           {% endif %}
         </div>
         <div class="presence-card-body">
           <div class="presence-card-nav">
-            <button type="button" class="presence-card-prev" aria-label="Previous location"><img src="{{ theme.buildUri }}/img/chevron-left.png" alt="Previous location" loading="lazy" /></button>
+            <button type="button" class="presence-card-prev" aria-label="Previous location"><img src="{{ theme.buildUri }}/img/chevron-left.webp" alt="Previous location" loading="lazy" /></button>
             <h3 class="presence-card-title">{% if locations|length %}{{ (locations[0].title|default(locations[0].label))|e }}{% endif %}</h3>
-            <button type="button" class="presence-card-next" aria-label="Next location"><img src="{{ theme.buildUri }}/img/chevron-right.png" alt="Next location" loading="lazy" /></button>
+            <button type="button" class="presence-card-next" aria-label="Next location"><img src="{{ theme.buildUri }}/img/chevron-right.webp" alt="Next location" loading="lazy" /></button>
           </div>
           <div class="presence-card-address">
             {% if locations|length %}
@@ -64,7 +64,7 @@
             <img class="global-presence-place-image" src="{{ (loc.image.url|default(loc.image.src))|e('esc_url') }}" alt="{{ (loc.title|default(loc.label))|e }}" loading="lazy" />
           {% elseif theme.buildUri %}
             {% set _placeNum = ((loop.index0) % 5) + 1 %}
-            <img class="global-presence-place-image" src="{{ theme.buildUri }}/img/global-presence-place-{{ _placeNum }}.{{ _placeNum == 3 ? 'jpg' : 'png' }}" alt="{{ (loc.title|default(loc.label))|e }}" loading="lazy" />
+            <img class="global-presence-place-image" src="{{ theme.buildUri }}/img/global-presence-place-{{ _placeNum }}.webp" alt="{{ (loc.title|default(loc.label))|e }}" loading="lazy" />
           {% endif %}
           <h3>{{ (loc.title|default(loc.label))|e }}</h3>
           <p>
@@ -79,7 +79,7 @@
     </div>
 
     {% if theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/global-presence-bot-bg.png" class="global-presence-bot-bg lg:block hidden" alt="" loading="lazy" aria-hidden="true" />
+      <img src="{{ theme.buildUri }}/img/global-presence-bot-bg.webp" class="global-presence-bot-bg lg:block hidden" alt="" loading="lazy" aria-hidden="true" />
     {% endif %}
   </section>
 </nsc-software-component>

@@ -6,7 +6,7 @@
         {% if headingIcon.url or headingIcon.src %}
           <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
         {% elseif theme.buildUri|default('') %}
-          <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.png" alt="" loading="lazy" />
+          <img src="{{ theme.buildUri|e('esc_url') }}/img/heading-icon.webp" alt="" loading="lazy" />
         {% endif %}
         <h2>{{ (title|default('Case Studies'))|e }}</h2>
       </div>
@@ -26,7 +26,7 @@
         <template v-if="paginatedStudies.length">
           <article class="case-study-card" v-for="study in paginatedStudies" :key="study.id">
             <div class="card-image">
-              <img :src="study.image" :alt="study.title" loading="lazy" />
+              <img v-if="study.image" :src="study.image" :alt="study.title" loading="lazy" />
             </div>
             <div class="card-content">
               <span class="card-category">{{ study.category }}</span>

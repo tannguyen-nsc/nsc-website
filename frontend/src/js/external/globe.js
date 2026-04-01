@@ -61,11 +61,11 @@
   var GEOJSON_URL =
     "https://cdn.jsdelivr.net/npm/three-globe@2.45.0/example/hexed-polygons/ne_110m_admin_0_countries.geojson";
 
-  // Base URL for build assets (WP theme sets NSC_GLOBE_BUILD_URI so ./img/s.png resolves correctly).
+  // Base URL for build assets (WP theme sets NSC_GLOBE_BUILD_URI so ./img/s.webp resolves correctly).
   var BUILD_BASE_URI = (typeof window.NSC_GLOBE_BUILD_URI !== "undefined" && window.NSC_GLOBE_BUILD_URI)
     ? String(window.NSC_GLOBE_BUILD_URI).replace(/\/$/, "")
     : "";
-  var VIETNAM_TILE_IMAGE_URL = BUILD_BASE_URI ? BUILD_BASE_URI + "/img/s.png" : "./img/s.png";
+  var VIETNAM_TILE_IMAGE_URL = BUILD_BASE_URI ? BUILD_BASE_URI + "/img/s.webp" : "./img/s.webp";
 
   var POINTS_DATA = [
     { lat: 22.00, lng: 100.00, camLat: 5.50, camLng: 122.50, label: "Senior-Led, AI-Driven Expertise" },

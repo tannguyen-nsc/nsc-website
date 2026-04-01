@@ -14,7 +14,7 @@ import.meta.glob([
   '!**/*.scss',
   '!**/*.php',
   '!**/*.twig',
-  '!**/screenshot.png',
+  '!**/screenshot.webp',
   '!**/*.md'
 ])
 

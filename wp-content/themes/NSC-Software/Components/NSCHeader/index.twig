@@ -6,8 +6,8 @@
     <div class="mobile-header-wrapper">
       <div class="mobile-logo-wrapper">
         <a href="{{ site.link|e('esc_url') }}">
-          <img src="{{ (mobileLogo.white.src|default(mobileLogo.white.url)|default(buildUri ~ '/img/mob-logo-white.png'))|e('esc_url') }}" class="mobile-logo-white" alt="{{ (mobileLogo.white.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
-          <img src="{{ (mobileLogo.colored.src|default(mobileLogo.colored.url)|default(buildUri ~ '/img/mob-logo.png'))|e('esc_url') }}" class="mobile-logo-colored" alt="{{ (mobileLogo.colored.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
+          <img src="{{ (mobileLogo.white.src|default(mobileLogo.white.url)|default(buildUri ~ '/img/mob-logo-white.webp'))|e('esc_url') }}" class="mobile-logo-white" alt="{{ (mobileLogo.white.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
+          <img src="{{ (mobileLogo.colored.src|default(mobileLogo.colored.url)|default(buildUri ~ '/img/mob-logo.webp'))|e('esc_url') }}" class="mobile-logo-colored" alt="{{ (mobileLogo.colored.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
         </a>
       </div>
       <div class="mobile-center">

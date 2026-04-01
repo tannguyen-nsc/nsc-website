@@ -5,7 +5,7 @@
       {% if image.url or image.src %}
         <img src="{{ (image.url|default(image.src))|e('esc_url') }}" alt="{{ (image.alt|default(''))|e }}" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/ai-info-banner.png" alt="AI Info" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/ai-info-banner.webp" alt="AI Info" loading="lazy" />
       {% endif %}
     </div>
     <div class="col">
@@ -16,7 +16,7 @@
               {% if item.headingIcon.url or item.headingIcon.src %}
                 <img src="{{ (item.headingIcon.url|default(item.headingIcon.src))|e('esc_url') }}" alt="{{ (item.headingIcon.alt|default(''))|e }}" loading="lazy" />
               {% elseif theme.buildUri %}
-                <img src="{{ theme.buildUri }}/img/heading-icon.png" alt="" loading="lazy" />
+                <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="" loading="lazy" />
               {% endif %}
               {% if item.title %}<h3>{{ item.title|e }}</h3>{% endif %}
             </div>

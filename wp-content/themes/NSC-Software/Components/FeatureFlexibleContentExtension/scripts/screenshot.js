@@ -20,7 +20,7 @@ document.addEventListener('mouseleave', (e) => {
 
 function showComponentScreenshot (layout, wrapper) {
   const componentName = firstToUpperCase(layout)
-  const image = `${NscSoftwareData.templateDirectoryUri}/${FeatureFlexibleContentExtension.components[componentName]}/screenshot.png`
+  const image = `${NscSoftwareData.templateDirectoryUri}/${FeatureFlexibleContentExtension.components[componentName]}/screenshot.webp`
   const wrapperContainer = document.createElement('div')
 
   wrapperContainer.classList.add('NSC-SoftwareComponentScreenshot-imageWrapper')
