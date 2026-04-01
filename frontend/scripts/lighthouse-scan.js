@@ -1,7 +1,7 @@
 const { spawnSync } = require("child_process");
 
 const mode = (process.argv[2] || "both").toLowerCase();
-const targetUrl = process.env.LH_URL || "http://localhost/nsc/";
+const targetUrl = process.env.LH_URL || "https://nsc.test/";
 const outDir = process.env.LH_OUT_DIR || "lighthouse-report";
 
 const presets = {

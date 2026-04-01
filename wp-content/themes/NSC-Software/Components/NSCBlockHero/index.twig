@@ -13,9 +13,12 @@
   {% if style == 'home' %}
     {# Home: single background image (wave canvas is injected by wave.js when .hero.home exists) #}
     {% if image.url or image.src %}
-      <img src="{{ (image.url|default(image.src))|e('esc_url') }}" alt="{{ (image.alt|default(''))|e }}" loading="lazy" />
+      <img src="{{ (image.url|default(image.src))|e('esc_url') }}" alt="{{ (image.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/hero-light.webp" alt="" loading="lazy" />
+      <picture>
+        <source media="(max-width: 767px)" srcset="{{ theme.buildUri|e('esc_url') }}/img/hero-light-mob.webp" />
+        <img src="{{ theme.buildUri|e('esc_url') }}/img/hero-light.webp" alt="" loading="eager" fetchpriority="high" />
+      </picture>
     {% endif %}
     <div class="headlines animate__animated animate__zoomIn">
       <h1>{{ headline|raw }}</h1>

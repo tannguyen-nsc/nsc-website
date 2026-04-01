@@ -6,8 +6,8 @@
     <div class="mobile-header-wrapper">
       <div class="mobile-logo-wrapper">
         <a href="{{ site.link|e('esc_url') }}">
-          <img src="{{ (mobileLogo.white.src|default(mobileLogo.white.url)|default(buildUri ~ '/img/mob-logo-white.webp'))|e('esc_url') }}" class="mobile-logo-white" alt="{{ (mobileLogo.white.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
-          <img src="{{ (mobileLogo.colored.src|default(mobileLogo.colored.url)|default(buildUri ~ '/img/mob-logo.webp'))|e('esc_url') }}" class="mobile-logo-colored" alt="{{ (mobileLogo.colored.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
+          <img src="{{ (mobileLogo.white.src|default(mobileLogo.white.url)|default(buildUri ~ '/img/mob-logo-white.webp'))|e('esc_url') }}" class="mobile-logo-white" alt="{{ (mobileLogo.white.alt|default(''))|e }}" loading="eager" fetchpriority="low" />
+          <img src="{{ (mobileLogo.colored.src|default(mobileLogo.colored.url)|default(buildUri ~ '/img/mob-logo.webp'))|e('esc_url') }}" class="mobile-logo-colored" alt="{{ (mobileLogo.colored.alt|default(''))|e }}" loading="eager" fetchpriority="low" />
         </a>
       </div>
       <div class="mobile-center">
@@ -97,8 +97,8 @@
         <a href="{{ site.link|e('esc_url') }}">
           {% set _desktopLogoWhite = (logoWhite.src|default(logoWhite.url))|default('')|trim %}
           {% set _desktopLogo = (logo.src|default(logo.url))|default('')|trim %}
-          <img src="{{ (_desktopLogoWhite|length ? _desktopLogoWhite : buildUri ~ '/img/logo-white.png')|e('esc_url') }}" class="logo-white" alt="{{ (logoWhite.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
-          <img src="{{ (_desktopLogo|length ? _desktopLogo : buildUri ~ '/img/logo.png')|e('esc_url') }}" class="logo" alt="{{ (logo.alt|default(''))|e }}" loading="eager" fetchpriority="high" />
+          <img src="{{ (_desktopLogoWhite|length ? _desktopLogoWhite : buildUri ~ '/img/logo-white.png')|e('esc_url') }}" class="logo-white" alt="{{ (logoWhite.alt|default(''))|e }}" loading="eager" fetchpriority="low" />
+          <img src="{{ (_desktopLogo|length ? _desktopLogo : buildUri ~ '/img/logo.png')|e('esc_url') }}" class="logo" alt="{{ (logo.alt|default(''))|e }}" loading="eager" fetchpriority="low" />
         </a>
       </logo>
       {% if menu %}
