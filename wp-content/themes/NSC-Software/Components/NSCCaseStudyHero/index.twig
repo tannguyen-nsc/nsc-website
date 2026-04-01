@@ -1,6 +1,7 @@
 {% if not (options.hidden|default(0)) %}
 <nsc-software-component name="NSCCaseStudyHero">
   <section class="hero case-study-detail" aria-label="{{ __('Case study hero', 'NscSoftware')|e }}">
+    {% set post_title_plain = function('html_entity_decode', post.title|default('')) %}
     {% if heroBackgroundMobileUrl|default('') %}
       <img src="{{ heroBackgroundMobileUrl|e('esc_url') }}" alt="" class="hero-case-study-detail__bg hero-case-study-detail__bg--mob lg:hidden" width="1920" height="1080" loading="eager" decoding="async" aria-hidden="true" />
     {% endif %}
@@ -9,7 +10,7 @@
     {% endif %}
     <div class="hero-case-study-detail__inner">
       <div class="headlines animate__animated animate__fadeInUp">
-        <h1>{{ post.title|e }}</h1>
+        <h1>{{ post_title_plain|e }}</h1>
         <div class="description">
           {% set introHtml = intro|default('')|trim %}
           {% if introHtml %}

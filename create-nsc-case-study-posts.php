@@ -2,8 +2,8 @@
 declare(strict_types=1);
 
 /**
- * Seed 2 case_study posts with ACF flexible field `caseStudyComponents`
- * (minimal: Hero + Main, full: Hero, Instruction, Quote, Main, Contact). Matches theme single-case_study layout.
+ * Seed case_study posts with ACF flexible field `caseStudyComponents`
+ * (minimal: Hero + Main, full: Hero, Instruction, Quote, Main, Contact, Related). Matches theme single-case_study layout.
  * Idempotent by post slug (updates if exists).
  *
  * Usage:
@@ -435,12 +435,18 @@ function nsc_case_study_seed_component_rows(int $index, array $study, array $ima
         'sizeDuration'          => $sizeDuration,
         'gallery'               => $galleryIds,
     ];
+    $related = [
+        'acf_fc_layout' => 'nscCaseStudyRelated',
+        'heading' => 'Other case studies',
+        'ctaLabel' => 'View other case studies',
+        'relatedCount' => 3,
+    ];
 
     if ($minimal) {
         return [$hero, $main];
     }
 
-    return [$hero, $instruction, $quote, $main, $contact];
+    return [$hero, $instruction, $quote, $main, $related, $contact];
 }
 
 $caseStudies = [];

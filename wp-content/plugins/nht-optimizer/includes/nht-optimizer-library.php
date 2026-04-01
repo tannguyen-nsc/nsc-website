@@ -253,12 +253,35 @@ if (!class_exists('WP_Optimizer_Library')) {
                 echo 'results.querySelectorAll(".nht-row-delete").forEach(function(btn){btn.addEventListener("click",function(){var tr=btn.closest("tr"); if(!tr)return; bulkAction("delete",[tr.getAttribute("data-id")]);});});';
                 echo '}';
                 echo 'function removeRows(ids){ids.forEach(function(id){var tr=results.querySelector("tr[data-id=\'"+id+"\']"); if(tr){tr.remove();}}); if(!results.querySelector("tbody tr")){results.innerHTML="<p>All listed files processed.</p>";}}';
-                echo 'function bulkAction(mode,ids){if(!ids.length){alert("Please select at least one file."); return;} if(mode==="delete"&&!confirm("Delete permanently selected files?")){return;} req("nht_unused_scan_all_bulk",{mode:mode,ids:ids,ids_json:JSON.stringify(ids)}).then(function(res){if(!res||!res.success){var msg=(res&&res.data&&res.data.message)?res.data.message:"Bulk action failed."; alert(msg); return;} var d=res.data||{}; removeRows(ids); s.textContent=(d.message||"Done");}).catch(function(e){alert("Bulk action failed.");});}';
+                echo 'function bulkAction(mode,ids){if(!ids.length){alert("Please select at least one file."); return;} if(mode==="delete"&&!confirm("Delete permanently selected files?")){return;} req("nht_unused_scan_all_bulk",{mode:mode,ids:ids,ids_json:JSON.stringify(ids)}).then(function(res){if(!res||!res.success){var msg=(res&&res.data&&res.data.message)?res.data.message:"Bulk action failed."; alert(msg); return;} var d=res.data||{}; var deleted=Array.isArray(d.deleted_ids)?d.deleted_ids:ids; removeRows(deleted); s.textContent=(d.message||"Done");}).catch(function(e){alert("Bulk action failed.");});}';
                 echo 'function step(){req("nht_unused_scan_all_step",{}).then(function(res){if(!res||!res.success){s.textContent="Scan failed."; return;} var d=res.data||{}; p.style.width=String(d.percent||0)+"%"; s.textContent=(d.stage_label||"Scanning")+" | "+(d.current_file||""); if(d.done){renderTable(d.unused||[]);} else {setTimeout(step,120);} }).catch(function(){s.textContent="Scan failed.";});}';
                 echo 'function start(){results.innerHTML=""; p.style.width="0%"; s.textContent="Starting scan..."; req("nht_unused_scan_all_start",{scope:selectedScope()}).then(function(res){if(!res||!res.success){s.textContent="Cannot start scan."; return;} step();}).catch(function(){s.textContent="Cannot start scan.";});}';
                 echo 'if(runBtn){runBtn.addEventListener("click",start);}';
                 echo 'var form=document.querySelector("form[action=\"options.php\"]"); if(form){form.addEventListener("submit",function(){try{sessionStorage.setItem("nhtScanAfterSave","1");}catch(e){}});}';
                 echo 'var auto=(new URLSearchParams(window.location.search)).get("settings-updated")==="true"; var should=false; try{should=sessionStorage.getItem("nhtScanAfterSave")==="1";}catch(e){} if(auto&&should){try{sessionStorage.removeItem("nhtScanAfterSave");}catch(e){} start();}';
+                echo '})();';
+                echo '</script>';
+
+                echo '<hr />';
+                echo '<h2>' . esc_html__('Scan all used non-WebP images', 'wp-optimizer') . '</h2>';
+                echo '<div id="nht-scan-used-nonwebp-app" data-nonce="' . esc_attr($scanNonce) . '">';
+                echo '<p style="margin:0 0 8px;">' . esc_html__('Finds images that are currently used and not in WebP format.', 'wp-optimizer') . '</p>';
+                echo '<button type="button" class="button button-secondary" id="nht-scan-used-nonwebp-run">' . esc_html__('Run scan now', 'wp-optimizer') . '</button>';
+                echo '<div style="height:10px;background:#f0f0f1;border-radius:99px;overflow:hidden;margin-top:10px;"><div id="nht-scan-used-nonwebp-progress" style="width:0%;height:100%;background:#2271b1;transition:width .2s ease;"></div></div>';
+                echo '<p id="nht-scan-used-nonwebp-status" style="margin:8px 0 0;"></p>';
+                echo '<div id="nht-scan-used-nonwebp-results" style="margin-top:12px;"></div>';
+                echo '</div>';
+                echo '<script>';
+                echo '(function(){';
+                echo 'var app=document.getElementById("nht-scan-used-nonwebp-app"); if(!app||typeof ajaxurl==="undefined"){return;}';
+                echo 'var nonce=app.getAttribute("data-nonce"); var runBtn=document.getElementById("nht-scan-used-nonwebp-run"); var p=document.getElementById("nht-scan-used-nonwebp-progress"); var s=document.getElementById("nht-scan-used-nonwebp-status"); var results=document.getElementById("nht-scan-used-nonwebp-results");';
+                echo 'function esc(x){return String(x||"").replace(/[&<>\\"\\\']/g,function(c){return({"&":"&amp;","<":"&lt;",">":"&gt;","\\"":"&quot;","\\\'":"&#039;"})[c];});}';
+                echo 'function req(action,payload){var fd=new FormData();fd.append("action",action);fd.append("_ajax_nonce",nonce);for(var k in payload){if(Object.prototype.hasOwnProperty.call(payload,k)){var v=payload[k];if(Array.isArray(v)){v.forEach(function(one){fd.append(k+"[]",one);});}else{fd.append(k,v);}}}return fetch(ajaxurl,{method:"POST",credentials:"same-origin",body:fd}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t);}catch(e){return {success:false,data:{message:t||("HTTP "+r.status)}};}});});}';
+                echo 'function selectedScope(){var sel=document.querySelector("select[name=\"wp_optimizer_options[unused_checker_scope]\"]"); return sel?sel.value:"both";}';
+                echo 'function renderTable(items){if(!items||!items.length){results.innerHTML="<p>No used non-WebP images found.</p>";return;} var h="<table class=\'widefat striped\'><thead><tr><th>File</th><th>URL</th><th>Actions</th></tr></thead><tbody>"; items.forEach(function(it){var e=esc(it.edit_link||"#"); h+="<tr><td><strong>"+esc(it.filename||it.title||it.id)+"</strong></td><td><small>"+esc(it.url||"")+"</small></td><td><a class=\'button button-small\' href=\'"+e+"\'>Edit</a></td></tr>";}); h+="</tbody></table>"; results.innerHTML=h;}';
+                echo 'function step(){req("nht_unused_scan_all_step",{}).then(function(res){if(!res||!res.success){s.textContent="Scan failed."; return;} var d=res.data||{}; p.style.width=String(d.percent||0)+"%"; s.textContent=(d.stage_label||"Scanning")+" | "+(d.current_file||""); if(d.done){renderTable(d.items||[]);} else {setTimeout(step,120);} }).catch(function(){s.textContent="Scan failed.";});}';
+                echo 'function start(){results.innerHTML=""; p.style.width="0%"; s.textContent="Starting scan..."; req("nht_unused_scan_all_start",{scope:selectedScope(),mode:"used_non_webp"}).then(function(res){if(!res||!res.success){s.textContent="Cannot start scan."; return;} step();}).catch(function(){s.textContent="Cannot start scan.";});}';
+                echo 'if(runBtn){runBtn.addEventListener("click",start);}';
                 echo '})();';
                 echo '</script>';
             }
@@ -629,30 +652,29 @@ if (!class_exists('WP_Optimizer_Library')) {
                 $scope = self::unusedCheckerScope();
             }
 
-            $ids = get_posts([
-                'post_type' => 'attachment',
-                'post_status' => ['inherit', 'private', 'publish'],
-                'posts_per_page' => -1,
-                'fields' => 'ids',
-                'orderby' => 'ID',
-                'order' => 'ASC',
-            ]);
-            $ids = array_values(array_map('intval', is_array($ids) ? $ids : []));
+            $mode = isset($_POST['mode']) ? sanitize_key((string) $_POST['mode']) : 'unused';
+            if (!in_array($mode, ['unused', 'used_non_webp'], true)) {
+                $mode = 'unused';
+            }
+
+            $ids = self::collectScanAttachmentIds($mode);
 
             $files = ($scope === 'db') ? [] : self::collectScanFiles();
             $session = [
+                'mode' => $mode,
                 'scope' => $scope,
                 'attachment_ids' => $ids,
                 'total' => count($ids),
                 'index' => 0,
                 'files' => $files,
                 'unused' => [],
+                'items' => [],
                 'done' => false,
-                'stage_label' => 'Starting scan',
+                'stage_label' => $mode === 'used_non_webp' ? 'Starting scan (used non-WebP images)' : 'Starting scan',
                 'current_file' => '',
             ];
             set_transient(self::scanAllSessionKey(), $session, 30 * MINUTE_IN_SECONDS);
-            wp_send_json_success(['started' => true, 'total' => count($ids)]);
+            wp_send_json_success(['started' => true, 'total' => count($ids), 'mode' => $mode]);
         }
 
         public static function ajaxStepUnusedScanAll(): void
@@ -678,6 +700,7 @@ if (!class_exists('WP_Optimizer_Library')) {
                 $session['current_file'] = $name;
 
                 $terms = self::collectSearchTerms($attachmentId);
+                $mode = (string) ($session['mode'] ?? 'unused');
                 $scope = (string) ($session['scope'] ?? 'both');
                 $used = false;
 
@@ -698,12 +721,23 @@ if (!class_exists('WP_Optimizer_Library')) {
                     }
                 }
 
-                if (!$used) {
-                    $session['unused'][] = [
+                if ($mode === 'used_non_webp') {
+                    if ($used) {
+                        $session['items'][] = [
+                            'id' => $attachmentId,
+                            'filename' => $name,
+                            'url' => (string) wp_get_attachment_url($attachmentId),
+                            'edit_link' => (string) get_edit_post_link($attachmentId, 'raw'),
+                        ];
+                    }
+                } elseif (!$used) {
+                    $item = [
                         'id' => $attachmentId,
                         'filename' => $name,
                         'url' => (string) wp_get_attachment_url($attachmentId),
                     ];
+                    $session['unused'][] = $item;
+                    $session['items'][] = $item;
                 }
 
                 $session['index'] = $index + 1;
@@ -724,7 +758,41 @@ if (!class_exists('WP_Optimizer_Library')) {
                 'stage_label' => (string) ($session['stage_label'] ?? 'Scanning'),
                 'current_file' => (string) ($session['current_file'] ?? ''),
                 'unused' => !empty($session['done']) ? (array) ($session['unused'] ?? []) : [],
+                'items' => !empty($session['done']) ? (array) ($session['items'] ?? []) : [],
             ]);
+        }
+
+        /**
+         * @return list<int>
+         */
+        private static function collectScanAttachmentIds(string $mode = 'unused'): array
+        {
+            $ids = get_posts([
+                'post_type' => 'attachment',
+                'post_status' => ['inherit', 'private', 'publish'],
+                'posts_per_page' => -1,
+                'fields' => 'ids',
+                'orderby' => 'ID',
+                'order' => 'ASC',
+            ]);
+            $ids = array_values(array_map('intval', is_array($ids) ? $ids : []));
+
+            if ($mode !== 'used_non_webp') {
+                return $ids;
+            }
+
+            $filtered = [];
+            foreach ($ids as $id) {
+                if ($id <= 0) {
+                    continue;
+                }
+                if (!self::isImageAttachment($id) || self::isWebpAttachment($id)) {
+                    continue;
+                }
+                $filtered[] = $id;
+            }
+
+            return $filtered;
         }
 
         public static function ajaxBulkUnusedScanAll(): void
@@ -766,17 +834,22 @@ if (!class_exists('WP_Optimizer_Library')) {
 
             $ok = 0;
             $fail = 0;
+            $deletedIds = [];
+            $failedIds = [];
             foreach ($ids as $id) {
                 if ($id <= 0 || !current_user_can('delete_post', $id)) {
                     $fail++;
+                    $failedIds[] = $id;
                     continue;
                 }
 
-                $result = wp_delete_attachment($id, true);
-                if ($result === false || $result === null) {
+                $result = self::deleteAttachmentPermanently($id);
+                if (!$result) {
                     $fail++;
+                    $failedIds[] = $id;
                 } else {
                     $ok++;
+                    $deletedIds[] = $id;
                 }
             }
 
@@ -790,8 +863,78 @@ if (!class_exists('WP_Optimizer_Library')) {
             wp_send_json_success([
                 'ok' => $ok,
                 'failed' => $fail,
+                'deleted_ids' => array_values(array_unique(array_map('intval', $deletedIds))),
+                'failed_ids' => array_values(array_unique(array_map('intval', $failedIds))),
                 'message' => $msg,
             ]);
+        }
+
+        private static function deleteAttachmentPermanently(int $attachmentId): bool
+        {
+            if ($attachmentId <= 0) {
+                return false;
+            }
+
+            $attachment = get_post($attachmentId);
+            if (!$attachment || $attachment->post_type !== 'attachment') {
+                return false;
+            }
+
+            $upload = wp_get_upload_dir();
+            $baseDir = isset($upload['basedir']) ? wp_normalize_path((string) $upload['basedir']) : '';
+            $paths = [];
+
+            $attachedFile = get_attached_file($attachmentId);
+            if (is_string($attachedFile) && $attachedFile !== '') {
+                $paths[] = $attachedFile;
+            }
+
+            $meta = wp_get_attachment_metadata($attachmentId);
+            if (is_array($meta)) {
+                $metaFile = isset($meta['file']) && is_string($meta['file']) ? $meta['file'] : '';
+                if ($metaFile !== '' && $baseDir !== '') {
+                    $paths[] = trailingslashit($baseDir) . ltrim($metaFile, '/');
+                }
+
+                $metaDir = $metaFile !== '' ? dirname($metaFile) : '';
+                if (!empty($meta['sizes']) && is_array($meta['sizes']) && $baseDir !== '' && $metaDir !== '') {
+                    foreach ($meta['sizes'] as $size) {
+                        $sizeFile = (is_array($size) && !empty($size['file']) && is_string($size['file'])) ? $size['file'] : '';
+                        if ($sizeFile !== '') {
+                            $paths[] = trailingslashit($baseDir) . trim($metaDir, '/\\') . '/' . ltrim($sizeFile, '/');
+                        }
+                    }
+                }
+
+                if (!empty($meta['original_image']) && is_string($meta['original_image']) && $baseDir !== '' && $metaDir !== '') {
+                    $paths[] = trailingslashit($baseDir) . trim($metaDir, '/\\') . '/' . ltrim($meta['original_image'], '/');
+                }
+            }
+
+            $paths = array_values(array_unique(array_filter(array_map(static function ($path) {
+                return is_string($path) && $path !== '' ? wp_normalize_path($path) : '';
+            }, $paths))));
+
+            $deleted = wp_delete_attachment($attachmentId, true);
+            if ($deleted !== false && $deleted !== null) {
+                return true;
+            }
+
+            $postDeleted = wp_delete_post($attachmentId, true);
+            if ($postDeleted === false || $postDeleted === null) {
+                return false;
+            }
+
+            foreach ($paths as $path) {
+                if ($baseDir !== '' && strpos($path, trailingslashit($baseDir)) !== 0) {
+                    continue;
+                }
+                if (is_file($path)) {
+                    wp_delete_file($path);
+                }
+            }
+
+            return true;
         }
 
         public static function ajaxStartUnusedChecker(): void
@@ -1048,24 +1191,57 @@ if (!class_exists('WP_Optimizer_Library')) {
                 return [];
             }
 
+            // Postmeta scan should only match full filenames (with extension),
+            // not raw attachment IDs, to avoid false positives.
+            $filenameTerms = [];
+            foreach ($terms as $term) {
+                if (!is_string($term) || $term === '') {
+                    continue;
+                }
+
+                $candidate = $term;
+                $parsedPath = (string) wp_parse_url($term, PHP_URL_PATH);
+                if ($parsedPath !== '') {
+                    $candidate = wp_basename($parsedPath);
+                } else {
+                    $candidate = wp_basename($candidate);
+                }
+
+                $candidate = trim((string) $candidate);
+                if ($candidate === '' || strpos($candidate, '.') === false) {
+                    continue;
+                }
+
+                $filenameTerms[] = $candidate;
+            }
+            $filenameTerms = array_values(array_unique($filenameTerms));
+            if (empty($filenameTerms)) {
+                return [];
+            }
+
             $whereParts = [];
             $args = [];
-            foreach ($terms as $term) {
+            foreach ($filenameTerms as $term) {
                 $like = '%' . $wpdb->esc_like($term) . '%';
                 $whereParts[] = 'pm.meta_value LIKE %s';
                 $args[] = $like;
             }
 
             if ($attachmentId > 0) {
-                // Exact ID match for featured image / attachment ID custom fields.
-                $whereParts[] = 'pm.meta_value = %s';
+                // Some ACF image fields store attachment IDs (or serialized IDs) in postmeta.
+                // Keep this as a fallback for real usages in posts/pages/CPTs.
+                $whereParts[] = '(pm.meta_value = %s OR pm.meta_value LIKE %s OR pm.meta_value LIKE %s)';
                 $args[] = (string) $attachmentId;
+                $args[] = '%i:' . (string) $attachmentId . ';%';
+                $args[] = '%:"' . (string) $attachmentId . '";%';
             }
 
             $sql = "SELECT p.ID, p.post_title, p.post_type, pm.meta_key
                     FROM {$wpdb->postmeta} pm
                     INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
                     WHERE pm.post_id <> %d
+                      AND p.post_type <> 'attachment'
+                      AND pm.meta_key NOT IN ('_wp_attached_file', '_wp_attachment_metadata')
                       AND (" . implode(' OR ', $whereParts) . ")
                     LIMIT 1200";
             array_unshift($args, $attachmentId);
@@ -1188,6 +1364,23 @@ if (!class_exists('WP_Optimizer_Library')) {
             return (string) get_the_title($attachmentId);
         }
 
+        private static function isImageAttachment(int $attachmentId): bool
+        {
+            $mime = (string) get_post_mime_type($attachmentId);
+            return strpos(strtolower($mime), 'image/') === 0;
+        }
+
+        private static function isWebpAttachment(int $attachmentId): bool
+        {
+            $mime = strtolower((string) get_post_mime_type($attachmentId));
+            if ($mime === 'image/webp') {
+                return true;
+            }
+
+            $name = strtolower((string) self::attachmentDisplayName($attachmentId));
+            return substr($name, -5) === '.webp';
+        }
+
         /**
          * Add Unused Checker URL to media JS payload (for modal UI).
          *
@@ -1269,8 +1462,7 @@ if (!class_exists('WP_Optimizer_Library')) {
                 exit;
             }
 
-            $ok = false;
-            $ok = (wp_delete_attachment($attachmentId, true) !== false);
+            $ok = self::deleteAttachmentPermanently($attachmentId);
             $notice = $ok ? 'delete_success' : 'delete_error';
 
             wp_safe_redirect(add_query_arg('nht_unused_checker_notice', $notice, admin_url('upload.php')));

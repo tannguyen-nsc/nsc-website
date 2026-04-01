@@ -100,7 +100,6 @@ add_action('NscSoftware/afterRegisterComponents', static function (): void {
                         'label' => __('Technology', 'NscSoftware'),
                         'name' => 'technology_name',
                         'type' => 'text',
-                        'required' => 1,
                     ],
                 ],
             ],

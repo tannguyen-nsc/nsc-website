@@ -24,6 +24,7 @@ add_action('template_redirect', function () use ($requiredToken) {
 
     $optionPrefixFooter = 'translatable_NSCFooter_';
     $optionPrefixHeader = 'translatable_NSCHeader_';
+    $optionPrefixCookies = 'translatable_NSCCookiesContent_';
 
     $updateOption = function (string $name, $value, string $prefix = '') use ($optionPrefixFooter, $optionPrefixHeader): bool {
         $key = $prefix ? $prefix . $name : $name;
@@ -82,6 +83,23 @@ add_action('template_redirect', function () use ($requiredToken) {
         ], 'option');
     }
     $results[] = ['scope' => 'NSCHeader', 'field' => 'Labels', 'status' => 'ok', 'message' => 'languageLabel, ariaLabel'];
+
+    // NSC Cookies Content (Theme Options → Global)
+    if (function_exists('update_field')) {
+        update_field($optionPrefixCookies . 'ariaLabel', 'Cookie preferences', 'option');
+        update_field($optionPrefixCookies . 'heading', 'We use cookies', 'option');
+        update_field(
+            $optionPrefixCookies . 'content',
+            'This site uses cookies to improve your browsing experience, analyze traffic, and remember your preferences. You can accept all cookies, reject non-essential cookies, or review details in our Cookies Policy.',
+            'option'
+        );
+        update_field($optionPrefixCookies . 'rejectLabel', 'Reject non-essential', 'option');
+        update_field($optionPrefixCookies . 'settingsLabel', 'Cookie settings', 'option');
+        update_field($optionPrefixCookies . 'settingsUrl', $baseUrl . 'cookies-policy/', 'option');
+        update_field($optionPrefixCookies . 'settingsOpenInNewTab', 0, 'option');
+        update_field($optionPrefixCookies . 'acceptLabel', 'Accept all', 'option');
+    }
+    $results[] = ['scope' => 'NSCCookiesContent', 'field' => 'Cookie bar', 'status' => 'ok', 'message' => 'heading, content, labels, settings link'];
 
     // Blog categories (Technology, Cultures) for archive filters
     $blogCategories = [
@@ -178,8 +196,8 @@ add_action('template_redirect', function () use ($requiredToken) {
     echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Global Options</title>';
     echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
     echo '</head><body>';
-    echo '<h1>NSC Global Options (Header, Footer & Blog)</h1>';
-    echo '<p>Menus, blog categories (Technology, Cultures), blog single (author, related services, related posts count, connect box), and theme options have been set. Edit in WP Admin → NSC Theme Options → <strong>Global</strong> (Header/Footer) or <strong>Blog</strong> (NSC Blog Single).</p>';
+    echo '<h1>NSC Global Options (Header, Footer, Cookies & Blog)</h1>';
+    echo '<p>Menus, blog categories (Technology, Cultures), blog single (author, related services, related posts count, connect box), and theme options have been set. Edit in WP Admin → NSC Theme Options → <strong>Global</strong> (Header/Footer/Cookies) or <strong>Blog</strong> (NSC Blog Single).</p>';
     echo '<table><thead><tr><th>Scope</th><th>Field</th><th>Status</th><th>Details</th></tr></thead><tbody>';
     foreach ($results as $row) {
         $statusClass = $row['status'] === 'error' ? 'error' : 'ok';

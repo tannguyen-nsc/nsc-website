@@ -21,10 +21,22 @@
 
     &.gallery-image-center-bottom {
       @apply bottom-[10%] left-[20%] max-w-[157px];
+
+      @screen xl {
+        @applyleft-[22%];
+      }
+
+      @media (min-width: 1440px) {
+        @apply left-[26%];
+      }
+
+      @screen 2xl {
+        @apply left-[30%];
+      }
     }
 
     &.gallery-image-middle-left {
-      @apply bottom-[35%] left-[19%] max-w-[320px] translate-x-[-100%];
+      @apply bottom-[44%] left-[30.5%] max-w-[320px] translate-x-[-100%];
     }
 
     &.gallery-image-bottom-left {

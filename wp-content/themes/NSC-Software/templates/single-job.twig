@@ -2,6 +2,7 @@
 
 {% block content %}
   {% set js = job_single|default({}) %}
+  {% set post_title_plain = function('html_entity_decode', post.title|default('')) %}
   {% set why_title = (js.jobSidebarWhyUsTitle|default(''))|trim ?: __('Why us?', 'NscSoftware') %}
   {% set share_title = (js.jobSidebarShareTitle|default(''))|trim ?: __('Share this vacancy', 'NscSoftware') %}
   {% set apply_heading = (js.jobApplyHeading|default(''))|trim ?: __('Apply now', 'NscSoftware') %}
@@ -14,13 +15,13 @@
         <nav class="career-details__breadcrumbs" aria-label="{{ __('Breadcrumb', 'NscSoftware')|e }}">
           <a href="{{ career_archive_url|e('esc_url') }}">{{ __('Career', 'NscSoftware')|e }}</a>
           <span class="career-details__bc-sep" aria-hidden="true">&gt;</span>
-          <span class="career-details__bc-current">{{ post.title|e }}</span>
+          <span class="career-details__bc-current">{{ post_title_plain|e }}</span>
         </nav>
 
         <div class="career-details__card">
           <div class="career-details__grid">
             <div class="career-details__main">
-              <h1 class="career-details__title">{{ post.title|e }}</h1>
+              <h1 class="career-details__title">{{ post_title_plain|e }}</h1>
 
               {% if job_tags is iterable and job_tags|length > 0 %}
                 <div class="career-details__tags">

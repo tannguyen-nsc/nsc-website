@@ -44,6 +44,35 @@
     ul {
       @apply m-0 list-disc space-y-2 pl-5 text-sm leading-relaxed text-[#0A0A0A] lg:text-base font-medium;
     }
+
+    ul, ol {
+      @apply list-disc list-inside space-y-2 pl-0 text-left marker:text-black;
+  
+      li::marker {
+        font-size: 0.55em;
+      }
+       
+      ul {
+        @apply list-inside space-y-2 pl-8 text-left marker:text-black;
+  
+        li {
+          @apply pl-1;
+          list-style: circle;
+        }
+  
+        li::marker {
+          font-size: 0.55em;
+        }
+      }
+    }
+
+    ol {
+      @apply list-decimal;
+
+      li::marker {
+        @apply text-sm lg:text-base; 
+      }
+    }
   }
 
   .case-study-detail-overview__meta {

@@ -1209,6 +1209,22 @@ function nsc_seed_polylang_translate_global_options(): int
         $headerLabels = [];
     }
 
+    $cookiesPrefix = 'translatable_NSCCookiesContent_';
+    $flatCookies = [
+        'ariaLabel',
+        'heading',
+        'content',
+        'rejectLabel',
+        'settingsLabel',
+        'acceptLabel',
+    ];
+    $cookiesValues = [];
+    foreach ($flatCookies as $name) {
+        $cookiesValues[$name] = get_field($cookiesPrefix . $name, 'option');
+    }
+    $cookiesSettingsUrl = get_field($cookiesPrefix . 'settingsUrl', 'option');
+    $cookiesSettingsOpenInNewTab = get_field($cookiesPrefix . 'settingsOpenInNewTab', 'option');
+
     remove_filter('acf/settings/current_language', $readDef, 99999);
 
     foreach ($targets as $lang) {
@@ -1240,6 +1256,18 @@ function nsc_seed_polylang_translate_global_options(): int
             $tLab = nsc_seed_polylang_map_string_fields($headerLabels, $translate, []);
             update_field('translatable_NSCHeader_labels', $tLab, 'option');
         }
+
+        foreach ($flatCookies as $name) {
+            $v = $cookiesValues[$name] ?? '';
+            if (is_string($v) && $v !== '') {
+                update_field($cookiesPrefix . $name, $translate($v), 'option');
+            }
+        }
+
+        if (is_string($cookiesSettingsUrl) && $cookiesSettingsUrl !== '') {
+            update_field($cookiesPrefix . 'settingsUrl', $cookiesSettingsUrl, 'option');
+        }
+        update_field($cookiesPrefix . 'settingsOpenInNewTab', (int) !empty($cookiesSettingsOpenInNewTab), 'option');
 
         remove_filter('acf/settings/current_language', $langCb, 99999);
     }

@@ -14,6 +14,7 @@ class Asset
      * @var array
      */
     protected static array $assetManifest;
+    protected static ?string $hotServerUrl = null;
 
     /**
      * Gets the asset's url.
@@ -93,8 +94,8 @@ class Asset
         }
 
         if ('url' == $returnType) {
-            if (file_exists(self::viteHotFile())) {
-                return trailingslashit(trim(file_get_contents(self::viteHotFile()))) . $asset;
+            if (self::isHotModuleReplacement()) {
+                return trailingslashit((string) self::$hotServerUrl) . $asset;
             }
             return file_exists($filePath) ? get_template_directory_uri() . '/dist/' . $assetSuffix : get_template_directory_uri() . '/' . $assetSuffix;
         }
@@ -109,7 +110,35 @@ class Asset
      */
     public static function isHotModuleReplacement()
     {
-        return file_exists(self::viteHotFile());
+        // Prevent localhost dev-server injection on staging/production even when dist/hot exists.
+        $env = 'production';
+        if (function_exists('wp_get_environment_type')) {
+            $env = (string) wp_get_environment_type();
+        } elseif (defined('WP_ENVIRONMENT_TYPE')) {
+            $env = (string) constant('WP_ENVIRONMENT_TYPE');
+        } elseif (defined('WP_ENV')) {
+            $env = (string) constant('WP_ENV');
+        }
+
+        if (!in_array(strtolower($env), ['local', 'development'], true)) {
+            self::$hotServerUrl = null;
+            return false;
+        }
+
+        $hotFile = self::viteHotFile();
+        if (!file_exists($hotFile)) {
+            self::$hotServerUrl = null;
+            return false;
+        }
+
+        $raw = trim((string) file_get_contents($hotFile));
+        if ($raw === '') {
+            self::$hotServerUrl = null;
+            return false;
+        }
+
+        self::$hotServerUrl = $raw;
+        return true;
     }
 
     /**
