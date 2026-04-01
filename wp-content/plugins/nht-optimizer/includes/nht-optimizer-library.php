@@ -43,11 +43,13 @@ if (!class_exists('WP_Optimizer_Library')) {
             add_action('admin_footer', [self::class, 'injectMediaModalUnusedCheckerScript']);
             add_action('edit_form_after_title', [self::class, 'renderUnusedCheckerPanel']);
             add_action('attachment_submitbox_misc_actions', [self::class, 'renderAttachmentSubmitboxUnusedChecker']);
+            add_action('attachment_submitbox_misc_actions', [self::class, 'renderAttachmentSubmitboxWebpReplace']);
             add_action('wp_ajax_nht_unused_checker_start', [self::class, 'ajaxStartUnusedChecker']);
             add_action('wp_ajax_nht_unused_checker_step', [self::class, 'ajaxStepUnusedChecker']);
             add_action('wp_ajax_nht_unused_scan_all_start', [self::class, 'ajaxStartUnusedScanAll']);
             add_action('wp_ajax_nht_unused_scan_all_step', [self::class, 'ajaxStepUnusedScanAll']);
             add_action('wp_ajax_nht_unused_scan_all_bulk', [self::class, 'ajaxBulkUnusedScanAll']);
+            add_action('wp_ajax_nht_replace_attachment_webp', [self::class, 'ajaxReplaceAttachmentWithWebp']);
             add_action('admin_post_nht_unused_checker_action', [self::class, 'handleUnusedCheckerAction']);
             add_action('admin_notices', [self::class, 'renderUnusedCheckerNotice']);
         }
@@ -617,27 +619,362 @@ if (!class_exists('WP_Optimizer_Library')) {
                 ],
                 admin_url('post.php')
             );
+            echo '<div class="misc-pub-section nht-unused-checker-section">';
+            echo '<a class="nht-unused-checker-inline" href="' . esc_url($url) . '">' . esc_html__('Unused Checker', 'wp-optimizer') . '</a>';
+            echo '</div>';
+        }
+
+        public static function renderAttachmentSubmitboxWebpReplace(): void
+        {
+            global $post;
+            if (
+                !self::isEnabled('optimize_wp_media')
+                || !($post instanceof \WP_Post)
+                || $post->post_type !== 'attachment'
+                || !current_user_can('upload_files')
+            ) {
+                return;
+            }
+
+            $attachmentId = (int) $post->ID;
+            $nonce = wp_create_nonce('nht_replace_webp_nonce');
+
+            echo '<div class="misc-pub-section nht-webp-replace-box">';
+            echo '<strong>' . esc_html__('Replace with WebP', 'wp-optimizer') . '</strong>';
+            echo '<p style="margin:6px 0 4px;">' . esc_html__('Upload a .webp file to replace this media. The checker will also update references in posts and postmeta.', 'wp-optimizer') . '</p>';
+            echo '<input type="file" id="nht-replace-webp-file" accept=".webp,image/webp" />';
+            echo '<p style="margin:8px 0 0;"><button type="button" class="button button-secondary" id="nht-replace-webp-run">' . esc_html__('Upload WebP and Replace', 'wp-optimizer') . '</button></p>';
+            echo '<p id="nht-replace-webp-status" style="margin:6px 0 0;"></p>';
+            echo '</div>';
 
             echo '<script>';
             echo '(function(){';
-            echo 'var url=' . wp_json_encode($url) . ';';
-            echo 'var text=' . wp_json_encode(__('Unused Checker', 'wp-optimizer')) . ';';
-            echo 'function mount(){';
-            echo 'var container=document.querySelector(".misc-pub-attachment, .misc-pub-section.misc-pub-attachment");';
-            echo 'if(!container){return;}';
-            echo 'if(container.querySelector(".nht-unused-checker-inline")){return;}';
-            echo 'var download=container.querySelector("a[href]");';
-            echo 'if(!download){return;}';
-            echo 'var link=document.createElement("a");';
-            echo 'link.className="nht-unused-checker-inline";';
-            echo 'link.href=url;';
-            echo 'link.textContent=text;';
-            echo 'var sep=document.createTextNode(" | ");';
-            echo 'if(download.nextSibling){container.insertBefore(sep,download.nextSibling); container.insertBefore(link,sep.nextSibling);}else{container.appendChild(sep); container.appendChild(link);}';
-            echo '}';
-            echo 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",mount);}else{mount();}';
+            echo 'var btn=document.getElementById("nht-replace-webp-run"); var file=document.getElementById("nht-replace-webp-file"); var status=document.getElementById("nht-replace-webp-status");';
+            echo 'if(!btn||!file||typeof ajaxurl==="undefined"){return;}';
+            echo 'btn.addEventListener("click", function(){';
+            echo 'if(!file.files||!file.files.length){status.textContent="Please select a WebP file.";return;}';
+            echo 'var f=file.files[0]; var n=(f.name||"").toLowerCase(); if(n.slice(-5)!==".webp"){status.textContent="Only .webp files are allowed.";return;}';
+            echo 'status.textContent="Uploading and replacing..."; btn.disabled=true;';
+            echo 'var fd=new FormData(); fd.append("action","nht_replace_attachment_webp"); fd.append("_ajax_nonce",' . wp_json_encode($nonce) . '); fd.append("attachment_id",' . (int) $attachmentId . '); fd.append("webp_file",f);';
+            echo 'fetch(ajaxurl,{method:"POST",credentials:"same-origin",body:fd}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t);}catch(e){return {success:false,data:{message:t||("HTTP "+r.status)}};}});}).then(function(res){btn.disabled=false; if(!res||!res.success){status.textContent=(res&&res.data&&res.data.message)?res.data.message:"Replace failed."; return;} status.textContent=(res.data&&res.data.message)?res.data.message:"Done."; window.location.reload();}).catch(function(){btn.disabled=false; status.textContent="Replace failed.";});';
+            echo '});';
             echo '})();';
             echo '</script>';
+        }
+
+        public static function ajaxReplaceAttachmentWithWebp(): void
+        {
+            if (!check_ajax_referer('nht_replace_webp_nonce', '_ajax_nonce', false)) {
+                wp_send_json_error(['message' => 'Security nonce expired. Please refresh and try again.'], 403);
+            }
+            if (!current_user_can('upload_files')) {
+                wp_send_json_error(['message' => 'Forbidden'], 403);
+            }
+
+            $attachmentId = isset($_POST['attachment_id']) ? (int) $_POST['attachment_id'] : 0;
+            if ($attachmentId <= 0 || get_post_type($attachmentId) !== 'attachment') {
+                wp_send_json_error(['message' => 'Invalid attachment.'], 400);
+            }
+            if (!current_user_can('edit_post', $attachmentId)) {
+                wp_send_json_error(['message' => 'You cannot edit this attachment.'], 403);
+            }
+            if (empty($_FILES['webp_file']) || !is_array($_FILES['webp_file'])) {
+                wp_send_json_error(['message' => 'No file uploaded.'], 400);
+            }
+
+            $file = $_FILES['webp_file'];
+            $tmpName = isset($file['tmp_name']) ? (string) $file['tmp_name'] : '';
+            $origName = isset($file['name']) ? (string) $file['name'] : '';
+            $errorCode = isset($file['error']) ? (int) $file['error'] : UPLOAD_ERR_NO_FILE;
+            if ($errorCode !== UPLOAD_ERR_OK || $tmpName === '' || !is_uploaded_file($tmpName)) {
+                wp_send_json_error(['message' => 'Upload failed.'], 400);
+            }
+
+            $checked = wp_check_filetype_and_ext($tmpName, $origName, ['webp' => 'image/webp']);
+            $ext = strtolower((string) ($checked['ext'] ?? pathinfo($origName, PATHINFO_EXTENSION)));
+            if ($ext !== 'webp') {
+                wp_send_json_error(['message' => 'Only .webp files are allowed.'], 400);
+            }
+
+            $result = self::replaceAttachmentImageWithWebp($attachmentId, $tmpName);
+            if (!$result['ok']) {
+                wp_send_json_error(['message' => (string) $result['message']], 400);
+            }
+
+            wp_send_json_success([
+                'message' => (string) $result['message'],
+                'new_url' => (string) ($result['new_url'] ?? ''),
+            ]);
+        }
+
+        /**
+         * @return array{ok:bool,message:string,new_url?:string}
+         */
+        private static function replaceAttachmentImageWithWebp(int $attachmentId, string $uploadedTmpPath): array
+        {
+            $oldAbs = (string) get_attached_file($attachmentId);
+            if ($oldAbs === '' || !file_exists($oldAbs)) {
+                return ['ok' => false, 'message' => 'Current media file not found.'];
+            }
+
+            $uploads = wp_get_upload_dir();
+            $baseDir = wp_normalize_path((string) ($uploads['basedir'] ?? ''));
+            if ($baseDir === '') {
+                return ['ok' => false, 'message' => 'Upload directory not available.'];
+            }
+
+            $oldAbsNorm = wp_normalize_path($oldAbs);
+            $oldRel = (string) get_post_meta($attachmentId, '_wp_attached_file', true);
+            $oldRel = str_replace('\\', '/', $oldRel);
+            $oldUrl = (string) wp_get_attachment_url($attachmentId);
+            $oldMeta = wp_get_attachment_metadata($attachmentId);
+
+            $targetDir = dirname($oldAbsNorm);
+            if (!is_dir($targetDir)) {
+                return ['ok' => false, 'message' => 'Target folder does not exist.'];
+            }
+
+            $stem = (string) pathinfo($oldAbsNorm, PATHINFO_FILENAME);
+            $newFileName = sanitize_file_name($stem . '.webp');
+            $newAbs = wp_normalize_path($targetDir . '/' . $newFileName);
+
+            if (file_exists($newAbs)) {
+                @unlink($newAbs);
+            }
+            if (!@move_uploaded_file($uploadedTmpPath, $newAbs)) {
+                return ['ok' => false, 'message' => 'Cannot move uploaded file.'];
+            }
+
+            require_once ABSPATH . 'wp-admin/includes/image.php';
+            $newMeta = wp_generate_attachment_metadata($attachmentId, $newAbs);
+
+            $newRel = ltrim(str_replace($baseDir, '', $newAbs), '/');
+            $newRel = str_replace('\\', '/', $newRel);
+            $newUrl = trailingslashit((string) ($uploads['baseurl'] ?? '')) . $newRel;
+
+            update_attached_file($attachmentId, $newRel);
+            if (is_array($newMeta)) {
+                wp_update_attachment_metadata($attachmentId, $newMeta);
+            } else {
+                update_post_meta($attachmentId, '_wp_attachment_metadata', ['file' => $newRel]);
+            }
+            wp_update_post([
+                'ID' => $attachmentId,
+                'post_mime_type' => 'image/webp',
+                'guid' => $newUrl,
+            ]);
+
+            self::deleteOldImageDerivatives($oldAbsNorm, $newAbs, is_array($oldMeta) ? $oldMeta : [], $baseDir);
+
+            $oldBase = wp_basename($oldAbsNorm);
+            $newBase = wp_basename($newAbs);
+            $oldExt = strtolower((string) pathinfo($oldBase, PATHINFO_EXTENSION));
+            $oldUploadPath = '/wp-content/uploads/' . ltrim($oldRel, '/');
+            $newUploadPath = '/wp-content/uploads/' . ltrim($newRel, '/');
+
+            self::replaceImageReferences([
+                $oldUrl => $newUrl,
+                $oldRel => $newRel,
+                $oldBase => $newBase,
+                $oldAbsNorm => $newAbs,
+                $oldUploadPath => $newUploadPath,
+            ], $attachmentId);
+
+            if ($oldExt !== '') {
+                self::updateAttachmentTitleAndSlugForNewExtension($attachmentId, $oldExt, 'webp');
+            }
+
+            return ['ok' => true, 'message' => 'Replaced successfully with WebP.', 'new_url' => $newUrl];
+        }
+
+        private static function updateAttachmentTitleAndSlugForNewExtension(int $attachmentId, string $oldExt, string $newExt): void
+        {
+            $oldExt = strtolower(trim($oldExt));
+            $newExt = strtolower(trim($newExt));
+            if ($attachmentId <= 0 || $oldExt === '' || $newExt === '' || $oldExt === $newExt) {
+                return;
+            }
+
+            $post = get_post($attachmentId);
+            if (!$post instanceof \WP_Post) {
+                return;
+            }
+
+            $title = (string) $post->post_title;
+            $slug = (string) $post->post_name;
+            $newTitle = $title;
+            $newSlug = $slug;
+
+            // Example: llms-4.png -> llms-4.webp
+            $titlePattern = '/\.' . preg_quote($oldExt, '/') . '$/i';
+            if (preg_match($titlePattern, $newTitle)) {
+                $newTitle = (string) preg_replace($titlePattern, '.' . $newExt, $newTitle);
+            }
+
+            // Slug often stores extension-like suffixes as -png / _png / .png.
+            $slugPattern = '/(?:-|_|\.|)%s$/i';
+            $slugPattern = sprintf($slugPattern, preg_quote($oldExt, '/'));
+            if (preg_match($slugPattern, $newSlug)) {
+                $newSlug = (string) preg_replace($slugPattern, '-' . $newExt, $newSlug);
+            }
+            if (preg_match('/\.' . preg_quote($oldExt, '/') . '$/i', $newSlug)) {
+                $newSlug = (string) preg_replace('/\.' . preg_quote($oldExt, '/') . '$/i', '-' . $newExt, $newSlug);
+            }
+            $newSlug = sanitize_title($newSlug);
+
+            if ($newTitle !== $title || $newSlug !== $slug) {
+                wp_update_post([
+                    'ID' => $attachmentId,
+                    'post_title' => $newTitle,
+                    'post_name' => $newSlug,
+                ]);
+            }
+        }
+
+        /**
+         * @param array<string,string> $pairs
+         */
+        private static function replaceImageReferences(array $pairs, int $attachmentId): void
+        {
+            global $wpdb;
+            $pairs = array_filter($pairs, static function ($v, $k): bool {
+                return is_string($k) && is_string($v) && $k !== '' && $k !== $v;
+            }, ARRAY_FILTER_USE_BOTH);
+            if (empty($pairs)) {
+                return;
+            }
+
+            $needles = array_keys($pairs);
+            $likeSql = [];
+            $args = [];
+            foreach ($needles as $needle) {
+                $like = '%' . $wpdb->esc_like($needle) . '%';
+                $likeSql[] = '(post_content LIKE %s OR post_excerpt LIKE %s)';
+                $args[] = $like;
+                $args[] = $like;
+            }
+            if (!empty($likeSql)) {
+                $sql = "SELECT ID, post_content, post_excerpt FROM {$wpdb->posts} WHERE (" . implode(' OR ', $likeSql) . ')';
+                $rows = $wpdb->get_results($wpdb->prepare($sql, $args), ARRAY_A);
+                if (is_array($rows)) {
+                    foreach ($rows as $row) {
+                        $id = (int) ($row['ID'] ?? 0);
+                        if ($id <= 0) {
+                            continue;
+                        }
+                        $content = (string) ($row['post_content'] ?? '');
+                        $excerpt = (string) ($row['post_excerpt'] ?? '');
+                        $newContent = strtr($content, $pairs);
+                        $newExcerpt = strtr($excerpt, $pairs);
+                        if ($newContent !== $content || $newExcerpt !== $excerpt) {
+                            $wpdb->update($wpdb->posts, ['post_content' => $newContent, 'post_excerpt' => $newExcerpt], ['ID' => $id], ['%s', '%s'], ['%d']);
+                        }
+                    }
+                }
+            }
+
+            $metaLike = [];
+            $metaArgs = [$attachmentId];
+            foreach ($needles as $needle) {
+                $metaLike[] = 'meta_value LIKE %s';
+                $metaArgs[] = '%' . $wpdb->esc_like($needle) . '%';
+            }
+            if (!empty($metaLike)) {
+                $metaSql = "SELECT meta_id, meta_value FROM {$wpdb->postmeta} WHERE post_id <> %d AND (" . implode(' OR ', $metaLike) . ')';
+                $metaRows = $wpdb->get_results($wpdb->prepare($metaSql, $metaArgs), ARRAY_A);
+                if (is_array($metaRows)) {
+                    foreach ($metaRows as $row) {
+                        $metaId = (int) ($row['meta_id'] ?? 0);
+                        if ($metaId <= 0) {
+                            continue;
+                        }
+                        $raw = (string) ($row['meta_value'] ?? '');
+                        $newRaw = self::replaceMaybeSerializedOrJson($raw, $pairs);
+                        if ($newRaw !== $raw) {
+                            $wpdb->update($wpdb->postmeta, ['meta_value' => $newRaw], ['meta_id' => $metaId], ['%s'], ['%d']);
+                        }
+                    }
+                }
+            }
+        }
+
+        /**
+         * @param array<string,string> $pairs
+         */
+        private static function replaceMaybeSerializedOrJson(string $value, array $pairs): string
+        {
+            if ($value === '') {
+                return $value;
+            }
+
+            if (is_serialized($value)) {
+                $un = maybe_unserialize($value);
+                $rep = self::replaceInMixed($un, $pairs);
+                return maybe_serialize($rep);
+            }
+
+            $trim = ltrim($value);
+            if ($trim !== '' && ($trim[0] === '{' || $trim[0] === '[')) {
+                $decoded = json_decode($value, true);
+                if (json_last_error() === JSON_ERROR_NONE) {
+                    $rep = self::replaceInMixed($decoded, $pairs);
+                    $enc = wp_json_encode($rep, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                    if (is_string($enc)) {
+                        return $enc;
+                    }
+                }
+            }
+
+            return strtr($value, $pairs);
+        }
+
+        /**
+         * @param mixed $data
+         * @param array<string,string> $pairs
+         * @return mixed
+         */
+        private static function replaceInMixed($data, array $pairs)
+        {
+            if (is_string($data)) {
+                return strtr($data, $pairs);
+            }
+            if (is_array($data)) {
+                foreach ($data as $k => $v) {
+                    $data[$k] = self::replaceInMixed($v, $pairs);
+                }
+            }
+            return $data;
+        }
+
+        /**
+         * @param array<string, mixed> $oldMeta
+         */
+        private static function deleteOldImageDerivatives(string $oldAbs, string $newAbs, array $oldMeta, string $baseDir): void
+        {
+            $paths = [$oldAbs];
+            $metaFile = isset($oldMeta['file']) && is_string($oldMeta['file']) ? $oldMeta['file'] : '';
+            $metaDir = $metaFile !== '' ? dirname($metaFile) : '';
+            if (!empty($oldMeta['sizes']) && is_array($oldMeta['sizes']) && $metaDir !== '') {
+                foreach ($oldMeta['sizes'] as $size) {
+                    $sizeFile = (is_array($size) && !empty($size['file']) && is_string($size['file'])) ? $size['file'] : '';
+                    if ($sizeFile !== '') {
+                        $paths[] = wp_normalize_path(trailingslashit($baseDir) . trim($metaDir, '/\\') . '/' . ltrim($sizeFile, '/'));
+                    }
+                }
+            }
+            if (!empty($oldMeta['original_image']) && is_string($oldMeta['original_image']) && $metaDir !== '') {
+                $paths[] = wp_normalize_path(trailingslashit($baseDir) . trim($metaDir, '/\\') . '/' . ltrim($oldMeta['original_image'], '/'));
+            }
+            $paths = array_values(array_unique(array_filter($paths)));
+            foreach ($paths as $path) {
+                $norm = wp_normalize_path((string) $path);
+                if ($norm === '' || $norm === wp_normalize_path($newAbs)) {
+                    continue;
+                }
+                if (is_file($norm)) {
+                    @wp_delete_file($norm);
+                }
+            }
         }
 
         public static function ajaxStartUnusedScanAll(): void
