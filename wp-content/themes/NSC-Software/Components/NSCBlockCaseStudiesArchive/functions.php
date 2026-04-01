@@ -110,6 +110,7 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockCaseStudiesArchive', funct
     $placeholderImage = $buildUri . '/img/blog1.webp';
 
     $opts = isset($data['options']) && is_array($data['options']) ? $data['options'] : [];
+    $hideCategories = !empty($opts['hideCategories']);
     $rawPerPage = $opts['caseStudiesPerPage'] ?? null;
     $perPage = ($rawPerPage === null || $rawPerPage === '') ? 6 : (int) $rawPerPage;
     $perPage = max(1, min(48, $perPage));
@@ -120,23 +121,24 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockCaseStudiesArchive', funct
 
     $vueStudies = build_vue_case_study_items($placeholderImage);
 
-    $filterDefs = [
-        ['id' => 'all', 'label' => $listLabels['allCategoriesLabel']],
-    ];
-    $terms = get_terms([
-        'taxonomy' => TAXONOMY,
-        'hide_empty' => true,
-    ]);
-    if (!is_wp_error($terms)) {
-        foreach ($terms as $term) {
-            if (!$term instanceof \WP_Term) {
-                continue;
-            }
+    $filterDefs = [];
+    if (!$hideCategories) {
+        $filterDefs[] = ['id' => 'all', 'label' => $listLabels['allCategoriesLabel']];
+        $terms = get_terms([
+            'taxonomy' => TAXONOMY,
+            'hide_empty' => true,
+        ]);
+        if (!is_wp_error($terms)) {
+            foreach ($terms as $term) {
+                if (!$term instanceof \WP_Term) {
+                    continue;
+                }
 
-            $filterDefs[] = [
-                'id' => $term->name,
-                'label' => $term->name,
-            ];
+                $filterDefs[] = [
+                    'id' => $term->name,
+                    'label' => $term->name,
+                ];
+            }
         }
     }
 
@@ -249,6 +251,14 @@ function getACFLayout(): array
                 'layout' => 'row',
                 'sub_fields' => [
                     FieldVariables\getCaseStudiesListPerPageField(),
+                    [
+                        'label' => __('Hide categories filter', 'NscSoftware'),
+                        'name' => 'hideCategories',
+                        'type' => 'true_false',
+                        'ui' => 1,
+                        'default_value' => 0,
+                        'instructions' => __('Hide category filter buttons in archive list (including All Categories).', 'NscSoftware'),
+                    ],
                     FieldVariables\getHiddenCaseStudiesArchive(),
                 ],
             ],

@@ -95,6 +95,7 @@
           window.blogVueData = {{ (blog_vue_data_json|default('{}'))|raw }};
         </script>
 
+        {% set hideCategories = options.hideCategories|default(0) %}
         <div class="blogs-list" id="blog-list-app" v-cloak>
           <div class="blogs-list-header">
             <div class="blogs-title">
@@ -120,12 +121,18 @@
                   <span class="results-count" v-if="searchQuery && searchQuery.trim().length">{{ searchResultsSummary }}</span>
                 </label>
               </div>
+              {% endverbatim %}
+              {% if not hideCategories %}
+              {% verbatim %}
               <button type="button" class="filter-btn" :class="{ 'filter-active': activeFilter === filter.id }" v-for="filter in filters" :key="filter.id" @click="setFilter(filter.id)">
                 <svg v-if="activeFilter === filter.id" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                   <path d="M13.3333 4L6 11.3333L2.66667 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 {{ filter.label }}
               </button>
+              {% endverbatim %}
+              {% endif %}
+              {% verbatim %}
             </div>
           </div>
           <div class="blogs-posts">

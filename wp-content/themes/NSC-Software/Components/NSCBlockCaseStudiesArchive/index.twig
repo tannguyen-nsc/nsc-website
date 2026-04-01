@@ -2,6 +2,7 @@
 <nsc-software-component name="NSCBlockCaseStudiesArchive">
   <section class="case-studies" id="case-studies-app" v-cloak>
     <div class="wrapper">
+      {% set hideCategories = options.hideCategories|default(0) %}
       <div class="heading">
         {% if headingIcon.url or headingIcon.src %}
           <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" loading="lazy" />
@@ -13,6 +14,7 @@
       <script>
         window.caseStudiesVueData = {{ (case_studies_vue_data_json|default('{}'))|raw }};
       </script>
+      {% if not hideCategories %}
       {% verbatim %}
       <div class="case-studies-filters">
         <button type="button" class="filter-btn" :class="{ 'filter-active': activeFilter === filter.id }" v-for="filter in filters" :key="filter.id" @click="setFilter(filter.id)">
@@ -22,6 +24,12 @@
           {{ filter.label }}
         </button>
       </div>
+      {% endverbatim %}
+      {% endif %}
+      {% if hideCategories %}
+      <div style="height:24px;" aria-hidden="true"></div>
+      {% endif %}
+      {% verbatim %}
       <div class="case-studies-grid">
         <template v-if="paginatedStudies.length">
           <article class="case-study-card" v-for="study in paginatedStudies" :key="study.id">

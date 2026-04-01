@@ -637,6 +637,9 @@ if (!class_exists('WP_Optimizer_Library')) {
             }
 
             $attachmentId = (int) $post->ID;
+            if (!self::isImageAttachment($attachmentId) || self::isWebpAttachment($attachmentId)) {
+                return;
+            }
             $nonce = wp_create_nonce('nht_replace_webp_nonce');
 
             echo '<div class="misc-pub-section nht-webp-replace-box">';
@@ -1704,7 +1707,13 @@ if (!class_exists('WP_Optimizer_Library')) {
         private static function isImageAttachment(int $attachmentId): bool
         {
             $mime = (string) get_post_mime_type($attachmentId);
-            return strpos(strtolower($mime), 'image/') === 0;
+            if (strpos(strtolower($mime), 'image/') === 0) {
+                return true;
+            }
+
+            $attachedFile = strtolower((string) get_post_meta($attachmentId, '_wp_attached_file', true));
+            $ext = strtolower((string) pathinfo($attachedFile, PATHINFO_EXTENSION));
+            return in_array($ext, ['png', 'jpg', 'jpeg', 'gif', 'webp', 'avif'], true);
         }
 
         private static function isWebpAttachment(int $attachmentId): bool
