@@ -110,6 +110,30 @@ function pages_seeder_scope_choices(): array
 }
 
 /**
+ * Chunked run order for pages seeder when "All pages" is selected.
+ * Using smaller scopes avoids long single requests that can trigger 524 on live/proxied hosts.
+ *
+ * @return list<string>
+ */
+function pages_seeder_chunk_scopes(): array
+{
+    return [
+        'home',
+        'about',
+        'ai',
+        'blogs',
+        'career',
+        'case-studies',
+        'contact',
+        'technology-capabilities',
+        'our-services',
+        'policies',
+        'master',
+        'test',
+    ];
+}
+
+/**
  * Polylang passes for “Run all”: default (omit seed_lang) then each non-default locale.
  *
  * @return list<array{slug: string, label: string}>
@@ -497,6 +521,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
         'prefixNonce' => \wp_create_nonce(AJAX_NONCE_PREFIX_MIGRATION),
         'runAllLanguagePassesFull' => get_run_all_language_passes(),
         'runAllSeederGroups' => get_run_all_seeder_groups(),
+        'pagesChunkScopes' => pages_seeder_chunk_scopes(),
         'runAllDefaultLangSlug' => \function_exists('pll_default_language') ? (string) \pll_default_language('slug') : '',
         'i18n' => [
             'running' => \__('Running seeder…', 'NscSoftware'),
@@ -623,13 +648,26 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
     var passes = resolveRunAllLanguagePasses(langVal);
     var groups = nscSeedersAdmin.runAllSeederGroups || [];
     var steps = [];
+    var pageScopes = Array.isArray(nscSeedersAdmin.pagesChunkScopes) ? nscSeedersAdmin.pagesChunkScopes : [];
     for (var pi = 0; pi < passes.length; pi++) {
       for (var gi = 0; gi < groups.length; gi++) {
-        steps.push({
-          seeder: groups[gi].key,
-          seed_lang: passes[pi].slug,
-          label: groups[gi].title + " — " + passes[pi].label
-        });
+        if (groups[gi].key === "pages" && pageScopes.length) {
+          pageScopes.forEach(function (scope) {
+            steps.push({
+              seeder: "pages",
+              seed_lang: passes[pi].slug,
+              page_scope: scope,
+              label: groups[gi].title + " [" + scope + "] — " + passes[pi].label
+            });
+          });
+        } else {
+          steps.push({
+            seeder: groups[gi].key,
+            seed_lang: passes[pi].slug,
+            page_scope: "",
+            label: groups[gi].title + " — " + passes[pi].label
+          });
+        }
       }
     }
 
@@ -661,6 +699,50 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
     });
   }
 
+  function runPagesSeederInChunks(basePayload) {
+    var pageScopes = Array.isArray(nscSeedersAdmin.pagesChunkScopes) ? nscSeedersAdmin.pagesChunkScopes : [];
+    if (!pageScopes.length) {
+      return runSeederAjax(basePayload);
+    }
+
+    var dfd = $.Deferred();
+    var idx = 0;
+    var htmlParts = [];
+
+    function step() {
+      if (idx >= pageScopes.length) {
+        dfd.resolve({
+          success: true,
+          data: {
+            html: htmlParts.join("")
+          }
+        });
+        return;
+      }
+
+      var scope = pageScopes[idx];
+      var payload = $.extend({}, basePayload, { page_scope: scope });
+      runSeederAjax(payload)
+        .done(function (res) {
+          if (!res || res.success !== true) {
+            dfd.resolve(res);
+            return;
+          }
+          if (res.data && res.data.html) {
+            htmlParts.push("<section><h2>" + escapeHtml("Pages scope: " + scope) + "</h2>" + res.data.html + "</section>");
+          }
+          idx += 1;
+          step();
+        })
+        .fail(function (xhr) {
+          dfd.reject(xhr);
+        });
+    }
+
+    step();
+    return dfd.promise();
+  }
+
   $(document).on("click", ".nsc-run-seeder", function (e) {
     e.preventDefault();
     var seeder = $(this).data("seeder");
@@ -671,7 +753,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
     notice("success", nscSeedersAdmin.i18n.running);
     $("#nsc-seeder-frame").attr("srcdoc", "");
 
-    runSeederAjax({
+    var payload = {
       seeder: seeder,
       seed_lang: (function () {
         var v = $("#nsc-seed-lang").val() || "";
@@ -685,7 +767,13 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
         case_study_count: $("#nsc-case-study-count").val() || "",
         case_mode: caseMode,
         cleanup_seeded: $("#nsc-seeder-cleanup").is(":checked") ? "1" : ""
-    } )
+    };
+
+    var req = (seeder === "pages" && !payload.page_scope)
+      ? runPagesSeederInChunks(payload)
+      : runSeederAjax(payload);
+
+    req
       .done(function (res) {
         if (!res || res.success !== true) {
           var msg =
@@ -811,7 +899,7 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
       runSeederAjax({
         seeder: step.seeder,
         seed_lang: step.seed_lang || "",
-        page_scope: "",
+        page_scope: step.page_scope || "",
         menu_rebuild: step.seeder === "menus" ? "1" : "",
         blog_count: $("#nsc-blog-count").val() || "",
         career_count: $("#nsc-career-count").val() || "",

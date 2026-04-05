@@ -266,3 +266,105 @@ function mark_menu_items_matching_case_studies_path(array $items, string $caseSt
 
     return $matched;
 }
+
+/**
+ * Default slug for the Contact page in the site’s default Polylang language (used to find the translation group).
+ *
+ * @return string
+ */
+function get_contact_page_canonical_slug(): string
+{
+    $slug = \apply_filters('nsc_contact_page_slug', 'contact');
+
+    return \is_string($slug) && $slug !== '' ? $slug : 'contact';
+}
+
+/**
+ * All page post IDs that are Polylang translations of the Contact page (including the default language).
+ * Empty if no contact page is found.
+ *
+ * @return int[]
+ */
+function get_contact_page_translation_ids(): array
+{
+    static $cache = null;
+    if (\is_array($cache)) {
+        return $cache;
+    }
+
+    $slug = get_contact_page_canonical_slug();
+    $baseId = 0;
+
+    if (\function_exists('pll_default_language')) {
+        $def = \pll_default_language('slug');
+        if (\is_string($def) && $def !== '') {
+            $q = new \WP_Query([
+                'post_type' => 'page',
+                'name' => $slug,
+                'posts_per_page' => 1,
+                'post_status' => 'publish',
+                'lang' => $def,
+                'suppress_filters' => false,
+                'no_found_rows' => true,
+                'fields' => 'ids',
+            ]);
+            if ($q->have_posts()) {
+                $baseId = (int) $q->posts[0];
+            }
+            \wp_reset_postdata();
+        }
+    }
+
+    if ($baseId <= 0) {
+        $p = \get_page_by_path($slug, \OBJECT, 'page');
+        if ($p instanceof \WP_Post) {
+            $baseId = (int) $p->ID;
+        }
+    }
+
+    $baseId = (int) \apply_filters('nsc_contact_page_base_id', $baseId);
+    if ($baseId <= 0) {
+        $cache = [];
+
+        return $cache;
+    }
+
+    $ids = [];
+    if (\function_exists('pll_get_post_translations')) {
+        $tr = \pll_get_post_translations($baseId);
+        if (\is_array($tr)) {
+            foreach ($tr as $pid) {
+                $pid = (int) $pid;
+                if ($pid > 0) {
+                    $ids[] = $pid;
+                }
+            }
+            $cache = \array_values(\array_unique($ids));
+
+            return $cache;
+        }
+    }
+
+    $cache = [$baseId];
+
+    return $cache;
+}
+
+/**
+ * True when the main query is any language’s Contact page (Polylang translation group), not only slug "contact".
+ */
+function is_contact_page_context(): bool
+{
+    if (!\is_page()) {
+        return false;
+    }
+
+    $current = (int) \get_queried_object_id();
+    if ($current <= 0) {
+        return false;
+    }
+
+    $ids = get_contact_page_translation_ids();
+
+    return $ids !== [] && \in_array($current, $ids, true);
+}

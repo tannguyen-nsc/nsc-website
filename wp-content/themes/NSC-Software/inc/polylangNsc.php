@@ -250,6 +250,74 @@ add_filter(
 );
 
 /**
+ * Prevent Polylang from synchronizing NSC ACF flexible layouts across translations on save.
+ *
+ * With Languages → Settings → Synchronization → **Custom fields** enabled, Polylang copies
+ * every public post meta from the saved post to its translations. That includes the full
+ * `pageComponents` / `caseStudyComponents` / `reusableComponents` trees, so editing e.g.
+ * the German front page overwrites the English home’s builder content.
+ *
+ * We only strip these keys when `$sync` is true (ongoing sync). When `$sync` is false
+ * (duplicate / new translation), keys stay in the list so the first copy still works.
+ *
+ * @param string[]     $keys Meta keys Polylang would copy or synchronize.
+ * @param bool         $sync True when syncing after save; false when duplicating a translation.
+ * @param int          $from Source post ID.
+ * @param int          $to   Target post ID.
+ * @param string       $lang Target language slug.
+ * @return string[]
+ */
+\add_filter(
+    'pll_copy_post_metas',
+    static function ($keys, $sync, $from, $to, $lang) {
+        if ($sync !== true || !\is_array($keys)) {
+            return $keys;
+        }
+
+        $roots = \apply_filters(
+            'nsc_polylang_no_sync_flexible_meta_roots',
+            [
+                'pageComponents',
+                'caseStudyComponents',
+                'reusableComponents',
+            ]
+        );
+
+        if (!\is_array($roots) || $roots === []) {
+            return $keys;
+        }
+
+        $out = [];
+        foreach ($keys as $key) {
+            if (!\is_string($key) || $key === '') {
+                continue;
+            }
+            $drop = false;
+            foreach ($roots as $root) {
+                if (!\is_string($root) || $root === '') {
+                    continue;
+                }
+                if ($key === $root || $key === '_' . $root) {
+                    $drop = true;
+                    break;
+                }
+                if (\strpos($key, $root . '_') === 0 || \strpos($key, '_' . $root . '_') === 0) {
+                    $drop = true;
+                    break;
+                }
+            }
+            if (!$drop) {
+                $out[] = $key;
+            }
+        }
+
+        return $out;
+    },
+    20,
+    5
+);
+
+/**
  * Polylang URL presets (directory mode only): default language at site root; non-default home at /{lang}/, not /{lang}/page-slug/.
  * Sets the same options as Languages → Settings → URL modifications: hide default language prefix; front page uses language code only.
  *

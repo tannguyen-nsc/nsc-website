@@ -173,8 +173,13 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
         $data['labels']['mobileHomeText'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Home') : __('Home', 'NscSoftware');
     }
 
-    // When on the contact page, do not add active class to the Contact Us menu item (contact-btn).
-    $data['isContactPage'] = is_page('contact');
+    // When on the contact page (any Polylang translation), do not add active to the Contact menu item.
+    $data['isContactPage'] = \function_exists('NscSoftware\\Menu\\is_contact_page_context')
+        ? Menu\is_contact_page_context()
+        : \is_page('contact');
+    $data['contactPageIds'] = \function_exists('NscSoftware\\Menu\\get_contact_page_translation_ids')
+        ? Menu\get_contact_page_translation_ids()
+        : [];
 
     $data['languageSwitcher'] = '';
     $data['languageSwitcherAria'] = \function_exists('nsc_pll_theme') ? nsc_pll_theme('Languages') : __('Languages', 'NscSoftware');
