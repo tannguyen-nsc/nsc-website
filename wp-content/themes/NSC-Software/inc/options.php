@@ -14,6 +14,6 @@ add_filter('NscSoftware/addComponentData', function ($data, $componentName) {
 
         return array_merge($carry, $batch);
     }, []);
-    // Don’t overwrite existing data.
-    return array_merge($options, $data);
+    // Overlay ACF options on top of incoming $data so saved Theme Options win over empty defaults.
+    return array_merge($data, $options);
 }, 9, 2);

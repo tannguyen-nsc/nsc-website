@@ -87,21 +87,21 @@ add_filter('NscSoftware/addComponentData?name=NSCFooter', function ($data) {
     $data['certifications'] = $options['certifications'] ?? [];
     $data['buildUri'] = trailingslashit(get_template_directory_uri()) . 'frontend/build';
 
-    $data['businessNumberLabel'] = !empty($options['businessNumberLabel'])
-        ? $options['businessNumberLabel']
-        : __('Business Number:', 'NscSoftware');
-    $data['emailLabel'] = !empty($options['emailLabel'])
-        ? $options['emailLabel']
-        : __('Email:', 'NscSoftware');
-    $data['contactHeading'] = !empty($options['contactHeading'])
-        ? $options['contactHeading']
-        : __('Contact', 'NscSoftware');
-    $data['siteMapHeading'] = !empty($options['siteMapHeading'])
-        ? $options['siteMapHeading']
-        : __('Site Map', 'NscSoftware');
-    $data['telLabel'] = !empty($options['telLabel'])
-        ? $options['telLabel']
-        : __('Tel:', 'NscSoftware');
+    // Labels: prefer values already merged from Theme Options ($data), then fresh $options, then gettext fallback.
+    $resolveFooterLabel = static function (string $key, string $fallback) use ($data, $options): string {
+        foreach ([$data[$key] ?? null, $options[$key] ?? null] as $v) {
+            if (\is_string($v) && \trim($v) !== '') {
+                return $v;
+            }
+        }
+
+        return $fallback;
+    };
+    $data['businessNumberLabel'] = $resolveFooterLabel('businessNumberLabel', __('Business Number:', 'NscSoftware'));
+    $data['emailLabel'] = $resolveFooterLabel('emailLabel', __('Email:', 'NscSoftware'));
+    $data['contactHeading'] = $resolveFooterLabel('contactHeading', __('Contact', 'NscSoftware'));
+    $data['siteMapHeading'] = $resolveFooterLabel('siteMapHeading', __('Site Map', 'NscSoftware'));
+    $data['telLabel'] = $resolveFooterLabel('telLabel', __('Tel:', 'NscSoftware'));
 
     return $data;
 });
