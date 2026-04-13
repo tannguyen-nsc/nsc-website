@@ -387,6 +387,24 @@ header.mobile-header {
         .mobile-dropdown-toggle {
           @apply flex items-center justify-between;
         }
+
+        &.mobile-about-dropdown {
+          .mobile-nav-dropdown-row {
+            @apply flex w-full items-stretch border-b border-white/30;
+          }
+
+          .mobile-nav-link--about-label {
+            @apply flex-1 border-b-0 py-4 justify-start;
+          }
+
+          .mobile-dropdown-toggle--chevron {
+            @apply flex flex-shrink-0 items-center justify-end self-stretch border-0 bg-transparent p-0 pr-2 text-white cursor-pointer;
+
+            .mobile-nav-chevron {
+              @apply ml-0;
+            }
+          }
+        }
         
         &.open {
           .mobile-dropdown {

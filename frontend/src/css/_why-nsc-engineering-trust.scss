@@ -1,0 +1,72 @@
+// Why NSC — Engineering you can trust (stats grid; backgrounds aligned with company-stats-full pattern)
+.page-why-nsc {
+  .why-nsc-engineering-trust {
+    @apply relative overflow-hidden py-12 text-white sm:py-14 lg:py-16 xl:py-20;
+    @apply bg-cover bg-no-repeat;
+    background-image: url("../img/why-nsc-engineering-trust-bg-mob.png");
+    background-position: center top;
+    @screen lg {
+      background-image: url("../img/why-nsc-engineering-trust-bg.webp");
+      background-position: center center;
+    }
+
+    &::after {
+      content: "";
+      @apply pointer-events-none absolute inset-0 z-[1];
+    }
+
+    .wrapper {
+      @apply relative z-[2] mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8;
+    }
+
+    .heading.light {
+      @apply mb-12 lg:mb-16;
+      h2 {
+        @apply uppercase;
+      }
+    }
+
+    /* 2×3 desktop / 3×2 mobile — hairline dividers via gap + cell fill (see company-stats-full) */
+    .why-nsc-stat-grid {
+      @apply mx-auto grid w-full max-w-[1100px] grid-cols-2 gap-px overflow-hidden p-px lg:grid-cols-3 bg-white/20 border border-white/60;
+    }
+
+    .why-nsc-stat-card {
+      @apply flex min-h-[8.5rem] flex-col items-start justify-start px-4 py-5 text-left backdrop-blur-[6px] sm:min-h-[9rem] sm:px-5 sm:py-6 lg:min-h-[10rem] lg:px-7 lg:py-8 border-r border-b border-white/60;
+
+      &:nth-child(2n) {
+        @apply border-r-0;
+      }
+
+      &:nth-last-child(-n + 2) {
+        @apply border-b-0;
+      }
+
+      @screen lg{
+        &:nth-child(2n) {
+          @apply border-r;
+        }
+
+        &:nth-child(3n) {
+          @apply border-r-0;
+        }
+
+        &:nth-last-child(-n + 3) {
+          @apply border-b-0;
+        }
+      }
+    }
+
+    .why-nsc-stat-card__num {
+      @apply text-3xl font-light text-white;
+    }
+
+    .why-nsc-stat-card__value {
+      @apply my-4 text-3xl lg:text-4xl font-bold leading-tight text-white;
+    }
+
+    .why-nsc-stat-card__label {
+      @apply text-base lg:text-xl font-normal text-white;
+    }
+  }
+}

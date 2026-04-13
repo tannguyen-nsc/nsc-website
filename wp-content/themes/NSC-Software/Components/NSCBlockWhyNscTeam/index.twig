@@ -1,0 +1,66 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockWhyNscTeam">
+    <section class="why-nsc-team" id="section-team-expertise" aria-labelledby="why-nsc-team-heading">
+      <div class="why-nsc-team__header">
+        <div class="wrapper">
+          <div class="why-nsc-team__intro-row">
+            <div class="why-nsc-team__heading-col">
+              {% if headingIcon.url|default(headingIcon.src) %}
+              <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" class="why-nsc-team__icon" width="56" height="56" loading="lazy" />
+              {% elseif theme.buildUri %}
+              <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="" class="why-nsc-team__icon" width="56" height="56" loading="lazy" />
+              {% endif %}
+              <h2 id="why-nsc-team-heading" class="why-nsc-team__title">
+                <span class="why-nsc-team__title-pre">{{ (titlePrefix|default('A Team Built on'))|e }}</span>
+                <span class="why-nsc-team__title-row">
+                  <span class="why-nsc-team__accent">{{ (titleAccent1|default('Expertise'))|e }}</span>
+                  &nbsp;<span class="why-nsc-team__and">{{ (titleConjunction|default('and'))|e }}</span>&nbsp;
+                  <span class="why-nsc-team__accent">{{ (titleAccent2|default('Culture'))|e }}</span>
+                </span>
+              </h2>
+            </div>
+            <div class="why-nsc-team__lead-col">
+              <p class="why-nsc-team__lead">
+                {{ (lead|default(''))|e }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="why-nsc-team__stage">
+        <div class="why-nsc-team__stage-inner">
+        <div class="why-nsc-team__slider-wrap">
+          <div class="why-nsc-team__card">
+            <div class="why-nsc-team__card-text">
+              {{ (cardText|default(''))|raw }}
+            </div>
+          </div>
+          <div
+            class="why-nsc-team__slider js-why-nsc-team-slider"
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="{{ (sliderAriaLabel|default('NSC Software team'))|e }}"
+          >
+            {% for slide in slides %}
+            <div class="why-nsc-team__slide">
+              {% if slide.image.url|default(slide.image.src) %}
+              <img src="{{ (slide.image.url|default(slide.image.src))|e('esc_url') }}" alt="{{ (slide.image.alt|default('NSC Software team collaborating in a modern office'))|e }}" width="1200" height="800" loading="lazy" decoding="async" />
+              {% endif %}
+            </div>
+            {% else %}
+            {% if theme.buildUri %}
+            {% for n in ['01','02','03','04','05','06','07','08','09','10'] %}
+            <div class="why-nsc-team__slide">
+              <img src="{{ theme.buildUri }}/img/why-nsc-team-{{ n }}.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+</nsc-software-component>
+{% endif %}

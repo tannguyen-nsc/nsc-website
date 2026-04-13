@@ -64,13 +64,23 @@
               </svg>
             </a>
           </li>
-          <li>
-            <a href="about.html" class="mobile-nav-link">
+          <li class="mobile-dropdown-parent">
+            <a class="mobile-nav-link mobile-dropdown-toggle no-link-cursor">
               About Us
               <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </a>
+            <ul class="mobile-dropdown">
+              <li>
+                <a href="why-nsc.html" class="mobile-nav-link">
+                  Why NSC Software
+                  <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </li>
+            </ul>
           </li>
           <li>
             <a href="ai.html" class="mobile-nav-link">
@@ -183,7 +193,11 @@
         <nav>
           <ul class="nav">
             <li><a href="./" class="active">Home</a></li>
-            <li><a href="about.html">About Us</a></li>
+            <li><a class="no-link-cursor">About Us <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+            <ul class="dropdown">
+              <li><a href="why-nsc.html">Why NSC Software</a></li>
+            </ul>
+            </li>
             <li><a href="ai.html" class="highlight">AI</a></li>
             <li><a class="no-link-cursor">What We Do <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
             <ul class="dropdown">
@@ -209,6 +223,396 @@
         
       </div>
     </header>
+
+    <!-- Why NSC page (why-nsc.html) section map: #section-hero-why-nsc | #section-engineering-trust | #section-built-vietnam | #section-what-makes-different | #section-team-expertise | #section-start-building -->
+    <div class="page-why-nsc">
+    <section class="why-nsc-hero" id="section-hero-why-nsc" aria-labelledby="why-nsc-hero-title">
+      <div class="why-nsc-hero__bg" aria-hidden="true">
+        <img src="./img/why-us-hero-desktop.webp" alt="" class="hidden lg:block" width="1920" height="1080" loading="eager" fetchpriority="high" />
+        <img src="./img/why-us-hero-mobile.webp" alt="" class="lg:hidden" width="750" height="1334" loading="eager" fetchpriority="high" />
+      </div>
+      <div class="why-nsc-hero__inner">
+        <div class="why-nsc-hero__panel">
+          <h1 id="why-nsc-hero-title" class="why-nsc-hero__title">
+            <span class="why-nsc-hero__title-why">Why</span>
+            <span class="why-nsc-hero__title-brand">
+              <span class="why-nsc-hero__title-brand-text highlight">NSC Software</span>
+            </span>
+          </h1>
+          <p class="why-nsc-hero__lead">Engineering Excellence Powered by Senior Talent</p>
+          <div class="why-nsc-hero__copy">
+            <p>At NSC Software, we believe great software is built by experienced engineers, strong technical leadership, and efficient collaboration. By combining Vietnam's top technology talent with AI-enhanced development workflows, we help global companies build scalable, high-quality digital solutions.</p>
+            <p class="why-nsc-hero__mission">
+              <span class="why-nsc-hero__mission-prefix">Our mission is simple:</span>
+              <span class="why-nsc-hero__mission-em">deliver world-class engineering quality while enabling businesses to move faster, smarter, and more efficiently.</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-nsc-engineering-trust" id="section-engineering-trust" aria-labelledby="engineering-trust-heading">
+      <div class="wrapper">
+        <div class="heading light">
+          <img src="./img/heading-icon.webp" alt="" width="56" height="56" loading="lazy" />
+          <h2 id="engineering-trust-heading" class="capitalize">Engineering You Can <br class="sm:hidden"> Trust</h2>
+        </div>
+        <div class="why-nsc-stat-grid">
+          <article class="why-nsc-stat-card">
+            <p class="why-nsc-stat-card__num">01.</p>
+            <p class="why-nsc-stat-card__value">TOP 7%</p>
+            <p class="why-nsc-stat-card__label">Vietnamese IT talent</p>
+          </article>
+          <article class="why-nsc-stat-card">
+            <p class="why-nsc-stat-card__num">02.</p>
+            <p class="why-nsc-stat-card__value">100%</p>
+            <p class="why-nsc-stat-card__label">Senior-level engineers</p>
+          </article>
+          <article class="why-nsc-stat-card">
+            <p class="why-nsc-stat-card__num">03.</p>
+            <p class="why-nsc-stat-card__value">6+ years</p>
+            <p class="why-nsc-stat-card__label">of industry experience</p>
+          </article>
+          <article class="why-nsc-stat-card">
+            <p class="why-nsc-stat-card__num">04.</p>
+            <p class="why-nsc-stat-card__value">AI-enhanced</p>
+            <p class="why-nsc-stat-card__label">Development workflows</p>
+          </article>
+          <article class="why-nsc-stat-card">
+            <p class="why-nsc-stat-card__num">05.</p>
+            <p class="why-nsc-stat-card__value">Global</p>
+            <p class="why-nsc-stat-card__label">English Collaboration</p>
+          </article>
+          <article class="why-nsc-stat-card">
+            <p class="why-nsc-stat-card__num">06.</p>
+            <p class="why-nsc-stat-card__value">Time-zone</p>
+            <p class="why-nsc-stat-card__label">EU, AU &amp; US Alignment</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-nsc-built" id="section-built-vietnam" aria-labelledby="built-vietnam-heading">
+      <div class="wrapper">
+        <header class="why-nsc-built__intro">
+          <div class="info">
+            <div class="col">
+              <img src="./img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
+              <h2 id="built-vietnam-heading">Built in Vietnam. <br class="hidden lg:block"> Delivered Globally.</h2>
+              <div class="description">
+                <p>Founded in Vietnam with a global vision, NSC Software provides high-quality software development and technology consulting for companies worldwide.</p>
+              </div>
+            </div>
+          </div>
+        </header>
+        <div class="why-nsc-built__columns">
+          <article class="why-nsc-built__card">
+            <div class="why-nsc-built__figure">
+              <img src="./img/why-nsc-built-meeting.png" alt="" width="800" height="500" loading="lazy" />
+            </div>
+            <div class="why-nsc-built__panel">
+              <p>Our team consists of experienced engineers, solution architects, and technology specialists who work together to design and deliver modern digital products.</p>
+            </div>
+          </article>
+          <article class="why-nsc-built__card why-nsc-built__card--text-first">
+            <div class="why-nsc-built__panel">
+              <p>With a culture focused on discipline, collaboration, and continuous improvement, we approach every project with both technical rigor and business understanding.</p>
+            </div>
+            <div class="why-nsc-built__figure">
+              <img src="./img/why-nsc-built-office.png" alt="" width="800" height="500" loading="lazy" />
+            </div>
+          </article>
+          <article class="why-nsc-built__card">
+            <div class="why-nsc-built__figure">
+              <img src="./img/why-nsc-built-handshake.png" alt="" width="800" height="500" loading="lazy" />
+            </div>
+            <div class="why-nsc-built__panel">
+              <p>Through strong engineering leadership and global delivery standards, NSC Software helps organizations build reliable, scalable, and future-ready technology solutions.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-nsc-different" id="section-what-makes-different">
+      <img class="why-nsc-different__bg" src="./img/what-make-diff-bg.webp" alt="" width="1920" height="900" loading="lazy" aria-hidden="true" />
+      <div class="wrapper">
+        <div class="info">
+          <div class="col">
+            <img src="./img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
+            <h2 id="what-makes-heading">WHAT MAKES NSC</h2>
+            <h2><span class="highlight">DIFFERENT</span></h2>
+          </div>
+        </div>
+        <div class="why-nsc-diff-grid service-items">
+          <div class="why-nsc-diff-grid__left col">
+            <div class="why-nsc-diff-item active" data-diff="1" data-feature-img="./img/why-nsc-different-col-1.webp" data-feature-alt="NSC senior engineers collaborating in a modern office">
+              <h2><span>1</span> Senior-Led, AI-Enhanced Development</h2>
+              <div class="arrow-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="description">
+                <!-- <h2>Human-led engineering with AI-accelerated delivery.</h2> -->
+                <p>Every project at NSC is led by experienced senior engineers who take ownership of architecture, design decisions, and delivery quality.</p>
+
+                <p>To improve efficiency and development speed, our engineers leverage AI-assisted development tools for coding support, testing automation, and knowledge acceleration.</p>
+                
+                <p>The result is a modern development process where human expertise and AI efficiency work together to deliver faster and better outcomes.</p>
+
+                <img class="why-nsc-diff-detail__photo" src="./img/why-nsc-different-col-1.webp" alt="NSC senior engineers collaborating in a modern office" width="800" height="500" loading="lazy" />
+              </div>
+            </div>
+            <div class="why-nsc-diff-item" data-diff="2" data-feature-img="./img/why-nsc-different-col-2.webp" data-feature-alt="NSC engineering workspace in Vietnam">
+              <h2><span>2</span> Access to Vietnam&rsquo;s Top 7% IT Talent</h2>
+              <div class="arrow-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="description">
+                <!-- <h2>Deep access to Vietnam&rsquo;s strongest engineering pool.</h2> -->
+                <p>Vietnam is one of the fastest-growing technology talent markets in Asia. NSC carefully selects engineers from the top tier of Vietnam’s IT workforce, ensuring strong technical foundations and analytical problem-solving skills.</p>
+
+                <p>Our hiring process evaluates candidates through:</p>
+
+                <ul>
+                  <li>Technical assessments</li>
+                  <li>System design capability</li>
+                  <li>Real-world development experience</li>
+                  <li>Communication and collaboration skills</li>
+                </ul>
+
+                <p>This ensures our clients work with engineers who can think critically, solve complex challenges, and deliver reliable solutions.</p>
+
+                <img class="why-nsc-diff-detail__photo" src="./img/why-nsc-different-col-2.webp" alt="NSC senior engineers collaborating in a modern office" width="800" height="500" loading="lazy" />
+              </div>
+            </div>
+            <div class="why-nsc-diff-item" data-diff="3" data-feature-img="./img/why-nsc-different-col-3.webp" data-feature-alt="NSC partnership and delivery commitment">
+              <h2><span>3</span> 100% Senior-Level Engineering Team</h2>
+              <div class="arrow-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="description">
+                <!-- <h2>Senior practitioners across every workstream.</h2> -->
+                <p>Unlike traditional outsourcing models that rely heavily on junior developers, NSC focuses on senior-level engineering talent.</p>
+                <p>All engineers in our team have extensive professional experience and the ability to independently handle complex technical problems.</p>
+                <p>This allows us to deliver:</p>
+                <ul>
+                  <li>Faster development cycles</li>
+                  <li>Higher code quality</li>
+                  <li>Reduced project risks</li>
+                  <li>Stronger technical decision-making</li>
+                </ul>
+                <img class="why-nsc-diff-detail__photo" src="./img/why-nsc-different-col-3.webp" alt="NSC senior engineers collaborating in a modern office" width="800" height="500" loading="lazy" />
+              </div>
+            </div>
+            <div class="why-nsc-diff-item" data-diff="4" data-feature-img="./img/why-nsc-different-col-4.webp" data-feature-alt="NSC technology delivery">
+              <h2><span>4</span> Minimum 6+ Years of Professional Experience</h2>
+              <div class="arrow-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="description">
+                <!-- <h2>Depth you can rely on from day one.</h2> -->
+                <p>Every NSC engineer brings at least six years of real-world development experience across a wide range of technologies and industries.</p>
+
+                <p>This experience enables our teams to:</p>
+                <ul>
+                  <li>Design scalable system architectures</li>
+                  <li>Identify potential risks early</li>
+                  <li>Implement best practices in software engineering</li>
+                  <li>Deliver stable and maintainable solutions</li>
+                </ul>
+                <p>Our engineers understand not just how to write code, but how to build systems that perform reliably in real-world environments.</p>
+                <img class="why-nsc-diff-detail__photo" src="./img/why-nsc-different-col-4.webp" alt="NSC senior engineers collaborating in a modern office" width="800" height="500" loading="lazy" />
+              </div>
+            </div>
+            <div class="why-nsc-diff-item" data-diff="5" data-feature-img="./img/why-nsc-different-col-5.webp" data-feature-alt="Global communication standards">
+              <h2><span>5</span> Global Communication Standards</h2>
+              <div class="arrow-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="description">
+                <!-- <h2>Clear, proactive communication with global partners.</h2> -->
+                <p>Clear   is critical in international software projects. At NSC, our engineering teams are fully English-proficient, enabling smooth collaboration with global clients.</p>
+                <p></p>Our teams actively participate in:</p>
+                <ul>
+                  <li>Technical planning meetings</li>
+                  <li>Agile sprint ceremonies</li>
+                  <li>Architecture discussions</li>
+                  <li>Product and requirement reviews</li>
+                </ul>
+                <p>This ensures alignment, transparency, and faster decision-making throughout the project lifecycle.</p>
+                <img class="why-nsc-diff-detail__photo" src="./img/why-nsc-different-col-5.webp" alt="NSC senior engineers collaborating in a modern office" width="800" height="500" loading="lazy" />
+              </div>
+            </div>
+            <div class="why-nsc-diff-item" data-diff="6" data-feature-img="./img/why-nsc-different-col-6.webp" data-feature-alt="Time-zone friendly NSC collaboration">
+              <h2><span>6</span> Time-Zone Friendly Collaboration</h2>
+              <div class="arrow-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="description">
+                <!-- <h2>Distributed teams that feel local.</h2> -->
+                <p>NSC Software operates in working hours that overlap with Europe, Australia, and North America, Asia enabling real-time communication with international clients.</p>
+                <p>This allows for:</p>
+                <ul>
+                  <li>Faster feedback cycles</li>
+                  <li>Immediate issue resolution</li>
+                  <li>Efficient project coordination</li>
+                  <li>Continuous development progress</li>
+                </ul>
+                <p>Clients benefit from the flexibility of global teams while maintaining the responsiveness of a close collaboration.</p>
+                <img class="why-nsc-diff-detail__photo" src="./img/why-nsc-different-col-6.webp" alt="NSC senior engineers collaborating in a modern office" width="800" height="500" loading="lazy" />
+              </div>
+            </div>
+            <div class="why-nsc-diff-item" data-diff="7" data-feature-img="./img/why-nsc-different-col-7.webp" data-feature-alt="High quality software delivery with NSC">
+              <h2><span>7</span> High Quality, Cost-Efficient Delivery</h2>
+              <div class="arrow-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="description">
+                <!-- <h2>Senior quality at a sustainable investment level.</h2> -->
+                <p>One of the major advantages of working with NSC Software is the ability to access high-quality engineering talent at competitive development costs.</p>
+                <p>Vietnam’s technology ecosystem allows companies to scale development capacity without the high operational costs typically found in Western markets.</p>
+                <p>NSC combines:</p>
+                <ul>
+                  <li>Senior engineering expertise</li>
+                  <li>Global development standards</li>
+                  <li>Efficient cost structures</li>
+                </ul>
+                <p>This creates a model where companies receive premium engineering quality at a sustainable investment level.</p>
+                <img class="why-nsc-diff-detail__photo" src="./img/why-nsc-different-col-7.webp" alt="NSC senior engineers collaborating in a modern office" width="800" height="500" loading="lazy" />
+              </div>
+            </div>
+          </div>
+          <div class="why-nsc-diff-grid__right col right-column">
+            <div class="why-nsc-diff-right__stack">
+              <div class="why-nsc-diff-right__text">
+                <div class="why-nsc-diff-right__text-inner">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-sheet-overlay" id="whyNscDiffBottomSheetOverlay"></div>
+      <div class="bottom-sheet why-nsc-diff-bottom-sheet" id="whyNscDiffBottomSheet">
+        <img class="why-nsc-diff-bottom-sheet__sheet-col" src="./img/why-nsc-different-col-bg.png" alt="" width="1200" height="900" loading="lazy" aria-hidden="true" />
+        <div class="bottom-sheet-header">
+          <h3 class="bottom-sheet-title" id="whyNscDiffBottomSheetTitle" aria-hidden="true"></h3>
+          <button type="button" class="bottom-sheet-close" id="whyNscDiffBottomSheetClose" aria-label="Close">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M21 7L7 21M7 7L21 21" stroke="#F9F9FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="bottom-sheet-content">
+          <div class="why-nsc-diff-sheet-body" id="whyNscDiffBottomSheetContent"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-nsc-team" id="section-team-expertise" aria-labelledby="why-nsc-team-heading">
+      <div class="why-nsc-team__header">
+        <div class="wrapper">
+          <div class="why-nsc-team__intro-row">
+            <div class="why-nsc-team__heading-col">
+              <img src="./img/heading-icon.webp" alt="" class="why-nsc-team__icon" width="56" height="56" loading="lazy" />
+              <h2 id="why-nsc-team-heading" class="why-nsc-team__title">
+                <span class="why-nsc-team__title-pre">A Team Built on</span>
+                <span class="why-nsc-team__title-row">
+                  <span class="why-nsc-team__accent">Expertise</span>
+                  <span class="why-nsc-team__and"> and </span>
+                  <span class="why-nsc-team__accent">Culture</span>
+                </span>
+              </h2>
+            </div>
+            <div class="why-nsc-team__lead-col">
+              <p class="why-nsc-team__lead">
+                At NSC Software, we believe that great technology solutions come from great people. Our culture encourages collaboration, continuous learning, and technical excellence.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="why-nsc-team__stage">
+        <div class="why-nsc-team__stage-inner">
+        <div class="why-nsc-team__slider-wrap">
+          <div class="why-nsc-team__card">
+            <p class="why-nsc-team__card-text">
+              Engineers at NSC are empowered to take ownership, explore new technologies, and continuously improve their skills while working on challenging global projects.
+            </p>
+          </div>
+          <div
+            class="why-nsc-team__slider js-why-nsc-team-slider"
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="NSC Software team"
+          >
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-01.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-02.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-03.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-04.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-05.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-06.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-07.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-08.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-09.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+            <div class="why-nsc-team__slide">
+              <img src="./img/why-nsc-team-10.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="why-nsc-cta" id="section-start-building" aria-labelledby="why-nsc-cta-heading">
+      <div class="why-nsc-cta__panel">
+        <div class="why-nsc-cta__inner">
+          <h2 id="why-nsc-cta-heading">Start Building with NSC Software</h2>
+          <p>Whether you're a startup building a new product or an enterprise scaling your technology platform, NSC Software provides the engineering expertise needed to bring your ideas to life.</p>
+          <a href="contact.html" class="why-nsc-cta__btn">
+            <span class="why-nsc-cta__btn-text">Let's build the future of technology together</span>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z" fill="currentColor"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+    </div>
 
     <section class="hero dark">
       <img src="./img/hero-dark.webp" alt="Hero Image" loading="lazy" />
@@ -3448,7 +3852,7 @@
               <div class="sitemap-col">
                 <ul>
                   <li><a href="./">Home</a></li>
-                  <li><a href="about.html">About Us</a></li>
+                                    <li><a href="why-nsc.html">Why NSC Software</a></li>
                 </ul>
               </div>
               <div class="sitemap-col">
@@ -3484,7 +3888,7 @@
           <div class="sitemap-col">
             <ul>
               <li><a href="./">Home</a></li>
-              <li><a href="about.html">About Us</a></li>
+                            <li><a href="why-nsc.html">Why NSC Software</a></li>
             </ul>
           </div>
           <div class="sitemap-col">

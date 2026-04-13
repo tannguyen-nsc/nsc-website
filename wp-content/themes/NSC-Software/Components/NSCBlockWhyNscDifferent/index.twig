@@ -1,0 +1,90 @@
+{% if not (options.hidden|default(0)) %}
+{% set bu = theme.buildUri %}
+<nsc-software-component name="NSCBlockWhyNscDifferent">
+    <section class="why-nsc-different" id="section-what-makes-different">
+      {% if backgroundImage.url|default(backgroundImage.src) %}
+      <img class="why-nsc-different__bg" src="{{ (backgroundImage.url|default(backgroundImage.src))|e('esc_url') }}" alt="{{ (backgroundImage.alt|default(''))|e }}" width="1920" height="900" loading="lazy" aria-hidden="true" />
+      {% elseif bu %}
+      <img class="why-nsc-different__bg" src="{{ bu }}/img/what-make-diff-bg.webp" alt="" width="1920" height="900" loading="lazy" aria-hidden="true" />
+      {% endif %}
+      <div class="wrapper">
+        <div class="info">
+          <div class="col">
+            {% if headingIcon.url|default(headingIcon.src) %}
+            <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default('Heading Icon'))|e }}" loading="lazy" />
+            {% elseif bu %}
+            <img src="{{ bu }}/img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
+            {% endif %}
+            <h2 id="what-makes-heading">{{ (titleLine1|default('WHAT MAKES NSC'))|e }}</h2>
+            <h2><span class="highlight">{{ (titleLine2|default('DIFFERENT'))|e }}</span></h2>
+          </div>
+        </div>
+        <div class="why-nsc-diff-grid service-items">
+          <div class="why-nsc-diff-grid__left col">
+            {% for item in items %}
+            {% set fi = item.feature_image %}
+            {% set featUrl = '' %}
+            {# Timber\Image or ACF array: never pass the object to wp_get_attachment_* (expects int ID). #}
+            {% if fi %}
+              {# Twig 3: attribute(obj, name, false) is invalid — use dot notation / default. #}
+              {% set featUrl = fi.url|default(fi.src|default('')) %}
+              {% if not featUrl %}
+                {% set featId = fi.ID|default(fi.id|default(0)) %}
+                {% if featId %}
+                  {% set featUrl = function('wp_get_attachment_image_url', featId, 'full')|default('') %}
+                {% endif %}
+              {% endif %}
+            {% endif %}
+            {% if not featUrl and bu %}
+              {% set idx = loop.index < 10 ? '0' ~ loop.index : loop.index %}
+              {% set featUrl = bu ~ '/img/why-nsc-different-col-' ~ idx ~ '.webp' %}
+            {% endif %}
+            <div class="why-nsc-diff-item{% if loop.first %} active{% endif %}" data-diff="{{ loop.index }}" data-feature-img="{{ featUrl|e('html_attr') }}" data-feature-alt="{{ (item.feature_alt|default(''))|e('html_attr') }}">
+              <h2><span>{{ loop.index }}</span> {{ item.title|e }}</h2>
+              <div class="arrow-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M8.293 4.29289C7.90237 4.68342 7.90237 5.31643 8.293 5.70696L13.5859 10.9999H2C1.44772 10.9999 1 11.4476 1 11.9999C1 12.5522 1.44772 12.9999 2 12.9999H13.5859L8.293 18.2929C7.90237 18.6834 7.90237 19.3164 8.293 19.707C8.68342 20.0975 9.31643 20.0975 9.70696 19.707L16.707 12.707C17.0976 12.3164 17.0976 11.6834 16.707 11.293L9.70696 4.29289C9.31643 3.90237 8.68342 3.90237 8.293 4.29289Z" fill="currentColor"/>
+                </svg>
+              </div>
+              <div class="description">
+                {{ (item.body|default(''))|raw }}
+                {% if featUrl %}
+                <img class="why-nsc-diff-detail__photo" src="{{ featUrl|e('esc_url') }}" alt="{{ (item.feature_alt|default(''))|e }}" width="800" height="500" loading="lazy" />
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+          <div class="why-nsc-diff-grid__right col right-column">
+            <div class="why-nsc-diff-right__stack">
+              <div class="why-nsc-diff-right__text">
+                <div class="why-nsc-diff-right__text-inner">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-sheet-overlay" id="whyNscDiffBottomSheetOverlay"></div>
+      <div class="bottom-sheet why-nsc-diff-bottom-sheet" id="whyNscDiffBottomSheet">
+        {% if bottomSheetBg.url|default(bottomSheetBg.src) %}
+        <img class="why-nsc-diff-bottom-sheet__sheet-col" src="{{ (bottomSheetBg.url|default(bottomSheetBg.src))|e('esc_url') }}" alt="" width="1200" height="900" loading="lazy" aria-hidden="true" />
+        {% elseif bu %}
+        <img class="why-nsc-diff-bottom-sheet__sheet-col" src="{{ bu }}/img/why-nsc-different-col-bg.png" alt="" width="1200" height="900" loading="lazy" aria-hidden="true" />
+        {% endif %}
+        <div class="bottom-sheet-header">
+          <h3 class="bottom-sheet-title" id="whyNscDiffBottomSheetTitle" aria-hidden="true"></h3>
+          <button type="button" class="bottom-sheet-close" id="whyNscDiffBottomSheetClose" aria-label="Close">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M21 7L7 21M7 7L21 21" stroke="#F9F9FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <div class="bottom-sheet-content">
+          <div class="why-nsc-diff-sheet-body" id="whyNscDiffBottomSheetContent"></div>
+        </div>
+      </div>
+    </section>
+</nsc-software-component>
+{% endif %}

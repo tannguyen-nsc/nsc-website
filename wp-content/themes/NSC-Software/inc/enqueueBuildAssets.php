@@ -44,7 +44,10 @@ function current_page_meta_contains_layout(string $layoutName): bool
 
 function should_enqueue_slick_assets(): bool
 {
-    return is_front_page() || current_page_meta_contains_layout('nscBlockTestimonials');
+    return is_front_page()
+        || current_page_meta_contains_layout('nscBlockTestimonials')
+        || current_page_meta_contains_layout('nscBlockWhyNsc')
+        || is_page('why-nsc');
 }
 
 function should_enqueue_vue_runtime(): bool
@@ -218,9 +221,9 @@ add_filter('style_loader_tag', function (string $html, string $handle, string $h
         '<noscript><link rel="stylesheet" href="' . $safeHref . '" media="' . $safeMedia . '"></noscript>';
 }, 10, 4);
 
-// External Google Fonts are disabled by default for better Lighthouse performance.
-// If needed, re-enable via: add_filter('nsc_load_external_google_fonts', '__return_true');
-if ((bool) apply_filters('nsc_load_external_google_fonts', false)) {
+// Montserrat (matches frontend/src/css/_global.scss). Disable for Lighthouse experiments:
+// add_filter('nsc_load_external_google_fonts', '__return_false');
+if ((bool) apply_filters('nsc_load_external_google_fonts', true)) {
     add_action('wp_head', function () {
         echo '<link rel="preconnect" href="https://fonts.googleapis.com">' . "\n";
         echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";

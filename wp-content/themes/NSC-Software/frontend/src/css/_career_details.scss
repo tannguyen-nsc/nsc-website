@@ -111,6 +111,35 @@
     strong {
       @apply font-bold text-black;
     }
+
+    ul, ol {
+      @apply list-disc list-inside space-y-2 pl-0 text-left marker:text-black;
+  
+      li::marker {
+        font-size: 0.55em;
+      }
+       
+      ul {
+        @apply list-inside space-y-2 pl-8 text-left marker:text-black;
+  
+        li {
+          @apply pl-1;
+          list-style: circle;
+        }
+  
+        li::marker {
+          font-size: 0.55em;
+        }
+      }
+    }
+
+    ol {
+      @apply list-decimal;
+
+      li::marker {
+        @apply text-sm lg:text-base; 
+      }
+    }
   }
 
   &__sidebar {

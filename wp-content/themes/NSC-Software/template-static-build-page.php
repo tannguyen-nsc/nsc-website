@@ -31,6 +31,7 @@ $pageMap = [
     'contact.html' => 'contact',
     'technology-capabilities.html' => 'technology-capabilities',
     'our-services.html' => 'our-services',
+    'why-nsc.html' => 'why-nsc',
     'master.html' => 'master',
     'test.html' => 'test',
 ];

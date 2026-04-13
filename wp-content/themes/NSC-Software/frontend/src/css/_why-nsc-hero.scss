@@ -1,0 +1,42 @@
+// Why NSC — Hero (Figma: desktop frame hero / mobile top)
+.page-why-nsc {
+  .why-nsc-hero {
+    @apply relative overflow-hidden bg-[#050a12] text-white;
+    min-height: 42rem;
+    @screen lg {
+      min-height: 36rem;
+    }
+
+    &::after {
+      content: "";
+      @apply absolute inset-0 pointer-events-none z-[1];
+      background: linear-gradient(105deg, rgba(5, 10, 18, 0.92) 0%, rgba(5, 10, 18, 0.55) 45%, rgba(5, 10, 18, 0.25) 100%);
+    }
+
+    .why-nsc-hero__bg {
+      @apply absolute inset-0 pointer-events-none;
+      img {
+        @apply w-full h-full object-cover object-center opacity-90;
+      }
+    }
+
+    .why-nsc-hero__inner {
+      @apply relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24;
+    }
+
+    .why-nsc-hero__title {
+      @apply text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6;
+      .highlight {
+        @apply text-primary;
+      }
+    }
+
+    .why-nsc-hero__lead {
+      @apply text-xl sm:text-2xl font-semibold mb-6 max-w-4xl text-[rgba(255,255,255,0.95)];
+    }
+
+    .why-nsc-hero__copy {
+      @apply space-y-4 text-base sm:text-lg max-w-4xl leading-relaxed text-[rgba(255,255,255,0.85)];
+    }
+  }
+}

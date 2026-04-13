@@ -12,7 +12,7 @@ declare(strict_types=1);
  *   http://localhost/nsc/create-nsc-menus.php?token=nsc-create-menus-2026&seed_lang=all
  *
  * Notes:
- * - Uses the same page slugs as create-nsc-pages.php (home, about, ai, our-services, technology-capabilities,
+ * - Uses the same page slugs as create-nsc-pages.php (home, about, why-nsc, ai, our-services, technology-capabilities,
  *   blogs, career, case-studies, contact). Run create-nsc-pages.php first so pages exist.
  * - Main nav matches desktop header: Home, About Us, AI, What We Do ▾ (Our Services, Technology Capabilities),
  *   Blog, Careers, Case Studies, Contact Us (CSS classes: highlight, no-link-cursor, contact-btn).

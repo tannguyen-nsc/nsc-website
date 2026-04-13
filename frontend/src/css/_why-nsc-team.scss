@@ -1,0 +1,132 @@
+// Why NSC — Team (wrapper matches `.why-nsc-different .wrapper`; desktop: 5-up / 3-up Slick + centered card)
+.page-why-nsc {
+  .why-nsc-team {
+    @apply overflow-x-hidden bg-white py-12 lg:py-16;
+
+    /* Match `.why-nsc-different .wrapper` — max 1140px from xl, 1280px at 2xl */
+    .wrapper {
+      @apply relative z-[1] mx-auto flex w-full max-w-full flex-col items-start justify-start px-4 sm:px-6 lg:max-w-[90%] lg:px-8 xl:max-w-[1140px] 2xl:max-w-[1280px];
+    }
+
+    .why-nsc-team__header {
+      @apply relative z-[1] bg-white pb-12 lg:pb-16;
+      @apply lg:bg-transparent;
+    }
+
+    .why-nsc-team__intro-row {
+      @apply flex w-full flex-col gap-6 sm:gap-8 lg:flex-row lg:items-start lg:gap-10 xl:gap-14;
+    }
+
+    .why-nsc-team__heading-col {
+      @apply flex w-full flex-col items-start lg:w-1/2 lg:max-w-none;
+    }
+
+    .why-nsc-team__icon {
+      @apply mb-4 max-w-[32px] lg:max-w-[56px];
+    }
+
+    .why-nsc-team__title {
+      @apply m-0 flex w-full flex-col items-start gap-1 text-left text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl  font-bold xl:leading-tight ;
+    }
+
+    .why-nsc-team__title-row {
+      @apply flex items-baseline gap-x-0;
+    }
+
+    .why-nsc-team__accent {
+      @apply relative inline-block text-primary;
+      padding: 0.12em 0.28em 0.18em;
+
+      &::before {
+        content: "";
+        @apply pointer-events-none absolute border-primary;
+        top: 0;
+        left: 0;
+        width: 0.42em;
+        height: 0.42em;
+        border-style: solid;
+        border-width: 2px 0 0 2px;
+      }
+
+      &::after {
+        content: "";
+        @apply pointer-events-none absolute border-primary;
+        right: 0;
+        bottom: 0;
+        width: 0.42em;
+        height: 0.42em;
+        border-style: solid;
+        border-width: 0 2px 2px 0;
+      }
+    }
+
+    .why-nsc-team__lead-col {
+      @apply w-full lg:flex lg:w-1/2 lg:items-start lg:justify-end lg:pl-12 xl:pl-0;
+    }
+
+    .why-nsc-team__lead {
+      @apply m-0 max-w-none text-base font-semibold leading-relaxed text-black lg:max-w-xl lg:pt-2 lg:text-lg 2xl:text-2xl;
+    }
+
+    .why-nsc-team__stage {
+      @apply relative z-10 flex flex-col bg-white;
+    }
+
+    /* Mobile: horizontal padding matches header; desktop: full-bleed slider below */
+    .why-nsc-team__stage-inner {
+      @apply relative w-full px-4 sm:px-6 pb-0 lg:py-10;
+    }
+
+    /* Card + slider; card is centered over slider strip on lg (positioning context = this box) */
+    .why-nsc-team__slider-wrap {
+      @apply relative flex w-full flex-col;
+      @media (min-width: 1024px) {
+        width: 100vw;
+        max-width: none;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+      }
+    }
+
+    .why-nsc-team__slider {
+      @apply relative z-0 w-full;
+
+      .slick-list {
+        @apply overflow-visible lg:overflow-hidden;
+      }
+
+      .slick-track {
+        @apply flex items-stretch bg-white lg:bg-transparent;
+      }
+
+      .slick-slide {
+        @apply h-auto px-2 sm:px-2.5;
+        @apply lg:px-1.5 xl:px-2;
+      }
+
+      .slick-slide > div {
+        @apply h-full;
+      }
+    }
+
+    .why-nsc-team__slide {
+      @apply relative mx-0 overflow-hidden rounded-xl bg-white;
+      @apply h-[240px] sm:h-[280px];
+      @apply lg:h-[200px] lg:min-h-0 lg:rounded-md xl:h-[220px];
+
+      img {
+        @apply block h-full w-full object-cover object-center;
+      }
+    }
+
+    .why-nsc-team__card {
+      @apply relative z-[3] mx-auto mb-12 lg:mb-0 w-full max-w-[24rem] 2xl:max-w-[34rem] bg-white p-6 bg-[#f9f9fb] shadow-md;
+      
+      @apply lg:absolute lg:left-1/2 lg:top-1/2 lg:mb-0 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:px-8 2xl:px-12 py-12 2xl:py-16;
+    }
+
+    .why-nsc-team__card-text {
+      @apply m-0 text-center lg:text-left text-base font-medium leading-relaxed text-primary lg:text-lg 2xl:text-2xl;
+    }
+  }
+}

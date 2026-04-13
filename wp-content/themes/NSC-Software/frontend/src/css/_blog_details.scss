@@ -82,7 +82,7 @@
     @apply -mx-0 my-6 lg:my-8;
 
     img {
-      @apply max-h-[420px] w-full object-cover lg:max-h-[480px];
+      @apply w-full object-cover;
     }
   }
 
@@ -115,6 +115,27 @@
 
     li::marker {
       font-size: 0.55em;
+    }
+
+    &.decimal {
+      @apply list-decimal;
+
+      li::marker {
+        @apply text-sm lg:text-base; 
+      }
+    }
+
+    ul {
+      @apply list-inside space-y-2 pl-8 text-left marker:text-black;
+
+      li {
+        @apply pl-1;
+        list-style: circle;
+      }
+
+      li::marker {
+        font-size: 0.55em;
+      }
     }
   }
 

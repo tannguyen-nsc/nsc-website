@@ -1,0 +1,18 @@
+// Why NSC — CTA
+.page-why-nsc {
+  .why-nsc-cta {
+    @apply py-16 lg:py-24 bg-[#0a1628] text-white text-center;
+    .wrapper {
+      @apply max-w-[900px] mx-auto px-4 sm:px-6;
+    }
+    h2 {
+      @apply text-2xl sm:text-3xl font-bold mb-6;
+    }
+    p {
+      @apply mb-8 leading-relaxed text-[rgba(255,255,255,0.85)];
+    }
+    .btn {
+      @apply inline-flex items-center justify-center px-8 py-3 rounded bg-primary text-white font-semibold hover:opacity-90 transition-opacity;
+    }
+  }
+}

@@ -1,0 +1,224 @@
+// Why NSC — What makes NSC different (two-column + mobile bottom sheet)
+.page-why-nsc {
+  .why-nsc-different {
+    @apply relative overflow-hidden py-14 lg:py-20;
+
+    .why-nsc-different__bg {
+      @apply pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-right;
+    }
+
+    .wrapper {
+      @apply relative z-[1] mx-auto flex w-full max-w-full flex-col items-start justify-start px-4 sm:px-6 lg:max-w-[90%] lg:px-8 xl:max-w-[1140px] 2xl:max-w-[1280px];
+    }
+
+    /* Match `.our-services-details .info` heading + intro layout */
+    .info {
+      @apply mb-10 flex w-full flex-col items-stretch sm:mb-12 lg:mb-14 lg:flex-row;
+
+      .col {
+        @apply w-full lg:w-1/2;
+
+        &:first-child {
+          @apply flex flex-col items-start border-r border-white/20;
+
+          img {
+            @apply mb-4 max-w-[32px] lg:max-w-[56px];
+          }
+
+          h2 {
+            @apply my-4 text-2xl font-bold uppercase leading-[0.725] text-[#AFE7F1] lg:text-3xl xl:text-[42px] 2xl:text-5xl;
+
+            &:last-child {
+              @apply mb-0;
+            }
+          }
+        }
+
+        &:last-child {
+          @apply mb-4 flex flex-col justify-center gap-4 py-4 lg:mb-0 lg:p-8 lg:pb-0;
+
+          p {
+            @apply mb-8 text-sm font-medium leading-relaxed text-white last:mb-0 lg:text-base lg:font-semibold 2xl:text-xl;
+          }
+        }
+      }
+    }
+
+    .why-nsc-diff-grid {
+      @apply flex w-full flex-col border border-white/25 bg-white/10 backdrop-blur-sm lg:flex-row lg:items-stretch;
+    }
+
+    .why-nsc-diff-grid__left {
+      @apply flex w-full flex-col border-b border-white/20 lg:w-1/2 lg:border-b-0 lg:border-r;
+    }
+
+    .why-nsc-diff-grid__right {
+      @apply relative hidden min-h-[420px] w-full overflow-hidden lg:flex lg:w-1/2;
+    }
+
+    .why-nsc-diff-right__deco {
+      @apply pointer-events-none absolute inset-0 z-0 h-full min-h-full w-full opacity-90;
+      object-fit: cover;
+      object-position: right top;
+    }
+
+    .why-nsc-diff-right__stack {
+      @apply relative flex h-full min-h-[400px] w-full min-w-0 flex-col;
+    }
+
+    .why-nsc-diff-right__text {
+      @apply flex h-full flex-none flex-col justify-start overflow-y-auto px-5 py-5 text-left text-sm font-medium leading-snug text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] sm:px-6 sm:py-6 sm:text-base lg:px-8;
+      @apply backdrop-blur-xl backdrop-saturate-150;
+      -webkit-backdrop-filter: blur(18px) saturate(1.25);
+      background-color: transparent;
+      background-image: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.55) 0%,
+        rgba(0, 0, 0, 0.82) 45%,
+        rgba(0, 24, 40, 0.92) 100%
+      );
+    }
+
+    .why-nsc-diff-right__text-inner {
+      @apply space-y-3;
+
+      h2 {
+        @apply m-0 text-lg font-semibold leading-tight text-white lg:text-xl;
+      }
+
+      p {
+        @apply m-0 font-normal leading-relaxed text-white/95;
+      }
+
+      ul {
+        @apply m-0 list-disc space-y-1 pl-5 text-white/95;
+      }
+
+      h2, p, ul {
+        @apply relative z-20 m-0 drop-shadow-sm;
+      }
+
+      img {
+        @apply absolute object-cover object-top z-10 left-0 top-0 h-full;
+        margin-top: 0 !important;
+      }
+    }
+
+    /* Feature photo fills the lower band like a CSS background-image */
+    .why-nsc-diff-right__figure {
+      @apply relative z-0 min-h-[240px] flex-1 overflow-hidden bg-black/30;
+
+      img.why-nsc-diff-detail__photo {
+        @apply absolute inset-0 block h-full w-full max-w-none;
+        object-fit: cover;
+        object-position: center center;
+      }
+    }
+
+    /* Left list — mirrors service-item interaction */
+    .why-nsc-diff-item {
+      @apply relative flex cursor-pointer items-center justify-between gap-3 border-b border-white/20 p-4 transition-all duration-300 ease-in-out last:border-b-0 lg:gap-4 lg:p-6;
+
+      h2 {
+        @apply flex flex-1 items-center gap-2 text-base font-semibold text-white transition-colors duration-300 xl:text-lg 2xl:text-xl;
+
+        span {
+          @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white bg-primary text-xs font-bold text-white transition-all duration-300 lg:h-10 lg:w-10 lg:text-sm xl:text-base;
+        }
+      }
+
+      .arrow-icon {
+        @apply flex shrink-0 items-center justify-center text-white transition-colors duration-300;
+
+        svg {
+          @apply h-4 w-4 lg:h-5 lg:w-5 xl:h-6 xl:w-6;
+
+          path {
+            @apply fill-white transition-colors duration-300;
+          }
+        }
+      }
+
+      .description {
+        @apply hidden;
+      }
+
+      &.active,
+      &:hover,
+      &:focus-visible {
+        @apply bg-white shadow-lg;
+
+        h2 {
+          @apply text-black;
+
+          span {
+            @apply border-primary bg-white text-primary;
+          }
+        }
+
+        .arrow-icon {
+          @apply text-primary;
+
+          svg path {
+            @apply fill-primary;
+          }
+        }
+      }
+    }
+
+    /*
+     * Mobile bottom sheet — layered PNGs.
+     * Must NOT use position:relative on the sheet: base `.bottom-sheet` (_services.scss) is
+     * `fixed` + centered; a later `relative` here was overriding it and breaking modal placement.
+     * Header/content padding matches `.our-services-details .bottom-sheet` (px-4, content pt-0 pb-4).
+     */
+    .why-nsc-diff-bottom-sheet {
+      /*
+       * Do NOT add position:relative — it overrides base `.bottom-sheet` `fixed` + centering transforms
+       * (_services.scss). `fixed` already forms the containing block for absolute __sheet-* images.
+       */
+      @apply isolate overflow-hidden bg-transparent;
+
+      &.bottom-sheet {
+        @apply bg-transparent;
+        background-image: none;
+      }
+
+      .why-nsc-diff-bottom-sheet__sheet-bg {
+        @apply pointer-events-none absolute inset-0 z-0 h-full w-full object-cover object-right;
+      }
+
+      .why-nsc-diff-bottom-sheet__sheet-col {
+        @apply pointer-events-none absolute inset-0 z-[1] h-full min-h-full w-full opacity-90;
+        object-fit: cover;
+        object-position: right top;
+      }
+
+      .bottom-sheet-header {
+        @apply sticky top-0 z-[2] flex items-center justify-between bg-black/25 px-4 py-4 backdrop-blur-sm;
+      }
+
+      .bottom-sheet-content {
+        @apply relative z-[2] px-4 pt-0 pb-4;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+
+        .why-nsc-diff-sheet-description {
+          @apply space-y-3 rounded border border-white/20 bg-primary/60 p-4 text-white backdrop-blur-sm;
+
+          h2 {
+            @apply text-lg font-bold text-white;
+          }
+
+          p {
+            @apply text-base font-medium leading-relaxed text-white/95;
+          }
+
+          ul {
+            @apply list-disc pl-5 text-sm text-white/95;
+          }
+        }
+      }
+    }
+  }
+}

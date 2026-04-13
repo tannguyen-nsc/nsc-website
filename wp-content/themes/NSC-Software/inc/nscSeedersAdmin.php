@@ -22,6 +22,8 @@ declare(strict_types=1);
 
 namespace NscSoftware\SeedersAdmin;
 
+require_once __DIR__ . '/nscPageScopeNormalize.php';
+
 const CAPABILITY = 'manage_options';
 const AJAX_NONCE_ACTION = 'nsc_run_seeder';
 const AJAX_NONCE_PREFIX_MIGRATION = 'nsc_migrate_table_prefix';
@@ -63,11 +65,33 @@ function seeder_tokens(): array
  *
  * @return list<string>
  */
+/**
+ * Normalize Tools → NSC seeders page_scope POST value (preserves hyphens; maps whynsc → why-nsc).
+ */
+function posted_page_scope_for_seeder(string $raw): string
+{
+    $raw = trim($raw);
+    if ($raw === '') {
+        return '';
+    }
+    if (!preg_match('/^[a-z0-9\-]+$/', $raw) && preg_match('/why[\s_-]*nsc/i', $raw)) {
+        $raw = 'why-nsc';
+    }
+    if (\function_exists('nsc_normalize_page_scope_string')) {
+        $n = \nsc_normalize_page_scope_string($raw, pages_seeder_allowed_scopes());
+
+        return $n === null ? '' : $n;
+    }
+
+    return \sanitize_key($raw);
+}
+
 function pages_seeder_allowed_scopes(): array
 {
     return [
         'home',
         'about',
+        'why-nsc',
         'ai',
         'blogs',
         'career',
@@ -93,6 +117,7 @@ function pages_seeder_scope_choices(): array
         '' => \__('All pages', 'NscSoftware'),
         'home' => \__('Home', 'NscSoftware'),
         'about' => \__('About', 'NscSoftware'),
+        'why-nsc' => \__('Why NSC Software', 'NscSoftware'),
         'ai' => \__('AI', 'NscSoftware'),
         'blogs' => \__('Blogs', 'NscSoftware'),
         'career' => \__('Career', 'NscSoftware'),
@@ -120,6 +145,7 @@ function pages_seeder_chunk_scopes(): array
     return [
         'home',
         'about',
+        'why-nsc',
         'ai',
         'blogs',
         'career',
@@ -372,6 +398,94 @@ function force_delete_posts_by_type(string $postType): int
 }
 
 /**
+ * Post IDs to remove for one NSC seed page slug (canonical + Polylang translations + legacy slug-lang paths).
+ *
+ * @return list<int>
+ */
+function collect_page_ids_for_seed_slug_cleanup(string $slug): array
+{
+    $slug = \sanitize_title($slug);
+    if ($slug === '') {
+        return [];
+    }
+
+    $ids = [];
+
+    if (\function_exists('nsc_seed_get_canonical_post_by_type_and_slug')) {
+        $c = \nsc_seed_get_canonical_post_by_type_and_slug('page', $slug, true);
+        if ($c instanceof \WP_Post) {
+            if (\function_exists('pll_get_post_translations')) {
+                $tr = \pll_get_post_translations((int) $c->ID);
+                if (\is_array($tr)) {
+                    foreach ($tr as $pid) {
+                        if (\is_numeric($pid) && (int) $pid > 0) {
+                            $ids[] = (int) $pid;
+                        }
+                    }
+                }
+            } else {
+                $ids[] = (int) $c->ID;
+            }
+        }
+    }
+
+    if ($ids === []) {
+        $p = \get_page_by_path($slug, \OBJECT, 'page');
+        if ($p instanceof \WP_Post) {
+            $ids[] = (int) $p->ID;
+        }
+    }
+
+    if (\function_exists('pll_languages_list')) {
+        $langs = \pll_languages_list(['fields' => 'slug']);
+        if (\is_array($langs)) {
+            foreach ($langs as $lang) {
+                if (!\is_string($lang) || $lang === '') {
+                    continue;
+                }
+
+                $p = \get_page_by_path($slug . '-' . $lang, \OBJECT, 'page');
+                if ($p instanceof \WP_Post) {
+                    $ids[] = (int) $p->ID;
+                }
+            }
+        }
+    }
+
+    $ids = \array_values(\array_unique(\array_filter($ids, static fn (int $id): bool => $id > 0)));
+
+    return $ids;
+}
+
+/**
+ * Delete seeded pages for the given logical slugs (matches create-nsc-pages.php page_scope rules).
+ *
+ * @param list<string> $slugs
+ * @return int Number of posts permanently deleted.
+ */
+function force_delete_pages_for_seed_slugs(array $slugs): int
+{
+    $seen = [];
+    foreach ($slugs as $slug) {
+        foreach (collect_page_ids_for_seed_slug_cleanup((string) $slug) as $id) {
+            if ($id > 0) {
+                $seen[$id] = true;
+            }
+        }
+    }
+
+    $deleted = 0;
+    foreach (\array_keys($seen) as $postId) {
+        $res = \wp_delete_post($postId, true);
+        if ($res instanceof \WP_Post) {
+            $deleted++;
+        }
+    }
+
+    return $deleted;
+}
+
+/**
  * Remove `is_seeded` marker from posts of a post type.
  *
  * @return int Number of posts where marker was removed.
@@ -433,12 +547,30 @@ function force_delete_all_menus(): int
 
 /**
  * Cleanup seeded content for selected seeder key before execution.
+ *
+ * For the pages seeder, pass the same page_scope as create-nsc-pages.php (omit or "all" = all pages;
+ * a single scope e.g. why-nsc = only that page / policy group).
  */
-function maybe_cleanup_content_before_seed(string $key): string
+function maybe_cleanup_content_before_seed(string $key, string $pageScope = ''): string
 {
     switch ($key) {
         case 'pages':
+            $scopeRaw = posted_page_scope_for_seeder($pageScope);
+            if ($scopeRaw !== '' && $scopeRaw !== 'all' && \in_array($scopeRaw, pages_seeder_allowed_scopes(), true)) {
+                $slugs = $scopeRaw === 'policies'
+                    ? ['privacy-policy', 'cookies-policy', 'terms-of-use']
+                    : [$scopeRaw];
+                $deleted = force_delete_pages_for_seed_slugs($slugs);
+
+                return \sprintf(
+                    /* translators: %d deleted pages count */
+                    \__('Cleanup done: deleted %d page(s) for this scope (including translations where applicable).', 'NscSoftware'),
+                    $deleted
+                );
+            }
+
             $deleted = force_delete_posts_by_type('page');
+
             return \sprintf(
                 /* translators: %d deleted pages count */
                 \__('Cleanup done: deleted %d page(s).', 'NscSoftware'),
@@ -1034,8 +1166,8 @@ add_action('wp_ajax_nsc_run_seeder', static function (): void {
     $isRunAll = isset($_POST['nsc_run_all']) && (string) $_POST['nsc_run_all'] === '1';
 
     $extraQuery = [];
-    if ($key === 'pages' && !$isRunAll) {
-        $scope = isset($_POST['page_scope']) ? \sanitize_key((string) $_POST['page_scope']) : '';
+    if ($key === 'pages') {
+        $scope = posted_page_scope_for_seeder(isset($_POST['page_scope']) ? (string) $_POST['page_scope'] : '');
         if ($scope !== '' && $scope !== 'all' && \in_array($scope, pages_seeder_allowed_scopes(), true)) {
             $extraQuery['page_scope'] = $scope;
         }
@@ -1070,7 +1202,8 @@ add_action('wp_ajax_nsc_run_seeder', static function (): void {
 
     $cleanupMessage = '';
     if ($cleanupSeeded) {
-        $cleanupMessage = maybe_cleanup_content_before_seed($key);
+        $pageScopeCleanup = posted_page_scope_for_seeder(isset($_POST['page_scope']) ? (string) $_POST['page_scope'] : '');
+        $cleanupMessage = maybe_cleanup_content_before_seed($key, $pageScopeCleanup);
     }
 
     $response = \wp_remote_get(

@@ -22,6 +22,10 @@ add_filter('body_class', function (array $classes): array {
         $classes[] = 'page-case-study-details';
     }
 
+    if (is_page('why-nsc')) {
+        $classes[] = 'page-why-nsc';
+    }
+
     return $classes;
 });
 

@@ -832,6 +832,103 @@
   }
 
   // ============================================================================
+  // WHY NSC — TEAM SECTION SLIDER (autoplay; mobile peek)
+  // ============================================================================
+
+  class WhyNscTeamSlider {
+    constructor() {
+      this.slider = null;
+    }
+
+    init() {
+      const checkDependencies = () => {
+        if (typeof $ === 'undefined' || typeof $.fn.slick === 'undefined') {
+          setTimeout(checkDependencies, 100);
+          return;
+        }
+
+        const $slider = $('.js-why-nsc-team-slider');
+
+        if ($slider.length === 0 || $slider.hasClass('slick-initialized')) {
+          return;
+        }
+
+        const positionSlider = () => {
+          if ($slider.hasClass('slick-initialized')) {
+            $slider.slick('setPosition');
+          }
+        };
+
+        $slider.on('init', () => {
+          setTimeout(positionSlider, 0);
+        });
+
+        // Desktop: 5 slides at xl+ (>=1280), 3 slides at lg (1024–1279); mobile: 1 + peek (see breakpoints below).
+        $slider.slick({
+          slidesToShow: 5,
+          slidesToScroll: 1,
+          infinite: true,
+          autoplay: true,
+          autoplaySpeed: 4500,
+          speed: 600,
+          arrows: false,
+          dots: false,
+          pauseOnHover: true,
+          pauseOnFocus: true,
+          adaptiveHeight: false,
+          swipe: true,
+          centerMode: false,
+          centerPadding: '0px',
+          responsive: [
+            {
+              breakpoint: 1279,
+              settings: {
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                centerMode: false,
+                centerPadding: '0px',
+              },
+            },
+            {
+              breakpoint: CONFIG.BREAKPOINTS.DESKTOP - 1,
+              settings: {
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                centerMode: true,
+                centerPadding: '18%',
+              },
+            },
+          ],
+        });
+
+        $(window).on('resize.whyNscTeamSlider', () => {
+          setTimeout(positionSlider, CONFIG.RESIZE_DEBOUNCE);
+        });
+
+        if (document.readyState === 'complete') {
+          setTimeout(positionSlider, 0);
+        } else {
+          $(window).on('load.whyNscTeamSlider', positionSlider);
+        }
+
+        $slider.find('img').each(function bindTeamImgResize() {
+          const img = this;
+          if (img.complete) {
+            setTimeout(positionSlider, 0);
+          } else {
+            $(img).on('load', positionSlider);
+          }
+        });
+
+        this.slider = $slider;
+        debugLog('✨', 'SLIDER', 'Why NSC team slider initialized');
+      };
+
+      checkDependencies();
+    }
+  }
+
+  // ============================================================================
   // WHY US SLIDER
   // ============================================================================
 
@@ -2002,6 +2099,303 @@
   }
 
   // ============================================================================
+  // WHY NSC — WHAT MAKES US DIFFERENT
+  // ============================================================================
+
+  class WhyNscDifferentBottomSheetManager extends BaseModal {
+    constructor() {
+      super({
+        overlayId: 'whyNscDiffBottomSheetOverlay',
+        modalId: 'whyNscDiffBottomSheet',
+        closeBtnId: 'whyNscDiffBottomSheetClose'
+      });
+
+      this.bottomSheet = this.modal;
+      this.titleElement = document.getElementById('whyNscDiffBottomSheetTitle');
+      this.contentElement = document.getElementById('whyNscDiffBottomSheetContent');
+      this.sheetColImg = this.bottomSheet
+        ? this.bottomSheet.querySelector('.why-nsc-diff-bottom-sheet__sheet-col')
+        : null;
+      this.isMobile = window.innerWidth < CONFIG.BREAKPOINTS.DESKTOP;
+
+      this.init();
+    }
+
+    init() {
+      super.init();
+
+      if (!this.bottomSheet || !this.contentElement) {
+        return;
+      }
+
+      if (!this.isMobile) {
+        return;
+      }
+
+      const diffItems = document.querySelectorAll(
+        '.why-nsc-different .why-nsc-diff-grid.service-items .why-nsc-diff-item, .why-nsc-different .why-nsc-diff-grid .why-nsc-diff-item'
+      );
+      if (diffItems.length === 0) {
+        return;
+      }
+
+      diffItems.forEach((item) => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          this.openBottomSheet(item);
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        const wasMobile = this.isMobile;
+        this.isMobile = window.innerWidth < CONFIG.BREAKPOINTS.DESKTOP;
+
+        if (wasMobile && !this.isMobile && this.isOpen) {
+          this.close();
+        }
+      });
+    }
+
+    openBottomSheet(diffItem) {
+      if (!this.isMobile || !this.bottomSheet || !this.contentElement) {
+        return;
+      }
+
+      const titleElement = diffItem.querySelector('h2');
+      let title = 'What Makes NSC Different';
+      if (titleElement) {
+        const titleClone = titleElement.cloneNode(true);
+        titleClone.querySelectorAll('span').forEach((span) => span.remove());
+        title = titleClone.textContent.trim() || title;
+      }
+
+      const descriptionContainer = diffItem.querySelector('.description');
+
+      let featureImgSrc = '';
+      let featureImgAlt = '';
+      if (descriptionContainer) {
+        const descPhoto =
+          descriptionContainer.querySelector('img.why-nsc-diff-detail__photo') ||
+          descriptionContainer.querySelector('img');
+        if (descPhoto) {
+          featureImgSrc = descPhoto.getAttribute('src') || '';
+          featureImgAlt = descPhoto.getAttribute('alt') || '';
+        }
+      }
+      if (!featureImgSrc) {
+        featureImgSrc = diffItem.getAttribute('data-feature-img') || '';
+      }
+      if (!featureImgAlt) {
+        featureImgAlt = diffItem.getAttribute('data-feature-alt') || '';
+      }
+
+      if (this.sheetColImg && featureImgSrc) {
+        this.sheetColImg.src = featureImgSrc;
+        this.sheetColImg.alt = featureImgAlt;
+      }
+
+      /* Header title stays empty — same heading is shown inside `.why-nsc-diff-sheet-description` as h2 */
+      if (this.titleElement) {
+        this.titleElement.textContent = '';
+      }
+
+      this.contentElement.innerHTML = '';
+
+      const contentWrapper = document.createElement('div');
+      contentWrapper.className = 'why-nsc-diff-sheet-description';
+
+      if (descriptionContainer) {
+        contentWrapper.innerHTML = descriptionContainer.innerHTML.trim();
+
+        contentWrapper.querySelectorAll('img').forEach((img) => img.remove());
+
+        contentWrapper.querySelectorAll('h2').forEach((h2) => {
+          const p = document.createElement('p');
+          p.className = 'highlight';
+          p.innerHTML = h2.innerHTML;
+          h2.replaceWith(p);
+        });
+
+        const sheetHeading = document.createElement('h2');
+        sheetHeading.textContent = title;
+        contentWrapper.prepend(sheetHeading);
+      }
+
+      this.contentElement.appendChild(contentWrapper);
+
+      this.open();
+    }
+
+    onOpen() {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (this.bottomSheet) {
+            this.bottomSheet.scrollTop = 0;
+            const contentArea = this.bottomSheet.querySelector('.bottom-sheet-content');
+            if (contentArea) {
+              contentArea.scrollTop = 0;
+            }
+          }
+        });
+      });
+    }
+
+    onClose() {
+      if (this.titleElement) {
+        this.titleElement.textContent = '';
+      }
+    }
+  }
+
+  class WhyNscDifferentManager {
+    constructor() {
+      this.section = document.querySelector('.why-nsc-different');
+      if (!this.section) {
+        return;
+      }
+
+      this.items = this.section.querySelectorAll(
+        '.why-nsc-diff-grid.service-items .why-nsc-diff-item, .why-nsc-diff-grid .why-nsc-diff-item'
+      );
+      this.textInner = this.section.querySelector('.why-nsc-diff-right__text-inner');
+      this.isMobile = window.innerWidth < CONFIG.BREAKPOINTS.DESKTOP;
+      this.autoplayInterval = null;
+      this.currentIndex = 0;
+      this.autoplaySpeed = 3000;
+      this.isPaused = false;
+      this.userHeldAutoplay = false;
+
+      if (this.items.length === 0) {
+        return;
+      }
+
+      this.init();
+    }
+
+    init() {
+      this.checkAndSetActive();
+
+      this.items.forEach((item) => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.setActiveItem(item);
+
+          if (!this.isMobile) {
+            this.userHeldAutoplay = true;
+            this.stopAutoplay();
+            this.isPaused = true;
+          }
+        });
+
+        item.addEventListener('mouseenter', () => {
+          this.pauseAutoplay();
+        });
+
+        item.addEventListener('mouseleave', () => {
+          this.resumeAutoplay();
+        });
+      });
+
+      if (!this.isMobile) {
+        this.startAutoplay();
+      }
+
+      window.addEventListener('resize', () => {
+        const wasMobile = this.isMobile;
+        this.isMobile = window.innerWidth < CONFIG.BREAKPOINTS.DESKTOP;
+
+        if (!wasMobile && this.isMobile) {
+          this.stopAutoplay();
+          this.userHeldAutoplay = false;
+          this.items.forEach((el) => el.classList.remove('active'));
+        } else if (wasMobile && !this.isMobile) {
+          this.userHeldAutoplay = false;
+          this.isPaused = false;
+          this.checkAndSetActive();
+          this.startAutoplay();
+        }
+      });
+    }
+
+    startAutoplay() {
+      if (this.isMobile || this.items.length === 0) {
+        return;
+      }
+
+      this.stopAutoplay();
+      this.isPaused = false;
+
+      const activeItem = Array.from(this.items).find((item) => item.classList.contains('active'));
+      this.currentIndex = activeItem ? Array.from(this.items).indexOf(activeItem) : 0;
+
+      this.autoplayInterval = setInterval(() => {
+        if (!this.isPaused && !this.isMobile) {
+          this.currentIndex = (this.currentIndex + 1) % this.items.length;
+          this.setActiveItem(this.items[this.currentIndex]);
+        }
+      }, this.autoplaySpeed);
+
+      debugLog('▶️', 'AUTOPLAY', 'Why NSC diff items autoplay started');
+    }
+
+    pauseAutoplay() {
+      this.isPaused = true;
+    }
+
+    resumeAutoplay() {
+      if (!this.isMobile && this.autoplayInterval && !this.userHeldAutoplay) {
+        this.isPaused = false;
+      }
+    }
+
+    stopAutoplay() {
+      if (this.autoplayInterval) {
+        clearInterval(this.autoplayInterval);
+        this.autoplayInterval = null;
+        this.isPaused = false;
+        debugLog('⏹️', 'AUTOPLAY', 'Why NSC diff items autoplay stopped');
+      }
+    }
+
+    checkAndSetActive() {
+      if (window.innerWidth >= CONFIG.BREAKPOINTS.DESKTOP && this.items.length > 0) {
+        const hasActive = Array.from(this.items).some((el) => el.classList.contains('active'));
+        if (!hasActive && this.textInner) {
+          this.setActiveItem(this.items[0]);
+        } else if (!hasActive) {
+          this.items[0].classList.add('active');
+        } else {
+          const active = Array.from(this.items).find((el) => el.classList.contains('active'));
+          if (active && this.textInner) {
+            this.populateFromItem(active);
+          }
+        }
+      }
+    }
+
+    setActiveItem(item) {
+      this.items.forEach((el) => el.classList.remove('active'));
+      item.classList.add('active');
+      this.currentIndex = Array.from(this.items).indexOf(item);
+
+      if (!this.isMobile) {
+        this.populateFromItem(item);
+      }
+    }
+
+    populateFromItem(item) {
+      if (!this.textInner) {
+        return;
+      }
+
+      const descriptionContainer = item.querySelector('.description');
+      this.textInner.innerHTML = descriptionContainer ? descriptionContainer.innerHTML.trim() : '';
+    }
+  }
+
+  // ============================================================================
   // BLOG HEIGHTS
   // ============================================================================
 
@@ -2488,7 +2882,7 @@
 
   /** Additional offset subtracted from scroll `top` (more clearance below fixed nav). */
   const EXPLORE_STATS_SCROLL_EXTRA_PX = 100;
-  const ANCHOR_SCROLL_OFFSET_PX = 100;
+  const ANCHOR_SCROLL_OFFSET_PX = 80;
 
   /**
    * Height of the WP admin bar when visible (front-end), else 0.
@@ -2707,6 +3101,9 @@
     const caseStudyDetailGallerySlider = new CaseStudyDetailGallerySlider();
     caseStudyDetailGallerySlider.init();
 
+    const whyNscTeamSlider = new WhyNscTeamSlider();
+    whyNscTeamSlider.init();
+
     whyUsSliderInstance = new WhyUsSlider();
     whyUsSliderInstance.init();
   }
@@ -2732,6 +3129,12 @@
         if ($caseStudyGallery.length > 0 && !$caseStudyGallery.hasClass('slick-initialized')) {
           const caseStudyDetailGallerySlider = new CaseStudyDetailGallerySlider();
           caseStudyDetailGallerySlider.init();
+        }
+
+        const $whyNscTeamSlider = $('.js-why-nsc-team-slider');
+        if ($whyNscTeamSlider.length > 0 && !$whyNscTeamSlider.hasClass('slick-initialized')) {
+          const whyNscTeamSlider = new WhyNscTeamSlider();
+          whyNscTeamSlider.init();
         }
 
         // Initialize Why Us slider if on mobile
@@ -3012,6 +3415,14 @@
       
       // Initialize ServiceDetailsManager
       new ServiceDetailsManager();
+
+      if (document.querySelector('.why-nsc-different .why-nsc-diff-item')) {
+        new WhyNscDifferentManager();
+      }
+
+      if (document.getElementById('whyNscDiffBottomSheet') && document.getElementById('whyNscDiffBottomSheetContent')) {
+        new WhyNscDifferentBottomSheetManager();
+      }
     } catch (error) {
       console.error('Error initializing components:', error);
     }

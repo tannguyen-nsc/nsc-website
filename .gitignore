@@ -6,3 +6,7 @@
 
 # Local HTTP Basic Auth for /dev (see dev/README.md)
 /dev/.htpasswd
+
+# Figma MCP: local PAT (copy from .cursor/mcp.json.example)
+.cursor/mcp.json
+.cursor/figma.env

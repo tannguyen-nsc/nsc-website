@@ -1,0 +1,48 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockWhyNscBuilt">
+    <section class="why-nsc-built" id="section-built-vietnam" aria-labelledby="built-vietnam-heading">
+      <div class="wrapper">
+        <header class="why-nsc-built__intro">
+          <div class="info">
+            <div class="col">
+              {% if headingIcon.url|default(headingIcon.src) %}
+              <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default('Heading Icon'))|e }}" loading="lazy" />
+              {% elseif theme.buildUri %}
+              <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
+              {% endif %}
+              <h2 id="built-vietnam-heading">{{ (title|default(''))|raw }}</h2>
+              <div class="description">
+                {{ (intro|default(''))|raw }}
+              </div>
+            </div>
+          </div>
+        </header>
+        <div class="why-nsc-built__columns">
+          {% for card in cards %}
+          <article class="why-nsc-built__card{% if card.text_first %} why-nsc-built__card--text-first{% endif %}">
+            {% if card.text_first %}
+            <div class="why-nsc-built__panel">
+              {{ (card.body|default(''))|raw }}
+            </div>
+            <div class="why-nsc-built__figure">
+              {% if card.image.url|default(card.image.src) %}
+              <img src="{{ (card.image.url|default(card.image.src))|e('esc_url') }}" alt="{{ (card.image.alt|default(''))|e }}" width="800" height="500" loading="lazy" />
+              {% endif %}
+            </div>
+            {% else %}
+            <div class="why-nsc-built__figure">
+              {% if card.image.url|default(card.image.src) %}
+              <img src="{{ (card.image.url|default(card.image.src))|e('esc_url') }}" alt="{{ (card.image.alt|default(''))|e }}" width="800" height="500" loading="lazy" />
+              {% endif %}
+            </div>
+            <div class="why-nsc-built__panel">
+              {{ (card.body|default(''))|raw }}
+            </div>
+            {% endif %}
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+</nsc-software-component>
+{% endif %}

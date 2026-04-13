@@ -1,0 +1,25 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockWhyNscEngineeringTrust">
+    <section class="why-nsc-engineering-trust" id="section-engineering-trust" aria-labelledby="engineering-trust-heading">
+      <div class="wrapper">
+        <div class="heading light">
+          {% if headingIcon.url|default(headingIcon.src) %}
+          <img src="{{ (headingIcon.url|default(headingIcon.src))|e('esc_url') }}" alt="{{ (headingIcon.alt|default(''))|e }}" width="56" height="56" loading="lazy" />
+          {% elseif theme.buildUri %}
+          <img src="{{ theme.buildUri }}/img/heading-icon.webp" alt="" width="56" height="56" loading="lazy" />
+          {% endif %}
+          <h2 id="engineering-trust-heading" class="capitalize">{{ (heading|default('Engineering You Can <br class="sm:hidden"> Trust'))|raw }}</h2>
+        </div>
+        <div class="why-nsc-stat-grid">
+          {% for stat in stats %}
+          <article class="why-nsc-stat-card">
+            <p class="why-nsc-stat-card__num">{{ stat.num|e }}</p>
+            <p class="why-nsc-stat-card__value">{{ stat.value|e }}</p>
+            <p class="why-nsc-stat-card__label">{{ stat.label|e }}</p>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+</nsc-software-component>
+{% endif %}

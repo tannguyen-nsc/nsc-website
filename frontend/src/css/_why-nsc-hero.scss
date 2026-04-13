@@ -1,0 +1,113 @@
+// Why NSC — Hero (desktop + mobile full-bleed backgrounds, glass panel, hero.dark-style headlines)
+.page-why-nsc {
+  .why-nsc-hero {
+    @apply relative flex items-center justify-center overflow-hidden text-white;
+    min-height: min(92vh, 52rem);
+    @screen lg {
+      min-height: min(88vh, 44rem);
+    }
+    background: linear-gradient(180deg, #020d12 0%, #050a10 100%);
+
+    &::after {
+      content: "";
+      @apply absolute inset-0 pointer-events-none z-[1];
+      background: linear-gradient(
+        180deg,
+        rgba(2, 14, 18, 0.45) 0%,
+        rgba(3, 12, 16, 0.3) 40%,
+        rgba(0, 0, 0, 0.55) 100%
+      );
+    }
+
+    .why-nsc-hero__bg {
+      @apply absolute inset-0 pointer-events-none z-0;
+      img {
+        @apply h-full w-full object-cover object-center;
+      }
+    }
+
+    .why-nsc-hero__inner {
+      @apply relative z-10 mx-auto w-full max-w-[1200px] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16;
+    }
+
+    .why-nsc-hero__panel {
+      @apply mx-auto max-w-[920px] text-center;
+      padding: 1.75rem 1.25rem 2rem;
+      @screen sm {
+        @apply px-8 py-10;
+      }
+      @screen lg {
+        @apply px-12 py-12;
+      }
+      background: rgba(0, 0, 0, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      box-shadow:
+        0 0 48px rgba(0, 0, 0, 0.45),
+        0 0 80px rgba(54, 195, 220, 0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .why-nsc-hero__title {
+      @apply mb-5 flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1 text-3xl font-bold leading-tight sm:text-4xl sm:mb-6 lg:mb-8 lg:text-5xl xl:text-6xl;
+    }
+
+    .why-nsc-hero__title-why {
+      @apply font-bold text-white;
+    }
+
+    .why-nsc-hero__title-brand {
+      @apply inline-block;
+    }
+
+    /* Cyan corner brackets around “NSC Software” (Figma) */
+    .why-nsc-hero__title-brand-text {
+      @apply relative inline-block text-primary;
+      padding: 0.12em 0.28em 0.18em;
+
+      &::before {
+        content: "";
+        @apply pointer-events-none absolute border-primary;
+        top: 0;
+        left: 0;
+        width: 0.42em;
+        height: 0.42em;
+        border-style: solid;
+        border-width: 2px 0 0 2px;
+      }
+
+      &::after {
+        content: "";
+        @apply pointer-events-none absolute border-primary;
+        right: 0;
+        bottom: 0;
+        width: 0.42em;
+        height: 0.42em;
+        border-style: solid;
+        border-width: 0 2px 2px 0;
+      }
+    }
+
+    .why-nsc-hero__lead {
+      @apply mx-auto mb-6 max-w-3xl text-lg font-semibold leading-snug text-[rgba(255,255,255,0.96)] sm:text-xl lg:mb-8 lg:text-2xl;
+    }
+
+    .why-nsc-hero__copy {
+      @apply mx-auto max-w-3xl space-y-4 text-center text-base leading-relaxed text-[rgba(255,255,255,0.88)] sm:text-lg;
+    }
+
+    /* Match hero.dark headlines: accent on key phrase */
+    .why-nsc-hero__mission {
+      @apply text-center;
+    }
+
+    .why-nsc-hero__mission-prefix {
+      @apply text-white;
+    }
+
+    .why-nsc-hero__mission-em {
+      @apply text-primary font-semibold;
+    }
+  }
+}

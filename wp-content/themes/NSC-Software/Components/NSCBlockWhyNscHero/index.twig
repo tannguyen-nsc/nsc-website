@@ -1,0 +1,41 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockWhyNscHero">
+    <section class="why-nsc-hero" id="section-hero-why-nsc" aria-labelledby="why-nsc-hero-title">
+      <div class="why-nsc-hero__bg" aria-hidden="true">
+        {% if imageDesktop.url|default(imageDesktop.src) %}
+        <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="hidden lg:block" width="1920" height="1080" loading="eager" fetchpriority="high" />
+        {% elseif theme.buildUri %}
+        <img src="{{ theme.buildUri }}/img/why-us-hero-desktop.webp" alt="" class="hidden lg:block" width="1920" height="1080" loading="eager" fetchpriority="high" />
+        {% endif %}
+        {% if imageMobile.url|default(imageMobile.src) %}
+        <img src="{{ (imageMobile.url|default(imageMobile.src))|e('esc_url') }}" alt="{{ (imageMobile.alt|default(''))|e }}" class="lg:hidden" width="750" height="1334" loading="eager" fetchpriority="high" />
+        {% elseif theme.buildUri %}
+        <img src="{{ theme.buildUri }}/img/why-us-hero-mobile.webp" alt="" class="lg:hidden" width="750" height="1334" loading="eager" fetchpriority="high" />
+        {% endif %}
+      </div>
+      <div class="why-nsc-hero__inner">
+        <div class="why-nsc-hero__panel">
+          <h1 id="why-nsc-hero-title" class="why-nsc-hero__title">
+            <span class="why-nsc-hero__title-why">{{ (titleWhy|default('Why'))|e }}</span>
+            <span class="why-nsc-hero__title-brand">
+              <span class="why-nsc-hero__title-brand-text highlight">{{ (titleBrand|default('NSC Software'))|e }}</span>
+            </span>
+          </h1>
+          <p class="why-nsc-hero__lead">{{ (lead|default('Engineering Excellence Powered by Senior Talent'))|e }}</p>
+          <div class="why-nsc-hero__copy">
+            {% set introHtml = intro|default('')|trim %}
+            {% if introHtml %}
+            {{ introHtml|raw }}
+            {% else %}
+            <p>At NSC Software, we believe great software is built by experienced engineers, strong technical leadership, and efficient collaboration. By combining Vietnam's top technology talent with AI-enhanced development workflows, we help global companies build scalable, high-quality digital solutions.</p>
+            {% endif %}
+            <p class="why-nsc-hero__mission">
+              <span class="why-nsc-hero__mission-prefix">{{ (missionPrefix|default('Our mission is simple:'))|e }}</span>
+              <span class="why-nsc-hero__mission-em">{{ (missionEmphasis|default(''))|e }}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+</nsc-software-component>
+{% endif %}

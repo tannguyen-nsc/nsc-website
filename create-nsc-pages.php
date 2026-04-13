@@ -13,6 +13,7 @@ declare(strict_types=1);
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&case_studies_only=1
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&page_scope=home
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&page_scope=policies
+ *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&page_scope=why-nsc
  *
  * Notes:
  * - Runs idempotently (creates missing pages, updates existing by slug).
@@ -23,6 +24,7 @@ declare(strict_types=1);
  *   Contact Us). Home uses the default page template so it renders from components.
  * - For the Blogs page: default template + pageComponents = Hero (dark, blogs copy with links to
  *   Home / About / AI / Our Services / Technology Capabilities) + NSC Block: Blogs (Archive) with Vue list fed from WP posts.
+ * - For the Why NSC Software page (slug why-nsc): seeds pageComponents to match frontend/src/why-nsc.html main sections (Hero → … → CTA).
  * - For the About page: seeds pageComponents to match frontend/build/about.html
  *   (Hero left-text → Company Snapshot → Our Story → Our Leaders → Why Us →
  *   Technology Capabilities → Global Presence → Contact). About uses the default page template.
@@ -78,6 +80,60 @@ require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
 
+$nscPageScopeNorm = get_template_directory() . '/inc/nscPageScopeNormalize.php';
+if (is_readable($nscPageScopeNorm)) {
+    require_once $nscPageScopeNorm;
+}
+if (!function_exists('nsc_normalize_page_scope_string')) {
+    /**
+     * Inline fallback if theme file missing on deploy. Must match inc/nscPageScopeNormalize.php.
+     *
+     * @param list<string> $knownSlugs
+     */
+    function nsc_normalize_page_scope_string(string $input, array $knownSlugs): ?string
+    {
+        $raw = trim($input);
+        if ($raw === '') {
+            return '';
+        }
+
+        $s = strtolower($raw);
+        $s = (string) preg_replace('/[^a-z0-9\-]/', '', $s);
+        if ($s === '') {
+            return null;
+        }
+
+        if ($s === 'all') {
+            return 'all';
+        }
+
+        if ($s === 'policies') {
+            return 'policies';
+        }
+
+        if (in_array($s, $knownSlugs, true)) {
+            return $s;
+        }
+
+        $compactToSlug = [];
+        foreach ($knownSlugs as $slug) {
+            if (strpos($slug, '-') === false) {
+                continue;
+            }
+            $compact = str_replace('-', '', $slug);
+            if ($compact !== '' && !isset($compactToSlug[$compact])) {
+                $compactToSlug[$compact] = $slug;
+            }
+        }
+
+        if (isset($compactToSlug[$s])) {
+            return $compactToSlug[$s];
+        }
+
+        return null;
+    }
+}
+
 $nscSeedPolylang = get_template_directory() . '/inc/nscSeedPolylang.php';
 if (is_readable($nscSeedPolylang)) {
     require_once $nscSeedPolylang;
@@ -110,6 +166,7 @@ function nsc_create_pages_primary_cf7_shortcode(): string
 $pages = [
     ['title' => 'Home', 'slug' => 'home', 'template' => ''], // default = page.twig + pageComponents
     ['title' => 'About', 'slug' => 'about', 'template' => ''], // default = page.twig + pageComponents (About Us sections)
+    ['title' => 'Why NSC Software', 'slug' => 'why-nsc', 'template' => ''], // default = page.twig + pageComponents (Why NSC sections)
     ['title' => 'AI', 'slug' => 'ai', 'template' => ''], // default = page.twig + pageComponents (AI sections)
     ['title' => 'Blogs', 'slug' => 'blogs', 'template' => ''], // default + Hero + Blogs (Archive), Vue uses WP posts
     ['title' => 'Career', 'slug' => 'career', 'template' => ''], // default + pageComponents (frontend/src/career.html sections)
@@ -650,6 +707,18 @@ function getAboutPageComponents(): array
             'options'        => ['theme' => ''],
         ],
     ];
+}
+
+require_once __DIR__ . '/create-nsc-pages-why-nsc.php';
+
+/**
+ * Why NSC page components matching frontend/src/why-nsc.html (Hero → Engineering trust → Built → Different → Team → CTA).
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getWhyNscPageComponents(): array
+{
+    return nsc_why_nsc_build_page_components();
 }
 
 /**
@@ -1401,8 +1470,73 @@ function nsc_seed_pages_persist_page_components(int $pageId, array $components):
     }
 }
 
-$pageScopeRaw = isset($_GET['page_scope']) ? sanitize_key((string) $_GET['page_scope']) : '';
-$pageScopeActive = ($pageScopeRaw !== '' && $pageScopeRaw !== 'all');
+/**
+ * Read page_scope for HTTP seeders: GET (normal), POST (some proxies), or raw QUERY_STRING fallback.
+ */
+function nsc_create_pages_read_page_scope_param(): string
+{
+    $trim = static function (string $s): string {
+        $s = preg_replace('/^\xEF\xBB\xBF/', '', $s);
+
+        return trim($s);
+    };
+
+    if (isset($_GET['page_scope']) && (string) $_GET['page_scope'] !== '') {
+        return $trim((string) $_GET['page_scope']);
+    }
+    if (isset($_POST['page_scope']) && (string) $_POST['page_scope'] !== '') {
+        return $trim((string) $_POST['page_scope']);
+    }
+    if (!empty($_SERVER['QUERY_STRING']) && is_string($_SERVER['QUERY_STRING'])) {
+        $q = [];
+        parse_str($_SERVER['QUERY_STRING'], $q);
+        if (isset($q['page_scope']) && (string) $q['page_scope'] !== '') {
+            return $trim((string) $q['page_scope']);
+        }
+    }
+    // Some stacks populate REQUEST_URI but not QUERY_STRING for the inner request.
+    if (!empty($_SERVER['REQUEST_URI']) && is_string($_SERVER['REQUEST_URI'])) {
+        $qs = parse_url('http://nsc.invalid' . $_SERVER['REQUEST_URI'], PHP_URL_QUERY);
+        if (is_string($qs) && $qs !== '') {
+            $q = [];
+            parse_str($qs, $q);
+            if (isset($q['page_scope']) && (string) $q['page_scope'] !== '') {
+                return $trim((string) $q['page_scope']);
+            }
+        }
+    }
+
+    return '';
+}
+
+$pageScopeInput = nsc_create_pages_read_page_scope_param();
+// Fuzzy: "Why NSC", "why_nsc", pasted labels from admin UI
+if ($pageScopeInput !== '' && !preg_match('/^[a-z0-9\-]+$/', $pageScopeInput)) {
+    if (preg_match('/why[\s_-]*nsc/i', $pageScopeInput)) {
+        $pageScopeInput = 'why-nsc';
+    }
+}
+
+$pageScopeRaw = '';
+$scopeInvalid = false;
+if (function_exists('nsc_normalize_page_scope_string')) {
+    $resolved = nsc_normalize_page_scope_string($pageScopeInput, array_column($pages, 'slug'));
+    if ($resolved === null) {
+        if (trim($pageScopeInput) !== '') {
+            $scopeInvalid = true;
+        }
+        $pageScopeRaw = '';
+    } else {
+        $pageScopeRaw = $resolved;
+    }
+} else {
+    $pageScopeRaw = $pageScopeInput !== '' ? sanitize_key($pageScopeInput) : '';
+    if ($pageScopeInput !== '' && $pageScopeRaw === '') {
+        $scopeInvalid = true;
+    }
+}
+
+$pageScopeActive = (!$scopeInvalid && $pageScopeRaw !== '' && $pageScopeRaw !== 'all');
 
 $homeOnly         = isset($_GET['home_only']) && $_GET['home_only'] === '1';
 $blogsOnly        = isset($_GET['blogs_only']) && $_GET['blogs_only'] === '1';
@@ -1411,7 +1545,9 @@ $policiesOnly     = isset($_GET['policies_only']) && $_GET['policies_only'] === 
 $caseStudiesOnly  = isset($_GET['case_studies_only']) && $_GET['case_studies_only'] === '1';
 $contentTest   = isset($_GET['content_test']) && $_GET['content_test'] === '1';
 
-if ($pageScopeActive) {
+if ($scopeInvalid) {
+    $pages = [];
+} elseif ($pageScopeActive) {
     if ($pageScopeRaw === 'policies') {
         $policySlugs = ['privacy-policy', 'cookies-policy', 'terms-of-use'];
         $pages = array_filter($pages, static function (array $p) use ($policySlugs) {
@@ -1452,7 +1588,21 @@ $skipHomeFrontPageSetup = $policiesOnly
     ));
 
 $results = [];
+if ($scopeInvalid) {
+    $results[] = [
+        'slug' => 'page_scope',
+        'status' => 'error',
+        'message' => 'Invalid page_scope. Use a slug such as why-nsc, about, home, or policies. (Do not rely on sanitize_key for this parameter — hyphens must be preserved.) Received: ' . $pageScopeInput,
+    ];
+} elseif ($pageScopeActive && empty($pages)) {
+    $results[] = [
+        'slug' => $pageScopeRaw,
+        'status' => 'error',
+        'message' => 'No page definition matched this page_scope after filtering (internal mismatch).',
+    ];
+}
 
+try {
 foreach ($pages as $page) {
     $slug     = $page['slug'];
     $title    = $page['title'];
@@ -1552,6 +1702,27 @@ foreach ($pages as $page) {
         }
 
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Hero→…→Contact Us)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
+    } elseif ($slug === 'why-nsc') {
+        $components = getWhyNscPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
+        }
+
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Why NSC sections)';
         if ($contentTest) {
             $msg .= ', content_test=1 (all text set to "[test]")';
         }
@@ -1800,6 +1971,13 @@ foreach ($pages as $page) {
         $results[$ri]['message'] = (string) preg_replace('/\bpage_id=\d+/', 'page_id=' . $logPageId, $results[$ri]['message'], 1);
     }
 }
+} catch (\Throwable $e) {
+    $results[] = [
+        'slug' => 'exception',
+        'status' => 'error',
+        'message' => $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine(),
+    ];
+}
 
 // Set Home as front page when not a policies-only style run (URL or page_scope). Always use
 // default-language home ID; skip when seed_lang targets one translation only.
@@ -1818,6 +1996,27 @@ if (!$skipHomeFrontPageSetup && !(function_exists('nsc_seed_is_single_target_lan
     }
 }
 
+if (!is_array($results)) {
+    $results = [];
+}
+if (count($results) === 0) {
+    $results[] = [
+        'slug' => '(empty)',
+        'status' => 'error',
+        'message' => sprintf(
+            'No result rows before HTML output. scope_input=[%s] resolved=[%s] active=%s invalid=%s pages_to_seed=%d get_keys=[%s] query_string=[%s] request_uri=[%s]',
+            $pageScopeInput,
+            $pageScopeRaw,
+            $pageScopeActive ? '1' : '0',
+            $scopeInvalid ? '1' : '0',
+            count($pages),
+            implode(',', array_keys($_GET)),
+            isset($_SERVER['QUERY_STRING']) ? (string) $_SERVER['QUERY_STRING'] : '',
+            isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : ''
+        ),
+    ];
+}
+
 header('Content-Type: text/html; charset=utf-8');
 echo '<!doctype html><html><head><meta charset="utf-8"><title>NSC Page Setup</title>';
 echo '<style>body{font-family:Arial,sans-serif;padding:24px}table{border-collapse:collapse;width:100%;max-width:900px}th,td{border:1px solid #ddd;padding:8px}th{background:#f7f7f7;text-align:left}.ok{color:#0a7f2e}.error{color:#b00020}</style>';
@@ -1825,12 +2024,20 @@ echo '</head><body>';
 echo '<h1>NSC Pages Setup</h1>';
 echo '<p>Done. Use <code>page_scope</code> (with a slug or <code>policies</code>) or legacy <code>home_only=1</code>, <code>blogs_only=1</code>, etc. Add <code>content_test=1</code> for test prefixes. <code>seed_lang</code> / Polylang: same as before. Jobs: <code>create-nsc-job-posts.php?token=nsc-create-job-posts-2026</code>. Case studies: <code>create-nsc-case-study-posts.php?token=nsc-create-case-studies-2026</code>. Menus: <code>create-nsc-menus.php?token=nsc-create-menus-2026</code>.</p>';
 echo '<table><thead><tr><th>Slug</th><th>Status</th><th>Details</th></tr></thead><tbody>';
-foreach ($results as $row) {
-    $statusClass = $row['status'] === 'error' ? 'error' : 'ok';
+$resultsForTable = is_array($results) ? $results : [];
+if (count($resultsForTable) === 0) {
+    $resultsForTable[] = [
+        'slug' => '(render-fallback)',
+        'status' => 'error',
+        'message' => 'Results buffer was empty at render time (unexpected). Deploy the latest create-nsc-pages.php from the repo root.',
+    ];
+}
+foreach ($resultsForTable as $row) {
+    $statusClass = ($row['status'] ?? '') === 'error' ? 'error' : 'ok';
     echo '<tr>';
-    echo '<td>' . esc_html($row['slug']) . '</td>';
-    echo '<td class="' . esc_attr($statusClass) . '">' . esc_html($row['status']) . '</td>';
-    echo '<td>' . esc_html($row['message']) . '</td>';
+    echo '<td>' . esc_html((string) ($row['slug'] ?? '')) . '</td>';
+    echo '<td class="' . esc_attr($statusClass) . '">' . esc_html((string) ($row['status'] ?? '')) . '</td>';
+    echo '<td>' . esc_html((string) ($row['message'] ?? '')) . '</td>';
     echo '</tr>';
 }
 

@@ -7,7 +7,7 @@ declare(strict_types=1);
  *
  * Default run: menus for the default Polylang language (or a single menu if Polylang is off),
  * assigns theme locations, mirrors the same menu term to every language in Polylang.
- * Footer sitemap tree is stored in one menu (Home, About, AI + children, Careers, Blog, Case Studies) and assigned to both sitemap_footer and navigation_footer
+ * Footer sitemap tree is stored in one menu (Home, About, Why NSC Software, AI + children, Careers, Blog, Case Studies) and assigned to both sitemap_footer and navigation_footer
  * (NSCFooter: column links + sitemap columns) for each locale. Policy pages use <code>footer_policy</code>.
  *
  * seed_lang={slug}|all: builds menus for those languages only (translated labels + translated page IDs),
@@ -425,7 +425,41 @@ function nsc_seed_menus_populate_main(int $menuId, string $lang): void
     };
 
     $addPage('home', 'Home');
-    $addPage('about', 'About Us');
+
+    $aboutPageId = nsc_seed_menus_page_id('about', $lang);
+    $aboutParentId = 0;
+    if ($aboutPageId > 0) {
+        $aboutParentId = nsc_seed_menus_add_item($menuId, [
+            'menu-item-title' => $t('About Us'),
+            'menu-item-object-id' => $aboutPageId,
+            'menu-item-position' => $position,
+        ]);
+    } else {
+        $aboutParentId = nsc_seed_menus_add_item($menuId, [
+            'menu-item-title' => $t('About Us'),
+            'menu-item-type' => 'custom',
+            'menu-item-object' => '',
+            'menu-item-object-id' => 0,
+            'menu-item-url' => '#',
+            'menu-item-position' => $position,
+            'menu-item-classes' => 'no-link-cursor',
+        ]);
+    }
+    nsc_seed_menus_mark_item($aboutParentId);
+    ++$position;
+
+    $aboutChildPos = 1;
+    $whyNscId = nsc_seed_menus_page_id('why-nsc', $lang);
+    if ($whyNscId > 0 && $aboutParentId > 0) {
+        $cid = nsc_seed_menus_add_item($menuId, [
+            'menu-item-title' => $t('Why NSC Software'),
+            'menu-item-object-id' => $whyNscId,
+            'menu-item-position' => $aboutChildPos,
+            'menu-item-parent-id' => $aboutParentId,
+        ]);
+        nsc_seed_menus_mark_item($cid);
+    }
+
     $addPage('ai', 'AI', 'highlight');
 
     $wwdId = nsc_seed_menus_add_item($menuId, [
@@ -471,7 +505,7 @@ function nsc_seed_menus_populate_main(int $menuId, string $lang): void
 }
 
 /**
- * Top-level order: Home, About, AI page (+ Our Services, Technology Capabilities as children), Careers, Blog, Case Studies.
+ * Top-level order: Home, About Us (links to About page; dropdown: Why NSC Software only), AI page (+ Our Services, Technology Capabilities as children), Careers, Blog, Case Studies.
  */
 function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
 {
@@ -498,6 +532,7 @@ function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
 
     $addPage('home', 'Home');
     $addPage('about', 'About Us');
+    $addPage('why-nsc', 'Why NSC Software');
 
     $aiPid = nsc_seed_menus_page_id('ai', $lang);
     $parentId = 0;
