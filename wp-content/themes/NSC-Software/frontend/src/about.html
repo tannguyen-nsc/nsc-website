@@ -65,17 +65,27 @@
               </svg>
             </a>
           </li>
-          <li class="mobile-dropdown-parent">
-            <a class="mobile-nav-link mobile-dropdown-toggle active no-link-cursor">
-              About Us
-              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </a>
+          <li class="mobile-dropdown-parent mobile-about-dropdown">
+            <div class="mobile-nav-dropdown-row">
+              <a href="about.html" class="mobile-nav-link mobile-nav-link--about-label active">About Us</a>
+              <button type="button" class="mobile-dropdown-toggle mobile-dropdown-toggle--chevron" aria-expanded="false" aria-label="Expand About Us submenu">
+                <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
             <ul class="mobile-dropdown">
               <li>
                 <a href="why-nsc.html" class="mobile-nav-link">
                   Why NSC Software
+                  <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="how-we-work.html" class="mobile-nav-link">
+                  How we work
                   <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -194,9 +204,10 @@
         <nav>
           <ul class="nav">
             <li><a href="./">Home</a></li>
-            <li><a class="active no-link-cursor">About Us <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+            <li><a class="active" href="about.html">About Us <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
             <ul class="dropdown">
               <li><a href="why-nsc.html">Why NSC Software</a></li>
+              <li><a href="how-we-work.html">How we work</a></li>
             </ul>
             </li>
             <li><a href="ai.html" class="highlight">AI</a></li>
@@ -226,8 +237,8 @@
     </header>
     
     <section class="hero left-text">
-      <img src="./img/hero-left-text.webp" alt="Hero Image" class="xl:block hidden" loading="eager" fetchpriority="high" />
-      <img src="./img/hero-left-text-mob.webp" alt="Hero Image" class="xl:hidden" loading="eager" fetchpriority="high" />
+      <img src="./img/hero-left-text.webp" alt="Hero Image" class="lg:block hidden" loading="eager" fetchpriority="high" />
+      <img src="./img/hero-left-text-mob.webp" alt="Hero Image" class="lg:hidden" loading="eager" fetchpriority="high" />
       <div class="headlines animate__animated animate__fadeInRightBig">
         <h1>
           <sb>We’re</sb> <span class="highlight primary">Vietnam’s Premier</span> <br class="lg:hidden"> <sb>Software Development &</sb> <br>
@@ -663,6 +674,7 @@
                 <ul>
                   <li><a href="./">Home</a></li>
                                     <li><a href="why-nsc.html">Why NSC Software</a></li>
+              <li><a href="how-we-work.html">How we work</a></li>
                 </ul>
               </div>
               <div class="sitemap-col">
@@ -699,6 +711,7 @@
             <ul>
               <li><a href="./">Home</a></li>
                             <li><a href="why-nsc.html">Why NSC Software</a></li>
+              <li><a href="how-we-work.html">How we work</a></li>
             </ul>
           </div>
           <div class="sitemap-col">

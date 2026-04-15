@@ -8,12 +8,12 @@
     background-image: url("../img/why-nsc-built-bg-mob.png");
     background-position: center bottom;
     @screen lg {
-      background-image: url("../img/why-nsc-built-bg.png");
+      background-image: url("../img/why-nsc-built-bg.webp");
       background-position: center center;
     }
 
     .wrapper {
-      @apply relative z-[1] mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8;
+      @apply relative z-[1] mx-auto lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full px-4 px-4 lg:px-0;
     }
 
     /* Intro: stacked on mobile; desktop = col1 (icon + heading) | col2 (description) */
@@ -25,18 +25,18 @@
       }
 
       .info .col {
-        @apply w-full min-w-0;
+        @apply w-full lg:w-1/2 min-w-0;
 
         &:first-child {
           /* Desktop: column width follows icon + heading only; not equal split with description */
-          @apply flex flex-col items-start lg:flex-none lg:w-fit lg:max-w-[min(100%,28rem)];
+          @apply flex flex-col items-start 2xl:w-auto;
 
           img {
             @apply mb-4 max-w-[32px] lg:max-w-[56px];
           }
 
           h2 {
-            @apply my-4 text-left text-2xl font-bold uppercase text-black lg:my-0 lg:text-3xl xl:text-[42px] 2xl:text-5xl;
+            @apply my-4 text-left text-2xl font-bold uppercase text-black lg:my-0 lg:text-3xl xl:text-[42px] 2xl:text-5xl xl:leading-tight;
           }
         }
 
@@ -44,14 +44,14 @@
           @apply mt-4 flex flex-col items-stretch lg:mt-0 lg:min-w-0 lg:flex-1;
 
           .description p {
-            @apply text-left text-lg font-semibold leading-relaxed text-black lg:text-xl 2xl:text-2xl;
+            @apply text-left text-base font-bold leading-relaxed text-black lg:text-2xl lg:font-semibold;
           }
         }
       }
     }
 
     .why-nsc-built__columns {
-      @apply grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-6 xl:gap-8;
+      @apply grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6;
     }
 
     .why-nsc-built__card {
@@ -113,19 +113,26 @@
     }
 
     .why-nsc-built__panel {
-      @apply relative flex min-h-[182px] flex-1 flex-col justify-center overflow-hidden border-t border-white/30 px-5 py-6 text-left text-sm font-medium leading-relaxed text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] sm:px-6 sm:py-7 sm:text-base;
+      @apply relative flex min-h-[182px] flex-1 flex-col justify-center overflow-hidden px-5 py-6 text-left text-sm font-medium leading-relaxed text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18)] sm:px-6 sm:py-7 sm:text-base;
       /* Translucent CSS gradient only — lets backdrop-blur show the overlapped photo */
       @apply backdrop-blur-xl backdrop-saturate-150;
       -webkit-backdrop-filter: blur(16px) saturate(1.2);
       background-color: transparent;
       background-image: linear-gradient(
         180deg,
-        rgba(200, 245, 255, 0.42) 0%,
-        rgba(95, 212, 232, 0.48) 18%,
-        rgba(54, 195, 220, 0.52) 42%,
-        rgba(35, 143, 168, 0.58) 72%,
-        rgba(15, 80, 98, 0.62) 100%
+        rgba(54, 195, 220, 0.3) 0%,
+        rgba(54, 195, 220, 1) 18%,
+        rgba(0, 129, 187, 1) 100%
       );
+
+      &:nth-child(2n + 1) {
+        background-image: linear-gradient(
+          180deg,
+          rgb(54, 195, 220, 0.6) 0%,
+          rgba(54, 195, 220, 1) 18%,
+          rgba(0, 129, 187, 1) 100%
+        );
+      }
 
       /* Wider than 768px: cap teal band 182–200px (mobile + 768px stay flexible) */
       @media (min-width: 769px) {
@@ -137,7 +144,7 @@
       }
 
       p {
-        @apply relative z-[1] m-0 drop-shadow-sm;
+        @apply relative z-[1] m-0 drop-shadow-sm font-normal text-base lg:text-lg;
       }
     }
   }

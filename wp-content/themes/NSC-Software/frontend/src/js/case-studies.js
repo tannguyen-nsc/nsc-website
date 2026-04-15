@@ -94,7 +94,7 @@
         var total = this.totalPages;
         var current = this.currentPage;
         var result = [];
-        var isMobilePagination = this.viewportWidth < 1024;
+        var isMobilePagination = this.viewportWidth < 992;
 
         if (total <= 0) {
           return result;
@@ -156,7 +156,7 @@
     },
     methods: {
       getDescriptionLineLimit: function () {
-        return window.innerWidth >= 1024 ? DESKTOP_DESCRIPTION_LINES : DEFAULT_DESCRIPTION_LINES;
+        return window.innerWidth >= 992 ? DESKTOP_DESCRIPTION_LINES : DEFAULT_DESCRIPTION_LINES;
       },
       trimDescriptionToFit: function (descriptionEl) {
         if (!descriptionEl) return;

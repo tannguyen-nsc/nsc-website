@@ -3,7 +3,7 @@
   @apply relative min-h-[70vh] md:min-h-[50vh] xl:min-h-[45vw] py-16 lg:py-24 bg-[400%] lg:bg-cover bg-right-top bg-no-repeat overflow-hidden mt-4 flex flex-col items-center justify-center px-4;
 
   .wrapper {
-    @apply z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full max-w-full;
+    @apply z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
   }
 
   .error-404__inner {

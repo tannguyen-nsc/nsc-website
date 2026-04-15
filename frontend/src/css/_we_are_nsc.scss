@@ -45,7 +45,7 @@
   } 
 
   .wrapper {
-    @apply relative z-10 flex flex-col xl:flex-row flex-wrap items-start lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full max-w-full px-4 xl:px-0 xl:pt-[157px] 2xl:pl-[157px] xl:pl-6;
+    @apply relative z-10 flex flex-col xl:flex-row flex-wrap items-start lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full px-4 xl:px-0 xl:pt-[157px] 2xl:pl-[157px] xl:pl-6;
 
     .gallery-image-group {
       @apply relative w-full h-auto;

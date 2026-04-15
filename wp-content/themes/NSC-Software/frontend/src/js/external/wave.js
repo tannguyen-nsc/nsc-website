@@ -397,7 +397,7 @@
   function responsiveCols() {
     var w = window.innerWidth;
     if (w < 768) return 40;
-    if (w < 1024) return 60;
+    if (w < 992) return 60;
     if (w < 1280) return 80;
     return 100;
   }

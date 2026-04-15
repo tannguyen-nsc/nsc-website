@@ -1,18 +1,62 @@
-// Why NSC — CTA
+// Why NSC — CTA ("Start Building") — layered section + content backgrounds (see ai-banner / our-services-details .banner patterns)
 .page-why-nsc {
   .why-nsc-cta {
-    @apply py-16 lg:py-24 bg-[#0a1628] text-white text-center;
-    .wrapper {
-      @apply max-w-[900px] mx-auto px-4 sm:px-6;
+    @apply relative overflow-hidden bg-cover bg-center bg-no-repeat px-4 py-10 sm:px-6 lg:px-8 lg:py-16;
+    background-color: #e8ecf0;
+    background-image: url("../img/why-nsc-cta-bg-mob.webp");
+
+    @media (min-width: 992px) {
+      background-image: url("../img/why-nsc-cta-bg.webp");
     }
+
+    .why-nsc-cta__panel {
+      @apply relative mx-auto flex w-full max-w-[1140px] flex-col items-stretch justify-center;
+      @apply px-6 py-10 sm:px-10 sm:py-12 lg:px-16 lg:py-16 xl:py-20;
+      background-color: var(--color-primary);
+      background-image: url("../img/why-nsc-cta-content-bg-mob.webp");
+      background-size: cover;
+      background-position: center bottom;
+      background-repeat: no-repeat;
+      text-align: center;
+
+      @media (min-width: 992px) {
+        background-image: url("../img/why-nsc-cta-content-bg.png");
+        background-position: center center;
+      }
+    }
+
+    .why-nsc-cta__inner {
+      @apply relative z-[1] mx-auto w-full max-w-[920px];
+    }
+
     h2 {
-      @apply text-2xl sm:text-3xl font-bold mb-6;
+      @apply mb-5 text-2xl font-bold leading-tight text-white sm:text-3xl lg:mb-8 lg:text-4xl xl:text-[42px] 2xl:text-5xl;
     }
+
     p {
-      @apply mb-8 leading-relaxed text-[rgba(255,255,255,0.85)];
+      @apply mx-auto mb-8 max-w-[640px] text-base font-medium leading-relaxed text-white sm:text-lg lg:mb-10 lg:max-w-none lg:text-xl lg:leading-relaxed;
     }
-    .btn {
-      @apply inline-flex items-center justify-center px-8 py-3 rounded bg-primary text-white font-semibold hover:opacity-90 transition-opacity;
+
+    /* Inverted CTA: white field, primary text — matches design refs; avoids global `section .btn` primary fill */
+    .why-nsc-cta__btn {
+      @apply mx-auto inline-flex w-full max-w-md items-center justify-center gap-2 border-0 px-6 py-3.5 text-center text-xs font-bold no-underline transition-opacity sm:max-w-xl sm:px-10 lg:text-lg;
+      border-radius: 0;
+      background-color: #fff;
+      color: var(--color-primary);
+
+      &:hover,
+      &:focus-visible {
+        @apply opacity-90;
+      }
+
+      .why-nsc-cta__btn-text {
+        @apply text-center;
+      }
+
+      svg {
+        @apply h-5 w-5 shrink-0;
+        color: var(--color-primary);
+      }
     }
   }
 }

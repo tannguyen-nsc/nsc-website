@@ -1,27 +1,16 @@
 // Why NSC — Team (wrapper matches `.why-nsc-different .wrapper`; desktop: 5-up / 3-up Slick + centered card)
 .page-why-nsc {
   .why-nsc-team {
-    @apply overflow-x-hidden bg-white pb-8 pt-14 sm:pb-10 lg:overflow-x-visible lg:pb-0 lg:pt-20;
+    @apply overflow-x-hidden bg-white py-12 lg:py-16;
 
-    /* Match `.why-nsc-different .wrapper` — max 1140px from xl, 1280px at 2xl */
+    /* Match `.why-nsc-different .wrapper` — max 1140px from xl, 1140px at 2xl */
     .wrapper {
       @apply relative z-[1] mx-auto flex w-full max-w-full flex-col items-start justify-start px-4 sm:px-6 lg:max-w-[90%] lg:px-8 xl:max-w-[1140px] 2xl:max-w-[1280px];
     }
 
     .why-nsc-team__header {
-      @apply relative z-[1] bg-white pb-6 sm:pb-8;
-      @apply lg:bg-transparent lg:pb-14;
-    }
-
-    @media (min-width: 1024px) {
-      .why-nsc-team__header {
-        background: linear-gradient(
-          180deg,
-          #ffffff 0%,
-          #ffffff 55%,
-          #f4fbfc 100%
-        );
-      }
+      @apply relative z-[1] bg-white pb-12 lg:pb-16;
+      @apply lg:bg-transparent;
     }
 
     .why-nsc-team__intro-row {
@@ -37,24 +26,15 @@
     }
 
     .why-nsc-team__title {
-      @apply m-0 flex w-full flex-col items-start gap-1 text-left;
-    }
-
-    .why-nsc-team__title-pre {
-      @apply text-2xl font-bold leading-tight text-black sm:text-3xl lg:text-[28px] xl:text-4xl 2xl:text-[42px];
-      @apply lg:text-[#0a1628];
+      @apply m-0 flex w-full flex-col items-start gap-1 text-left text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl  font-bold xl:leading-tight uppercase;
     }
 
     .why-nsc-team__title-row {
-      @apply flex flex-wrap items-baseline gap-x-0 text-2xl font-bold leading-tight sm:text-3xl lg:text-[28px] xl:text-4xl 2xl:text-[42px];
-    }
-
-    .why-nsc-team__and {
-      @apply font-bold text-black lg:text-[#0a1628];
+      @apply flex lg:flex-wrap items-baseline gap-x-0;
     }
 
     .why-nsc-team__accent {
-      @apply relative inline-block font-bold text-primary;
+      @apply relative inline-block text-primary;
       padding: 0.12em 0.28em 0.18em;
 
       &::before {
@@ -81,54 +61,30 @@
     }
 
     .why-nsc-team__lead-col {
-      @apply w-full lg:flex lg:w-1/2 lg:items-start lg:justify-end;
+      @apply w-full lg:flex lg:w-1/2 lg:items-start lg:justify-end lg:pl-12 xl:pl-0;
     }
 
     .why-nsc-team__lead {
-      @apply m-0 max-w-none text-base font-normal leading-relaxed text-black lg:max-w-xl lg:pt-2 lg:text-lg lg:font-medium lg:text-[#0a1628] xl:text-xl;
+      @apply m-0 max-w-none text-base font-semibold leading-relaxed text-black lg:max-w-xl lg:pt-2 lg:text-lg 2xl:text-2xl;
     }
 
     .why-nsc-team__stage {
-      @apply relative z-0 flex flex-col bg-white;
+      @apply relative z-10 flex flex-col bg-white;
     }
 
     /* Mobile: horizontal padding matches header; desktop: full-bleed slider below */
     .why-nsc-team__stage-inner {
-      @apply relative w-full px-4 sm:px-6;
-      @apply lg:px-0 lg:pb-10 xl:pb-12;
+      @apply relative w-full px-4 sm:px-6 pb-0 lg:py-10;
     }
 
     /* Card + slider; card is centered over slider strip on lg (positioning context = this box) */
     .why-nsc-team__slider-wrap {
-      @apply relative flex w-full flex-col overflow-hidden bg-white;
-      @apply lg:block lg:bg-transparent;
-      @media (min-width: 1024px) {
+      @apply relative flex w-full flex-col;
+      @media (min-width: 992px) {
         width: 100vw;
         max-width: none;
         margin-left: calc(50% - 50vw);
         margin-right: calc(50% - 50vw);
-      }
-    }
-
-    .why-nsc-team__slider-wrap::after {
-      content: "";
-      @apply pointer-events-none absolute inset-0 z-[1];
-      background: linear-gradient(
-        180deg,
-        rgba(54, 195, 220, 0.14) 0%,
-        rgba(54, 195, 220, 0.06) 50%,
-        rgba(54, 195, 220, 0.12) 100%
-      );
-    }
-
-    @media (min-width: 1024px) {
-      .why-nsc-team__slider-wrap::after {
-        background: linear-gradient(
-          180deg,
-          rgba(54, 195, 220, 0.1) 0%,
-          transparent 50%,
-          rgba(54, 195, 220, 0.08) 100%
-        );
       }
     }
 
@@ -164,14 +120,13 @@
     }
 
     .why-nsc-team__card {
-      @apply relative z-[3] mx-auto mb-5 w-full max-w-[24rem] rounded-lg bg-white px-6 py-6 sm:mb-6 sm:px-8 sm:py-7;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-      @apply lg:absolute lg:left-1/2 lg:top-1/2 lg:mb-0 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:px-8 lg:py-7;
-      @apply lg:shadow-[0_18px_40px_rgba(0,0,0,0.28)];
+      @apply relative z-[3] mx-auto mb-12 lg:mb-0 w-full max-w-[24rem] 2xl:max-w-[34rem] bg-white p-6 bg-[#f9f9fb] shadow-md;
+      
+      @apply lg:absolute lg:left-1/2 lg:top-1/2 lg:mb-0 lg:-translate-x-1/2 lg:-translate-y-1/2 lg:px-8 2xl:px-12 py-12 2xl:py-16;
     }
 
     .why-nsc-team__card-text {
-      @apply m-0 text-center text-base font-medium leading-relaxed text-primary lg:text-lg;
+      @apply m-0 text-center lg:text-left text-base font-medium leading-relaxed text-primary lg:text-lg 2xl:text-2xl;
     }
   }
 }

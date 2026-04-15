@@ -2,7 +2,7 @@
   @apply min-h-[180vw] md:min-h-[130vw] lg:min-h-[55vw] xl:min-h-[50vw] relative lg:bg-cover bg-left-top bg-no-repeat bg-white flex flex-col items-center justify-center px-4 py-16 lg:py-16;
   
   .wrapper {
-    @apply flex flex-col z-50 max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full;
+    @apply flex flex-col z-50 max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full;
     
     .blogs-wrapper {
       @apply mt-12 lg:mt-16 bg-white border border-[#E5E5E5];

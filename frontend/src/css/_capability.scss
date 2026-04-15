@@ -2,7 +2,7 @@
   @apply relative flex flex-col items-center justify-center px-4 pt-12 pb-12 lg:py-16;
   
   .wrapper {
-    @apply relative w-full max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px]  mx-auto mt-8 lg:mt-12;
+    @apply relative w-full max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px]  mx-auto mt-8 lg:mt-12;
 
     .capability-main {
       @apply relative w-full h-full overflow-hidden;

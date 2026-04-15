@@ -2,7 +2,7 @@
   @apply relative flex flex-col items-center justify-center min-h-[180vw] md:min-h-[100vw] lg:min-h-[55vw] xl:min-h-[50vw] 2xl:min-h-[40vw] bg-cover bg-right-bottom bg-no-repeat px-4 bg-[url('../img/mob-our-story-bg.webp')] lg:bg-[url('../img/our-story-bg.webp')] py-12 lg:py-16;
 
   .content {
-    @apply lg:text-center py-8 lg:py-12 lg:px-8 mx-auto lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full max-w-full;
+    @apply lg:text-center py-8 lg:py-12 lg:px-8 mx-auto lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
     
     p {
       @apply text-base lg:text-lg xl:text-xl text-black leading-relaxed;
@@ -14,7 +14,7 @@
   } 
 
   .wrapper {
-    @apply flex flex-wrap items-start justify-center z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full max-w-full;
+    @apply flex flex-wrap items-start justify-center z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
     gap: 2rem 0;
     @screen lg {
       gap: 3rem 2rem;

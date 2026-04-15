@@ -13,7 +13,7 @@
     }
 
     .logos {
-      @apply relative w-full xl:max-w-[1280px] overflow-hidden md:overflow-hidden border-b border-[#E5E5E5] lg:border-b-0 pt-4 pb-8 lg:py-12;
+      @apply relative w-full xl:max-w-[1140px] overflow-hidden md:overflow-hidden border-b border-[#E5E5E5] lg:border-b-0 pt-4 pb-8 lg:py-12;
       
       &.slick-slider {
         @apply w-full;

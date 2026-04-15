@@ -1,7 +1,7 @@
 .default-text-content {
   @apply relative min-h-[180vw] md:min-h-[130vw] xl:min-h-[60vw] 2xl:min-h-[50vw] py-12 lg:py-16 bg-[400%] lg:bg-cover bg-right-top bg-no-repeat overflow-hidden mt-20 lg:mt-14 flex flex-col items-center justify-center px-4;
   .wrapper {
-    @apply z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full max-w-full bg-white shadow-md py-12 lg:py-16 px-4 lg:px-12;
+    @apply z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full bg-white shadow-md py-12 lg:py-16 px-4 lg:px-12;
     .heading {
       @apply text-3xl xl:text-[42px] 2xl:text-5xl font-semibold xl:leading-tight mb-8 2xl:mb-10 text-left text-primary justify-start;
     }

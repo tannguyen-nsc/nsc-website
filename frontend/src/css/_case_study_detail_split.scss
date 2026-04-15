@@ -4,7 +4,7 @@
 
   .wrapper {
     @apply relative z-10 mx-auto flex w-full max-w-full min-h-[25vh] translate-y-0 items-center justify-center bg-white px-4 py-12 lg:py-0 lg:px-0;
-    @apply lg:absolute lg:top-0 lg:w-full lg:translate-y-[-50%] lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px];
+    @apply lg:absolute lg:top-0 lg:w-full lg:translate-y-[-50%] lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
   }
 
   .case-study-detail-split__grid {

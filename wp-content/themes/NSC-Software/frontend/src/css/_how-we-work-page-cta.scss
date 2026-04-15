@@ -1,0 +1,57 @@
+// How we work — CTA (“Let’s Build Together”) — mirrors why-nsc-cta structure: section bg + panel + inner; wireframe bg asset
+.page-how-we-work {
+  .how-we-work-page-cta {
+    @apply relative overflow-hidden bg-white bg-no-repeat px-4 py-10 sm:px-6 lg:px-8 lg:py-16;
+    background-image: url("../img/how-we-work-page-cta-bg.webp");
+    background-position: center bottom;
+    background-size: cover;
+
+    .how-we-work-page-cta__panel {
+      @apply relative mx-auto flex w-full max-w-[1140px] flex-col;
+      @apply px-6 py-10 sm:px-10 sm:py-12 lg:px-16 lg:py-16 xl:py-20 text-center bg-[#EBF9FB];
+      border: 1px solid rgba(54, 195, 220, 0.22);
+    }
+
+    .how-we-work-page-cta__inner {
+      @apply relative z-[1] mx-auto w-full max-w-[920px];
+    }
+
+    .how-we-work-page-cta__inner .heading {
+      @apply mb-6 justify-center lg:mb-8;
+
+      /* Title case to match design; global `section .heading h2` is uppercase */
+      h2 {
+        @apply normal-case text-black;
+      }
+    }
+
+    .how-we-work-page-cta__lead {
+      @apply mx-auto mb-4 max-w-[640px] text-base font-medium leading-relaxed text-black sm:text-lg lg:max-w-none;
+    }
+
+    .how-we-work-page-cta__emphasis {
+      @apply mx-auto mb-8 max-w-[640px] text-base font-bold leading-relaxed text-black sm:text-lg lg:mb-10 lg:max-w-none;
+    }
+
+    .how-we-work-page-cta__btn {
+      @apply mx-auto inline-flex items-center justify-center gap-2 border-0 px-4 py-3.5 text-center text-xs font-bold no-underline transition-opacity sm:max-w-xl sm:px-6 lg:px-7 lg:text-lg;
+      border-radius: 0;
+      background-color: var(--color-primary);
+      color: #fff;
+
+      &:hover,
+      &:focus-visible {
+        @apply opacity-90;
+      }
+
+      .how-we-work-page-cta__btn-text {
+        @apply text-center;
+      }
+
+      svg {
+        @apply h-5 w-5 shrink-0;
+        color: #fff;
+      }
+    }
+  }
+}

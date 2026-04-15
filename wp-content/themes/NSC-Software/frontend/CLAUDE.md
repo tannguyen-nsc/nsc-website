@@ -67,7 +67,7 @@
 1. Open localhost — gear icon appears bottom-right, debug panel opens with all sections
 2. Test every slider/toggle/color picker — scene updates in real-time
 3. Resize browser — globe adjusts, connector lines stay visible
-4. Cross 1280px breakpoint — connectors appear/disappear correctly
+4. Cross 1140px breakpoint — connectors appear/disappear correctly
 5. Scroll away from "Why Us" section — dispose runs cleanly (no console errors)
 6. Scroll back — globe re-initializes correctly
 7. Run `npm run prod` — minified output works correctly

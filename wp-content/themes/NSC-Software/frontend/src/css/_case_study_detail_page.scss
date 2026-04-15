@@ -28,7 +28,7 @@
 
     // Widen slider to full 12-col row width on large screens (was ~⅓ of main column per slide without this).
     > .case-study-detail-gallery {
-      @media (min-width: 1024px) {
+      @media (min-width: 992px) {
         width: 150%;
         max-width: none;
         margin-left: -25%;
@@ -218,7 +218,7 @@
           opacity: 1 !important;
           background-color: #cecece !important; // career-details skill--none
 
-          @media (min-width: 1024px) {
+          @media (min-width: 992px) {
             height: 3px;
             min-height: 3px;
           }

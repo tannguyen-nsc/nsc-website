@@ -2,7 +2,7 @@
   @apply relative bg-white bg-left bg-cover bg-center bg-no-repeat py-12 overflow-hidden py-12 lg:py-16;
   
   .wrapper {
-    @apply relative z-10 flex flex-col lg:gap-8 max-w-full mx-auto px-4 lg:flex-row lg:items-start lg:gap-12 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px];
+    @apply relative z-10 flex flex-col lg:gap-8 max-w-full mx-auto px-4 lg:flex-row lg:items-start lg:gap-12 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
     
     .col {
       @apply flex flex-col w-full relative z-[1] lg:w-1/2 py-4 lg:py-12 xl:py-16;
@@ -74,7 +74,7 @@
 
   .wrapper {
     @apply relative z-10 max-w-full mx-auto px-4 grid grid-cols-1 gap-8 lg:gap-10 lg:grid-cols-2;
-    @apply lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px];
+    @apply lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
   }
 
   .contact-main {

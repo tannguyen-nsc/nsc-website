@@ -42,7 +42,7 @@ function nsc_why_nsc_build_page_components(): array
         'heading'       => 'Engineering You Can <br class="sm:hidden"> Trust',
         'stats'         => [
             ['num' => '01.', 'value' => 'TOP 7%', 'label' => 'Vietnamese IT talent'],
-            ['num' => '02.', 'value' => '100%', 'label' => 'Senior-level engineers'],
+            ['num' => '02.', 'value' => '90%', 'label' => 'Senior-level engineers'],
             ['num' => '03.', 'value' => '6+ years', 'label' => 'of industry experience'],
             ['num' => '04.', 'value' => 'AI-enhanced', 'label' => 'Development workflows'],
             ['num' => '05.', 'value' => 'Global', 'label' => 'English Collaboration'],

@@ -1,39 +1,112 @@
-// Why NSC — Hero (Figma: desktop frame hero / mobile top)
+// Why NSC — Hero (desktop + mobile full-bleed backgrounds, glass panel, hero.dark-style headlines)
 .page-why-nsc {
   .why-nsc-hero {
     /* Min heights match `.hero` on the home page (_hero.scss) */
-    @apply relative flex min-h-[180vw] items-center justify-center overflow-hidden bg-[#050a12] text-white md:min-h-[130vw] xl:min-h-[60vw] 2xl:min-h-[50vw];
+    @apply relative flex min-h-[180vw] items-center justify-center overflow-hidden text-white md:min-h-[130vw] lg:min-h-[60vw] 2xl:min-h-[50vw];
+    background: linear-gradient(180deg, #020d12 0%, #050a10 100%);
 
     &::after {
       content: "";
       @apply absolute inset-0 pointer-events-none z-[1];
-      background: linear-gradient(105deg, rgba(5, 10, 18, 0.92) 0%, rgba(5, 10, 18, 0.55) 45%, rgba(5, 10, 18, 0.25) 100%);
+      background: linear-gradient(
+        180deg,
+        rgba(2, 14, 18, 0.45) 0%,
+        rgba(3, 12, 16, 0.3) 40%,
+        rgba(0, 0, 0, 0.55) 100%
+      );
     }
 
     .why-nsc-hero__bg {
-      @apply absolute inset-0 pointer-events-none;
+      @apply absolute inset-0 pointer-events-none z-0;
       img {
-        @apply w-full h-full object-cover object-center opacity-90;
+        @apply h-full w-full object-cover object-center;
       }
     }
 
     .why-nsc-hero__inner {
-      @apply relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24;
+      @apply relative z-10 mx-auto w-full max-w-[1200px] px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-16;
+    }
+
+    .why-nsc-hero__panel {
+      @apply mx-auto max-w-[920px] text-center;
+      padding: 1.75rem 1.25rem 2rem;
+      @screen sm {
+        @apply px-8 py-10;
+      }
+
+      @screen lg {
+        @apply px-12 py-12;
+      }
+
+      background: rgba(0, 0, 0, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 4px;
+      box-shadow:
+        0 0 48px rgba(0, 0, 0, 0.45),
+        0 0 80px rgba(54, 195, 220, 0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
     .why-nsc-hero__title {
-      @apply text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6;
-      .highlight {
-        @apply text-primary;
+      @apply mb-5 flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1 text-3xl font-bold leading-tight sm:text-4xl sm:mb-6 lg:mb-8 lg:text-5xl xl:text-6xl;
+    }
+
+    .why-nsc-hero__title-why {
+      @apply font-bold text-white;
+    }
+
+    .why-nsc-hero__title-brand {
+      @apply inline-block;
+    }
+
+    /* Cyan corner brackets around “NSC Software” (Figma) */
+    .why-nsc-hero__title-brand-text {
+      @apply relative inline-block text-primary;
+      padding: 0.12em 0.28em 0.18em;
+
+      &::before {
+        content: "";
+        @apply pointer-events-none absolute border-primary;
+        top: 0;
+        left: 0;
+        width: 0.42em;
+        height: 0.42em;
+        border-style: solid;
+        border-width: 2px 0 0 2px;
+      }
+
+      &::after {
+        content: "";
+        @apply pointer-events-none absolute border-primary;
+        right: 0;
+        bottom: 0;
+        width: 0.42em;
+        height: 0.42em;
+        border-style: solid;
+        border-width: 0 2px 2px 0;
       }
     }
 
     .why-nsc-hero__lead {
-      @apply text-xl sm:text-2xl font-semibold mb-6 max-w-4xl text-[rgba(255,255,255,0.95)];
+      @apply mx-auto mb-6 max-w-3xl text-lg font-semibold leading-snug text-[rgba(255,255,255,0.96)] sm:text-xl lg:mb-8 lg:text-2xl;
     }
 
     .why-nsc-hero__copy {
-      @apply space-y-4 text-base sm:text-lg max-w-4xl leading-relaxed text-[rgba(255,255,255,0.85)];
+      @apply mx-auto max-w-3xl space-y-4 text-center text-base leading-relaxed text-[rgba(255,255,255,0.88)] sm:text-lg;
+    }
+
+    /* Match hero.dark headlines: accent on key phrase */
+    .why-nsc-hero__mission {
+      @apply text-center;
+    }
+
+    .why-nsc-hero__mission-prefix {
+      @apply text-white;
+    }
+
+    .why-nsc-hero__mission-em {
+      @apply text-primary font-semibold;
     }
   }
 }

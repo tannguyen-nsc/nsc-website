@@ -31,7 +31,7 @@
   <body class="page-why-nsc">
     
     <!-- Mobile Header (shows for mobile up to lg screen) -->
-    <header class="mobile-header transparent-floating lg:hidden">
+    <header class="mobile-header lg:hidden">
       <div class="mobile-header-wrapper">
         <logo class="mobile-logo-wrapper">
           <a href="./">
@@ -65,17 +65,27 @@
               </svg>
             </a>
           </li>
-          <li class="mobile-dropdown-parent">
-            <a class="mobile-nav-link mobile-dropdown-toggle active no-link-cursor">
-              About Us
-              <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-            </a>
+          <li class="mobile-dropdown-parent mobile-about-dropdown">
+            <div class="mobile-nav-dropdown-row">
+              <a href="about.html" class="mobile-nav-link mobile-nav-link--about-label">About Us</a>
+              <button type="button" class="mobile-dropdown-toggle mobile-dropdown-toggle--chevron" aria-expanded="false" aria-label="Expand About Us submenu">
+                <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
             <ul class="mobile-dropdown">
               <li>
                 <a href="why-nsc.html" class="mobile-nav-link active">
                   Why NSC Software
+                  <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              </li>
+              <li>
+                <a href="how-we-work.html" class="mobile-nav-link">
+                  How we work
                   <svg class="mobile-nav-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
@@ -185,7 +195,7 @@
     </header>
 
     <!-- Desktop Header (shows for screens above lg) -->
-    <header class="desktop-header transparent-floating hidden lg:block">
+    <header class="desktop-header hidden lg:block">
       <div class="wrapper">
         <logo>
           <a href="#"><img src="./img/logo-white.png" class="logo-white" alt="Logo" loading="eager" fetchpriority="high" />
@@ -194,9 +204,10 @@
         <nav>
           <ul class="nav">
             <li><a href="./">Home</a></li>
-            <li><a class="active no-link-cursor">About Us <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
+            <li><a href="about.html">About Us <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="inline-block ml-1"><path d="M6 9L1 4H11L6 9Z" fill="currentColor"/></svg></a>
             <ul class="dropdown">
               <li><a href="why-nsc.html" class="active">Why NSC Software</a></li>
+              <li><a href="how-we-work.html">How we work</a></li>
             </ul>
             </li>
             <li><a href="ai.html" class="highlight">AI</a></li>
@@ -225,7 +236,8 @@
       </div>
     </header>
     
-    <!-- Why NSC page (why-nsc.html) section map: #section-hero-why-nsc | #section-engineering-trust | #section-built-vietnam | #section-what-makes-different | #section-team-expertise | #section-start-building -->
+    <!-- Why NSC page (why-nsc.html) section map: #section-hero-why-nsc | #section-engineering-trust | #section-built-vietnam | #section-what-makes-different | #section-team-expertise | #section-start-building — How we work page (how-we-work.html): #section-hww-hero | #section-hww-models | #section-hww-process | #section-hww-collab | #section-hww-cta (block follows this page in master) -->
+    <div class="page-why-nsc">
     <section class="why-nsc-hero" id="section-hero-why-nsc" aria-labelledby="why-nsc-hero-title">
       <div class="why-nsc-hero__bg" aria-hidden="true">
         <img src="./img/why-us-hero-desktop.webp" alt="" class="hidden lg:block" width="1920" height="1080" loading="eager" fetchpriority="high" />
@@ -234,13 +246,13 @@
       <div class="why-nsc-hero__inner">
         <div class="why-nsc-hero__panel">
           <h1 id="why-nsc-hero-title" class="why-nsc-hero__title">
-            <span class="why-nsc-hero__title-why">Why</span>
+            <span class="why-nsc-hero__title-why">Why</span>&nbsp;
             <span class="why-nsc-hero__title-brand">
               <span class="why-nsc-hero__title-brand-text highlight">NSC Software</span>
             </span>
           </h1>
-          <p class="why-nsc-hero__lead">Engineering Excellence Powered by Senior Talent</p>
           <div class="why-nsc-hero__copy">
+            <p>Engineering Excellence Powered by Senior Talent</p>
             <p>At NSC Software, we believe great software is built by experienced engineers, strong technical leadership, and efficient collaboration. By combining Vietnam's top technology talent with AI-enhanced development workflows, we help global companies build scalable, high-quality digital solutions.</p>
             <p class="why-nsc-hero__mission">
               <span class="why-nsc-hero__mission-prefix">Our mission is simple:</span>
@@ -265,7 +277,7 @@
           </article>
           <article class="why-nsc-stat-card">
             <p class="why-nsc-stat-card__num">02.</p>
-            <p class="why-nsc-stat-card__value">100%</p>
+            <p class="why-nsc-stat-card__value">90%</p>
             <p class="why-nsc-stat-card__label">Senior-level engineers</p>
           </article>
           <article class="why-nsc-stat-card">
@@ -298,7 +310,7 @@
           <div class="info">
             <div class="col">
               <img src="./img/heading-icon.webp" alt="Heading Icon" loading="lazy" />
-              <h2 id="built-vietnam-heading">Built in Vietnam. <br class="hidden lg:block"> Delivered Globally.</h2>
+              <h2 id="built-vietnam-heading">Built in Vietnam<br class="hidden lg:block"> Delivered Globally.</h2>
             </div>
             <div class="col">
               <div class="description">
@@ -537,7 +549,7 @@
                 <span class="why-nsc-team__title-row">
                   <span class="why-nsc-team__accent">Expertise</span>
                   &nbsp;<span class="why-nsc-team__and">and</span>&nbsp;
-                  <span class="why-nsc-team__accent">Culture</span>
+                  <span class="why-nsc-team__accent">Expertise</span>
                 </span>
               </h2>
             </div>
@@ -614,6 +626,8 @@
         </div>
       </div>
     </section>
+    </div>
+
     <footer>
       <div class="wrapper">
         <div class="col company-info">
@@ -722,6 +736,7 @@
                 <ul>
                   <li><a href="./">Home</a></li>
                                     <li><a href="why-nsc.html">Why NSC Software</a></li>
+              <li><a href="how-we-work.html">How we work</a></li>
                 </ul>
               </div>
               <div class="sitemap-col">
@@ -758,6 +773,7 @@
             <ul>
               <li><a href="./">Home</a></li>
                             <li><a href="why-nsc.html">Why NSC Software</a></li>
+              <li><a href="how-we-work.html">How we work</a></li>
             </ul>
           </div>
           <div class="sitemap-col">
