@@ -1,7 +1,7 @@
 .our-services {
   @apply relative bg-cover bg-left bg-no-repeat flex flex-col items-center justify-center px-4 pt-40 pb-12 lg:pb-16 lg:pt-52;
   .wrapper {
-    @apply flex flex-col items-center justify-center z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+    @apply flex flex-col items-center justify-center z-50 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full max-w-full;
   
     .services {
       @apply flex flex-wrap justify-center items-stretch z-50 pt-4 lg:pt-12 gap-4 lg:gap-8 lg:grid lg:grid-cols-3 lg:gap-8;

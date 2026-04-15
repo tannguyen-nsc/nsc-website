@@ -2,7 +2,7 @@
   @apply relative flex flex-col items-center justify-center min-h-screen bg-cover bg-right-top bg-no-repeat px-4 py-12 lg:py-16;
   
   .wrapper {
-    @apply relative z-10 flex flex-col items-start justify-start lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+    @apply relative z-10 flex flex-col items-start justify-start lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full max-w-full;
 
     // Info section (top section with heading and intro text)
     .info {

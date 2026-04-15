@@ -15,7 +15,7 @@
                 <span class="why-nsc-team__title-row">
                   <span class="why-nsc-team__accent">{{ (titleAccent1|default('Expertise'))|e }}</span>
                   &nbsp;<span class="why-nsc-team__and">{{ (titleConjunction|default('and'))|e }}</span>&nbsp;
-                  <span class="why-nsc-team__accent">{{ (titleAccent2|default('Culture'))|e }}</span>
+                  <span class="why-nsc-team__accent">{{ (titleAccent2|default('Expertise'))|e }}</span>
                 </span>
               </h2>
             </div>
@@ -32,9 +32,9 @@
         <div class="why-nsc-team__stage-inner">
         <div class="why-nsc-team__slider-wrap">
           <div class="why-nsc-team__card">
-            <div class="why-nsc-team__card-text">
+            <p class="why-nsc-team__card-text">
               {{ (cardText|default(''))|raw }}
-            </div>
+            </p>
           </div>
           <div
             class="why-nsc-team__slider js-why-nsc-team-slider"
@@ -52,7 +52,7 @@
             {% if theme.buildUri %}
             {% for n in ['01','02','03','04','05','06','07','08','09','10'] %}
             <div class="why-nsc-team__slide">
-              <img src="{{ theme.buildUri }}/img/why-nsc-team-{{ n }}.png" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
+              <img src="{{ theme.buildUri }}/img/why-nsc-team-{{ n }}.webp" alt="NSC Software team collaborating in a modern office" width="1200" height="800" loading="lazy" decoding="async" />
             </div>
             {% endfor %}
             {% endif %}

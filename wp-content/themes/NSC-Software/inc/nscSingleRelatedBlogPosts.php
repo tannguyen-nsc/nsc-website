@@ -20,17 +20,20 @@ function get_timber_posts(int $postId, int $limit, ?\WP_Term $primaryCategory): 
     $idsOrdered = [];
 
     if ($primaryCategory instanceof \WP_Term) {
-        $catIds = get_posts([
-            'post_type'           => 'post',
-            'post_status'         => 'publish',
-            'posts_per_page'      => $limit,
-            'post__not_in'        => [$postId],
-            'category__in'        => [(int) $primaryCategory->term_id],
-            'orderby'             => 'date',
-            'order'               => 'DESC',
-            'ignore_sticky_posts' => true,
-            'fields'              => 'ids',
-        ]);
+        $catIds = get_posts(array_merge(
+            [
+                'post_type'           => 'post',
+                'post_status'         => 'publish',
+                'posts_per_page'      => $limit,
+                'post__not_in'        => [$postId],
+                'category__in'        => [(int) $primaryCategory->term_id],
+                'orderby'             => 'date',
+                'order'               => 'DESC',
+                'ignore_sticky_posts' => true,
+                'fields'              => 'ids',
+            ],
+            function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+        ));
         foreach ($catIds as $id) {
             $idsOrdered[] = (int) $id;
         }
@@ -39,16 +42,19 @@ function get_timber_posts(int $postId, int $limit, ?\WP_Term $primaryCategory): 
     if (count($idsOrdered) < $limit) {
         $exclude = array_merge([$postId], $idsOrdered);
         $need = $limit - count($idsOrdered);
-        $more = get_posts([
-            'post_type'           => 'post',
-            'post_status'         => 'publish',
-            'posts_per_page'      => $need,
-            'post__not_in'        => $exclude,
-            'orderby'             => 'date',
-            'order'               => 'DESC',
-            'ignore_sticky_posts' => true,
-            'fields'              => 'ids',
-        ]);
+        $more = get_posts(array_merge(
+            [
+                'post_type'           => 'post',
+                'post_status'         => 'publish',
+                'posts_per_page'      => $need,
+                'post__not_in'        => $exclude,
+                'orderby'             => 'date',
+                'order'               => 'DESC',
+                'ignore_sticky_posts' => true,
+                'fields'              => 'ids',
+            ],
+            function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+        ));
         foreach ($more as $id) {
             $idsOrdered[] = (int) $id;
         }
@@ -58,13 +64,16 @@ function get_timber_posts(int $postId, int $limit, ?\WP_Term $primaryCategory): 
         return [];
     }
 
-    $posts = Timber::get_posts([
-        'post_type'      => 'post',
-        'post__in'       => $idsOrdered,
-        'orderby'        => 'post__in',
-        'posts_per_page' => count($idsOrdered),
-        'post_status'    => 'publish',
-    ]);
+    $posts = Timber::get_posts(array_merge(
+        [
+            'post_type'      => 'post',
+            'post__in'       => $idsOrdered,
+            'orderby'        => 'post__in',
+            'posts_per_page' => count($idsOrdered),
+            'post_status'    => 'publish',
+        ],
+        function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+    ));
 
     return normalize_timber_posts_list($posts);
 }

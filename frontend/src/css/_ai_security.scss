@@ -3,7 +3,7 @@
   @apply relative min-h-[180vw] md:min-h-[130vw] lg:min-h-[55vw] xl:min-h-[50vw] bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center py-12 lg:py-16;
 
   .wrapper {
-    @apply flex flex-col items-center justify-center z-50 w-full px-4 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full;
+    @apply flex flex-col items-center justify-center z-50 w-full px-4 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full max-w-full;
 
     .title-block {
       @apply relative z-10 text-center mb-2 lg:mb-3;
@@ -23,7 +23,7 @@
     }
 
     .item-wrapper {
-      @apply relative z-10 px-4 xl:max-w-[1280px] w-full max-w-full;
+      @apply relative z-10 px-4 xl:max-w-[1140px] w-full max-w-full;
 
       img {
         @apply relative w-full h-auto;

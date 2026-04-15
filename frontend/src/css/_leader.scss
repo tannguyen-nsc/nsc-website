@@ -34,7 +34,7 @@
   }
 
   .wrapper {
-    @apply relative z-10 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full max-w-full mx-auto;
+    @apply relative z-10 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full max-w-full mx-auto;
     @apply grid grid-cols-2 gap-6 gap-x-8 bg-[url('../img/mob-leader-body.webp')] lg:bg-none bg-cover bg-center bg-no-repeat;
     @apply lg:grid-cols-4 lg:gap-8 lg:gap-x-12 mt-4 lg:mt-8 pt-4 lg:pt-0 2xl:mt-0 lg:pb-0;
   }

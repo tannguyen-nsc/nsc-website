@@ -68,13 +68,16 @@ function primary_case_study_category_name(int $postId): string
  */
 function build_vue_case_study_items(string $placeholderImageUrl): array
 {
-    $args = [
-        'post_status' => 'publish',
-        'post_type' => POST_TYPE,
-        'posts_per_page' => VUE_POSTS_MAX,
-        'orderby' => 'date',
-        'order' => 'DESC',
-    ];
+    $args = array_merge(
+        [
+            'post_status' => 'publish',
+            'post_type' => POST_TYPE,
+            'posts_per_page' => VUE_POSTS_MAX,
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ],
+        function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+    );
     $collection = Timber::get_posts($args);
     $posts = is_object($collection) && method_exists($collection, 'to_array')
         ? $collection->to_array()
@@ -124,10 +127,13 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockCaseStudiesArchive', funct
     $filterDefs = [];
     if (!$hideCategories) {
         $filterDefs[] = ['id' => 'all', 'label' => $listLabels['allCategoriesLabel']];
-        $terms = get_terms([
-            'taxonomy' => TAXONOMY,
-            'hide_empty' => true,
-        ]);
+        $terms = get_terms(array_merge(
+            [
+                'taxonomy' => TAXONOMY,
+                'hide_empty' => true,
+            ],
+            function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+        ));
         if (!is_wp_error($terms)) {
             foreach ($terms as $term) {
                 if (!$term instanceof \WP_Term) {

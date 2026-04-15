@@ -1,0 +1,397 @@
+// How we work — Engagement models (desktop tabs + frosted panel + collaboration process; mobile list + bottom sheet)
+.page-how-we-work {
+  .how-we-work-page-engagement {
+    @apply relative overflow-hidden py-12 text-white lg:py-16;
+    background: linear-gradient(165deg, #0a6b7a 0%, #36c3dc 48%, #0d4a5c 100%);
+
+    .how-we-work-page-engagement__bg {
+      @apply pointer-events-none absolute inset-0 z-0;
+    }
+
+    .how-we-work-page-engagement__bg-img {
+      @apply h-full w-full object-cover object-center;
+    }
+
+    @media (min-width: 1024px) {
+      background-image: none;
+      .how-we-work-page-engagement__bg-img--desktop {
+        @apply block;
+      }
+    }
+
+    @media (max-width: 1023px) {
+      .how-we-work-page-engagement__bg-img--mob {
+        @apply block;
+      }
+    }
+
+    .wrapper {
+      @apply relative z-[1] mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8;
+    }
+
+    .how-we-work-page-engagement__heading {
+      @apply mb-8 lg:mb-10;
+
+      .heading.light {
+        @apply mb-0 flex flex-col items-start text-left;
+
+        img {
+          @apply mb-4 max-h-14 w-auto;
+        }
+
+        h2 {
+          @apply m-0 text-2xl font-bold uppercase tracking-wide text-white sm:text-3xl lg:text-4xl;
+        }
+      }
+    }
+
+    /* Desktop tab bar — full width, equal segments */
+    .hww-engagement__tabs {
+      @apply mb-0 hidden w-full border border-white/40 bg-white/10 lg:flex;
+    }
+
+    .hww-engagement__tab {
+      @apply relative flex flex-1 cursor-pointer items-center justify-center gap-2 border-r border-white/30 px-3 py-4 text-center text-xs font-semibold text-white transition-colors duration-300 last:border-r-0 sm:gap-3 sm:px-4 sm:text-sm;
+    }
+
+    .hww-engagement__tab-num {
+      @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-white text-sm font-bold leading-none text-white sm:h-10 sm:w-10 sm:text-base;
+    }
+
+    .hww-engagement__tab-label {
+      @apply flex-1 text-left font-bold uppercase tracking-wide;
+    }
+
+    .hww-engagement__tab-arrow {
+      @apply flex shrink-0 items-center text-white;
+
+      svg {
+        @apply h-5 w-5 sm:h-6 sm:w-6;
+      }
+    }
+
+    .hww-engagement__tab--active {
+      @apply border-white bg-white text-slate-900 shadow-none;
+
+      .hww-engagement__tab-num {
+        @apply border-primary text-primary;
+      }
+
+      .hww-engagement__tab-arrow {
+        @apply text-primary;
+      }
+    }
+
+    .hww-engagement__panels {
+      @apply mb-12 hidden lg:mb-16 lg:block;
+    }
+
+    .hww-engagement__panel {
+      @apply hidden;
+    }
+
+    .hww-engagement__panel.hww-engagement__panel--active {
+      @apply block;
+    }
+
+    .hww-engagement__panel-shell {
+      @apply border border-white/50 bg-white/10 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.18)] backdrop-blur-md sm:p-6 lg:p-8;
+    }
+
+    .hww-engagement__panel-inner {
+      @apply grid gap-8 border-b border-white/25 pb-8 lg:grid-cols-12 lg:gap-10 lg:pb-10;
+    }
+
+    .hww-engagement__panel-lead {
+      @apply lg:col-span-5;
+
+      .hww-engagement__panel-lead-strong {
+        @apply mb-3 text-base font-bold leading-snug text-white sm:text-lg;
+      }
+
+      p:not(.hww-engagement__panel-lead-strong) {
+        @apply text-base leading-relaxed text-white/95 sm:text-lg;
+      }
+    }
+
+    .hww-engagement__panel-aside {
+      @apply grid gap-4 sm:grid-cols-2 lg:col-span-7;
+    }
+
+    .hww-engagement__box {
+      @apply rounded-sm border border-white/40 bg-[rgba(7,40,52,0.35)] p-4 sm:p-5;
+    }
+
+    .hww-engagement__box-title {
+      @apply mb-3 text-xs font-bold uppercase tracking-[0.12em] text-white;
+    }
+
+    .hww-engagement__box ul {
+      @apply space-y-2 text-sm leading-snug text-white/95 sm:text-base;
+    }
+
+    .hww-engagement__box li {
+      @apply relative pl-4;
+      &::before {
+        content: "";
+        @apply absolute left-0 top-[0.55em] h-1.5 w-1.5 rounded-full bg-primary;
+      }
+    }
+
+    /* Collaboration process — same horizontal inset as rest of panel (.hww-engagement__panel-shell padding). */
+    .hww-engagement__collab-process {
+      @apply mt-8 border-0 bg-transparent pt-2 lg:mt-10 lg:pt-4;
+    }
+
+    .how-we-work-page-engagement__process-heading {
+      @apply mb-6 text-left text-lg font-bold uppercase tracking-wide text-white lg:mb-8 lg:text-xl;
+    }
+
+    .how-we-work-page-collaboration-process__grid {
+      @apply flex w-full min-w-0 flex-col gap-4 lg:flex-row lg:flex-nowrap lg:items-stretch lg:gap-0;
+    }
+
+    .hww-process-card {
+      @apply relative flex min-h-[240px] flex-1 flex-col justify-end overflow-hidden rounded-sm border border-white/25 text-slate-900 shadow-lg transition-shadow duration-300 lg:min-h-[280px] lg:min-w-0 lg:flex-[1_1_0%];
+
+      @media (min-width: 1024px) {
+        /* Flush row: no gap; outer corners only */
+        @apply rounded-none;
+
+        &:first-child {
+          @apply rounded-l-sm;
+        }
+
+        &:last-child {
+          @apply rounded-r-sm;
+        }
+
+        /* Single border line between adjacent cards */
+        & + & {
+          @apply -ml-px;
+        }
+      }
+    }
+
+    .hww-process-card__figure {
+      @apply pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-sm bg-black/10;
+
+      img {
+        @apply absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-500 ease-out;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .how-we-work-page-collaboration-process__grid .hww-process-card:first-child .hww-process-card__figure {
+        @apply rounded-l-sm rounded-r-none;
+      }
+
+      .how-we-work-page-collaboration-process__grid .hww-process-card:last-child .hww-process-card__figure {
+        @apply rounded-r-sm rounded-l-none;
+      }
+
+      .how-we-work-page-collaboration-process__grid .hww-process-card:not(:first-child):not(:last-child) .hww-process-card__figure {
+        @apply rounded-none;
+      }
+
+      .hww-process-card:hover .hww-process-card__figure img {
+        transform: scale(1.04);
+      }
+    }
+
+    .hww-process-card__body {
+      @apply relative z-[1] flex flex-col bg-white/95 p-4 lg:flex-none lg:p-5;
+    }
+
+    @media (min-width: 1024px) {
+      /* Collapsed: equal-height strip; expanded (hover): full card */
+      .hww-process-card__body {
+        @apply w-full shrink-0 justify-start gap-2 overflow-hidden transition-[min-height,height,box-shadow] duration-300 ease-out;
+        height: 9rem;
+        min-height: 9rem;
+        max-height: 9rem;
+      }
+
+      .hww-process-card__title {
+        @apply line-clamp-2;
+      }
+
+      .hww-process-card:hover .hww-process-card__body,
+      .hww-process-card:focus-within .hww-process-card__body {
+        @apply absolute inset-0 z-[2] h-full min-h-0 max-h-none justify-start overflow-hidden shadow-lg;
+        height: 100%;
+        min-height: 100%;
+        max-height: none;
+      }
+
+      .hww-process-card:hover .hww-process-card__title,
+      .hww-process-card:focus-within .hww-process-card__title {
+        @apply line-clamp-none;
+      }
+
+      .hww-process-card:hover .hww-process-card__description,
+      .hww-process-card:focus-within .hww-process-card__description {
+        @apply mt-3 flex-1 overflow-y-auto opacity-100;
+        max-height: none;
+      }
+    }
+
+    .hww-process-card__top {
+      @apply mb-2 flex shrink-0 items-center justify-between gap-2 lg:mb-0;
+    }
+
+    .hww-process-card__step {
+      @apply m-0 text-lg font-bold tabular-nums text-slate-900 lg:text-xl;
+    }
+
+    /* Arrow in .hww-process-card__top — inside the card (all five steps); SVG is 55×14 */
+    .hww-process-card__arrow {
+      @apply block h-[14px] w-[55px] shrink-0 bg-contain bg-right bg-no-repeat;
+      background-image: url("../img/hww-process-long-arrow.svg");
+    }
+
+    @media (min-width: 1024px) {
+      .hww-process-card__top {
+        @apply min-w-0;
+      }
+    }
+
+    .hww-process-card__title {
+      @apply m-0 text-base font-bold leading-snug text-slate-900 sm:text-lg;
+    }
+
+    .hww-process-card__description {
+      @apply mt-2 max-h-0 overflow-hidden text-sm leading-relaxed text-slate-800 opacity-0 transition-all duration-300 ease-out lg:mt-0 lg:text-[0.9375rem];
+    }
+
+    @media (max-width: 1023px) {
+      .hww-process-card__description {
+        @apply mt-2 max-h-none opacity-100;
+      }
+    }
+
+    /* Mobile list — must stay max-width only: unconditional `display:flex` here beats Tailwind `lg:hidden` on the same element (higher specificity). */
+    @media (max-width: 1023px) {
+      .hww-engagement__mob-grid.service-items {
+        @apply mb-10 flex w-full flex-col overflow-hidden rounded-sm border border-white/30 bg-white/10 backdrop-blur-sm;
+      }
+
+      .hww-engagement__mob-list.col {
+        @apply w-full border-0;
+      }
+
+      .hww-engagement__mob-item {
+        @apply relative flex cursor-pointer items-center justify-between gap-3 border-b border-white/25 p-4 transition-all duration-300 ease-in-out last:border-b-0 sm:p-5;
+
+        h2 {
+          @apply m-0 flex flex-1 items-center gap-3 text-base font-bold text-white sm:text-lg;
+
+          span {
+            @apply flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-white text-sm font-bold text-white;
+          }
+        }
+
+        .arrow-icon {
+          @apply flex shrink-0 text-white;
+
+          svg {
+            @apply h-5 w-5;
+          }
+        }
+
+        &.active,
+        &:hover {
+          @apply bg-white shadow-md;
+
+          h2 {
+            @apply text-slate-900;
+
+            span {
+              @apply border-primary text-primary;
+            }
+          }
+
+          .arrow-icon {
+            @apply text-primary;
+          }
+        }
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .hww-engagement__mob-grid.service-items {
+        display: none;
+      }
+    }
+  }
+
+  /* Mobile overlay: ~20px gap below header strip; above page + header (z-100) */
+  #hwwEngagementBottomSheetOverlay.bottom-sheet-overlay {
+    @media (max-width: 1023px) {
+      @apply z-[350];
+      top: calc(3.75rem + env(safe-area-inset-top, 0px) + 20px);
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+  }
+
+  /* Bottom sheet — anchored top+bottom so height fills; scroll inside .bottom-sheet-content */
+  .hww-engagement-bottom-sheet.bottom-sheet {
+    @media (max-width: 1023px) {
+      @apply z-[360] left-0 right-0 mx-0 max-h-none w-full max-w-none overflow-hidden rounded-t-2xl border-0 p-0;
+      top: calc(3.75rem + env(safe-area-inset-top, 0px) + 20px);
+      bottom: 0;
+      transform: none;
+      -webkit-overflow-scrolling: touch;
+
+      &.active {
+        @apply flex flex-col;
+      }
+    }
+
+    .bottom-sheet-header {
+      @apply border-b border-white/20;
+      @media (max-width: 1023px) {
+        @apply shrink-0;
+      }
+    }
+
+    .bottom-sheet-title {
+      @apply text-left text-lg font-bold text-white;
+    }
+
+    /* Scroll here — inner body grows with cloned HTML; nested overflow-y on body breaks iOS flex sizing */
+    .bottom-sheet-content {
+      @media (max-width: 1023px) {
+        @apply min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-4 pt-4 pb-6;
+        -webkit-overflow-scrolling: touch;
+        /* Stronger than body touch-action:none from scroll-lock; enables sheet scrolling */
+        touch-action: pan-y pinch-zoom;
+      }
+    }
+
+    .hww-engagement-sheet-body {
+      @apply px-4 pb-6 pt-2 text-left text-sm leading-relaxed text-white/95 sm:px-6 sm:text-base;
+      @media (max-width: 1023px) {
+        @apply block min-h-0 overflow-visible px-0 pb-0 pt-0;
+      }
+
+      .hww-engagement__panel-shell {
+        @apply border-0 bg-transparent p-0 shadow-none;
+      }
+
+      .hww-engagement__panel-inner {
+        @apply border-0 pb-6;
+      }
+
+      .how-we-work-page-collaboration-process__grid {
+        @apply flex-col;
+      }
+
+      .hww-process-card__description {
+        @apply max-h-none opacity-100;
+      }
+    }
+  }
+}

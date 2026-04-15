@@ -1,7 +1,7 @@
 .stats {
   @apply relative flex items-center justify-center;
   .wrapper {
-    @apply absolute top-0 w-full max-w-[80%] lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] translate-y-[-50%] min-h-[25vh] z-10 flex items-center justify-center mx-auto ;
+    @apply absolute top-0 w-full max-w-[80%] lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] translate-y-[-50%] min-h-[25vh] z-10 flex items-center justify-center mx-auto ;
     img {
       @apply absolute top-0 left-0 w-full h-full object-cover object-top;
     }

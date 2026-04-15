@@ -16,13 +16,13 @@
       <div class="why-nsc-hero__inner">
         <div class="why-nsc-hero__panel">
           <h1 id="why-nsc-hero-title" class="why-nsc-hero__title">
-            <span class="why-nsc-hero__title-why">{{ (titleWhy|default('Why'))|e }}</span>
+            <span class="why-nsc-hero__title-why">{{ (titleWhy|default('Why'))|e }}</span>&nbsp;
             <span class="why-nsc-hero__title-brand">
               <span class="why-nsc-hero__title-brand-text highlight">{{ (titleBrand|default('NSC Software'))|e }}</span>
             </span>
           </h1>
-          <p class="why-nsc-hero__lead">{{ (lead|default('Engineering Excellence Powered by Senior Talent'))|e }}</p>
           <div class="why-nsc-hero__copy">
+            <p>{{ (lead|default('Engineering Excellence Powered by Senior Talent'))|e }}</p>
             {% set introHtml = intro|default('')|trim %}
             {% if introHtml %}
             {{ introHtml|raw }}

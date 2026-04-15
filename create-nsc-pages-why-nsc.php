@@ -29,6 +29,7 @@ function nsc_why_nsc_build_page_components(): array
     if ($heroDesk > 0) {
         $heroRow['imageDesktop'] = $heroDesk;
     }
+
     if ($heroMob > 0) {
         $heroRow['imageMobile'] = $heroMob;
     }
@@ -59,7 +60,7 @@ function nsc_why_nsc_build_page_components(): array
 
     $built = [
         'acf_fc_layout' => 'nscBlockWhyNscBuilt',
-        'title'         => 'Built in Vietnam. <br class="hidden lg:block"> Delivered Globally.',
+        'title'         => 'Built in Vietnam<br class="hidden lg:block"> Delivered Globally.',
         'intro'         => '<p>Founded in Vietnam with a global vision, NSC Software provides high-quality software development and technology consulting for companies worldwide.</p>',
         'cards'         => [
             [
@@ -92,62 +93,131 @@ function nsc_why_nsc_build_page_components(): array
     $f6 = $img('why-nsc-different-col-6.webp');
     $f7 = $img('why-nsc-different-col-7.webp');
 
+    $diffBody1 = <<<'HTML'
+<p>Every project at NSC is led by experienced senior engineers who take ownership of architecture, design decisions, and delivery quality.</p>
+
+<p>To improve efficiency and development speed, our engineers leverage AI-assisted development tools for coding support, testing automation, and knowledge acceleration.</p>
+
+<p>The result is a modern development process where human expertise and AI efficiency work together to deliver faster and better outcomes.</p>
+HTML;
+
+    $diffBody2 = <<<'HTML'
+<p>Vietnam is one of the fastest-growing technology talent markets in Asia. NSC carefully selects engineers from the top tier of Vietnam&rsquo;s IT workforce, ensuring strong technical foundations and analytical problem-solving skills.</p>
+
+<p>Our hiring process evaluates candidates through:</p>
+
+<ul>
+<li>Technical assessments</li>
+<li>System design capability</li>
+<li>Real-world development experience</li>
+<li>Communication and collaboration skills</li>
+</ul>
+
+<p>This ensures our clients work with engineers who can think critically, solve complex challenges, and deliver reliable solutions.</p>
+HTML;
+
+    $diffBody3 = <<<'HTML'
+<p>Unlike traditional outsourcing models that rely heavily on junior developers, NSC focuses on senior-level engineering talent.</p>
+<p>All engineers in our team have extensive professional experience and the ability to independently handle complex technical problems.</p>
+<p>This allows us to deliver:</p>
+<ul>
+<li>Faster development cycles</li>
+<li>Higher code quality</li>
+<li>Reduced project risks</li>
+<li>Stronger technical decision-making</li>
+</ul>
+HTML;
+
+    $diffBody4 = <<<'HTML'
+<p>Every NSC engineer brings at least six years of real-world development experience across a wide range of technologies and industries.</p>
+
+<p>This experience enables our teams to:</p>
+<ul>
+<li>Design scalable system architectures</li>
+<li>Identify potential risks early</li>
+<li>Implement best practices in software engineering</li>
+<li>Deliver stable and maintainable solutions</li>
+</ul>
+<p>Our engineers understand not just how to write code, but how to build systems that perform reliably in real-world environments.</p>
+HTML;
+
+    $diffBody5 = <<<'HTML'
+<p>Clear is critical in international software projects. At NSC, our engineering teams are fully English-proficient, enabling smooth collaboration with global clients.</p>
+<p>Our teams actively participate in:</p>
+<ul>
+<li>Technical planning meetings</li>
+<li>Agile sprint ceremonies</li>
+<li>Architecture discussions</li>
+<li>Product and requirement reviews</li>
+</ul>
+<p>This ensures alignment, transparency, and faster decision-making throughout the project lifecycle.</p>
+HTML;
+
+    $diffBody6 = <<<'HTML'
+<p>NSC Software operates in working hours that overlap with Europe, Australia, and North America, Asia enabling real-time communication with international clients.</p>
+<p>This allows for:</p>
+<ul>
+<li>Faster feedback cycles</li>
+<li>Immediate issue resolution</li>
+<li>Efficient project coordination</li>
+<li>Continuous development progress</li>
+</ul>
+<p>Clients benefit from the flexibility of global teams while maintaining the responsiveness of a close collaboration.</p>
+HTML;
+
+    $diffBody7 = <<<'HTML'
+<p>One of the major advantages of working with NSC Software is the ability to access high-quality engineering talent at competitive development costs.</p>
+<p>Vietnam&rsquo;s technology ecosystem allows companies to scale development capacity without the high operational costs typically found in Western markets.</p>
+<p>NSC combines:</p>
+<ul>
+<li>Senior engineering expertise</li>
+<li>Global development standards</li>
+<li>Efficient cost structures</li>
+</ul>
+<p>This creates a model where companies receive premium engineering quality at a sustainable investment level.</p>
+HTML;
+
     $diffItems = [
         [
             'title' => 'Senior-Led, AI-Enhanced Development',
             'feature_alt' => 'NSC senior engineers collaborating in a modern office',
-            'body'  => '<p>Every project at NSC is led by experienced senior engineers who take ownership of architecture, design decisions, and delivery quality.</p>'
-                . '<p>To improve efficiency and development speed, our engineers leverage AI-assisted development tools for coding support, testing automation, and knowledge acceleration.</p>'
-                . '<p>The result is a modern development process where human expertise and AI efficiency work together to deliver faster and better outcomes.</p>',
+            'body'  => $diffBody1,
             'feature_image' => $f1 > 0 ? $f1 : '',
         ],
         [
-            'title' => 'Access to Vietnam\'s Top 7% IT Talent',
+            'title' => 'Access to Vietnam&rsquo;s Top 7% IT Talent',
             'feature_alt' => 'NSC engineering workspace in Vietnam',
-            'body'  => '<p>Vietnam is one of the fastest-growing technology talent markets in Asia. NSC carefully selects engineers from the top tier of Vietnam\'s IT workforce, ensuring strong technical foundations and analytical problem-solving skills.</p>'
-                . '<p>Our hiring process evaluates candidates through:</p><ul><li>Technical assessments</li><li>System design capability</li><li>Real-world development experience</li><li>Communication and collaboration skills</li></ul>'
-                . '<p>This ensures our clients work with engineers who can think critically, solve complex challenges, and deliver reliable solutions.</p>',
+            'body'  => $diffBody2,
             'feature_image' => $f2 > 0 ? $f2 : '',
         ],
         [
             'title' => '100% Senior-Level Engineering Team',
             'feature_alt' => 'NSC partnership and delivery commitment',
-            'body'  => '<p>Unlike traditional outsourcing models that rely heavily on junior developers, NSC focuses on senior-level engineering talent.</p>'
-                . '<p>All engineers in our team have extensive professional experience and the ability to independently handle complex technical problems.</p>'
-                . '<p>This allows us to deliver:</p><ul><li>Faster development cycles</li><li>Higher code quality</li><li>Reduced project risks</li><li>Stronger technical decision-making</li></ul>',
+            'body'  => $diffBody3,
             'feature_image' => $f3 > 0 ? $f3 : '',
         ],
         [
             'title' => 'Minimum 6+ Years of Professional Experience',
             'feature_alt' => 'NSC technology delivery',
-            'body'  => '<p>Every NSC engineer brings at least six years of real-world development experience across a wide range of technologies and industries.</p>'
-                . '<p>This experience enables our teams to:</p><ul><li>Design scalable system architectures</li><li>Identify potential risks early</li><li>Implement best practices in software engineering</li><li>Deliver stable and maintainable solutions</li></ul>'
-                . '<p>Our engineers understand not just how to write code, but how to build systems that perform reliably in real-world environments.</p>',
+            'body'  => $diffBody4,
             'feature_image' => $f4 > 0 ? $f4 : '',
         ],
         [
             'title' => 'Global Communication Standards',
             'feature_alt' => 'Global communication standards',
-            'body'  => '<p>Clear communication is critical in international software projects. At NSC, our engineering teams are fully English-proficient, enabling smooth collaboration with global clients.</p>'
-                . '<p>Our teams actively participate in:</p><ul><li>Technical planning meetings</li><li>Agile sprint ceremonies</li><li>Architecture discussions</li><li>Product and requirement reviews</li></ul>'
-                . '<p>This ensures alignment, transparency, and faster decision-making throughout the project lifecycle.</p>',
+            'body'  => $diffBody5,
             'feature_image' => $f5 > 0 ? $f5 : '',
         ],
         [
             'title' => 'Time-Zone Friendly Collaboration',
             'feature_alt' => 'Time-zone friendly NSC collaboration',
-            'body'  => '<p>NSC Software operates in working hours that overlap with Europe, Australia, and North America, Asia enabling real-time communication with international clients.</p>'
-                . '<p>This allows for:</p><ul><li>Faster feedback cycles</li><li>Immediate issue resolution</li><li>Efficient project coordination</li><li>Continuous development progress</li></ul>'
-                . '<p>Clients benefit from the flexibility of global teams while maintaining the responsiveness of a close collaboration.</p>',
+            'body'  => $diffBody6,
             'feature_image' => $f6 > 0 ? $f6 : '',
         ],
         [
             'title' => 'High Quality, Cost-Efficient Delivery',
             'feature_alt' => 'High quality software delivery with NSC',
-            'body'  => '<p>One of the major advantages of working with NSC Software is the ability to access high-quality engineering talent at competitive development costs.</p>'
-                . '<p>Vietnam\'s technology ecosystem allows companies to scale development capacity without the high operational costs typically found in Western markets.</p>'
-                . '<p>NSC combines:</p><ul><li>Senior engineering expertise</li><li>Global development standards</li><li>Efficient cost structures</li></ul>'
-                . '<p>This creates a model where companies receive premium engineering quality at a sustainable investment level.</p>',
+            'body'  => $diffBody7,
             'feature_image' => $f7 > 0 ? $f7 : '',
         ],
     ];
@@ -165,16 +235,18 @@ function nsc_why_nsc_build_page_components(): array
     if ($headingIconField !== '') {
         $different['headingIcon'] = $headingIconField;
     }
+
     if ($bgDiff > 0) {
         $different['backgroundImage'] = $bgDiff;
     }
+
     if ($sheetBg > 0) {
         $different['bottomSheetBg'] = $sheetBg;
     }
 
     $slides = [];
     for ($i = 1; $i <= 10; $i++) {
-        $fn = sprintf('why-nsc-team-%02d.png', $i);
+        $fn = sprintf('why-nsc-team-%02d.webp', $i);
         $sid = $img($fn);
         if ($sid > 0) {
             $slides[] = ['image' => $sid];
@@ -186,9 +258,9 @@ function nsc_why_nsc_build_page_components(): array
         'titlePrefix'     => 'A Team Built on',
         'titleAccent1'    => 'Expertise',
         'titleConjunction'=> 'and',
-        'titleAccent2'    => 'Culture',
+        'titleAccent2'    => 'Expertise',
         'lead'            => 'At NSC Software, we believe that great technology solutions come from great people. Our culture encourages collaboration, continuous learning, and technical excellence.',
-        'cardText'        => '<p>Engineers at NSC <br> are empowered to take ownership, <br> explore new technologies, and <br> continuously improve their skills <br> while working on challenging <br> global projects.</p>',
+        'cardText'        => 'Engineers at NSC <br> are empowered to take ownership, <br> explore new technologies, and <br> continuously improve their skills <br> while working on challenging <br> global projects.',
         'sliderAriaLabel' => 'NSC Software team',
         'slides'          => $slides,
         'options'         => ['theme' => ''],
@@ -200,7 +272,7 @@ function nsc_why_nsc_build_page_components(): array
     $cta = [
         'acf_fc_layout' => 'nscBlockWhyNscCta',
         'title'         => 'Start Building with NSC Software',
-        'body'          => 'Whether you\'re a startup building a new product or an enterprise scaling your technology platform, NSC Software provides the engineering expertise needed to bring your ideas to life.',
+        'body'          => 'Whether you\'re a startup building a new product or an enterprise scaling <br> your technology platform, NSC Software provides the engineering expertise <br> needed to bring your ideas to life.',
         'button'        => [
             'label'         => 'Let\'s build the future of technology together',
             'url'           => '',

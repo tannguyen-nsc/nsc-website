@@ -310,14 +310,17 @@ function post_plain_excerpt($post, int $maxLen = 280): string
  */
 function build_vue_blog_items(string $placeholderImageUrl): array
 {
-    $args = [
-        'post_status' => 'publish',
-        'post_type' => POST_TYPE,
-        'posts_per_page' => VUE_POSTS_MAX,
-        'orderby' => 'date',
-        'order' => 'DESC',
-        'ignore_sticky_posts' => 1,
-    ];
+    $args = array_merge(
+        [
+            'post_status' => 'publish',
+            'post_type' => POST_TYPE,
+            'posts_per_page' => VUE_POSTS_MAX,
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'ignore_sticky_posts' => 1,
+        ],
+        function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+    );
     $collection = Timber::get_posts($args);
     $posts = is_object($collection) && method_exists($collection, 'to_array')
         ? $collection->to_array()
@@ -354,15 +357,18 @@ function build_vue_blog_items(string $placeholderImageUrl): array
 function get_featured_posts_for_archive(int $limit = 4): array
 {
     $limit = max(1, min(24, $limit));
-    $q = [
-        'post_type' => POST_TYPE,
-        'post_status' => 'publish',
-        'posts_per_page' => $limit,
-        'ignore_sticky_posts' => 1,
-        'orderby' => 'date',
-        'order' => 'DESC',
-        'meta_query' => featured_article_yes_meta_query(),
-    ];
+    $q = array_merge(
+        [
+            'post_type' => POST_TYPE,
+            'post_status' => 'publish',
+            'posts_per_page' => $limit,
+            'ignore_sticky_posts' => 1,
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'meta_query' => featured_article_yes_meta_query(),
+        ],
+        function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+    );
     $featured = Timber::get_posts($q);
     return is_object($featured) && method_exists($featured, 'to_array')
         ? $featured->to_array()
@@ -399,10 +405,13 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsArchive', function ($
     $filterDefs = [];
     if (!$hideCategories) {
         $filterDefs[] = ['id' => 'all', 'label' => $listLabels['allCategoriesLabel']];
-        $terms = get_terms([
-            'taxonomy' => TAXONOMY,
-            'hide_empty' => true,
-        ]);
+        $terms = get_terms(array_merge(
+            [
+                'taxonomy' => TAXONOMY,
+                'hide_empty' => true,
+            ],
+            function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+        ));
         if (!is_wp_error($terms)) {
             foreach ($terms as $term) {
                 if (!$term instanceof \WP_Term || is_uncategorized_category($term)) {

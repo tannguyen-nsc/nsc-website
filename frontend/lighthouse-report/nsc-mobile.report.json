@@ -852,7 +852,7 @@
             "sessionTargetType": "page",
             "protocol": "http/1.1",
             "rendererStartTime": 1201.3420000001788,
-            "networkRequestTime": 1280.8210000023246,
+            "networkRequestTime": 1140.8210000023246,
             "networkEndTime": 1284.0020000003278,
             "finished": true,
             "transferSize": 59350,

@@ -2,7 +2,7 @@ footer {
   @apply bg-white text-black border-t border-[#E5E5E5];
   
   .wrapper {
-    @apply grid grid-cols-1 lg:grid-cols-[35%_65%] max-w-full mx-auto lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
+    @apply grid grid-cols-1 lg:grid-cols-[35%_65%] max-w-full mx-auto lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px];
   }
 
   // Left Column - Company Information
@@ -126,7 +126,7 @@ footer {
   }
 
   .sitemap {
-    @apply lg:py-12 lg:border-t border-[#E5E5E5] lg:grid lg:grid-cols-1 lg:grid-cols-[35%_65%] max-w-full mx-auto lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full;
+    @apply lg:py-12 lg:border-t border-[#E5E5E5] lg:grid lg:grid-cols-1 lg:grid-cols-[35%_65%] max-w-full mx-auto lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] w-full;
     .accordion-toggle {
       @apply lg:hidden flex items-center justify-between bg-transparent border-none p-0 cursor-pointer mb-4 text-primary w-full text-left;
       

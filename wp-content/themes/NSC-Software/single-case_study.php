@@ -36,13 +36,17 @@ if (function_exists('nsc_resolve_page_permalink')) {
 $context['related_heading'] = function_exists('nsc_pll_theme') ? nsc_pll_theme('Other case studies') : __('Other case studies', 'NscSoftware');
 $context['related_cta_label'] = function_exists('nsc_pll_theme') ? nsc_pll_theme('View other case studies') : __('View other case studies', 'NscSoftware');
 
-$related = Timber::get_posts([
-    'post_type'      => 'case_study',
-    'post__not_in'   => $postId > 0 ? [$postId] : [],
-    'posts_per_page' => 3,
-    'orderby'        => 'date',
-    'order'          => 'DESC',
-]);
+$related = Timber::get_posts(array_merge(
+    [
+        'post_type'      => 'case_study',
+        'post_status'    => 'publish',
+        'post__not_in'   => $postId > 0 ? [$postId] : [],
+        'posts_per_page' => 3,
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+    ],
+    function_exists('nsc_polylang_frontend_lang_query_args') ? nsc_polylang_frontend_lang_query_args() : []
+));
 $context['related_case_studies'] = $related;
 
 Timber::render('templates/single-case-study.twig', $context);

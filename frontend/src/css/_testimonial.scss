@@ -2,7 +2,7 @@
   @apply relative lg:min-h-[180vw] md:min-h-[130vw] lg:min-h-[55vw] xl:min-h-[50vw] bg-cover lg:bg-right-top bg-no-repeat flex flex-col items-center justify-start lg:justify-center py-12 lg:py-16;
   
   .wrapper {
-    @apply flex flex-col lg:justify-center z-50 max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] px-4 gap-4 lg:gap-0;
+    @apply flex flex-col lg:justify-center z-50 max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1140px] px-4 gap-4 lg:gap-0;
     
     .description {
       @apply relative z-10 text-center flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-4 border-b border-[#E5E5E5] pt-4 py-8 lg:py-12;
@@ -13,7 +13,7 @@
     }
 
     .logos {
-      @apply relative w-full xl:max-w-[1280px] overflow-hidden md:overflow-hidden border-b border-[#E5E5E5] lg:border-b-0 pt-4 pb-8 lg:py-12;
+      @apply relative w-full xl:max-w-[1140px] overflow-hidden md:overflow-hidden border-b border-[#E5E5E5] lg:border-b-0 pt-4 pb-8 lg:py-12;
       
       &.slick-slider {
         @apply w-full;

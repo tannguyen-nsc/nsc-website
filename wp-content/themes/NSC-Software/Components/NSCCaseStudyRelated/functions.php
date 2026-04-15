@@ -67,13 +67,17 @@ function getACFLayout(): array
     $countRaw = isset($data['relatedCount']) ? (int) $data['relatedCount'] : 3;
     $count = max(1, min(12, $countRaw));
 
-    $data['related_case_studies'] = Timber::get_posts([
-        'post_type' => 'case_study',
-        'post__not_in' => $currentId > 0 ? [$currentId] : [],
-        'posts_per_page' => $count,
-        'orderby' => 'date',
-        'order' => 'DESC',
-    ]);
+    $data['related_case_studies'] = Timber::get_posts(array_merge(
+        [
+            'post_type' => 'case_study',
+            'post_status' => 'publish',
+            'post__not_in' => $currentId > 0 ? [$currentId] : [],
+            'posts_per_page' => $count,
+            'orderby' => 'date',
+            'order' => 'DESC',
+        ],
+        function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+    ));
 
     if (\function_exists('nsc_resolve_page_permalink')) {
         $data['case_studies_archive_url'] = nsc_resolve_page_permalink('case-studies');

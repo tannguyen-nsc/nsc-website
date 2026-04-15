@@ -120,14 +120,17 @@ function job_company_name(int $postId): string
  */
 function build_vue_job_items(): array
 {
-    $args = [
-        'post_status' => 'publish',
-        'post_type' => JOB_POST_TYPE,
-        'posts_per_page' => VUE_JOBS_MAX,
-        'orderby' => 'date',
-        'order' => 'DESC',
-        'ignore_sticky_posts' => 1,
-    ];
+    $args = array_merge(
+        [
+            'post_status' => 'publish',
+            'post_type' => JOB_POST_TYPE,
+            'posts_per_page' => VUE_JOBS_MAX,
+            'orderby' => 'date',
+            'order' => 'DESC',
+            'ignore_sticky_posts' => 1,
+        ],
+        function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+    );
     $collection = Timber::get_posts($args);
     $posts = is_object($collection) && method_exists($collection, 'to_array')
         ? $collection->to_array()
@@ -170,12 +173,15 @@ function build_vue_tabs(array $labels): array
         ],
     ];
 
-    $terms = get_terms([
-        'taxonomy' => JOB_CATEGORY_TAXONOMY,
-        'hide_empty' => false,
-        'orderby' => 'name',
-        'order' => 'ASC',
-    ]);
+    $terms = get_terms(array_merge(
+        [
+            'taxonomy' => JOB_CATEGORY_TAXONOMY,
+            'hide_empty' => false,
+            'orderby' => 'name',
+            'order' => 'ASC',
+        ],
+        function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+    ));
     if (!is_wp_error($terms)) {
         foreach ($terms as $term) {
             if (!$term instanceof \WP_Term) {

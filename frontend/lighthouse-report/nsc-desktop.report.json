@@ -844,7 +844,7 @@
             "sessionTargetType": "page",
             "protocol": "http/1.1",
             "rendererStartTime": 1200.6429999992251,
-            "networkRequestTime": 1280.7129999995232,
+            "networkRequestTime": 1140.7129999995232,
             "networkEndTime": 1283.6980000026524,
             "finished": true,
             "transferSize": 59350,
@@ -5165,7 +5165,7 @@
           },
           {
             "duration": 27.48,
-            "startTime": 12803.007
+            "startTime": 11403.007
           },
           {
             "duration": 26.367,

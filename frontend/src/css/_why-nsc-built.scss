@@ -16,30 +16,35 @@
       @apply relative z-[1] mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8;
     }
 
-    /* Heading block matches `.timeline .info > .col:first-child` (single column here) */
+    /* Intro: stacked on mobile; desktop = col1 (icon + heading) | col2 (description) */
     .why-nsc-built__intro {
       @apply mb-10 w-full lg:mb-12 xl:mb-14;
 
       .info {
-        @apply flex w-full flex-col items-stretch lg:flex-row;
+        @apply flex w-full flex-col items-stretch lg:flex-row lg:items-start lg:gap-8 xl:gap-10;
       }
 
       .info .col {
-        @apply w-full;
+        @apply w-full lg:w-1/2 min-w-0;
 
         &:first-child {
-          @apply flex flex-col items-start;
+          /* Desktop: column width follows icon + heading only; not equal split with description */
+          @apply flex flex-col items-start 2xl:w-auto;
 
           img {
             @apply mb-4 max-w-[32px] lg:max-w-[56px];
           }
 
           h2 {
-            @apply my-4 text-left text-2xl font-bold uppercase text-black lg:text-3xl xl:text-[42px] 2xl:text-5xl;
+            @apply my-4 text-left text-2xl font-bold uppercase text-black lg:my-0 lg:text-3xl xl:text-[42px] 2xl:text-5xl xl:leading-tight;
           }
+        }
+
+        &:last-child {
+          @apply mt-4 flex flex-col items-stretch lg:mt-0 lg:min-w-0 lg:flex-1;
 
           .description p {
-            @apply mt-4 text-left text-base font-bold leading-relaxed text-black lg:text-2xl lg:font-semibold;
+            @apply text-left text-base font-bold leading-relaxed text-black lg:text-2xl lg:font-semibold;
           }
         }
       }

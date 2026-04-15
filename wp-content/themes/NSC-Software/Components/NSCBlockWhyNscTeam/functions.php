@@ -46,7 +46,7 @@ function getACFLayout()
                 'label' => __('Title — accent word 2', 'NscSoftware'),
                 'name' => 'titleAccent2',
                 'type' => 'text',
-                'default_value' => 'Culture',
+                'default_value' => 'Expertise',
             ],
             [
                 'label' => __('Lead paragraph', 'NscSoftware'),
@@ -62,7 +62,7 @@ function getACFLayout()
                 'toolbar' => 'basic',
                 'media_upload' => 0,
                 'instructions' => __('Allows basic formatting (bold, links, line breaks).', 'NscSoftware'),
-                'default_value' => '<p>Engineers at NSC <br> are empowered to take ownership, <br> explore new technologies, and <br> continuously improve their skills <br> while working on challenging <br> global projects.</p>',
+                'default_value' => 'Engineers at NSC <br> are empowered to take ownership, <br> explore new technologies, and <br> continuously improve their skills <br> while working on challenging <br> global projects.',
             ],
             [
                 'label' => __('Slider images', 'NscSoftware'),

@@ -7,7 +7,7 @@
       <div class="why-nsc-cta__panel">
         <div class="why-nsc-cta__inner">
           <h2 id="why-nsc-cta-heading">{{ (title|default('Start Building with NSC Software'))|e }}</h2>
-          <p>{{ (body|default(''))|e }}</p>
+          <p>{{ (body|default(''))|e('wp_kses_post') }}</p>
           <a href="{{ ctaHref|e('esc_url') }}" class="why-nsc-cta__btn"{% if btn.openInNewTab|default(0) %} target="_blank" rel="noopener noreferrer"{% endif %}>
             <span class="why-nsc-cta__btn-text">{{ (btn.label|default(''))|e }}</span>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

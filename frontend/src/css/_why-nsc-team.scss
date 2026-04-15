@@ -3,9 +3,9 @@
   .why-nsc-team {
     @apply overflow-x-hidden bg-white py-12 lg:py-16;
 
-    /* Match `.why-nsc-different .wrapper` — max 1140px from xl, 1280px at 2xl */
+    /* Match `.why-nsc-different .wrapper` — max 1140px from xl, 1140px at 2xl */
     .wrapper {
-      @apply relative z-[1] mx-auto flex w-full max-w-full flex-col items-start justify-start px-4 sm:px-6 lg:max-w-[90%] lg:px-8 xl:max-w-[1140px] 2xl:max-w-[1280px];
+      @apply relative z-[1] mx-auto flex w-full max-w-full flex-col items-start justify-start px-4 sm:px-6 lg:max-w-[90%] lg:px-8 xl:max-w-[1140px] 2xl:max-w-[1140px];
     }
 
     .why-nsc-team__header {
@@ -26,11 +26,11 @@
     }
 
     .why-nsc-team__title {
-      @apply m-0 flex w-full flex-col items-start gap-1 text-left text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl  font-bold xl:leading-tight ;
+      @apply m-0 flex w-full flex-col items-start gap-1 text-left text-2xl lg:text-4xl xl:text-[42px] xl:text-[42px] 2xl:text-5xl  font-bold xl:leading-tight uppercase;
     }
 
     .why-nsc-team__title-row {
-      @apply flex items-baseline gap-x-0;
+      @apply flex lg:flex-wrap items-baseline gap-x-0;
     }
 
     .why-nsc-team__accent {
@@ -80,7 +80,7 @@
     /* Card + slider; card is centered over slider strip on lg (positioning context = this box) */
     .why-nsc-team__slider-wrap {
       @apply relative flex w-full flex-col;
-      @media (min-width: 1024px) {
+      @media (min-width: 992px) {
         width: 100vw;
         max-width: none;
         margin-left: calc(50% - 50vw);

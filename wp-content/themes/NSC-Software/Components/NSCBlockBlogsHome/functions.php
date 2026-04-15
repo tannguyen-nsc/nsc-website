@@ -100,14 +100,17 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsHome', function ($dat
         }
     }
 
-    $featuredArgs = [
-        'post_status' => 'publish',
-        'post_type' => POST_TYPE,
-        'posts_per_page' => $postsLimit,
-        'ignore_sticky_posts' => 1,
-        'post__not_in' => $excludeCurrent,
-        'meta_query' => featured_article_yes_meta_query(),
-    ];
+    $featuredArgs = array_merge(
+        [
+            'post_status' => 'publish',
+            'post_type' => POST_TYPE,
+            'posts_per_page' => $postsLimit,
+            'ignore_sticky_posts' => 1,
+            'post__not_in' => $excludeCurrent,
+            'meta_query' => featured_article_yes_meta_query(),
+        ],
+        function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+    );
     if (!empty($featuredCategoryIds)) {
         $featuredArgs['cat'] = implode(',', $featuredCategoryIds);
     }
@@ -118,13 +121,16 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockBlogsHome', function ($dat
     $excludeIds = array_merge($excludeCurrent, array_map(function ($p) {
         return $p->ID;
     }, $data['featuredPosts']));
-    $latestArgs = [
-        'post_status' => 'publish',
-        'post_type' => POST_TYPE,
-        'posts_per_page' => $postsLimit,
-        'ignore_sticky_posts' => 1,
-        'post__not_in' => $excludeIds,
-    ];
+    $latestArgs = array_merge(
+        [
+            'post_status' => 'publish',
+            'post_type' => POST_TYPE,
+            'posts_per_page' => $postsLimit,
+            'ignore_sticky_posts' => 1,
+            'post__not_in' => $excludeIds,
+        ],
+        function_exists('nsc_polylang_frontend_lang_query_args') ? \nsc_polylang_frontend_lang_query_args() : []
+    );
     if (!empty($data['latestCategory'])) {
         $raw = $data['latestCategory'];
         $ids = is_array($raw)

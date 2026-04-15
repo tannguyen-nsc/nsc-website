@@ -580,6 +580,37 @@ function nsc_seed_polylang_default_lang_query_args(): array
 }
 
 /**
+ * Merge into Timber::get_posts() / WP_Query / get_terms on the front end so secondary queries
+ * return only posts (and terms) for the active Polylang language. Without this, archive Vue payloads
+ * and related blocks can list every translation. Falls back to the default language slug when the
+ * current language is unset (e.g. some default-language URL modes without a /{lang}/ prefix).
+ *
+ * @return array{lang?: string}
+ */
+function nsc_polylang_frontend_lang_query_args(): array
+{
+    if (!function_exists('pll_languages_list')) {
+        return [];
+    }
+
+    $slug = '';
+    if (function_exists('pll_current_language')) {
+        $cur = pll_current_language('slug');
+        if (is_string($cur) && $cur !== '') {
+            $slug = $cur;
+        }
+    }
+    if ($slug === '' && function_exists('pll_default_language')) {
+        $def = pll_default_language('slug');
+        if (is_string($def) && $def !== '') {
+            $slug = $def;
+        }
+    }
+
+    return $slug !== '' ? ['lang' => $slug] : [];
+}
+
+/**
  * @return string
  */
 function nsc_seed_google_translate_api_key(): string

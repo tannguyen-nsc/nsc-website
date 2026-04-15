@@ -1,0 +1,22 @@
+// How we work — Partnership intro (white band; uses global `section .heading` like homepage How We Work)
+.page-how-we-work {
+  .how-we-work-page-partnership {
+    @apply bg-white py-12 lg:py-16;
+
+    .wrapper {
+      @apply mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8;
+    }
+
+    .how-we-work-page-partnership__heading {
+      @apply mb-8 lg:mb-10;
+    }
+
+    .how-we-work-page-partnership__copy {
+      @apply space-y-4 text-center;
+
+      p {
+        @apply text-base leading-relaxed text-[rgba(0,0,0,0.82)] sm:text-lg;
+      }
+    }
+  }
+}

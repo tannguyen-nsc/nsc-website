@@ -46,6 +46,7 @@ function should_enqueue_slick_assets(): bool
 {
     return is_front_page()
         || current_page_meta_contains_layout('nscBlockTestimonials')
+        || current_page_meta_contains_layout('nscBlockWhyUs')
         || current_page_meta_contains_layout('nscBlockWhyNsc')
         || is_page('why-nsc');
 }

@@ -17,7 +17,7 @@
     BREAKPOINTS: {
       MOBILE: 425,
       TABLET: 768,
-      DESKTOP: 1024,
+      DESKTOP: 992,
       LARGE: 1280
     },
     INIT_DELAY: 100,
@@ -111,13 +111,17 @@
       document.documentElement.style.overflow = 'hidden';
       document.documentElement.style.height = '100%';
       
-      // Prevent scroll events
+      // Prevent scroll events on the page behind the modal — must not block scrolling inside the modal (bottom sheets, etc.)
       const preventScroll = (e) => {
+        const modal = this.modal;
+        if (modal && e.target && typeof modal.contains === 'function' && modal.contains(e.target)) {
+          return;
+        }
         e.preventDefault();
         e.stopPropagation();
         return false;
       };
-      
+
       // Store handler for cleanup
       this._preventScrollHandler = preventScroll;
       
@@ -863,7 +867,7 @@
           setTimeout(positionSlider, 0);
         });
 
-        // Desktop: 5 slides at xl+ (>=1280), 3 slides at lg (1024–1279); mobile: 1 + peek (see breakpoints below).
+        // Desktop: 5 slides at xl+ (>=1140), 3 slides at lg (992–1279); mobile: 1 + peek (see breakpoints below).
         $slider.slick({
           slidesToShow: 5,
           slidesToScroll: 1,
@@ -987,7 +991,7 @@
                             screen.width;
         this.isMobile = currentWidth < CONFIG.BREAKPOINTS.LARGE;
 
-        // Only initialize on screens below 1280px
+        // Only initialize on screens below 1140px
         if (!this.isMobile) {
           // If already initialized, destroy it
           if ($whyUsContent.hasClass('slick-initialized')) {
@@ -1012,7 +1016,7 @@
           slidesToShow = 3;
         }
 
-        // For screens between 1024px and 1280px, show 3 slides
+        // For screens between 992px and 1140px, show 3 slides
         if (currentWidth >= CONFIG.BREAKPOINTS.DESKTOP && currentWidth < CONFIG.BREAKPOINTS.LARGE) {
           slidesToShow = 3;
         }
@@ -1381,6 +1385,35 @@
   // ============================================================================
   // HOW WE WORK — EQUAL HEIGHT FOR ITEM PARAGRAPHS (DESKTOP ROW)
   // ============================================================================
+
+  function initHowWeWorkPage() {
+    const engagement = document.querySelector('.how-we-work-page-engagement');
+    if (!engagement) {
+      return;
+    }
+
+    const tabs = engagement.querySelectorAll('[data-hww-tab]');
+    const panels = engagement.querySelectorAll('[data-hww-panel]');
+
+    tabs.forEach(function (tab, index) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) {
+          t.classList.remove('hww-engagement__tab--active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        panels.forEach(function (p) {
+          p.classList.remove('hww-engagement__panel--active');
+        });
+        tab.classList.add('hww-engagement__tab--active');
+        tab.setAttribute('aria-selected', 'true');
+        const panel = engagement.querySelector('[data-hww-panel="' + index + '"]');
+        if (panel) {
+          panel.classList.add('hww-engagement__panel--active');
+        }
+      });
+    });
+
+  }
 
   function initHowWeWorkParagraphEqualHeight() {
     const sections = document.querySelectorAll('.how-we-work');
@@ -1806,6 +1839,127 @@
   }
 
   // ============================================================================
+  // HOW WE WORK — ENGAGEMENT (mobile bottom sheet; clones desktop panel body)
+  // ============================================================================
+
+  class HwwEngagementBottomSheetManager extends BaseModal {
+    constructor() {
+      super({
+        overlayId: 'hwwEngagementBottomSheetOverlay',
+        modalId: 'hwwEngagementBottomSheet',
+        closeBtnId: 'hwwEngagementBottomSheetClose'
+      });
+
+      this.bottomSheet = this.modal;
+      this.titleElement = document.getElementById('hwwEngagementBottomSheetTitle');
+      this.contentElement = document.getElementById('hwwEngagementBottomSheetContent');
+      this.engagement = document.querySelector('.how-we-work-page-engagement');
+      this.isMobile = window.innerWidth < CONFIG.BREAKPOINTS.DESKTOP;
+
+      this.init();
+    }
+
+    init() {
+      super.init();
+
+      if (!this.engagement || !this.bottomSheet || !this.contentElement) {
+        return;
+      }
+
+      const mobItems = this.engagement.querySelectorAll('.hww-engagement__mob-item');
+      if (mobItems.length === 0) {
+        return;
+      }
+
+      mobItems.forEach((item) => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          this.openForItem(item);
+        });
+        item.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.openForItem(item);
+          }
+        });
+      });
+
+      window.addEventListener('resize', () => {
+        const wasMobile = this.isMobile;
+        this.isMobile = window.innerWidth < CONFIG.BREAKPOINTS.DESKTOP;
+        if (wasMobile && !this.isMobile && this.isOpen) {
+          this.close();
+        }
+      });
+    }
+
+    openForItem(mobItem) {
+      this.isMobile = window.innerWidth < CONFIG.BREAKPOINTS.DESKTOP;
+      if (!this.isMobile || !this.engagement || !this.contentElement) {
+        return;
+      }
+
+      const ref = mobItem.getAttribute('data-hww-panel-ref');
+      if (ref === null || ref === '') {
+        return;
+      }
+
+      const panel = this.engagement.querySelector('[data-hww-panel="' + ref + '"]');
+      const body = panel ? panel.querySelector('.hww-engagement__panel-body') : null;
+      if (!body) {
+        return;
+      }
+
+      const titleEl = mobItem.querySelector('h2');
+      let title = '';
+      if (titleEl) {
+        const titleClone = titleEl.cloneNode(true);
+        titleClone.querySelectorAll('span').forEach(function (span) {
+          span.remove();
+        });
+        title = titleClone.textContent.trim();
+      }
+
+      if (this.titleElement) {
+        this.titleElement.textContent = title;
+      }
+
+      this.contentElement.innerHTML = '';
+      const wrap = document.createElement('div');
+      wrap.className = 'hww-engagement-sheet-clone';
+      wrap.appendChild(body.cloneNode(true));
+      this.contentElement.appendChild(wrap);
+
+      this.engagement.querySelectorAll('.hww-engagement__mob-item').forEach(function (el) {
+        el.classList.toggle('active', el === mobItem);
+      });
+
+      this.open();
+    }
+
+    onOpen() {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          if (this.bottomSheet) {
+            this.bottomSheet.scrollTop = 0;
+            const contentArea = this.bottomSheet.querySelector('.bottom-sheet-content');
+            if (contentArea) {
+              contentArea.scrollTop = 0;
+            }
+          }
+        });
+      });
+    }
+
+    onClose() {
+      if (this.contentElement) {
+        this.contentElement.innerHTML = '';
+      }
+    }
+  }
+
+  // ============================================================================
   // TESTIMONIAL MODAL
   // ============================================================================
 
@@ -2184,9 +2338,11 @@
           featureImgAlt = descPhoto.getAttribute('alt') || '';
         }
       }
+
       if (!featureImgSrc) {
         featureImgSrc = diffItem.getAttribute('data-feature-img') || '';
       }
+
       if (!featureImgAlt) {
         featureImgAlt = diffItem.getAttribute('data-feature-alt') || '';
       }
@@ -2596,7 +2752,7 @@
     const wrappers = document.querySelectorAll('footer .offices-wrapper');
     if (!wrappers.length) return;
 
-    const isLg = window.matchMedia('(min-width: 1024px)').matches;
+    const isLg = window.matchMedia('(min-width: 992px)').matches;
 
     wrappers.forEach(function(wrapper) {
       const officeCols = wrapper.querySelectorAll('.offices');
@@ -2812,7 +2968,7 @@
 
       // Desktop: hover to activate (same as click)
       item.addEventListener('mouseenter', function() {
-        if (window.matchMedia('(min-width: 1024px)').matches) {
+        if (window.matchMedia('(min-width: 992px)').matches) {
           openItem();
         }
       });
@@ -2905,7 +3061,7 @@
    * Visible primary nav bar height (desktop or mobile), matching lg breakpoint.
    */
   function getFixedNavigationBarHeight() {
-    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
+    const isDesktop = window.matchMedia('(min-width: 992px)').matches;
     const bar = isDesktop
       ? document.querySelector('header.desktop-header')
       : document.querySelector('header.mobile-header .mobile-header-wrapper');
@@ -3085,6 +3241,7 @@
     initOurServicesEqualHeight();
     initOurServicesHeaderTextSync();
     initHowWeWorkParagraphEqualHeight();
+    initHowWeWorkPage();
 
     const scrollAnimations = new ScrollAnimationManager();
     scrollAnimations.init();
@@ -3422,6 +3579,10 @@
 
       if (document.getElementById('whyNscDiffBottomSheet') && document.getElementById('whyNscDiffBottomSheetContent')) {
         new WhyNscDifferentBottomSheetManager();
+      }
+
+      if (document.getElementById('hwwEngagementBottomSheet') && document.getElementById('hwwEngagementBottomSheetContent')) {
+        new HwwEngagementBottomSheetManager();
       }
     } catch (error) {
       console.error('Error initializing components:', error);

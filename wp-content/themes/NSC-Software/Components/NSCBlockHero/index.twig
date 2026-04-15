@@ -54,14 +54,14 @@
   {% elseif style == 'left_text' %}
     {# About us: desktop + mobile images, headlines right #}
     {% if imageDesktop.url or imageDesktop.src %}
-      <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="xl:block hidden" loading="eager" fetchpriority="high" />
+      <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="lg:block hidden" loading="eager" fetchpriority="high" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/hero-left-text.webp" alt="" class="xl:block hidden" loading="eager" fetchpriority="high" />
+      <img src="{{ theme.buildUri }}/img/hero-left-text.webp" alt="" class="lg:block hidden" loading="eager" fetchpriority="high" />
     {% endif %}
     {% if imageMobile.url or imageMobile.src %}
-      <img src="{{ (imageMobile.url|default(imageMobile.src))|e('esc_url') }}" alt="{{ (imageMobile.alt|default(''))|e }}" class="xl:hidden" loading="eager" fetchpriority="high" />
+      <img src="{{ (imageMobile.url|default(imageMobile.src))|e('esc_url') }}" alt="{{ (imageMobile.alt|default(''))|e }}" class="lg:hidden" loading="eager" fetchpriority="high" />
     {% elseif theme.buildUri %}
-      <img src="{{ theme.buildUri }}/img/hero-left-text-mob.webp" alt="" class="xl:hidden" loading="eager" fetchpriority="high" />
+      <img src="{{ theme.buildUri }}/img/hero-left-text-mob.webp" alt="" class="lg:hidden" loading="eager" fetchpriority="high" />
     {% endif %}
     <div class="headlines animate__animated animate__fadeInRightBig">
       <h1>{{ headline|raw }}</h1>
@@ -97,14 +97,14 @@
     {# dark (AI / Our Services): desktop + mobile (or single image); Background/hero image field hidden in CMS for this style only #}
     {% if imageDesktop.url or imageDesktop.src or imageMobile.url or imageMobile.src %}
       {% if imageDesktop.url or imageDesktop.src %}
-        <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="xl:block hidden" loading="lazy" />
+        <img src="{{ (imageDesktop.url|default(imageDesktop.src))|e('esc_url') }}" alt="{{ (imageDesktop.alt|default(''))|e }}" class="lg:block hidden" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/ai-hero.webp" alt="" class="xl:block hidden" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/ai-hero.webp" alt="" class="lg:block hidden" loading="lazy" />
       {% endif %}
       {% if imageMobile.url or imageMobile.src %}
-        <img src="{{ (imageMobile.url|default(imageMobile.src))|e('esc_url') }}" alt="{{ (imageMobile.alt|default(''))|e }}" class="xl:hidden" loading="lazy" />
+        <img src="{{ (imageMobile.url|default(imageMobile.src))|e('esc_url') }}" alt="{{ (imageMobile.alt|default(''))|e }}" class="lg:hidden" loading="lazy" />
       {% elseif theme.buildUri %}
-        <img src="{{ theme.buildUri }}/img/mob-ai-hero.webp" alt="" class="xl:hidden" loading="lazy" />
+        <img src="{{ theme.buildUri }}/img/mob-ai-hero.webp" alt="" class="lg:hidden" loading="lazy" />
       {% endif %}
     {% else %}
       {% if image.url or image.src %}

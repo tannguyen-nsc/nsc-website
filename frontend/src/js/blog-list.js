@@ -27,7 +27,7 @@
       return;
     }
 
-    var isLg = window.matchMedia('(min-width: 1024px)').matches;
+    var isLg = window.matchMedia('(min-width: 992px)').matches;
 
     for (var i = 0; i < items.length; i++) {
       var item = items[i];
@@ -200,7 +200,7 @@
         var total = this.totalPages;
         var current = this.currentPage;
         var result = [];
-        var isMobilePagination = this.viewportWidth < 1024;
+        var isMobilePagination = this.viewportWidth < 992;
 
         if (total <= 0) {
           return result;

@@ -1,11 +1,8 @@
 // Why NSC — Hero (Figma: desktop frame hero / mobile top)
 .page-why-nsc {
   .why-nsc-hero {
-    @apply relative overflow-hidden bg-[#050a12] text-white;
-    min-height: 42rem;
-    @screen lg {
-      min-height: 36rem;
-    }
+    /* Min heights match `.hero` on the home page (_hero.scss) */
+    @apply relative flex min-h-[180vw] items-center justify-center overflow-hidden bg-[#050a12] text-white md:min-h-[130vw] xl:min-h-[60vw] 2xl:min-h-[50vw];
 
     &::after {
       content: "";
