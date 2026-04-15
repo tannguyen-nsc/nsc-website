@@ -7,7 +7,7 @@ declare(strict_types=1);
  *
  * Default run: menus for the default Polylang language (or a single menu if Polylang is off),
  * assigns theme locations, mirrors the same menu term to every language in Polylang.
- * Footer sitemap tree is stored in one menu (Home, About, Why NSC Software, AI + children, Careers, Blog, Case Studies) and assigned to both sitemap_footer and navigation_footer
+ * Footer sitemap tree is stored in one menu (Home, About, Why NSC Software, How we work, AI + children, Careers, Blog, Case Studies) and assigned to both sitemap_footer and navigation_footer
  * (NSCFooter: column links + sitemap columns) for each locale. Policy pages use <code>footer_policy</code>.
  *
  * seed_lang={slug}|all: builds menus for those languages only (translated labels + translated page IDs),
@@ -458,6 +458,18 @@ function nsc_seed_menus_populate_main(int $menuId, string $lang): void
             'menu-item-parent-id' => $aboutParentId,
         ]);
         nsc_seed_menus_mark_item($cid);
+        ++$aboutChildPos;
+    }
+
+    $howWeWorkId = nsc_seed_menus_page_id('how-we-work', $lang);
+    if ($howWeWorkId > 0 && $aboutParentId > 0) {
+        $cid = nsc_seed_menus_add_item($menuId, [
+            'menu-item-title' => $t('How we work'),
+            'menu-item-object-id' => $howWeWorkId,
+            'menu-item-position' => $aboutChildPos,
+            'menu-item-parent-id' => $aboutParentId,
+        ]);
+        nsc_seed_menus_mark_item($cid);
     }
 
     $addPage('ai', 'AI', 'highlight');
@@ -505,7 +517,7 @@ function nsc_seed_menus_populate_main(int $menuId, string $lang): void
 }
 
 /**
- * Top-level order: Home, About Us (links to About page; dropdown: Why NSC Software only), AI page (+ Our Services, Technology Capabilities as children), Careers, Blog, Case Studies.
+ * Top-level order: Home, About Us (links to About page; dropdown: Why NSC Software, How we work), AI page (+ Our Services, Technology Capabilities as children), Careers, Blog, Case Studies.
  */
 function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
 {
@@ -533,6 +545,7 @@ function nsc_seed_menus_populate_sitemap(int $menuId, string $lang): void
     $addPage('home', 'Home');
     $addPage('about', 'About Us');
     $addPage('why-nsc', 'Why NSC Software');
+    $addPage('how-we-work', 'How we work');
 
     $aiPid = nsc_seed_menus_page_id('ai', $lang);
     $parentId = 0;

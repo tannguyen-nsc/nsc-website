@@ -38,4 +38,6 @@ $register('NSCBlockGlobalPresence', 'backgroundDesktop', 'backgroundMobile');
 $register('NSCBlockOurLeaders', 'backgroundDesktop', 'backgroundMobile');
 $register('NSCBlockWhyUs', 'backgroundImage', 'backgroundImageMobile');
 $register('NSCBlockHowWeWork', 'image', 'imageMobile');
+$register('NSCBlockHowWeWorkPageHero', 'imageDesktop', 'imageMobile');
+$register('NSCBlockHowWeWorkPageEngagement', 'backgroundDesktop', 'backgroundMobile');
 $register('NSCFooter', 'logo', 'logoMobile');

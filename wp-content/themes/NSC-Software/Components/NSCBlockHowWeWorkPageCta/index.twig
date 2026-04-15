@@ -1,0 +1,27 @@
+{% if not (options.hidden|default(0)) %}
+{% set btn = button|default({}) %}
+{% set btnUrl = btn.url|default('')|trim %}
+{% set ctaHref = btnUrl != '' ? btnUrl : function('nsc_resolve_page_permalink', 'contact') %}
+{% set hi = headingIcon.url|default(headingIcon.src)|default('') %}
+{% set iconSrc = hi != '' ? hi : (theme.buildUri ~ '/img/heading-icon.webp') %}
+<nsc-software-component name="NSCBlockHowWeWorkPageCta">
+  <section class="how-we-work-page-cta" id="section-hww-cta" aria-labelledby="hww-cta-heading">
+    <div class="how-we-work-page-cta__panel">
+      <div class="how-we-work-page-cta__inner">
+        <div class="heading">
+          <img src="{{ iconSrc|e('esc_url') }}" alt="" loading="lazy" />
+          <h2 id="hww-cta-heading">{{ (title|default(''))|e }}</h2>
+        </div>
+        {% if lead|default('') %}<p class="how-we-work-page-cta__lead">{{ lead|e }}</p>{% endif %}
+        {% if emphasis|default('') %}<p class="how-we-work-page-cta__emphasis">{{ emphasis|e }}</p>{% endif %}
+        <a href="{{ ctaHref|e('esc_url') }}" class="how-we-work-page-cta__btn"{% if btn.openInNewTab|default(0) %} target="_blank" rel="noopener noreferrer"{% endif %}>
+          <span class="how-we-work-page-cta__btn-text">{{ (btn.label|default('Talk to Our Team'))|e }}</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M8.59 16.59L13.17 12L8.59 7.41L10 6L16 12L10 18L8.59 16.59Z" fill="currentColor"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

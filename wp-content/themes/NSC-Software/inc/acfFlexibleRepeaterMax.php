@@ -16,6 +16,7 @@ const LAYOUT_REPEATER_DEFAULTS = [
     'nscBlockOurServices' => ['services', 8],
     'nscBlockWhyUs' => ['items', 7],
     'nscBlockHowWeWork' => ['items', 4],
+    'nscBlockHowWeWorkPageEngagement' => ['engagementModels', 4],
     'nscBlockOurLeaders' => ['leaders', 4],
     'nscBlockGlobalPresence' => ['locations', 5],
     'nscBlockAiImpact' => ['items', 4],

@@ -50,6 +50,10 @@ add_filter('NscSoftware/addComponentData?name=NSCBlockHowWeWork', static functio
     return $slice($data, 'items', 4);
 }, 5);
 
+add_filter('NscSoftware/addComponentData?name=NSCBlockHowWeWorkPageEngagement', static function ($data) use ($slice) {
+    return $slice($data, 'engagementModels', 4);
+}, 5);
+
 add_filter('NscSoftware/addComponentData?name=NSCBlockOurLeaders', static function ($data) use ($slice) {
     return $slice($data, 'leaders', 4);
 }, 5);

@@ -14,6 +14,7 @@ declare(strict_types=1);
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&page_scope=home
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&page_scope=policies
  *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&page_scope=why-nsc
+ *   http://localhost/nsc/create-nsc-pages.php?token=nsc-create-pages-2026&page_scope=how-we-work
  *
  * Notes:
  * - Runs idempotently (creates missing pages, updates existing by slug).
@@ -25,6 +26,7 @@ declare(strict_types=1);
  * - For the Blogs page: default template + pageComponents = Hero (dark, blogs copy with links to
  *   Home / About / AI / Our Services / Technology Capabilities) + NSC Block: Blogs (Archive) with Vue list fed from WP posts.
  * - For the Why NSC Software page (slug why-nsc): seeds pageComponents to match frontend/src/why-nsc.html main sections (Hero → … → CTA).
+ * - For the How we work page (slug how-we-work): seeds pageComponents to match frontend/src/how-we-work.html (Hero → Partnership → Engagement → Long-term → CTA).
  * - For the About page: seeds pageComponents to match frontend/build/about.html
  *   (Hero left-text → Company Snapshot → Our Story → Our Leaders → Why Us →
  *   Technology Capabilities → Global Presence → Contact). About uses the default page template.
@@ -167,6 +169,7 @@ $pages = [
     ['title' => 'Home', 'slug' => 'home', 'template' => ''], // default = page.twig + pageComponents
     ['title' => 'About', 'slug' => 'about', 'template' => ''], // default = page.twig + pageComponents (About Us sections)
     ['title' => 'Why NSC Software', 'slug' => 'why-nsc', 'template' => ''], // default = page.twig + pageComponents (Why NSC sections)
+    ['title' => 'How we work', 'slug' => 'how-we-work', 'template' => ''], // default = page.twig + pageComponents (How we work page)
     ['title' => 'AI', 'slug' => 'ai', 'template' => ''], // default = page.twig + pageComponents (AI sections)
     ['title' => 'Blogs', 'slug' => 'blogs', 'template' => ''], // default + Hero + Blogs (Archive), Vue uses WP posts
     ['title' => 'Career', 'slug' => 'career', 'template' => ''], // default + pageComponents (frontend/src/career.html sections)
@@ -710,6 +713,7 @@ function getAboutPageComponents(): array
 }
 
 require_once __DIR__ . '/create-nsc-pages-why-nsc.php';
+require_once __DIR__ . '/create-nsc-pages-how-we-work.php';
 
 /**
  * Why NSC page components matching frontend/src/why-nsc.html (Hero → Engineering trust → Built → Different → Team → CTA).
@@ -719,6 +723,16 @@ require_once __DIR__ . '/create-nsc-pages-why-nsc.php';
 function getWhyNscPageComponents(): array
 {
     return nsc_why_nsc_build_page_components();
+}
+
+/**
+ * How we work page components matching frontend/src/how-we-work.html.
+ *
+ * @return array<int, array<string, mixed>>
+ */
+function getHowWeWorkPageComponents(): array
+{
+    return nsc_how_we_work_build_page_components();
 }
 
 /**
@@ -1723,6 +1737,27 @@ foreach ($pages as $page) {
         }
 
         $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (Why NSC sections)';
+        if ($contentTest) {
+            $msg .= ', content_test=1 (all text set to "[test]")';
+        }
+
+        $results[] = [
+            'slug'    => $slug,
+            'status'  => $action,
+            'message' => $msg,
+        ];
+    } elseif ($slug === 'how-we-work') {
+        $components = getHowWeWorkPageComponents();
+        if ($contentTest) {
+            $components = applyContentTest($components);
+        }
+
+        $seededPageComponents = $components;
+        if (!$singleTarget) {
+            nsc_seed_pages_persist_page_components((int) $pageId, $components);
+        }
+
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (How we work sections)';
         if ($contentTest) {
             $msg .= ', content_test=1 (all text set to "[test]")';
         }

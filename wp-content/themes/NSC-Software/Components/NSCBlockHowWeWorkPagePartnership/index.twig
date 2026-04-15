@@ -1,0 +1,25 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockHowWeWorkPagePartnership">
+  {% set hi = headingIcon.url|default(headingIcon.src)|default('') %}
+  {% set iconSrc = hi != '' ? hi : (theme.buildUri ~ '/img/heading-icon.webp') %}
+  <section class="how-we-work-page-partnership" id="section-hww-partnership" aria-labelledby="hww-partnership-heading">
+    <div class="wrapper">
+      <header class="how-we-work-page-partnership__heading">
+        <div class="heading">
+          <img src="{{ iconSrc|e('esc_url') }}" alt="" loading="lazy" />
+          <h2 id="hww-partnership-heading">
+            {{ (headingLine1|default(''))|e }}<br />
+            <span class="lg:hidden">{{ (headingMobileLine2a|default(''))|e }}<br />{{ (headingMobileLine2b|default(''))|e }}</span>
+            <span class="hidden lg:inline">{{ (headingDesktopLine2|default(''))|e }}</span>
+          </h2>
+        </div>
+      </header>
+      {% if body|default('') %}
+      <div class="how-we-work-page-partnership__copy">
+        {{ body|raw }}
+      </div>
+      {% endif %}
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

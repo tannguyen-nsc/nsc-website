@@ -1,0 +1,23 @@
+{% if not (options.hidden|default(0)) %}
+{% set hi = headingIcon.url|default(headingIcon.src)|default('') %}
+{% set iconSrc = hi != '' ? hi : (theme.buildUri ~ '/img/heading-icon.webp') %}
+{% set fig = image.url|default(image.src)|default('') %}
+{% set figUrl = fig != '' ? fig : (theme.buildUri ~ '/img/why-nsc-built-handshake.png') %}
+<nsc-software-component name="NSCBlockHowWeWorkPageLongterm">
+  <section class="how-we-work-page-longterm" id="section-hww-longterm" aria-labelledby="hww-longterm-heading">
+    <div class="wrapper">
+      <div class="how-we-work-page-longterm__grid">
+        <div class="how-we-work-page-longterm__content">
+          <img src="{{ iconSrc|e('esc_url') }}" alt="" width="56" height="56" loading="lazy" />
+          <h2 id="hww-longterm-heading">{{ (title|default(''))|e }}</h2>
+          {% if body|default('') %}<p>{{ body|e }}</p>{% endif %}
+        </div>
+        <div class="how-we-work-page-longterm__figure">
+          <div class="how-we-work-page-longterm__figure-deco" aria-hidden="true"></div>
+          <img src="{{ figUrl|e('esc_url') }}" alt="" width="800" height="560" loading="lazy" />
+        </div>
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}

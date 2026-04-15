@@ -26,6 +26,10 @@ add_filter('body_class', function (array $classes): array {
         $classes[] = 'page-why-nsc';
     }
 
+    if (is_page('how-we-work')) {
+        $classes[] = 'page-how-we-work';
+    }
+
     return $classes;
 });
 

@@ -1,0 +1,24 @@
+{% if not (options.hidden|default(0)) %}
+<nsc-software-component name="NSCBlockHowWeWorkPageHero">
+  {% set desk = imageDesktop.url|default(imageDesktop.src)|default('') %}
+  {% set mob = imageMobile.url|default(imageMobile.src)|default('') %}
+  {% set deskUrl = desk != '' ? desk : (theme.buildUri ~ '/img/how-we-work-hero-desktop.png') %}
+  {% set mobUrl = mob != '' ? mob : (theme.buildUri ~ '/img/how-we-work-hero-mob.png') %}
+  <section class="how-we-work-page-hero" id="section-hww-hero" aria-labelledby="hww-hero-title">
+    <div class="how-we-work-page-hero__bg" aria-hidden="true">
+      <img src="{{ deskUrl|e('esc_url') }}" alt="" class="hidden lg:block how-we-work-page-hero__bg-img how-we-work-page-hero__bg-img--desktop" width="1920" height="1080" loading="eager" fetchpriority="high" />
+      <img src="{{ mobUrl|e('esc_url') }}" alt="" class="lg:hidden how-we-work-page-hero__bg-img how-we-work-page-hero__bg-img--mob" width="750" height="1334" loading="eager" fetchpriority="high" />
+    </div>
+    <div class="how-we-work-page-hero__inner">
+      <div class="how-we-work-page-hero__panel">
+        <h1 id="hww-hero-title" class="how-we-work-page-hero__title">
+          <span class="how-we-work-page-hero__title-how">{{ (titleHow|default('How'))|e }}</span>
+          <span class="how-we-work-page-hero__title-we-work">{{ (titleWeWork|default('We Work'))|e }}</span>
+        </h1>
+        {% if lead|default('') %}<p class="how-we-work-page-hero__lead">{{ lead|e }}</p>{% endif %}
+        {% if intro|default('') %}<div class="how-we-work-page-hero__copy">{{ intro|raw }}</div>{% endif %}
+      </div>
+    </div>
+  </section>
+</nsc-software-component>
+{% endif %}
