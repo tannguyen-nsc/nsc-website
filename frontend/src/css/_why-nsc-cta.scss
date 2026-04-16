@@ -1,27 +1,17 @@
 // Why NSC — CTA ("Start Building") — layered section + content backgrounds (see ai-banner / our-services-details .banner patterns)
 .page-why-nsc {
   .why-nsc-cta {
-    @apply relative overflow-hidden bg-cover bg-center bg-no-repeat px-4 py-10 sm:px-6 lg:px-8 lg:py-16;
-    background-color: #e8ecf0;
-    background-image: url("../img/why-nsc-cta-bg-mob.webp");
-
-    @media (min-width: 992px) {
-      background-image: url("../img/why-nsc-cta-bg.png");
+    @apply relative overflow-hidden bg-[#e8ecf0] bg-[url('../img/why-nsc-cta-bg-mob.webp')] bg-cover bg-center bg-no-repeat px-4 py-10 sm:px-6 lg:px-8 lg:py-16;
+    @screen lg {
+      @apply bg-[url('../img/why-nsc-cta-bg.png')];
     }
 
     .why-nsc-cta__panel {
-      @apply relative mx-auto flex w-full max-w-[1140px] flex-col items-stretch justify-center;
+      @apply relative mx-auto flex w-full max-w-[1140px] flex-col items-stretch justify-center text-center;
+      @apply bg-primary bg-[url('../img/why-nsc-cta-content-bg-mob.webp')] bg-cover bg-bottom bg-no-repeat;
       @apply px-6 py-10 sm:px-10 sm:py-12 lg:px-16 lg:py-16 xl:py-20;
-      background-color: var(--color-primary);
-      background-image: url("../img/why-nsc-cta-content-bg-mob.webp");
-      background-size: cover;
-      background-position: center bottom;
-      background-repeat: no-repeat;
-      text-align: center;
-
-      @media (min-width: 992px) {
-        background-image: url("../img/why-nsc-cta-content-bg.png");
-        background-position: center center;
+      @screen lg {
+        @apply bg-[url('../img/why-nsc-cta-content-bg.png')] bg-center;
       }
     }
 
@@ -39,10 +29,7 @@
 
     /* Inverted CTA: white field, primary text — matches design refs; avoids global `section .btn` primary fill */
     .why-nsc-cta__btn {
-      @apply mx-auto inline-flex w-full max-w-md items-center justify-center gap-2 border-0 px-6 py-3.5 text-center text-xs font-bold no-underline transition-opacity sm:max-w-xl sm:px-10 lg:text-lg;
-      border-radius: 0;
-      background-color: #fff;
-      color: var(--color-primary);
+      @apply mx-auto inline-flex w-full max-w-md items-center justify-center gap-2 rounded-none border-0 bg-white px-6 py-3.5 text-center text-xs font-bold text-primary no-underline transition-opacity sm:max-w-xl sm:px-10 lg:text-lg;
 
       &:hover,
       &:focus-visible {
@@ -54,8 +41,7 @@
       }
 
       svg {
-        @apply h-5 w-5 shrink-0;
-        color: var(--color-primary);
+        @apply h-5 w-5 shrink-0 text-primary;
       }
     }
   }

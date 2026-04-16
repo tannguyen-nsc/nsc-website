@@ -28,10 +28,8 @@
 
     // Widen slider to full 12-col row width on large screens (was ~⅓ of main column per slide without this).
     > .case-study-detail-gallery {
-      @media (min-width: 992px) {
-        width: 150%;
-        max-width: none;
-        margin-left: -25%;
+      @screen lg {
+        @apply w-[150%] max-w-none -ml-[25%];
       }
     }
   }
@@ -49,19 +47,18 @@
       @apply list-disc list-inside space-y-2 pl-0 text-left marker:text-black;
   
       li::marker {
-        font-size: 0.55em;
+        @apply [font-size:0.55em];
       }
        
       ul {
         @apply list-inside space-y-2 pl-8 text-left marker:text-black;
   
         li {
-          @apply pl-1;
-          list-style: circle;
+          @apply list-[circle] pl-1;
         }
   
         li::marker {
-          font-size: 0.55em;
+          @apply [font-size:0.55em];
         }
       }
     }
@@ -126,9 +123,7 @@
 
     // One shared row height so center + sides match the mockup (no uneven image bands).
     .case-study-detail-gallery__frame {
-      @apply relative overflow-hidden rounded-lg transition-transform duration-300 ease-out;
-      height: clamp(200px, 42vw, 440px);
-      width: 100%;
+      @apply relative h-[clamp(200px,42vw,440px)] w-full overflow-hidden rounded-lg transition-transform duration-300 ease-out;
 
       img {
         @apply block h-full w-full object-cover;
@@ -137,27 +132,13 @@
 
     // Active (center): full size, sits on top, soft shadows on left/right edges.
     .slick-slide.slick-center .case-study-detail-gallery__frame {
-      @apply z-[3] rounded-none;
-      transform: scale(1);
-      transform-origin: center center;
-      width: calc(100% + 18%);
-      margin-left: -9%;
-      margin-right: -9%;
-      box-shadow:
-        16px 0 28px -12px rgba(0, 0, 0, 0.2),
-        -16px 0 28px -12px rgba(0, 0, 0, 0.2),
-        0 16px 40px rgba(0, 0, 0, 0.12);
+      @apply z-[3] origin-center w-[calc(100%+18%)] scale-100 rounded-none -mx-[9%];
+      @apply shadow-[16px_0_28px_-12px_rgba(0,0,0,0.2),-16px_0_28px_-12px_rgba(0,0,0,0.2),0_16px_40px_rgba(0,0,0,0.12)];
     }
 
     // Inactive sides: ~75–80% feel, pulled inward so photos meet without white gutters; slightly darker.
     .slick-slide:not(.slick-center) .case-study-detail-gallery__frame {
-      @apply z-[1];
-      transform: scale(0.78);
-      transform-origin: center center;
-      width: calc(100% + 44%);
-      margin-left: -22%;
-      margin-right: -22%;
-      box-shadow: none;
+      @apply z-[1] origin-center w-[calc(100%+44%)] scale-[0.78] shadow-none -mx-[22%];
 
       img {
         @apply brightness-[0.9] contrast-[0.98];
@@ -176,7 +157,7 @@
         @apply h-5 w-5;
 
         path {
-          fill: currentColor;
+          @apply fill-current;
         }
       }
     }
@@ -185,18 +166,16 @@
     .slick-prev {
       @apply left-[max(0.5rem,4%)];
 
-      @media (min-width: 768px) {
-        left: 27%;
-        transform: translate(-50%, -50%);
+      @screen md {
+        @apply left-[27%] -translate-x-1/2 -translate-y-1/2;
       }
     }
 
     .slick-next {
       @apply right-[max(0.5rem,4%)];
 
-      @media (min-width: 768px) {
-        right: 27%;
-        transform: translate(50%, -50%);
+      @screen md {
+        @apply right-[27%] translate-x-1/2 -translate-y-1/2;
       }
     }
 
@@ -208,19 +187,16 @@
         @apply m-0 h-auto w-auto p-0;
 
         button {
-          @apply w-7 shrink-0 rounded-lg p-0 lg:w-8;
+          @apply m-0 h-0.5 min-h-[2px] w-7 shrink-0 rounded-lg border-0 p-0 text-[0] leading-[0] bg-[#cecece] opacity-100;
           width: 1.75rem !important;
-          height: 2px;
-          min-height: 2px;
           font-size: 0 !important;
           line-height: 0 !important;
           border: none !important;
           opacity: 1 !important;
-          background-color: #cecece !important; // career-details skill--none
+          background-color: #cecece !important;
 
-          @media (min-width: 992px) {
-            height: 3px;
-            min-height: 3px;
+          @screen lg {
+            @apply h-[3px] min-h-[3px] w-8;
           }
 
           &::before {
@@ -237,50 +213,30 @@
   }
 }
 
-// Gallery images: plain CSS on `.js-case-study-detail-gallery` so layout wins over slick-theme / load order.
-// (Arrows/dots stay in the nested block above.)
+// Gallery images on `.js-case-study-detail-gallery` — matches slick-theme / load order overrides above.
 .js-case-study-detail-gallery.slick-slider {
   .case-study-detail-gallery__frame {
-    position: relative;
-    overflow: hidden;
-    border-radius: 0.5rem;
+    @apply relative w-full overflow-hidden rounded-lg;
     height: clamp(200px, 42vw, 440px) !important;
-    width: 100%;
   }
 
   .case-study-detail-gallery__frame img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    @apply block h-full w-full object-cover;
   }
 
   .slick-slide.slick-center .case-study-detail-gallery__frame {
-    z-index: 3;
-    border-radius: 0;
+    @apply z-[3] origin-center w-[calc(100%+18%)] rounded-none -mx-[9%];
+    @apply shadow-[16px_0_28px_-12px_rgba(0,0,0,0.2),-16px_0_28px_-12px_rgba(0,0,0,0.2),0_16px_40px_rgba(0,0,0,0.12)];
     transform: scale(1) !important;
-    transform-origin: center center;
-    width: calc(100% + 18%);
-    margin-left: -9%;
-    margin-right: -9%;
-    box-shadow:
-      16px 0 28px -12px rgba(0, 0, 0, 0.2),
-      -16px 0 28px -12px rgba(0, 0, 0, 0.2),
-      0 16px 40px rgba(0, 0, 0, 0.12);
   }
 
   .slick-slide:not(.slick-center) .case-study-detail-gallery__frame {
-    z-index: 1;
+    @apply z-[1] origin-center w-[calc(100%+44%)] shadow-none -mx-[22%];
     transform: scale(0.78) !important;
-    transform-origin: center center;
-    width: calc(100% + 44%);
-    margin-left: -22%;
-    margin-right: -22%;
-    box-shadow: none;
   }
 
   .slick-slide:not(.slick-center) .case-study-detail-gallery__frame img {
-    filter: brightness(0.88) contrast(0.98);
+    @apply brightness-[0.88] contrast-[0.98];
   }
 }
 

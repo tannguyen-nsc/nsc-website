@@ -67,9 +67,7 @@
   @apply relative py-12 lg:py-16 bg-cover bg-center bg-no-repeat overflow-hidden mt-20 lg:mt-14;
 
   &::before {
-    content: "";
-    @apply absolute inset-0;
-    background: rgba(255, 255, 255, 0.45);
+    @apply content-[''] absolute inset-0 bg-[rgba(255,255,255,0.45)];
   }
 
   .wrapper {

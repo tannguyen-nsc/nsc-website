@@ -156,10 +156,7 @@
           @apply m-0 h-auto w-auto;
 
           button {
-            @apply h-[10px] w-[10px] rounded-full border-0 bg-[#D4D4D4] p-0 text-transparent transition-all duration-300 ease-out;
-
-            font-size: 0;
-            line-height: 0;
+            @apply h-[10px] w-[10px] rounded-full border-0 bg-[#D4D4D4] p-0 text-[0] leading-[0] text-transparent transition-all duration-300 ease-out;
 
             &::before {
               @apply hidden;
@@ -177,14 +174,10 @@
 
 // Testimonial Modal
 .testimonial-modal-overlay {
-  @apply fixed inset-0 bg-black bg-opacity-50 z-[9998] hidden;
-  @apply touch-none;
-  overscroll-behavior: none;
+  @apply fixed inset-0 bg-black bg-opacity-50 z-[9998] hidden touch-none overscroll-none;
   
   &.active {
-    @apply block;
-    @apply touch-none;
-    overscroll-behavior: none;
+    @apply block touch-none overscroll-none;
   }
 }
 
@@ -216,9 +209,7 @@
   }
   
   .testimonial-modal-body {
-    @apply flex-grow overflow-y-auto px-2 py-2 sm:px-3 sm:py-3 md:px-4 md:py-4 pr-[calc(0.5rem+8px)];
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+    @apply flex-grow overflow-y-auto px-2 py-2 sm:px-3 sm:py-3 md:px-4 md:py-4 pr-[calc(0.5rem+8px)] overscroll-contain [-webkit-overflow-scrolling:touch];
     
     @screen sm {
       @apply pr-[calc(0.75rem+8px)];

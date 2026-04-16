@@ -116,8 +116,7 @@
             }
             
             .description p {
-              @apply text-white 2xl:mt-4;
-              transition: color 200ms ease 0ms;
+              @apply text-white 2xl:mt-4 transition-colors duration-200;
             }
           }
         }
@@ -164,21 +163,15 @@
 
 // Mobile Bottom Sheet Modal (outside .our-services for better positioning)
 .bottom-sheet-overlay {
-    @apply fixed inset-0 bg-black/50 z-[100] hidden opacity-0 transition-opacity duration-300 ease-in-out lg:hidden touch-none;
-    overscroll-behavior: none;
-    -webkit-overflow-scrolling: none;
+    @apply fixed inset-0 bg-black/50 z-[100] hidden opacity-0 transition-opacity duration-300 ease-in-out lg:hidden touch-none overscroll-none [-webkit-overflow-scrolling:none];
     
     &.active {
-      @apply block opacity-100 touch-none;
-      overscroll-behavior: none;
-      -webkit-overflow-scrolling: none;
+      @apply block opacity-100 touch-none overscroll-none [-webkit-overflow-scrolling:none];
     }
   }
 
 .bottom-sheet {
-    @apply fixed left-1/2 top-1/2 z-[101] hidden -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ease-in-out overflow-y-auto lg:hidden bg-[url('../img/serivce-hover.webp')] bg-primary bg-cover bg-right-top bg-no-repeat max-h-[90vh] w-[90%] mx-auto opacity-0;
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+    @apply fixed left-1/2 top-1/2 z-[101] hidden -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300 ease-in-out overflow-y-auto lg:hidden bg-[url('../img/serivce-hover.webp')] bg-primary bg-cover bg-right-top bg-no-repeat max-h-[90vh] w-[90%] mx-auto opacity-0 overscroll-contain [-webkit-overflow-scrolling:touch];
     
     &.active {
       @apply block opacity-100;
@@ -205,9 +198,7 @@
     }
 
     .bottom-sheet-content {
-      @apply px-4 pt-4 text-white pb-8;
-      -webkit-overflow-scrolling: touch;
-      overscroll-behavior: contain;
+      @apply px-4 pt-4 text-white pb-8 overscroll-contain [-webkit-overflow-scrolling:touch];
       
       .service-content {
         @apply space-y-4 text-white;
@@ -232,8 +223,7 @@
           @apply flex items-start gap-2 text-white text-base leading-[1.5];
           
           &::before {
-            content: '•';
-            @apply text-white shrink-0 mr-2 font-bold;
+            @apply content-['•'] text-white shrink-0 mr-2 font-bold;
           }
         }
       }

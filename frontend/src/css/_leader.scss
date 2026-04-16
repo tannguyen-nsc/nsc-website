@@ -55,13 +55,11 @@
       @apply text-white mt-2 text-center w-full;
       
       h3 {
-        @apply text-lg lg:text-xl xl:text-2xl font-bold text-white;
-        font-family: "Montserrat", Helvetica, sans-serif;
+        @apply font-sans text-lg lg:text-xl xl:text-2xl font-bold text-white;
       }
       
       p {
-        @apply text-sm lg:text-base xl:text-lg text-white;
-        font-family: "Montserrat", Helvetica, sans-serif;
+        @apply font-sans text-sm lg:text-base xl:text-lg text-white;
       }
     }
   }

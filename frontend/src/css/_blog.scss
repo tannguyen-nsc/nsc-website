@@ -1,6 +1,5 @@
 .blogs {
-  background-size: 250%;
-  @apply min-h-[180vw] md:min-h-[130vw] lg:min-h-[55vw] xl:min-h-[50vw] relative bg-[url('../img/mob-blogs-bg.webp')] lg:bg-[url('../img/blogs-bg.webp')] lg:bg-cover bg-left-top lg:bg-left-bottom bg-no-repeat bg-white flex flex-col items-center justify-center px-4 py-12 lg:py-16;
+  @apply min-h-[180vw] md:min-h-[130vw] lg:min-h-[55vw] xl:min-h-[50vw] relative bg-[length:250%] bg-[url('../img/mob-blogs-bg.webp')] lg:bg-[url('../img/blogs-bg.webp')] lg:bg-cover bg-left-top lg:bg-left-bottom bg-no-repeat bg-white flex flex-col items-center justify-center px-4 py-12 lg:py-16;
   
   .wrapper {
     @apply flex flex-col z-50 max-w-full lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px] w-full;
@@ -80,8 +79,7 @@
           @apply flex flex-col gap-0;
           
           .item {
-            @apply flex gap-4 px-4 py-4 border-t border-[#E5E5E5] min-h-[120px];
-            align-items: stretch;
+            @apply flex items-stretch gap-4 px-4 py-4 border-t border-[#E5E5E5] min-h-[120px];
             
             .thumbnail {
               @apply flex-shrink-0 w-[120px] h-[120px] lg:w-[160px] lg:h-[160px] overflow-hidden bg-[#f0f0f0];

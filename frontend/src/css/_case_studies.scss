@@ -2,7 +2,7 @@
   @apply relative bg-white py-12 lg:py-16 overflow-hidden bg-left-bottom bg-no-repeat lg:bg-[url('../img/case-studies-bg.webp')] lg:bg-cover lg:bg-center;
 
   [v-cloak] {
-    display: none;
+    @apply hidden;
   }
 
   .case-studies-empty {
@@ -10,16 +10,8 @@
   }
 
   &::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 30%;
-    height: 100%;
-    background: radial-gradient(circle at 20% 50%, rgba(93, 219, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(185, 241, 255, 0.1) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: 0;
+    @apply content-[''] absolute left-0 top-0 z-0 h-full w-[30%] pointer-events-none;
+    @apply [background-image:radial-gradient(circle_at_20%_50%,rgba(93,219,255,0.15)_0%,transparent_50%),radial-gradient(circle_at_80%_80%,rgba(185,241,255,0.1)_0%,transparent_50%)];
   }
 
   .wrapper {
@@ -52,7 +44,7 @@
         @apply bg-primary text-white;
 
         svg {
-          stroke: currentColor;
+          @apply stroke-current;
         }
 
         &:hover {
@@ -89,8 +81,7 @@
       }
 
       .card-description {
-        @apply text-sm lg:text-base leading-relaxed mb-4 flex-grow;
-        overflow: hidden;
+        @apply overflow-hidden text-sm lg:text-base leading-relaxed mb-4 flex-grow;
       }
 
       .card-read-more {

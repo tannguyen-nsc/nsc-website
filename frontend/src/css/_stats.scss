@@ -13,22 +13,17 @@
 
         h2 {
           @apply text-4xl lg:text-5xl 2xl:text-6xl font-bold leading-none mb-2;
-          @apply tracking-tight;
-          color: #ffffff;
+          @apply tracking-tight text-white;
         }
 
         h3 {
           @apply text-base lg:text-xl 2xl:text-3xl font-bold mt-2;
-          @apply leading-tight;
-          color: #ffffff;
-          opacity: 0.95;
+          @apply leading-tight text-white opacity-95;
         }
 
         p {
           @apply text-xs lg:text-sm xl:text-base font-medium mt-1;
-          @apply leading-tight;
-          color: #ffffff;
-          opacity: 0.9;
+          @apply leading-tight text-white opacity-90;
         }
       }
     }

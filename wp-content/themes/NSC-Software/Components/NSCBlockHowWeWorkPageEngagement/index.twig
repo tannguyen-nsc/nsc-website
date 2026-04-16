@@ -69,7 +69,7 @@
                 <h3 class="how-we-work-page-engagement__process-heading">{{ collabH|e }}</h3>
                 <div class="how-we-work-page-collaboration-process__grid">
                   {% for step in steps %}
-                  <article class="hww-process-card">
+                  <article class="hww-process-card" tabindex="0">
                     <div class="hww-process-card__figure">
                       {% set simg = step.image.url|default(step.image.src)|default('') %}
                       {% if simg != '' %}

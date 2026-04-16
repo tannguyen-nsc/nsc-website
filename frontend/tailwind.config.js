@@ -41,6 +41,9 @@ module.exports = {
       colors: {
         primary: '#36C3DC',
       },
+      fontFamily: {
+        sans: ['"Montserrat"', 'Helvetica', 'sans-serif'],
+      },
     },
   },
   plugins: plugins,

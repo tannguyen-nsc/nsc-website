@@ -8,7 +8,7 @@
     }
 
     .wrapper {
-      @apply relative z-[1] mx-auto flex w-full max-w-full flex-col items-start justify-start px-4 sm:px-6 lg:max-w-[90%] lg:px-8 xl:max-w-[1140px] 2xl:max-w-[1280px];
+      @apply relative z-[1]  flex flex-col items-start justify-start px-4 mx-auto w-full max-w-full  lg:px-0 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
     }
 
     /* Match `.our-services-details .info` heading + intro layout */
@@ -35,7 +35,7 @@
         }
 
         &:last-child {
-          @apply mb-4 flex flex-col justify-center gap-4 py-4 lg:mb-0 lg:p-8 lg:pb-0;
+          @apply mb-4 flex flex-col justify-center gap-4 py-4 lg:mb-0 ;
 
           p {
             @apply mb-8 text-sm font-medium leading-relaxed text-white last:mb-0 lg:text-base lg:font-semibold 2xl:text-xl;
@@ -57,9 +57,7 @@
     }
 
     .why-nsc-diff-right__deco {
-      @apply pointer-events-none absolute inset-0 z-0 h-full min-h-full w-full opacity-90;
-      object-fit: cover;
-      object-position: right top;
+      @apply pointer-events-none absolute inset-0 z-0 h-full min-h-full w-full opacity-90 object-cover object-right-top;
     }
 
     .why-nsc-diff-right__stack {
@@ -68,15 +66,8 @@
 
     .why-nsc-diff-right__text {
       @apply flex h-full flex-none flex-col justify-start overflow-y-auto px-5 py-5 text-left text-sm font-medium leading-snug text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] sm:px-6 sm:py-6 sm:text-base lg:px-8;
-      @apply backdrop-blur-xl backdrop-saturate-150;
-      -webkit-backdrop-filter: blur(18px) saturate(1.25);
-      background-color: transparent;
-      background-image: linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0.55) 0%,
-        rgba(0, 0, 0, 0.82) 45%,
-        rgba(0, 24, 40, 0.92) 100%
-      );
+      @apply bg-transparent backdrop-blur-xl backdrop-saturate-150 [-webkit-backdrop-filter:blur(18px)_saturate(1.25)];
+      @apply [background-image:linear-gradient(180deg,rgba(0,0,0,0.55)_0%,rgba(0,0,0,0.82)_45%,rgba(0,24,40,0.92)_100%)];
     }
 
     .why-nsc-diff-right__text-inner {
@@ -99,7 +90,7 @@
       }
 
       img {
-        @apply absolute object-cover object-top z-10 left-0 top-0 h-full;
+        @apply absolute left-0 top-0 z-10 h-full object-cover object-top;
         margin-top: 0 !important;
       }
     }
@@ -109,9 +100,7 @@
       @apply relative z-0 min-h-[240px] flex-1 overflow-hidden bg-black/30;
 
       img.why-nsc-diff-detail__photo {
-        @apply absolute inset-0 block h-full w-full max-w-none;
-        object-fit: cover;
-        object-position: center center;
+        @apply absolute inset-0 block h-full w-full max-w-none object-cover object-center;
       }
     }
 
@@ -180,8 +169,7 @@
       @apply isolate overflow-hidden bg-transparent;
 
       &.bottom-sheet {
-        @apply bg-transparent;
-        background-image: none;
+        @apply bg-transparent bg-none;
       }
 
       .why-nsc-diff-bottom-sheet__sheet-bg {
@@ -189,9 +177,7 @@
       }
 
       .why-nsc-diff-bottom-sheet__sheet-col {
-        @apply pointer-events-none absolute inset-0 z-[1] h-full min-h-full w-full opacity-90;
-        object-fit: cover;
-        object-position: right top;
+        @apply pointer-events-none absolute inset-0 z-[1] h-full min-h-full w-full opacity-90 object-cover object-right-top;
       }
 
       .bottom-sheet-header {
@@ -199,9 +185,7 @@
       }
 
       .bottom-sheet-content {
-        @apply relative z-[2] px-4 pt-0 pb-4;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
+        @apply relative z-[2] px-4 pt-0 pb-4 overscroll-contain [-webkit-overflow-scrolling:touch];
 
         .why-nsc-diff-sheet-description {
           @apply space-y-3 rounded border border-white/20 bg-primary/60 p-4 text-white backdrop-blur-sm;

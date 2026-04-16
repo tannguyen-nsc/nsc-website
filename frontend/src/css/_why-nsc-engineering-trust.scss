@@ -2,21 +2,17 @@
 .page-why-nsc {
   .why-nsc-engineering-trust {
     @apply relative overflow-hidden py-12 text-white sm:py-14 lg:py-16 xl:py-20;
-    @apply bg-cover bg-no-repeat;
-    background-image: url("../img/why-nsc-engineering-trust-bg-mob.png");
-    background-position: center top;
+    @apply bg-cover bg-no-repeat bg-top bg-[url('../img/why-nsc-engineering-trust-bg-mob.png')];
     @screen lg {
-      background-image: url("../img/why-nsc-engineering-trust-bg.webp");
-      background-position: center center;
+      @apply bg-[url('../img/why-nsc-engineering-trust-bg.webp')] bg-center;
     }
 
     &::after {
-      content: "";
-      @apply pointer-events-none absolute inset-0 z-[1];
+      @apply content-[''] pointer-events-none absolute inset-0 z-[1];
     }
 
     .wrapper {
-      @apply relative z-[2] mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8;
+      @apply relative z-[2] mx-auto w-full max-w-full px-4 lg:px-0 lg:max-w-[90%] xl:max-w-[1140px] 2xl:max-w-[1280px];
     }
 
     .heading.light {
@@ -28,7 +24,7 @@
 
     /* 2×3 desktop / 3×2 mobile — hairline dividers via gap + cell fill (see company-stats-full) */
     .why-nsc-stat-grid {
-      @apply mx-auto grid w-full max-w-[1100px] grid-cols-2 gap-px overflow-hidden p-px lg:grid-cols-3 bg-white/20 border border-white/60;
+      @apply mx-auto grid w-full grid-cols-2 gap-px overflow-hidden lg:grid-cols-3 bg-white/20 border border-white/60;
     }
 
     .why-nsc-stat-card {

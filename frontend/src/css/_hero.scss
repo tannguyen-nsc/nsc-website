@@ -163,15 +163,8 @@
     }
 
     &::after {
-      content: "";
-      @apply absolute inset-0 z-[1] pointer-events-none;
-      background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0.96) 0%,
-        rgba(255, 255, 255, 0.88) 38%,
-        rgba(255, 255, 255, 0.45) 62%,
-        rgba(255, 255, 255, 0.1) 100%
-      );
+      @apply content-[''] absolute inset-0 z-[1] pointer-events-none;
+      @apply [background:linear-gradient(90deg,rgba(255,255,255,0.96)_0%,rgba(255,255,255,0.88)_38%,rgba(255,255,255,0.45)_62%,rgba(255,255,255,0.1)_100%)];
     }
 
     img:not(.hero-case-study-detail__bg) {

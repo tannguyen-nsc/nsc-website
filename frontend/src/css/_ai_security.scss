@@ -10,7 +10,7 @@
 
       h2 {
         @apply text-2xl lg:text-4xl xl:text-[42px] 2xl:text-5xl  2xl:text-[3.25rem] font-bold leading-tight uppercase text-white m-0;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+        @apply [text-shadow:0_1px_2px_rgba(0,0,0,0.08)];
       }
     }
 
