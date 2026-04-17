@@ -27,6 +27,267 @@ require_once __DIR__ . '/nscPageScopeNormalize.php';
 const CAPABILITY = 'manage_options';
 const AJAX_NONCE_ACTION = 'nsc_run_seeder';
 const AJAX_NONCE_PREFIX_MIGRATION = 'nsc_migrate_table_prefix';
+const AJAX_NONCE_PLL_LINK = 'nsc_pll_link_posts';
+
+/**
+ * Post types offered in Tools → NSC Seeders → Link translations (Polylang).
+ *
+ * @return array<string, string> slug => label
+ */
+function pll_link_post_type_choices(): array
+{
+    $types = \get_post_types(
+        [
+            'public' => true,
+        ],
+        'objects'
+    );
+
+    if (!\is_array($types)) {
+        return [];
+    }
+
+    $out = [];
+    foreach ($types as $slug => $obj) {
+        if ($slug === 'attachment') {
+            continue;
+        }
+
+        if (!$obj instanceof \WP_Post_Type) {
+            continue;
+        }
+
+        $out[$slug] = $obj->labels->name !== '' ? $obj->labels->name : $slug;
+    }
+
+    /** @var array<string, \WP_Post_Type> $extra */
+    $extra = \get_post_types(
+        [
+            'show_ui' => true,
+            'public' => false,
+        ],
+        'objects'
+    );
+
+    if (\is_array($extra)) {
+        foreach ($extra as $slug => $obj) {
+            if ($slug === 'attachment' || isset($out[$slug]) || !$obj instanceof \WP_Post_Type) {
+                continue;
+            }
+
+            $out[$slug] = $obj->labels->name !== '' ? $obj->labels->name : $slug;
+        }
+    }
+
+    \ksort($out, \SORT_STRING);
+
+    return $out;
+}
+
+/**
+ * Search posts for the Link translations tool.
+ *
+ * When `$includeUnassignedTranslation` is true (translation field only), results include posts in
+ * `$langSlug` plus posts with no Polylang language (e.g. after Polylang was removed and reinstalled).
+ *
+ * @return list<array{id: int, label: string}>
+ */
+function pll_link_search_posts(string $postType, string $langSlug, string $query, bool $includeUnassignedTranslation = false): array
+{
+    $query = \trim($query);
+    if ($query === '' || !\post_type_exists($postType)) {
+        return [];
+    }
+
+    $langSlug = \sanitize_key($langSlug);
+
+    $matchesRow = static function (int $postId) use ($langSlug, $includeUnassignedTranslation): bool {
+        if (!\function_exists('pll_get_post_language')) {
+            return true;
+        }
+
+        $pl = \pll_get_post_language($postId, 'slug');
+
+        if (!\is_string($pl) || $pl === '') {
+            return $includeUnassignedTranslation;
+        }
+
+        return $pl === $langSlug;
+    };
+
+    $formatLabel = static function (int $postId, string $title) use ($includeUnassignedTranslation): string {
+        $base = \sprintf('#%d — %s', $postId, $title);
+        if (!$includeUnassignedTranslation || !\function_exists('pll_get_post_language')) {
+            return $base;
+        }
+
+        $pl = \pll_get_post_language($postId, 'slug');
+        if (!\is_string($pl) || $pl === '') {
+            return $base . ' ' . \__('(no language)', 'NscSoftware');
+        }
+
+        return $base;
+    };
+
+    if (\preg_match('/^\d+$/', $query)) {
+        $pid = (int) $query;
+        if ($pid <= 0) {
+            return [];
+        }
+
+        $p = \get_post($pid);
+        if (!$p instanceof \WP_Post || $p->post_type !== $postType) {
+            return [];
+        }
+
+        if (!$matchesRow($pid)) {
+            return [];
+        }
+
+        $title = $p->post_title !== '' ? $p->post_title : \__('(no title)', 'NscSoftware');
+
+        return [
+            [
+                'id' => $pid,
+                'label' => $formatLabel($pid, $title),
+            ],
+        ];
+    }
+
+    if (\strlen($query) < 2) {
+        return [];
+    }
+
+    $args = [
+        'post_type' => $postType,
+        'post_status' => 'any',
+        'posts_per_page' => $includeUnassignedTranslation ? 80 : 25,
+        's' => $query,
+        'orderby' => 'relevance',
+        'no_found_rows' => true,
+    ];
+
+    if ($includeUnassignedTranslation) {
+        $args['suppress_filters'] = true;
+    } elseif ($langSlug !== '' && \function_exists('pll_languages_list')) {
+        $args['lang'] = $langSlug;
+    }
+
+    $posts = \get_posts($args);
+    if (!\is_array($posts)) {
+        return [];
+    }
+
+    $out = [];
+    foreach ($posts as $p) {
+        if (!$p instanceof \WP_Post) {
+            continue;
+        }
+
+        if (!$matchesRow((int) $p->ID)) {
+            continue;
+        }
+
+        $title = $p->post_title !== '' ? $p->post_title : \__('(no title)', 'NscSoftware');
+        $out[] = [
+            'id' => (int) $p->ID,
+            'label' => $formatLabel((int) $p->ID, $title),
+        ];
+
+        if (\count($out) >= 25) {
+            break;
+        }
+    }
+
+    return $out;
+}
+
+/**
+ * Link a translation post to the default-language post via Polylang.
+ *
+ * @return true|\WP_Error
+ */
+function pll_link_save_translation_group(int $mainPostId, int $translationPostId, string $targetLangSlug)
+{
+    if (!\function_exists('pll_get_post_translations') || !\function_exists('pll_save_post_translations')
+        || !\function_exists('pll_default_language') || !\function_exists('pll_get_post_language')
+        || !\function_exists('pll_set_post_language')) {
+        return new \WP_Error(
+            'pll_inactive',
+            \__('Polylang is not available.', 'NscSoftware')
+        );
+    }
+
+    $def = \pll_default_language('slug');
+    if (!\is_string($def) || $def === '') {
+        return new \WP_Error('pll_no_default', \__('Polylang default language is not set.', 'NscSoftware'));
+    }
+
+    $targetLangSlug = \sanitize_key($targetLangSlug);
+    if ($targetLangSlug === '' || $targetLangSlug === $def) {
+        return new \WP_Error(
+            'pll_bad_lang',
+            \__('Choose a translation language other than the default.', 'NscSoftware')
+        );
+    }
+
+    if ($mainPostId <= 0 || $translationPostId <= 0) {
+        return new \WP_Error('pll_bad_id', \__('Enter valid post IDs.', 'NscSoftware'));
+    }
+
+    if ($mainPostId === $translationPostId) {
+        return new \WP_Error('pll_same', \__('Main and translation posts must be different.', 'NscSoftware'));
+    }
+
+    $main = \get_post($mainPostId);
+    $tr = \get_post($translationPostId);
+    if (!$main instanceof \WP_Post || !$tr instanceof \WP_Post) {
+        return new \WP_Error('pll_missing', \__('One or both posts were not found.', 'NscSoftware'));
+    }
+
+    if ($main->post_type !== $tr->post_type) {
+        return new \WP_Error(
+            'pll_type',
+            \__('Post types must match.', 'NscSoftware')
+        );
+    }
+
+    $mainLang = \pll_get_post_language($mainPostId, 'slug');
+    if (!\is_string($mainLang) || $mainLang === '') {
+        \pll_set_post_language($mainPostId, $def, false);
+    } elseif ($mainLang !== $def) {
+        return new \WP_Error(
+            'pll_main_lang',
+            \sprintf(
+                /* translators: %s: default language slug */
+                \__('Main post must be in the default language (%s).', 'NscSoftware'),
+                $def
+            )
+        );
+    }
+
+    $trLang = \pll_get_post_language($translationPostId, 'slug');
+    if (!\is_string($trLang) || $trLang === '') {
+        \pll_set_post_language($translationPostId, $targetLangSlug, false);
+    } elseif ($trLang !== $targetLangSlug) {
+        return new \WP_Error(
+            'pll_tr_lang',
+            \__('Translation post is assigned to a different language than selected.', 'NscSoftware')
+        );
+    }
+
+    $translations = \pll_get_post_translations($mainPostId);
+    if (!\is_array($translations)) {
+        $translations = [];
+    }
+
+    $translations[$def] = $mainPostId;
+    $translations[$targetLangSlug] = $translationPostId;
+
+    \pll_save_post_translations($translations);
+
+    return true;
+}
 
 /** @return array<string, string> slug => absolute URL without query */
 function seeder_script_urls(): array
@@ -648,11 +909,12 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
         return;
     }
 
-    \wp_register_script('nsc-seeders-admin', false, ['jquery'], false, true);
+    \wp_register_script('nsc-seeders-admin', false, ['jquery', 'jquery-ui-autocomplete'], false, true);
     \wp_enqueue_script('nsc-seeders-admin');
     \wp_localize_script('nsc-seeders-admin', 'nscSeedersAdmin', [
         'ajaxUrl' => \admin_url('admin-ajax.php'),
         'nonce' => \wp_create_nonce(AJAX_NONCE_ACTION),
+        'pllNonce' => \wp_create_nonce(AJAX_NONCE_PLL_LINK),
         'prefixNonce' => \wp_create_nonce(AJAX_NONCE_PREFIX_MIGRATION),
         'runAllLanguagePassesFull' => get_run_all_language_passes(),
         'runAllSeederGroups' => get_run_all_seeder_groups(),
@@ -676,6 +938,9 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
             'prefixError' => \__('Prefix migration failed.', 'NscSoftware'),
             'prefixInvalid' => \__('Enter a valid prefix (letters, numbers, underscores).', 'NscSoftware'),
             'prefixPreview' => \__('Will use:', 'NscSoftware'),
+            'pllLinkDone' => \__('Translations linked.', 'NscSoftware'),
+            'pllLinkError' => \__('Could not link translations.', 'NscSoftware'),
+            'pllPickFromList' => \__('Pick a match from the list or enter a valid post ID.', 'NscSoftware'),
         ],
     ]);
 
@@ -1141,10 +1406,165 @@ add_action('admin_enqueue_scripts', static function (string $hookSuffix): void {
       });
   });
 
+  function pllNotice(type, message) {
+    var $c = $("#nsc-pll-notices");
+    if (!$c.length) {
+      notice(type, message);
+      return;
+    }
+    $c.empty();
+    var cls = type === "success" ? "notice-success" : "notice-error";
+    $("<div />", { class: "notice " + cls })
+      .append($("<p />").text(message))
+      .appendTo($c);
+  }
+
+  function initPllLinkTab() {
+    var $form = $("#nsc-pll-link-form");
+    if (!$form.length) {
+      return;
+    }
+
+    function pllNonce() {
+      return nscSeedersAdmin.pllNonce || "";
+    }
+
+    function runSearch(langFn, request, response, includeUnassigned) {
+      var q = String(request.term == null ? "" : request.term).trim();
+      if (q.length < 2 && !/^\d+$/.test(q)) {
+        response([]);
+        return;
+      }
+      $.ajax({
+        url: nscSeedersAdmin.ajaxUrl,
+        type: "POST",
+        dataType: "json",
+        data: {
+          action: "nsc_seeder_pll_search_posts",
+          nonce: pllNonce(),
+          post_type: $("#nsc-pll-post-type").val() || "",
+          lang: langFn(),
+          q: q,
+          include_unassigned: includeUnassigned ? "1" : "0"
+        }
+      })
+        .done(function (res) {
+          if (!res || res.success !== true || !res.data || !res.data.results) {
+            response([]);
+            return;
+          }
+          response(
+            res.data.results.map(function (r) {
+              return { label: r.label, value: r.label, id: r.id };
+            })
+          );
+        })
+        .fail(function () {
+          response([]);
+        });
+    }
+
+    $("#nsc-pll-main-search").autocomplete({
+      minLength: 1,
+      delay: 250,
+      source: function (request, response) {
+        runSearch(function () {
+          return nscSeedersAdmin.runAllDefaultLangSlug || "";
+        }, request, response, false);
+      },
+      select: function (event, ui) {
+        if (ui.item && ui.item.id) {
+          $("#nsc-pll-main-id").val(String(ui.item.id));
+        }
+      },
+      open: function () {
+        $(this).autocomplete("widget").addClass("nsc-pll-ac");
+      }
+    });
+
+    $("#nsc-pll-tr-search").autocomplete({
+      minLength: 1,
+      delay: 250,
+      source: function (request, response) {
+        runSearch(function () {
+          return $("#nsc-pll-target-lang").val() || "";
+        }, request, response, true);
+      },
+      select: function (event, ui) {
+        if (ui.item && ui.item.id) {
+          $("#nsc-pll-tr-id").val(String(ui.item.id));
+        }
+      },
+      open: function () {
+        $(this).autocomplete("widget").addClass("nsc-pll-ac");
+      }
+    });
+
+    $("#nsc-pll-post-type").on("change", function () {
+      $("#nsc-pll-main-search, #nsc-pll-tr-search").val("");
+      $("#nsc-pll-main-id, #nsc-pll-tr-id").val("");
+    });
+
+    $("#nsc-pll-target-lang").on("change", function () {
+      $("#nsc-pll-tr-search").val("");
+      $("#nsc-pll-tr-id").val("");
+    });
+
+    $("#nsc-pll-link-submit").on("click", function (e) {
+      e.preventDefault();
+      var mainId = parseInt($("#nsc-pll-main-id").val(), 10);
+      var trId = parseInt($("#nsc-pll-tr-id").val(), 10);
+      if (!mainId || !trId) {
+        pllNotice("error", nscSeedersAdmin.i18n.pllPickFromList);
+        return;
+      }
+      var $btn = $("#nsc-pll-link-submit");
+      $btn.prop("disabled", true);
+      $.ajax({
+        url: nscSeedersAdmin.ajaxUrl,
+        type: "POST",
+        dataType: "json",
+        data: {
+          action: "nsc_seeder_pll_link_translation",
+          nonce: pllNonce(),
+          post_type: $("#nsc-pll-post-type").val() || "",
+          main_id: mainId,
+          translation_id: trId,
+          translation_lang: $("#nsc-pll-target-lang").val() || ""
+        }
+      })
+        .done(function (res) {
+          if (!res || res.success !== true) {
+            var msg =
+              res && res.data && res.data.message
+                ? res.data.message
+                : nscSeedersAdmin.i18n.pllLinkError;
+            pllNotice("error", msg);
+            return;
+          }
+          pllNotice(
+            "success",
+            res.data && res.data.message ? res.data.message : nscSeedersAdmin.i18n.pllLinkDone
+          );
+        })
+        .fail(function (xhr) {
+          var msg = nscSeedersAdmin.i18n.pllLinkError;
+          if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+            msg = xhr.responseJSON.data.message;
+          }
+          pllNotice("error", msg);
+        })
+        .always(function () {
+          $btn.prop("disabled", false);
+        });
+    });
+  }
+
   $(function () {
     if ($("#nsc-new-prefix").length) {
       nscUpdatePrefixPreview();
     }
+    initPllLinkTab();
   });
 })(jQuery);
 JS;
@@ -1281,6 +1701,63 @@ add_action('wp_ajax_nsc_migrate_table_prefix', static function (): void {
     ]);
 });
 
+add_action('wp_ajax_nsc_seeder_pll_search_posts', static function (): void {
+    if (!\current_user_can(CAPABILITY)) {
+        \wp_send_json_error(['message' => \__('You do not have permission.', 'NscSoftware')], 403);
+    }
+
+    \check_ajax_referer(AJAX_NONCE_PLL_LINK, 'nonce');
+
+    $postType = isset($_POST['post_type']) ? \sanitize_key((string) $_POST['post_type']) : '';
+    $lang = isset($_POST['lang']) ? \sanitize_key((string) $_POST['lang']) : '';
+    $q = isset($_POST['q']) ? \wp_unslash((string) $_POST['q']) : '';
+    $includeUnassigned = isset($_POST['include_unassigned']) && (string) $_POST['include_unassigned'] === '1';
+
+    if ($postType === '' || !\post_type_exists($postType)) {
+        \wp_send_json_error(['message' => \__('Invalid post type.', 'NscSoftware')], 400);
+    }
+
+    $results = pll_link_search_posts($postType, $lang, $q, $includeUnassigned);
+
+    \wp_send_json_success(['results' => $results]);
+});
+
+add_action('wp_ajax_nsc_seeder_pll_link_translation', static function (): void {
+    if (!\current_user_can(CAPABILITY)) {
+        \wp_send_json_error(['message' => \__('You do not have permission.', 'NscSoftware')], 403);
+    }
+
+    \check_ajax_referer(AJAX_NONCE_PLL_LINK, 'nonce');
+
+    $mainId = isset($_POST['main_id']) ? (int) $_POST['main_id'] : 0;
+    $trId = isset($_POST['translation_id']) ? (int) $_POST['translation_id'] : 0;
+    $lang = isset($_POST['translation_lang']) ? \sanitize_key((string) $_POST['translation_lang']) : '';
+
+    $postType = isset($_POST['post_type']) ? \sanitize_key((string) $_POST['post_type']) : '';
+    if ($postType === '' || !\post_type_exists($postType)) {
+        \wp_send_json_error(['message' => \__('Invalid post type.', 'NscSoftware')], 400);
+    }
+
+    $main = \get_post($mainId);
+    $tr = \get_post($trId);
+    if ($main instanceof \WP_Post && $main->post_type !== $postType) {
+        \wp_send_json_error(['message' => \__('Main post does not match selected post type.', 'NscSoftware')], 400);
+    }
+
+    if ($tr instanceof \WP_Post && $tr->post_type !== $postType) {
+        \wp_send_json_error(['message' => \__('Translation post does not match selected post type.', 'NscSoftware')], 400);
+    }
+
+    $result = pll_link_save_translation_group($mainId, $trId, $lang);
+    if ($result instanceof \WP_Error) {
+        \wp_send_json_error(['message' => $result->get_error_message()], 400);
+    }
+
+    \wp_send_json_success([
+        'message' => \__('Translation group saved. Both posts are linked in Polylang.', 'NscSoftware'),
+    ]);
+});
+
 function render_page(): void
 {
     if (!\current_user_can(CAPABILITY)) {
@@ -1339,7 +1816,19 @@ function render_page(): void
     }
 
     $tabBase = \admin_url('tools.php?page=nsc-http-seeders');
-    $activeTab = isset($_GET['tab']) && (string) $_GET['tab'] === 'prefix' ? 'prefix' : 'seeders';
+    $activeTab = 'seeders';
+    if (isset($_GET['tab'])) {
+        $t = \sanitize_key((string) $_GET['tab']);
+        if ($t === 'prefix' || $t === 'translations') {
+            $activeTab = $t;
+        }
+    }
+
+    $pllPostTypes = pll_link_post_type_choices();
+    if ($pllPostTypes === [] && \post_type_exists('page')) {
+        $pllPostTypes = ['page' => \__('Pages', 'NscSoftware')];
+    }
+
     global $wpdb;
     ?>
     <div class="wrap">
@@ -1354,6 +1843,9 @@ function render_page(): void
             </a>
             <a href="<?php echo \esc_url($tabBase . '&tab=prefix'); ?>" class="nav-tab <?php echo $activeTab === 'prefix' ? 'nav-tab-active' : ''; ?>">
                 <?php echo \esc_html(\__('WP prefix migration', 'NscSoftware')); ?>
+            </a>
+            <a href="<?php echo \esc_url($tabBase . '&tab=translations'); ?>" class="nav-tab <?php echo $activeTab === 'translations' ? 'nav-tab-active' : ''; ?>">
+                <?php echo \esc_html(\__('Link translations', 'NscSoftware')); ?>
             </a>
         </h2>
 
@@ -1388,6 +1880,99 @@ function render_page(): void
                     <?php echo \esc_html(\__('Save changes and migrate', 'NscSoftware')); ?>
                 </button>
             </p>
+        <?php } elseif ($activeTab === 'translations') { ?>
+            <p class="description" style="max-width:840px;">
+                <?php echo \esc_html(\__('Link an existing translation post to the default-language post so Polylang treats them as one translation group. Main post must already be in the default language; the translation post must match the language you select (or have no language yet — it will be assigned).', 'NscSoftware')); ?>
+            </p>
+            <div id="nsc-pll-notices" class="nsc-seeder-notices" style="max-width:960px;margin:12px 0;"></div>
+            <?php if (!\function_exists('pll_languages_list') || $defaultLangSlug === '') { ?>
+                <p class="notice notice-warning inline" style="max-width:840px;">
+                    <?php echo \esc_html(\__('Polylang is not active or has no default language. Install and configure Polylang first.', 'NscSoftware')); ?>
+                </p>
+            <?php } elseif ($langsSecondary === []) { ?>
+                <p class="notice notice-warning inline" style="max-width:840px;">
+                    <?php echo \esc_html(\__('Add at least one secondary language in Polylang to use this tool.', 'NscSoftware')); ?>
+                </p>
+            <?php } else { ?>
+                <form id="nsc-pll-link-form" class="nsc-pll-link-form" style="max-width:720px;" autocomplete="off">
+                    <table class="form-table" role="presentation">
+                        <tr>
+                            <th scope="row">
+                                <label for="nsc-pll-post-type"><?php echo \esc_html(\__('Post type', 'NscSoftware')); ?></label>
+                            </th>
+                            <td>
+                                <select id="nsc-pll-post-type" required>
+                                    <?php foreach ($pllPostTypes as $ptSlug => $ptLabel) { ?>
+                                        <option value="<?php echo \esc_attr($ptSlug); ?>"><?php echo \esc_html($ptLabel . ' (' . $ptSlug . ')'); ?></option>
+                                    <?php } ?>
+                                </select>
+                                <p class="description"><?php echo \esc_html(\__('Only posts of this type are searched and linked.', 'NscSoftware')); ?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="nsc-pll-main-id"><?php echo \esc_html(\__('Main post (default language)', 'NscSoftware')); ?></label>
+                            </th>
+                            <td>
+                                <p class="description" style="margin-top:0;">
+                                    <?php
+                                    echo \esc_html(\sprintf(
+                                        /* translators: %s: default language slug */
+                                        \__('Language: default (%s). Type at least two characters to search by title, or enter the numeric post ID.', 'NscSoftware'),
+                                        $defaultLangSlug
+                                    ));
+                                    ?>
+                                </p>
+                                <input type="text" id="nsc-pll-main-search" class="regular-text" placeholder="<?php echo \esc_attr(\__('Search by title…', 'NscSoftware')); ?>" style="max-width:100%;" />
+                                <p style="margin:8px 0 4px;">
+                                    <label for="nsc-pll-main-id"><?php echo \esc_html(\__('Post ID', 'NscSoftware')); ?></label>
+                                </p>
+                                <input type="number" id="nsc-pll-main-id" class="small-text" min="1" step="1" placeholder="<?php echo \esc_attr(\__('e.g. 5672', 'NscSoftware')); ?>" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="nsc-pll-target-lang"><?php echo \esc_html(\__('Translation language', 'NscSoftware')); ?></label>
+                            </th>
+                            <td>
+                                <select id="nsc-pll-target-lang" required>
+                                    <?php foreach ($langsSecondary as $slug => $name) { ?>
+                                        <option value="<?php echo \esc_attr($slug); ?>"><?php echo \esc_html($name . ' (' . $slug . ')'); ?></option>
+                                    <?php } ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">
+                                <label for="nsc-pll-tr-id"><?php echo \esc_html(\__('Translation post', 'NscSoftware')); ?></label>
+                            </th>
+                            <td>
+                                <p class="description" style="margin-top:0;">
+                                    <?php echo \esc_html(\__('Searches posts in the selected translation language and post type, and also posts with no language (e.g. after Polylang was reinstalled). Type at least two characters to search by title, or enter the numeric post ID.', 'NscSoftware')); ?>
+                                </p>
+                                <input type="text" id="nsc-pll-tr-search" class="regular-text" placeholder="<?php echo \esc_attr(\__('Search by title…', 'NscSoftware')); ?>" style="max-width:100%;" />
+                                <p style="margin:8px 0 4px;">
+                                    <label for="nsc-pll-tr-id"><?php echo \esc_html(\__('Post ID', 'NscSoftware')); ?></label>
+                                </p>
+                                <input type="number" id="nsc-pll-tr-id" class="small-text" min="1" step="1" placeholder="<?php echo \esc_attr(\__('e.g. 5851', 'NscSoftware')); ?>" />
+                            </td>
+                        </tr>
+                    </table>
+                    <p>
+                        <button type="button" class="button button-primary button-large" id="nsc-pll-link-submit">
+                            <?php echo \esc_html(\__('Link as translations', 'NscSoftware')); ?>
+                        </button>
+                    </p>
+                </form>
+                <style>
+                    .ui-autocomplete.nsc-pll-ac {
+                        max-height: 240px;
+                        overflow-y: auto;
+                        overflow-x: hidden;
+                        z-index: 100000 !important;
+                    }
+                </style>
+            <?php } ?>
         <?php } else { ?>
 
         <p class="description">
