@@ -4,6 +4,12 @@ declare(strict_types=1);
 
 /**
  * Seeded ACF payloads for the How we work page (create-nsc-pages.php).
+ * Aligned with frontend/src/how-we-work.html (synced from master.html).
+ *
+ * Note: `nscBlockHowWeWorkPageEngagement` exposes a single `processSteps` repeater; the Twig
+ * template renders that same step list inside each engagement tab. Static HTML varies steps per
+ * tab — seed uses tab 1 (Fixed-Scope) steps and hww-process-panel0-step*.png assets.
+ *
  * Requires nscSideloadBuildImageByFilename() from create-nsc-pages.php.
  *
  * @return array<int, array<string, mixed>>
@@ -48,21 +54,21 @@ function nsc_how_we_work_build_page_components(): array
         $partnership['headingIcon'] = $headingIcon;
     }
 
-    $m1 = $img('why-nsc-built-meeting.png');
-    $m2 = $img('why-nsc-built-office.png');
-    $d1 = $img('why-nsc-different-col-1.webp');
-    $d2 = $img('why-nsc-different-col-2.webp');
-    $hs = $img('why-nsc-built-handshake.png');
-
     $bgD = $img('how-we-work-page-engagement-bg.png');
     $bgM = $img('how-we-work-page-engagement-bg-mob.png');
 
+    $p0 = $img('hww-process-panel0-step01.png');
+    $p1 = $img('hww-process-panel0-step02.png');
+    $p2 = $img('hww-process-panel0-step03.png');
+    $p3 = $img('hww-process-panel0-step04.png');
+    $p4 = $img('hww-process-panel0-step05.png');
+
     $processStepDefs = [
-        ['01.', 'Requirement Definition', 'We begin by clearly defining project requirements, deliverables, timelines, and success criteria to ensure full alignment from the start.', $m1],
-        ['02.', 'Solution Planning', 'We translate requirements into architecture, milestones, and delivery plans your team can rely on.', $m2],
-        ['03.', 'Development & Implementation', 'Senior engineers build in tight feedback loops with transparent progress and quality gates.', $d1],
-        ['04.', 'Testing & Quality Assurance', 'Validation, regression, and release readiness so production rollouts stay predictable.', $d2],
-        ['05.', 'Delivery & Deployment', 'Handover, documentation, and go-live support with clear ownership through launch.', $hs],
+        ['01.', 'Requirement Definition', 'We begin by clearly defining project requirements, deliverables, timelines, and success criteria to ensure full alignment from the start.', $p0],
+        ['02.', 'Solution Planning', 'Our team designs the system architecture, technical approach, and project roadmap based on the agreed scope.', $p1],
+        ['03.', 'Development & Implementation', 'Engineers develop the product following the defined specifications while maintaining regular progress updates.', $p2],
+        ['04.', 'Testing & Quality Assurance', 'Comprehensive testing is conducted to ensure the system meets performance, security, and quality standards.', $p3],
+        ['05.', 'Delivery & Deployment', 'The final product is delivered according to the agreed timeline, with support during deployment and initial rollout.', $p4],
     ];
     $processSteps = [];
     foreach ($processStepDefs as $row) {
@@ -85,73 +91,75 @@ function nsc_how_we_work_build_page_components(): array
         [
             'tabNumber'       => '1',
             'tabLabel'        => 'Fixed-Scope Projects',
-            'leadStrong'      => 'Clear goals, fixed requirements, and defined timelines for well-defined initiatives.',
-            'leadParagraph'   => 'Ideal when scope is stable and outcomes can be agreed upfront — structured delivery with transparent checkpoints.',
+            'leadStrong'      => 'Clear goals, fixed requirements, and defined timelines, ideal for well-scoped initiatives.',
+            'leadParagraph'   => "The Fixed-Scope model is designed for projects where objectives, features, and deliverables can be clearly defined from the beginning. This model works best for initiatives with stable requirements and a well-defined development roadmap.\n\nNSC Software takes full responsibility for project delivery, including planning, development, testing, and deployment, ensuring that the final product meets agreed requirements, quality standards, and delivery timelines.",
             'bestSuitedLines' => array_map($line, [
                 'MVP development',
                 'Product feature implementation',
-                'Platform migration milestones',
-                'Well-documented change requests',
+                'System upgrades or migrations',
+                'Well-defined digital transformation initiatives',
             ]),
             'keyBenefitLines' => array_map($line, [
-                'Transparent costs and timelines',
-                'Predictable delivery checkpoints',
-                'Focused scope control',
-                'Clear acceptance criteria',
+                'Clear project scope and deliverables',
+                'Predictable timeline and budget',
+                'Structured project management',
+                'Reduced operational overhead for clients',
             ]),
         ],
         [
             'tabNumber'       => '2',
             'tabLabel'        => 'Dedicated Team',
             'leadStrong'      => 'Build a long-term, fully managed engineering team aligned with your business objectives.',
-            'leadParagraph'   => 'Leadership, process, and ownership embedded in NSC’s delivery model — ideal when you need sustained velocity and governance.',
+            'leadParagraph'   => "The Dedicated Team model provides clients with a stable, long-term engineering team that works exclusively on their products or platforms.\n\nThe team is carefully assembled based on project requirements and works exclusively on the client's product. While operating as an extension of the client's internal team, the engineers are supported by NSC's engineering management, delivery processes, and operational infrastructure.",
             'bestSuitedLines' => array_map($line, [
-                'Product roadmap execution',
-                'Continuous delivery cadence',
-                'Cross-functional squads',
-                'Long-term capacity planning',
+                'Long-term product development',
+                'Scaling technology teams',
+                'Continuous innovation and feature development',
+                'Companies building complex platforms',
             ]),
             'keyBenefitLines' => array_map($line, [
-                'Stable team continuity',
-                'Aligned KPIs and outcomes',
-                'Strong governance and reporting',
-                'Scalable throughput',
+                'Stable and committed engineering team',
+                'Deep product knowledge over time',
+                'Flexible team scaling',
+                'Long-term technical partnership',
             ]),
         ],
         [
             'tabNumber'       => '3',
             'tabLabel'        => 'Staff Augmentation',
-            'leadStrong'      => 'Extend your in-house capacity with senior engineers who integrate with your tools and ceremonies.',
-            'leadParagraph'   => 'NSC supports hiring quality and continuity while your team keeps day-to-day control and priorities.',
+            'leadStrong'      => 'Extend your in-house capacity with senior engineers working directly under your management.',
+            'leadParagraph'   => "For organizations that already have established engineering teams but need additional capacity, the Staff Augmentation model provides experienced NSC engineers who integrate directly into the client's existing workflow.\n\nEngineers work under the client's technical leadership while maintaining access to NSC's internal knowledge and support network.",
             'bestSuitedLines' => array_map($line, [
-                'Short-term skill gaps',
-                'Velocity ramp-up',
-                'Specialist roles',
-                'Hybrid product/engineering teams',
+                'Rapid team scaling',
+                'Access to specialized technical expertise',
+                'Supporting ongoing product development',
+                'Addressing skill gaps within internal teams',
+                'Increasing engineering capacity while maintaining internal control',
             ]),
             'keyBenefitLines' => array_map($line, [
-                'Fast onboarding',
-                'Direct collaboration',
-                'Flexible scaling',
-                'Senior-first staffing',
+                'Fast onboarding of experienced engineers',
+                'Flexible resource allocation',
+                'Full control over development processes',
+                'Seamless integration with internal teams',
+                'Flexible collaboration arrangements that can adapt to different client engagement structures.',
             ]),
         ],
         [
             'tabNumber'       => '4',
             'tabLabel'        => 'Managed Services',
-            'leadStrong'      => 'Delegate selected operations to NSC under SLA-driven management.',
-            'leadParagraph'   => 'Measurable service levels with engineering accountability — ideal for run, support, and continuous improvement.',
+            'leadStrong'      => 'Delegate selected operations to NSC under SLA-driven, KPI-measured management.',
+            'leadParagraph'   => "Our Managed Services model allows organizations to outsource specific technical operations or ongoing software management to NSC Software.\n\nUnder this model, NSC takes ownership of defined responsibilities and delivers services based on clearly established Service Level Agreements (SLAs) and performance KPIs.",
             'bestSuitedLines' => array_map($line, [
-                'Run operations',
-                'Support and maintenance',
-                'Monitoring and incident response',
-                'Continuous improvement cycles',
+                'Application maintenance and support',
+                'Infrastructure management',
+                'Long-term platform operation',
+                'Ongoing software optimization',
             ]),
             'keyBenefitLines' => array_map($line, [
-                'Clear SLAs',
-                'KPI visibility',
-                'Risk-managed handover',
-                'Predictable operational cost',
+                'Predictable operational performance',
+                'Continuous system monitoring and improvement',
+                'Reduced internal workload',
+                'Clear accountability through measurable KPIs',
             ]),
         ],
     ];
@@ -176,18 +184,15 @@ function nsc_how_we_work_build_page_components(): array
         $engagement['backgroundMobile'] = $bgM;
     }
 
-    $longFig = $hs > 0 ? $hs : '';
     $longterm = [
-        'acf_fc_layout' => 'nscBlockHowWeWorkPageLongterm',
-        'title'         => 'Built for Long-Term Partnerships',
-        'body'          => 'We invest in communication clarity, delivery predictability, and engineering ownership — so collaboration feels like an extension of your team, not a handoff to a black box.',
-        'options'       => ['theme' => ''],
+        'acf_fc_layout'     => 'nscBlockHowWeWorkPageLongterm',
+        'headingLineBlack'  => 'Built for',
+        'title'             => 'Long-Term Partnerships',
+        'body'              => 'Our goal is not just to complete projects, but to build lasting technology partnerships. By combining flexible engagement models with experienced engineering teams, NSC Software helps organizations scale development while maintaining high standards of quality and reliability.',
+        'options'           => ['theme' => ''],
     ];
     if ($headingIcon !== '') {
         $longterm['headingIcon'] = $headingIcon;
-    }
-    if ($longFig !== '') {
-        $longterm['image'] = $longFig;
     }
 
     $cta = [

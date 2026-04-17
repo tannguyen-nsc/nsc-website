@@ -1078,7 +1078,7 @@
         <div class="bottom-sheet-overlay" id="hwwEngagementBottomSheetOverlay"></div>
         <div class="bottom-sheet hww-engagement-bottom-sheet" id="hwwEngagementBottomSheet">
           <div class="bottom-sheet-header">
-            <h3 class="bottom-sheet-title" id="hwwEngagementBottomSheetTitle"></h3>
+            <h3 class="bottom-sheet-title" id="hwwEngagementBottomSheetTitle" aria-hidden="true"></h3>
             <button type="button" class="bottom-sheet-close" id="hwwEngagementBottomSheetClose" aria-label="Close">
               <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <path d="M21 7L7 21M7 7L21 21" stroke="#F9F9FB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -1094,16 +1094,17 @@
 
     <section class="how-we-work-page-longterm" id="section-hww-longterm" aria-labelledby="hww-longterm-heading">
       <div class="wrapper">
-        <div class="how-we-work-page-longterm__grid">
-          <div class="how-we-work-page-longterm__content">
-            <img src="./img/heading-icon.webp" alt="" width="56" height="56" loading="lazy" />
-            <h2 id="hww-longterm-heading">Built for Long-Term Partnerships</h2>
-            <p>We invest in communication clarity, delivery predictability, and engineering ownership — so collaboration feels like an extension of your team, not a handoff to a black box.</p>
-          </div>
-          <div class="how-we-work-page-longterm__figure">
-            <div class="how-we-work-page-longterm__figure-deco" aria-hidden="true"></div>
-            <img src="./img/why-nsc-built-handshake.png" alt="" width="800" height="560" loading="lazy" />
-          </div>
+        <div class="why-nsc-team__heading-col">
+          <img src="./img/heading-icon.webp" alt="" class="why-nsc-team__icon" width="56" height="56" loading="lazy" />
+          <h2 id="hww-longterm-heading" class="why-nsc-team__title">
+            <span class="why-nsc-team__title-pre">Built for</span>
+            <span class="why-nsc-team__title-row">
+              <span class="why-nsc-team__accent">Long-Term Partnerships</span>
+            </span>
+          </h2>
+        </div>
+        <div class="how-we-work-page-longterm__text">
+          <p>Our goal is not just to complete projects, but to build <strong>lasting technology partnerships</strong>. By combining flexible engagement models with experienced engineering teams, NSC Software helps organizations scale development while maintaining high standards of quality and reliability.</p>
         </div>
       </div>
     </section>

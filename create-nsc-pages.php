@@ -726,7 +726,8 @@ function getWhyNscPageComponents(): array
 }
 
 /**
- * How we work page components matching frontend/src/how-we-work.html.
+ * How we work page components matching frontend/src/how-we-work.html (Hero → Partnership → Engagement → Long-term → CTA).
+ * Engagement block: see create-nsc-pages-how-we-work.php for the single collaboration-process step list (matches tab 1 / Fixed-Scope on the static page).
  *
  * @return array<int, array<string, mixed>>
  */

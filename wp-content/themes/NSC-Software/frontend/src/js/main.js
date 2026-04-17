@@ -1851,7 +1851,6 @@
       });
 
       this.bottomSheet = this.modal;
-      this.titleElement = document.getElementById('hwwEngagementBottomSheetTitle');
       this.contentElement = document.getElementById('hwwEngagementBottomSheetContent');
       this.engagement = document.querySelector('.how-we-work-page-engagement');
       this.isMobile = window.innerWidth < CONFIG.BREAKPOINTS.DESKTOP;
@@ -1909,20 +1908,6 @@
       const body = panel ? panel.querySelector('.hww-engagement__panel-body') : null;
       if (!body) {
         return;
-      }
-
-      const titleEl = mobItem.querySelector('h2');
-      let title = '';
-      if (titleEl) {
-        const titleClone = titleEl.cloneNode(true);
-        titleClone.querySelectorAll('span').forEach(function (span) {
-          span.remove();
-        });
-        title = titleClone.textContent.trim();
-      }
-
-      if (this.titleElement) {
-        this.titleElement.textContent = title;
       }
 
       this.contentElement.innerHTML = '';

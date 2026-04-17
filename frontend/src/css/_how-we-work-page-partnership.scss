@@ -15,7 +15,7 @@
       @apply space-y-4 text-center;
 
       p {
-        @apply text-base leading-relaxed text-[rgba(0,0,0,0.82)] sm:text-lg;
+        @apply text-base font-bold lg:text-xl lg:font-semibold leading-relaxed text-[rgba(0,0,0,0.82)] sm:text-lg;
       }
     }
   }

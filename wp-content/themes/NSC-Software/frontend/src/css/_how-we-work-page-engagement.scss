@@ -470,7 +470,7 @@
     }
 
     .bottom-sheet-title {
-      @apply text-left text-lg font-bold text-white;
+      @apply hidden;
     }
 
     /* Scroll here — inner body grows with cloned HTML; nested overflow-y on body breaks iOS flex sizing */

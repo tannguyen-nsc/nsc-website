@@ -24,17 +24,23 @@ function getACFLayout()
                 'return_format' => 'array',
             ],
             [
-                'label' => __('Heading', 'NscSoftware'),
+                'label' => __('Heading line 1 (black)', 'NscSoftware'),
+                'name' => 'headingLineBlack',
+                'type' => 'text',
+                'default_value' => 'Built for',
+            ],
+            [
+                'label' => __('Heading line 2 (accent)', 'NscSoftware'),
                 'name' => 'title',
                 'type' => 'text',
-                'default_value' => 'Built for Long-Term Partnerships',
+                'default_value' => 'Long-Term Partnerships',
             ],
             [
                 'label' => __('Body', 'NscSoftware'),
                 'name' => 'body',
                 'type' => 'textarea',
                 'rows' => 4,
-                'default_value' => 'We invest in communication clarity, delivery predictability, and engineering ownership — so collaboration feels like an extension of your team, not a handoff to a black box.',
+                'default_value' => 'Our goal is not just to complete projects, but to build lasting technology partnerships. By combining flexible engagement models with experienced engineering teams, NSC Software helps organizations scale development while maintaining high standards of quality and reliability.',
             ],
             [
                 'label' => __('Image', 'NscSoftware'),

@@ -1,47 +1,88 @@
-// How we work — Built for long-term partnerships (split layout)
+// How we work — Long-term partnerships: full composite background (desktop + mobile art)
 .page-how-we-work {
   .how-we-work-page-longterm {
-    @apply relative z-[1] bg-white py-12 lg:py-20;
+    @apply relative z-[1] overflow-x-hidden bg-no-repeat py-12 lg:py-16 xl:py-20;
+    /* Mobile composite: white + mesh top, handshake bottom (484×1024) */
+    @apply bg-[url('../img/how-we-work-page-longterm-full-bg-mob.png')] bg-top;
+    background-size: 100% auto;
+    min-height: calc(100vw * 1024 / 484);
 
-    &::before {
-      content: "";
-      @apply pointer-events-none absolute inset-0 opacity-[0.07];
-      background-image: radial-gradient(circle at 20% 20%, #36c3dc 0, transparent 45%),
-        radial-gradient(circle at 80% 80%, #36c3dc 0, transparent 40%);
+    @media (min-width: 1024px) {
+      background-image: url("../img/how-we-work-page-longterm-full-bg.png");
+      @apply bg-center;
+      background-size: cover;
+      min-height: min(420px, 38vw);
     }
 
     .wrapper {
       @apply relative z-[1] mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8;
     }
 
-    .how-we-work-page-longterm__grid {
-      @apply grid items-center gap-10 lg:grid-cols-2 lg:gap-14;
+    /* Heading + body sit on the light left band of the desktop composite */
+    .why-nsc-team__heading-col,
+    .how-we-work-page-longterm__text {
+      @apply relative z-[2] max-w-full lg:max-w-[58%] xl:max-w-[55%] 2xl:max-w-[52%];
+      @apply lg:pr-6 xl:pr-8;
     }
 
-    .how-we-work-page-longterm__content {
-      img {
-        @apply mb-4 max-h-14 w-auto;
+    .how-we-work-page-longterm__text {
+      @apply pb-2 pt-0;
+    }
+
+    /* Match `.why-nsc-team__heading-col` / title treatment (black + primary accent) */
+    .why-nsc-team__heading-col {
+      @apply flex w-full flex-col items-start;
+    }
+
+    .why-nsc-team__icon {
+      @apply mb-4 max-w-[32px] lg:max-w-[56px];
+    }
+
+    .why-nsc-team__title {
+      @apply mx-0 mt-0 mb-4 flex w-full flex-col items-start gap-1 text-left text-2xl font-bold uppercase lg:text-4xl xl:text-[42px] 2xl:text-5xl xl:leading-tight;
+    }
+
+    .why-nsc-team__title-pre {
+      @apply text-black;
+    }
+
+    .why-nsc-team__title-row {
+      @apply flex items-baseline gap-x-0 lg:flex-wrap;
+    }
+
+    .why-nsc-team__accent {
+      @apply relative inline-block text-primary;
+      padding: 0.12em 0.28em 0.18em;
+
+      &::before {
+        content: "";
+        @apply pointer-events-none absolute border-primary;
+        top: 0;
+        left: 0;
+        width: 0.42em;
+        height: 0.42em;
+        border-style: solid;
+        border-width: 2px 0 0 2px;
       }
 
-      h2 {
-        @apply mb-4 text-2xl font-bold leading-tight text-black sm:text-3xl lg:text-4xl;
-      }
-
-      p {
-        @apply text-base leading-relaxed text-[rgba(0,0,0,0.82)] sm:text-lg;
+      &::after {
+        content: "";
+        @apply pointer-events-none absolute border-primary;
+        right: 0;
+        bottom: 0;
+        width: 0.42em;
+        height: 0.42em;
+        border-style: solid;
+        border-width: 0 2px 2px 0;
       }
     }
 
-    .how-we-work-page-longterm__figure {
-      @apply relative overflow-hidden rounded-sm;
-      img {
-        @apply h-full w-full object-cover;
-      }
+    .how-we-work-page-longterm__text p {
+      @apply text-base leading-relaxed text-[rgba(0,0,0,0.82)] sm:text-lg;
     }
 
-    .how-we-work-page-longterm__figure-deco {
-      @apply pointer-events-none absolute inset-0;
-      background: radial-gradient(circle at 60% 40%, rgba(54, 195, 220, 0.25), transparent 55%);
+    .how-we-work-page-longterm__text p strong {
+      @apply font-semibold text-black;
     }
   }
 }
