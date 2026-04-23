@@ -8,7 +8,7 @@ function getACFLayout()
 {
     return [
         'name' => 'nscBlockHowWeWorkPagePartnership',
-        'label' => __('NSC Block: How we work — Partnership', 'NscSoftware'),
+        'label' => __('NSC Block: How We Work — Partnership', 'NscSoftware'),
         'sub_fields' => [
             [
                 'label' => __('Content', 'NscSoftware'),

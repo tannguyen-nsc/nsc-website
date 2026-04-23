@@ -26,7 +26,7 @@ declare(strict_types=1);
  * - For the Blogs page: default template + pageComponents = Hero (dark, blogs copy with links to
  *   Home / About / AI / Our Services / Technology Capabilities) + NSC Block: Blogs (Archive) with Vue list fed from WP posts.
  * - For the Why NSC Software page (slug why-nsc): seeds pageComponents to match frontend/src/why-nsc.html main sections (Hero → … → CTA).
- * - For the How we work page (slug how-we-work): seeds pageComponents to match frontend/src/how-we-work.html (Hero → Partnership → Engagement → Long-term → CTA).
+ * - For the How We Work page (slug how-we-work): seeds pageComponents to match frontend/src/how-we-work.html (Hero → Partnership → Engagement → Long-term → CTA).
  * - For the About page: seeds pageComponents to match frontend/build/about.html
  *   (Hero left-text → Company Snapshot → Our Story → Our Leaders → Why Us →
  *   Technology Capabilities → Global Presence → Contact). About uses the default page template.
@@ -169,7 +169,7 @@ $pages = [
     ['title' => 'Home', 'slug' => 'home', 'template' => ''], // default = page.twig + pageComponents
     ['title' => 'About', 'slug' => 'about', 'template' => ''], // default = page.twig + pageComponents (About Us sections)
     ['title' => 'Why NSC Software', 'slug' => 'why-nsc', 'template' => ''], // default = page.twig + pageComponents (Why NSC sections)
-    ['title' => 'How we work', 'slug' => 'how-we-work', 'template' => ''], // default = page.twig + pageComponents (How we work page)
+    ['title' => 'How We Work', 'slug' => 'how-we-work', 'template' => ''], // default = page.twig + pageComponents (How We Work page)
     ['title' => 'AI', 'slug' => 'ai', 'template' => ''], // default = page.twig + pageComponents (AI sections)
     ['title' => 'Blogs', 'slug' => 'blogs', 'template' => ''], // default + Hero + Blogs (Archive), Vue uses WP posts
     ['title' => 'Career', 'slug' => 'career', 'template' => ''], // default + pageComponents (frontend/src/career.html sections)
@@ -726,7 +726,7 @@ function getWhyNscPageComponents(): array
 }
 
 /**
- * How we work page components matching frontend/src/how-we-work.html (Hero → Partnership → Engagement → Long-term → CTA).
+ * How We Work page components matching frontend/src/how-we-work.html (Hero → Partnership → Engagement → Long-term → CTA).
  * Engagement block: see create-nsc-pages-how-we-work.php for the single collaboration-process step list (matches tab 1 / Fixed-Scope on the static page).
  *
  * @return array<int, array<string, mixed>>
@@ -1758,7 +1758,7 @@ foreach ($pages as $page) {
             nsc_seed_pages_persist_page_components((int) $pageId, $components);
         }
 
-        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (How we work sections)';
+        $msg = 'page_id=' . $pageId . ', template=default, pageComponents cleared and set (How We Work sections)';
         if ($contentTest) {
             $msg .= ', content_test=1 (all text set to "[test]")';
         }

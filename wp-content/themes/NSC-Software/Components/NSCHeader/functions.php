@@ -197,6 +197,10 @@ add_filter('NscSoftware/addComponentData?name=NSCHeader', function ($data) {
             'hide_if_no_translation' => 0,
         ]);
         if (\is_array($raw)) {
+            if (\function_exists('nsc_pll_filter_switcher_raw_elements')) {
+                $raw = \nsc_pll_filter_switcher_raw_elements($raw);
+            }
+
             $data['languageSwitcherLanguages'] = \array_values($raw);
             foreach ($data['languageSwitcherLanguages'] as $row) {
                 if (\is_array($row) && !empty($row['current_lang'])) {

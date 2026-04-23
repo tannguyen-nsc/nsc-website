@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 /**
- * Seeded ACF payloads for the How we work page (create-nsc-pages.php).
+ * Seeded ACF payloads for the How We Work page (create-nsc-pages.php).
  * Aligned with frontend/src/how-we-work.html (synced from master.html).
  *
  * Note: `nscBlockHowWeWorkPageEngagement` exposes a single `processSteps` repeater; the Twig

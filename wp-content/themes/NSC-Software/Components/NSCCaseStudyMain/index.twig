@@ -75,7 +75,7 @@
                 <span class="case-study-detail-overview__meta-label">{{ __('Industry', 'NscSoftware')|e }}</span>
                 <div class="case-study-detail-overview__tags">
                   {% for t in industries %}
-                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                    <span class="case-study-detail-overview__tag">{{ function('html_entity_decode', t.name|default(''))|e }}</span>
                   {% endfor %}
                 </div>
               </div>
@@ -85,7 +85,7 @@
                 <span class="case-study-detail-overview__meta-label">{{ __('Country', 'NscSoftware')|e }}</span>
                 <div class="case-study-detail-overview__tags">
                   {% for t in countries %}
-                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                    <span class="case-study-detail-overview__tag">{{ function('html_entity_decode', t.name|default(''))|e }}</span>
                   {% endfor %}
                 </div>
               </div>
@@ -95,7 +95,7 @@
                 <span class="case-study-detail-overview__meta-label">{{ __('Solutions', 'NscSoftware')|e }}</span>
                 <div class="case-study-detail-overview__tags">
                   {% for t in solutions %}
-                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                    <span class="case-study-detail-overview__tag">{{ function('html_entity_decode', t.name|default(''))|e }}</span>
                   {% endfor %}
                 </div>
               </div>
@@ -105,7 +105,7 @@
                 <span class="case-study-detail-overview__meta-label">{{ __('Services', 'NscSoftware')|e }}</span>
                 <div class="case-study-detail-overview__tags">
                   {% for t in services %}
-                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                    <span class="case-study-detail-overview__tag">{{ function('html_entity_decode', t.name|default(''))|e }}</span>
                   {% endfor %}
                 </div>
               </div>
@@ -115,7 +115,7 @@
                 <span class="case-study-detail-overview__meta-label">{{ __('Technologies & frameworks', 'NscSoftware')|e }}</span>
                 <div class="case-study-detail-overview__tags">
                   {% for t in technologies %}
-                    <span class="case-study-detail-overview__tag">{{ t.name|e }}</span>
+                    <span class="case-study-detail-overview__tag">{{ function('html_entity_decode', t.name|default(''))|e }}</span>
                   {% endfor %}
                 </div>
               </div>

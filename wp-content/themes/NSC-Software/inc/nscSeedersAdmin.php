@@ -267,13 +267,12 @@ function pll_link_save_translation_group(int $mainPostId, int $translationPostId
     }
 
     $trLang = \pll_get_post_language($translationPostId, 'slug');
-    if (!\is_string($trLang) || $trLang === '') {
+    $trLangNorm = \is_string($trLang) && $trLang !== '' ? \strtolower($trLang) : '';
+    $targetNorm = \strtolower($targetLangSlug);
+    if ($trLangNorm === '' || $trLangNorm !== $targetNorm) {
+        // Match the dropdown (and the same case as the empty-language branch). Users often fix
+        // a mis-tagged import by linking; requiring manual Polylang edits was too strict.
         \pll_set_post_language($translationPostId, $targetLangSlug, false);
-    } elseif ($trLang !== $targetLangSlug) {
-        return new \WP_Error(
-            'pll_tr_lang',
-            \__('Translation post is assigned to a different language than selected.', 'NscSoftware')
-        );
     }
 
     $translations = \pll_get_post_translations($mainPostId);
@@ -380,7 +379,7 @@ function pages_seeder_scope_choices(): array
         'home' => \__('Home', 'NscSoftware'),
         'about' => \__('About', 'NscSoftware'),
         'why-nsc' => \__('Why NSC Software', 'NscSoftware'),
-        'how-we-work' => \__('How we work', 'NscSoftware'),
+        'how-we-work' => \__('How We Work', 'NscSoftware'),
         'ai' => \__('AI', 'NscSoftware'),
         'blogs' => \__('Blogs', 'NscSoftware'),
         'career' => \__('Career', 'NscSoftware'),

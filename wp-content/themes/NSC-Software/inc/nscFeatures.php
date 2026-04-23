@@ -56,6 +56,14 @@ add_action('acf/init', static function (): void {
             'default_value' => 1,
             'instructions' => __('When off: the header language dropdown and any Polylang “Languages” item in Navigation are hidden. Default is on. Does not disable multilingual URLs—only the switcher UI.', 'NscSoftware'),
         ],
+        [
+            'label' => __('CFDB7: re-upload CV in submission list', 'NscSoftware'),
+            'name' => 'feature_cfdb7_cv_reupload',
+            'type' => 'true_false',
+            'ui' => 1,
+            'default_value' => 0,
+            'instructions' => __('When on (and if you can manage CF7 entries): the job-application Contact Form CFDB7 list shows a “Replace CV” column so each row can get a new PDF/DOC/DOCX. The signed download link is regenerated.', 'NscSoftware'),
+        ],
     ], 'Global');
 }, 5);
 
@@ -89,6 +97,14 @@ function nsc_feature_case_studies_enabled(): bool
 function nsc_feature_language_enabled(): bool
 {
     return nsc_feature_truthy(Options::getGlobal('NSCFeatures', 'feature_language'));
+}
+
+/**
+ * @return bool
+ */
+function nsc_feature_cfdb7_cv_reupload_enabled(): bool
+{
+    return nsc_feature_truthy(Options::getGlobal('NSCFeatures', 'feature_cfdb7_cv_reupload'));
 }
 
 /**
