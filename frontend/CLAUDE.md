@@ -57,10 +57,15 @@
 
 ## Dependencies
 
-- **THREE** (three.js r160) — 3D rendering, loaded via CDN
-- **ThreeGlobe** (three-globe v2.31) — hex-polygon globe, loaded via CDN
+- **THREE** (three.js r177, classic `build/three.module.min.js`) — 3D rendering. There is **no UMD build** at r177; `src/js/external/three-bootstrap.js` (a `<script type="module">`) imports the core via the page importmap, spreads the frozen module namespace into a mutable plain object, attaches the addons, publishes it as `window.THREE`, and dispatches `three-addons-ready`. `three.module.min.js` pulls `three.core.min.js` via a relative import — no extra importmap entry needed.
+- **Three.js addons** (EffectComposer, RenderPass, ShaderPass, UnrealBloomPass, OutputPass, LineSegmentsGeometry, LineMaterial, LineSegments2) — official `three/addons/` (examples/jsm) at r177, imported by three-bootstrap.js. The old vendored `three-fat-lines.js` (r160 copy of the lines addons) has been removed.
+- **ThreeGlobe** (three-globe v2.45 UMD) — hex-polygon globe, loaded via CDN; reads `window.THREE` at evaluation time, so it must stay after the bootstrap in the script order.
 - **TWEEN** (@tweenjs/tween.js v23) — animation easing, loaded via CDN
-- Three.js addons (EffectComposer, RenderPass, UnrealBloomPass, OutputPass, LineSegments2, LineMaterial) — loaded asynchronously
+- **wave-three.js** uses `three/webgpu` + `three/tsl` (r177 webgpu build) via dynamic import only — it never touches bare `three` or `window.THREE`. Note: the importmaps currently point `three/webgpu` at the non-minified `three.webgpu.js`, which pulls `three.core.js` — a **different URL** from the classic chain's `three.core.min.js` — so pages that load both the globe stack and wave-three fetch **two** three cores. Known follow-up: switching the webgpu/tsl entries to `three.webgpu.min.js` would reuse `three.core.min.js` and reduce this to one core per page.
+
+### Script-order contract
+
+Non-async `<script type="module">` and classic `defer` scripts share one in-order post-parse queue. The required order on every page is: importmap → `three-bootstrap.js` (module) → three-globe UMD → tween UMD → `globe.js`. This block is **duplicated verbatim across 7 HTML pages** (index, 404, about, cookies-policy, privacy-policy, terms-of-use, master — about.html has no wave/webgpu entries); there is no shared partial, so edits must be repeated on all 7.
 
 ## Verification
 

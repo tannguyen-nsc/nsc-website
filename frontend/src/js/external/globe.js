@@ -5,8 +5,10 @@
  * dynamic SVG connector lines, and hover-driven rotation.
  *
  * Dependencies (loaded via CDN in HTML):
- *   - THREE        (three.js r160 + examples/js/lines/*)
- *   - ThreeGlobe   (three-globe v2.31 standalone)
+ *   - THREE        (three.js r177 module build, exposed as window.THREE by
+ *                   js/external/three-bootstrap.js together with the official
+ *                   postprocessing + lines addons)
+ *   - ThreeGlobe   (three-globe v2.45 UMD standalone)
  *   - TWEEN        (@tweenjs/tween.js v23)
  *
  * @module NSCGlobe

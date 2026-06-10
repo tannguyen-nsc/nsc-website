@@ -816,6 +816,21 @@
   // Debug Panel Sections
   // ---------------------------------------------------------------------------
 
+  function appendRendererSection(panel) {
+    panel.appendChild(makeCollapsibleGroup("Renderer", false, function (body) {
+      var info = document.createElement("div");
+      info.textContent = "Active: Canvas 2D";
+      info.style.cssText = "font-size:10px;color:rgba(255,255,255,0.35);margin:3px 0;";
+      body.appendChild(info);
+      body.appendChild(makeToggle("three.js (GPU)", useThreeWave(), function (v) {
+        try {
+          window.localStorage.setItem("NSC_WAVE_USE_THREE", v ? "1" : "0");
+        } catch (e) {}
+        window.location.reload();
+      }, function () { return useThreeWave(); }));
+    }));
+  }
+
   function appendPresetsSection(panel) {
     panel.appendChild(makeCollapsibleGroup("Presets", false, function (body) {
       var names = ["terrain", "ocean", "pulse", "chaos", "calm", "reset"];
@@ -1030,6 +1045,7 @@
 
     // Append all sections
     appendStatsSection(panel);
+    appendRendererSection(panel);
     appendPresetsSection(panel);
     appendGridSection(panel);
     appendWaveSection(panel);
@@ -1091,6 +1107,13 @@
   // Lifecycle
   // ---------------------------------------------------------------------------
 
+  function useThreeWave() {
+    if (window.NSC_WAVE_THREE_FAILED) return false;
+    var v = null;
+    try { v = window.localStorage.getItem("NSC_WAVE_USE_THREE"); } catch (e) {}
+    return v !== "0" && v !== "false";
+  }
+
   function dispose() {
     if (isDisposed) return;
     isDisposed = true;
@@ -1103,6 +1126,7 @@
 
   function init() {
     if (isInitialized) return;
+    if (useThreeWave()) return; // three.js variant (wave-three.js) owns the hero
 
     sectionEl = document.querySelector(".hero.home");
     if (!sectionEl) return;
@@ -1135,6 +1159,7 @@
   // ---------------------------------------------------------------------------
 
   function setupLazyLoad() {
+    if (useThreeWave()) return; // three.js variant (wave-three.js) owns the hero
     var section = document.querySelector(".hero.home");
     if (!section) return;
 

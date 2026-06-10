@@ -766,29 +766,15 @@
     
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js" defer></script>
     <script type="importmap">
     {
       "imports": {
-        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        "three": "https://cdn.jsdelivr.net/npm/three@0.177.0/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.177.0/examples/jsm/"
       }
     }
     </script>
-    <script type="module">
-      import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-      import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-      import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-      import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-      import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-      THREE.EffectComposer = EffectComposer;
-      THREE.RenderPass = RenderPass;
-      THREE.ShaderPass = ShaderPass;
-      THREE.UnrealBloomPass = UnrealBloomPass;
-      THREE.OutputPass = OutputPass;
-      window.dispatchEvent(new Event('three-addons-ready'));
-    </script>
-    <script src="./js/external/three-fat-lines.js" defer></script>
+    <script type="module" src="./js/external/three-bootstrap.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three-globe@2.45.0/dist/three-globe.min.js" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/@tweenjs/tween.js@23/dist/tween.umd.js" defer></script>
     <script src="./js/external/globe.js" defer></script>
